@@ -1,0 +1,456 @@
+.projects {
+  padding: 0;
+  background: #030106;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.projects::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(176, 36, 255, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(0, 200, 200, 0.06) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.projects-header {
+  text-align: center;
+  padding: var(--spacing-3xl) 4rem var(--spacing-2xl);
+  background: linear-gradient(135deg, rgba(176, 36, 255, 0.08) 0%, #030106 100%);
+  border-bottom: 3px solid #B024FF;
+  box-shadow: 0 3px 20px rgba(176, 36, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.projects-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(176, 36, 255, 0.1) 0%, transparent 70%);
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  padding: 4rem 4rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.project-card {
+  background: rgba(15, 15, 20, 0.8);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  cursor: pointer;
+  will-change: transform;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 1.25rem;
+  padding: 2px;
+  background: linear-gradient(135deg, transparent 0%, transparent 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Colores de borde para cada proyecto */
+.project-card.project-1::before {
+  background: linear-gradient(135deg, #B024FF 0%, #8B1ED9 100%);
+}
+
+.project-card.project-2::before {
+  background: linear-gradient(135deg, #00C8C8 0%, #00A8A8 100%);
+}
+
+.project-card.project-3::before {
+  background: linear-gradient(135deg, #00B478 0%, #009460 100%);
+}
+
+.project-card.project-4::before {
+  background: linear-gradient(135deg, #D4A574 0%, #B4855A 100%);
+}
+
+.project-card.project-5::before {
+  background: linear-gradient(135deg, #FF6B6B 0%, #D95555 100%);
+}
+
+.project-card.project-6::before {
+  background: linear-gradient(135deg, #4ECDC4 0%, #3EADA4 100%);
+}
+
+.project-card.project-7::before {
+  background: linear-gradient(135deg, #FFD93D 0%, #DFB91D 100%);
+}
+
+.project-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.project-card:hover::before {
+  opacity: 1;
+}
+
+/* Sombras específicas para cada proyecto al hacer hover */
+.project-card.project-1:hover {
+  box-shadow: 0 20px 50px -10px rgba(176, 36, 255, 0.5), 
+              0 0 30px -5px rgba(176, 36, 255, 0.3);
+}
+
+.project-card.project-2:hover {
+  box-shadow: 0 20px 50px -10px rgba(0, 200, 200, 0.5), 
+              0 0 30px -5px rgba(0, 200, 200, 0.3);
+}
+
+.project-card.project-3:hover {
+  box-shadow: 0 20px 50px -10px rgba(0, 180, 120, 0.5), 
+              0 0 30px -5px rgba(0, 180, 120, 0.3);
+}
+
+.project-card.project-4:hover {
+  box-shadow: 0 20px 50px -10px rgba(212, 165, 116, 0.5), 
+              0 0 30px -5px rgba(212, 165, 116, 0.3);
+}
+
+.project-card.project-5:hover {
+  box-shadow: 0 20px 50px -10px rgba(255, 107, 107, 0.5), 
+              0 0 30px -5px rgba(255, 107, 107, 0.3);
+}
+
+.project-card.project-6:hover {
+  box-shadow: 0 20px 50px -10px rgba(78, 205, 196, 0.5), 
+              0 0 30px -5px rgba(78, 205, 196, 0.3);
+}
+
+.project-card.project-7:hover {
+  box-shadow: 0 20px 50px -10px rgba(255, 217, 61, 0.5), 
+              0 0 30px -5px rgba(255, 217, 61, 0.3);
+}
+
+/* Layout especial - Segunda fila con proyecto destacado */
+.project-card.project-4 {
+  grid-column: 1 / -1;
+}
+
+.project-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.project-card.project-4 .project-image-wrapper {
+  aspect-ratio: 21 / 9;
+}
+
+.project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.project-card:hover .project-image {
+  transform: scale(1.08);
+}
+
+.project-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.project-card:hover .overlay-content {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.view-project {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.overlay-content svg {
+  transition: transform 0.3s ease;
+}
+
+.project-card:hover .overlay-content svg {
+  transform: translate(4px, -4px);
+}
+
+/* Colores específicos para el overlay de cada proyecto */
+.project-card.project-1 .overlay-content {
+  box-shadow: 0 0 30px rgba(176, 36, 255, 0.4);
+}
+
+.project-card.project-2 .overlay-content {
+  box-shadow: 0 0 30px rgba(0, 200, 200, 0.4);
+}
+
+.project-card.project-3 .overlay-content {
+  box-shadow: 0 0 30px rgba(0, 180, 120, 0.4);
+}
+
+.project-card.project-4 .overlay-content {
+  box-shadow: 0 0 30px rgba(212, 165, 116, 0.4);
+}
+
+.project-card.project-5 .overlay-content {
+  box-shadow: 0 0 30px rgba(255, 107, 107, 0.4);
+}
+
+.project-card.project-6 .overlay-content {
+  box-shadow: 0 0 30px rgba(78, 205, 196, 0.4);
+}
+
+.project-card.project-7 .overlay-content {
+  box-shadow: 0 0 30px rgba(255, 217, 61, 0.4);
+}
+
+.project-info {
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.project-category {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid;
+  border-radius: 2rem;
+  transition: all 0.3s ease;
+  width: fit-content;
+}
+
+.project-card:hover .project-category {
+  transform: translateY(-2px);
+}
+
+/* Colores de categoría para cada proyecto */
+.project-card.project-1 .project-category {
+  color: #B024FF;
+  background: rgba(176, 36, 255, 0.12);
+  border-color: #B024FF;
+  box-shadow: 0 4px 15px rgba(176, 36, 255, 0.3);
+}
+
+.project-card.project-2 .project-category {
+  color: #00C8C8;
+  background: rgba(0, 200, 200, 0.12);
+  border-color: #00C8C8;
+  box-shadow: 0 4px 15px rgba(0, 200, 200, 0.3);
+}
+
+.project-card.project-3 .project-category {
+  color: #00B478;
+  background: rgba(0, 180, 120, 0.12);
+  border-color: #00B478;
+  box-shadow: 0 4px 15px rgba(0, 180, 120, 0.3);
+}
+
+.project-card.project-4 .project-category {
+  color: #D4A574;
+  background: rgba(212, 165, 116, 0.12);
+  border-color: #D4A574;
+  box-shadow: 0 4px 15px rgba(212, 165, 116, 0.3);
+}
+
+.project-card.project-5 .project-category {
+  color: #FF6B6B;
+  background: rgba(255, 107, 107, 0.12);
+  border-color: #FF6B6B;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.project-card.project-6 .project-category {
+  color: #4ECDC4;
+  background: rgba(78, 205, 196, 0.12);
+  border-color: #4ECDC4;
+  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+}
+
+.project-card.project-7 .project-category {
+  color: #FFD93D;
+  background: rgba(255, 217, 61, 0.12);
+  border-color: #FFD93D;
+  box-shadow: 0 4px 15px rgba(255, 217, 61, 0.3);
+}
+
+.project-title {
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-weight: 700;
+  color: #ffffff;
+  margin: 1rem 0 0.75rem;
+  line-height: 1.3;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  transition: color 0.3s ease;
+}
+
+.project-card:hover .project-title {
+  color: #ffffff;
+  text-shadow: 0 2px 15px rgba(255, 255, 255, 0.3);
+}
+
+.project-description {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+  font-style: italic;
+  transition: color 0.3s ease;
+}
+
+.project-card:hover .project-description {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+  .projects-grid {
+    padding: 3rem 3rem;
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 3rem 2rem;
+    gap: 1.25rem;
+  }
+
+  .project-card.project-4 {
+    grid-column: 1 / -1;
+  }
+
+  .project-card.project-4 .project-image-wrapper {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-header {
+    padding: var(--spacing-2xl) var(--spacing-md);
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .project-card.project-4 {
+    grid-column: 1;
+  }
+
+  .project-card.project-4 .project-image-wrapper {
+    aspect-ratio: 16 / 10;
+  }
+
+  .project-info {
+    padding: 1.5rem;
+  }
+
+  .view-project {
+    font-size: 1rem;
+  }
+
+  .overlay-content {
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .projects-header {
+    padding: var(--spacing-xl) var(--spacing-sm);
+  }
+
+  .projects-grid {
+    padding: 2rem 1rem;
+    gap: 1.25rem;
+  }
+
+  .project-info {
+    padding: 1.25rem;
+  }
+
+  .project-title {
+    font-size: 1.15rem;
+  }
+
+  .project-description {
+    font-size: 0.9rem;
+  }
+
+  .project-category {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.85rem;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
