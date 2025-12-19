@@ -12,8 +12,12 @@
 }
 
 .contact-header .section-title {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  font-weight: 900;
   color: #ffffff;
   text-shadow: 0 0 30px rgba(176, 36, 255, 0.6);
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
 }
 
 .contact-form {
