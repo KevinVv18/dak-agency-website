@@ -22,10 +22,10 @@
 }
 
 .gallery-title {
-  font-size: clamp(3rem, 7vw, 6rem);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 900;
   color: #ffffff;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 0.5rem;
   letter-spacing: -0.04em;
   text-transform: uppercase;
   text-shadow: 0 0 30px rgba(176, 36, 255, 0.6);
