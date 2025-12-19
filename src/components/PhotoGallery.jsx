@@ -122,47 +122,66 @@ const PhotoGallery = () => {
     }
   }, [currentIndex, photos.length, isMouseInside])
 
-  // Touch support para móviles (funciona dentro del contenedor)
+  // Touch support para móviles - HORIZONTAL SWIPE
   useEffect(() => {
     const gallery = galleryRef.current
     if (!gallery) return
 
+    let touchStartX = 0
     let touchStartY = 0
-    let lastTouchTime = 0
-    const touchCooldown = 500
+    let isSwiping = false
 
     const handleTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX
       touchStartY = e.touches[0].clientY
+      isSwiping = false
     }
 
     const handleTouchMove = (e) => {
+      if (!touchStartX) return
+      
+      const touchX = e.touches[0].clientX
       const touchY = e.touches[0].clientY
+      const deltaX = touchStartX - touchX
       const deltaY = touchStartY - touchY
-      const now = Date.now()
 
-      if (now - lastTouchTime < touchCooldown) return
-
-      if (Math.abs(deltaY) > 50) {
-        if (deltaY > 0 && currentIndex < photos.length - 1) {
-          e.preventDefault()
-          setCurrentIndex(prev => prev + 1)
-          lastTouchTime = now
-          touchStartY = touchY
-        } else if (deltaY < 0 && currentIndex > 0) {
-          e.preventDefault()
-          setCurrentIndex(prev => prev - 1)
-          lastTouchTime = now
-          touchStartY = touchY
-        }
+      // Only handle horizontal swipes (ignore vertical scrolling)
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
+        e.preventDefault()
+        isSwiping = true
       }
+    }
+
+    const handleTouchEnd = (e) => {
+      if (!isSwiping) return
+      
+      const touchEndX = e.changedTouches[0].clientX
+      const deltaX = touchStartX - touchEndX
+
+      // Swipe left = next photo
+      if (deltaX > 50 && currentIndex < photos.length - 1) {
+        setCurrentIndex(prev => prev + 1)
+        setShowScrollHint(false)
+      }
+      // Swipe right = previous photo
+      else if (deltaX < -50 && currentIndex > 0) {
+        setCurrentIndex(prev => prev - 1)
+        setShowScrollHint(false)
+      }
+
+      touchStartX = 0
+      touchStartY = 0
+      isSwiping = false
     }
 
     gallery.addEventListener('touchstart', handleTouchStart, { passive: true })
     gallery.addEventListener('touchmove', handleTouchMove, { passive: false })
+    gallery.addEventListener('touchend', handleTouchEnd, { passive: true })
 
     return () => {
       gallery.removeEventListener('touchstart', handleTouchStart)
       gallery.removeEventListener('touchmove', handleTouchMove)
+      gallery.removeEventListener('touchend', handleTouchEnd)
     }
   }, [currentIndex, photos.length])
 

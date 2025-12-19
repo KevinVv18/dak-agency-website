@@ -233,6 +233,12 @@ textarea.form-input {
   
   .contact-header {
     padding: 0 0.5rem;
+    text-align: center;
+  }
+  
+  .contact-header .section-title {
+    text-align: center;
+    width: 100%;
   }
 }
 

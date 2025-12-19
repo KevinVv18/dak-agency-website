@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import './Services.css'
@@ -6,6 +6,7 @@ import './Services.css'
 const Services = () => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const [playingVideo, setPlayingVideo] = useState(null)
 
   const handleVideoHover = (e) => {
     const video = e.currentTarget.querySelector('video')
@@ -20,6 +21,27 @@ const Services = () => {
     if (video) {
       video.pause()
       video.currentTime = 0
+    }
+  }
+
+  // Handle click/tap for mobile - toggle video play
+  const handleVideoClick = (e, serviceId) => {
+    const video = e.currentTarget.querySelector('video')
+    if (video) {
+      if (playingVideo === serviceId) {
+        video.pause()
+        video.currentTime = 0
+        setPlayingVideo(null)
+      } else {
+        // Pause any other playing video first
+        document.querySelectorAll('.service-video').forEach(v => {
+          v.pause()
+          v.currentTime = 0
+        })
+        video.currentTime = 0
+        video.play().catch(() => {})
+        setPlayingVideo(serviceId)
+      }
     }
   }
 
@@ -242,19 +264,21 @@ const Services = () => {
               variants={itemVariants}
             >
               <div
-                className={`service-card service-card-${service.id}`}
+                className={`service-card service-card-${service.id} ${playingVideo === service.id ? 'video-playing' : ''}`}
                 onMouseEnter={handleVideoHover}
                 onMouseLeave={handleVideoLeave}
+                onClick={(e) => handleVideoClick(e, service.id)}
               >
                 {/* Video overlay */}
                 <div className="video-overlay">
                   <video
                     src={service.videoSrc}
-                    preload="metadata"
+                    preload="auto"
                     muted
                     playsInline
                     loop
                     className="service-video"
+                    poster={`${service.videoSrc}#t=0.1`}
                   />
                   <div className="video-dark-overlay"></div>
                 </div>

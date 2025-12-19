@@ -194,10 +194,29 @@
   opacity: 1;
   transform: scale(1);
   transition: all 0.3s ease;
+  /* Ensure video is visible on all devices */
+  background-color: #0a0a0a;
 }
 
 .service-card:hover .service-video {
   transform: scale(1.02);
+}
+
+/* Video playing state for mobile tap */
+.service-card.video-playing .service-video {
+  transform: scale(1.02);
+}
+
+.service-card.video-playing .video-dark-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+/* Mobile: force video to show first frame */
+@media (max-width: 768px) {
+  .service-video {
+    /* Force load first frame on mobile */
+    visibility: visible !important;
+  }
 }
 
 /* Overlay oscuro siempre visible para legibilidad del texto */
