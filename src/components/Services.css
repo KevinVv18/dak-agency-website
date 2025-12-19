@@ -587,13 +587,13 @@
   }
 
   .services-header {
-    padding: 0 1.5rem var(--spacing-2xl);
+    padding: 0 1.25rem var(--spacing-2xl);
   }
 
   .services-grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 0 1.5rem;
+    gap: 1.25rem;
+    padding: 0 1.25rem;
   }
 
   .service-card {
@@ -621,12 +621,12 @@
 
 @media (max-width: 480px) {
   .services-header {
-    padding: 0 1rem var(--spacing-xl);
+    padding: 0 1.25rem var(--spacing-xl);
   }
 
   .services-grid {
-    padding: 0 1rem;
-    gap: 1rem;
+    padding: 0 1.25rem;
+    gap: 1.25rem;
   }
 
   .service-card {

@@ -9,16 +9,30 @@
   padding-bottom: 0px;
 }
 
-/* Vertical line on left like Innostart */
+/* Neon border surrounding hero section */
 .hero::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: linear-gradient(180deg, #B024FF 0%, rgba(176, 36, 255, 0.6) 50%, #B024FF 100%);
-  box-shadow: 0 0 10px rgba(176, 36, 255, 0.5);
+  inset: 0;
+  border: 3px solid transparent;
+  border-image: linear-gradient(180deg, #B024FF 0%, rgba(176, 36, 255, 0.6) 50%, #B024FF 100%) 1;
+  box-shadow: 
+    inset 0 0 15px rgba(176, 36, 255, 0.3),
+    0 0 15px rgba(176, 36, 255, 0.3);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Additional glow effect on corners */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 3px solid rgba(176, 36, 255, 0.5);
+  box-shadow: 
+    0 0 20px rgba(176, 36, 255, 0.4),
+    inset 0 0 20px rgba(176, 36, 255, 0.1);
+  pointer-events: none;
   z-index: 10;
 }
 
@@ -487,32 +501,69 @@
 
   .hero-logo-container {
     max-width: 900px;
-    padding: 1.5rem 0;
+    padding: 1.5rem 2rem;
   }
 }
 
 @media (max-width: 768px) {
   .hero {
-    padding-top: 70px;
+    padding: 70px 0 0 0;
+    min-height: auto;
+    overflow: visible;
+    /* Direct border approach - cleaner for mobile */
+    border: 3px solid #B024FF;
+    box-shadow: 
+      inset 0 0 20px rgba(176, 36, 255, 0.2),
+      0 0 20px rgba(176, 36, 255, 0.3);
+  }
+  
+  /* Hide pseudo-element borders on mobile - use direct border instead */
+  .hero::before,
+  .hero::after {
+    display: none;
+  }
+
+  .hero-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
   }
 
   .hero-title-section {
     min-height: 35vh;
-    padding: 1.5rem 0;
+    padding: 1.5rem 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  
+  .hero-content {
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .hero-title {
     font-size: clamp(4rem, 12vw, 8rem);
   }
 
+  .hero-title-wrapper {
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
   .hero-logo-container {
-    max-width: 700px;
-    padding: 1rem 0;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 1rem 0 !important;
+    margin: 0 !important;
   }
 
   .hero-subtitle-strip {
-    padding: 1.25rem 1.5rem;
+    padding: 1.25rem 0 !important;
     min-height: 75px;
+    width: 100% !important;
+    margin: 0 !important;
   }
 
   .hero-subtitle {
@@ -524,11 +575,6 @@
   .logo-carousel-wrapper::before,
   .logo-carousel-wrapper::after {
     width: 60px;
-  }
-  
-  .logo-image {
-    height: 42px;
-    max-width: 130px;
   }
   
   .logo-image {
@@ -544,15 +590,28 @@
     gap: 3rem;
   }
 
+  .hero-bottom-section {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+  }
+
   .hero-cta-block,
   .hero-social-block {
-    padding: 2.5rem 1.5rem;
+    padding: 2.5rem 1rem !important;
     min-height: 35vh;
+    width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box;
   }
 
   .social-grid {
     gap: 1.5rem;
-    max-width: 350px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
   }
 
   .cta-small-text {
@@ -579,8 +638,13 @@
 }
 
 @media (max-width: 480px) {
+  .hero {
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+
   .hero-title-section {
-    min-height: 30vh;
+    min-height: 28vh;
     padding: 1rem 0;
   }
 
@@ -589,15 +653,14 @@
   }
 
   .hero-logo-container {
-    max-width: 500px;
-    padding: 0.5rem 0;
+    max-width: 100%;
+    padding: 0.5rem;
   }
 
   .hero-subtitle-strip {
-    padding: 1rem 1rem;
+    padding: 1rem 0;
     min-height: 65px;
   }
-  
   
   .logo-image {
     height: 32px;
@@ -616,17 +679,26 @@
   .hero-social-block {
     padding: 2rem 1rem;
     min-height: 30vh;
+    width: 100%;
   }
 
   .social-grid {
     gap: 1rem;
-    max-width: 280px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 0.5rem;
+  }
+
+  .cta-text-group {
+    text-align: center;
+    align-items: center;
+    padding: 0 1rem;
   }
 
   .btn {
     padding: 0.875rem 1.75rem;
     font-size: 0.9rem;
+    width: 100%;
   }
-
 }
 

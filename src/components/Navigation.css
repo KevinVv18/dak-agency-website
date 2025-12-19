@@ -256,7 +256,7 @@
 
 @media (max-width: 480px) {
   .nav-container {
-    padding: 0 1rem;
+    padding: 0 1.25rem;
   }
 
   .logo-box {
@@ -271,6 +271,17 @@
 
   .logo-text {
     font-size: 1rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 360px) {
+  .nav-container {
+    padding: 0 1rem;
+  }
+  
+  .logo-svg {
+    height: 18px;
   }
 }
 

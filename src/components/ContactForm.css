@@ -195,7 +195,7 @@ textarea.form-input {
 /* Responsive */
 @media (max-width: 768px) {
   .contact-form-section {
-    padding: var(--spacing-2xl) var(--spacing-md);
+    padding: var(--spacing-2xl) 1.5rem;
   }
 
   .contact-form {
@@ -215,7 +215,7 @@ textarea.form-input {
 
 @media (max-width: 480px) {
   .contact-form-section {
-    padding: var(--spacing-xl) var(--spacing-sm);
+    padding: var(--spacing-xl) 1.25rem;
   }
 
   .contact-form {
@@ -229,6 +229,10 @@ textarea.form-input {
 
   textarea.form-input {
     min-height: 120px;
+  }
+  
+  .contact-header {
+    padding: 0 0.5rem;
   }
 }
 
