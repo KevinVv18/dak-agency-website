@@ -4,22 +4,22 @@ import './Hero.css'
 import logoSvg from '../assets/logo-nav.svg'
 
 // Import client logos for carousel
-import logo1 from '../assets/logos/logo-1.svg'
 import logoBerseLine from '../assets/logos/logo-berse-line.svg'
-import logoBlanco from '../assets/logos/logo-blanco.svg'
+import logoGO from '../assets/logos/logo-go.png'
+import logoJeny from '../assets/logos/LOGO BLANCO.svg'
+import logoPardo from '../assets/logos/LOGO-MANUEL PARDO@4x-8.png'
+import logoProsadis from '../assets/logos/LOGO 1.svg'
 import logoSpaKreativos from '../assets/logos/logo-spa-kreativos.svg'
-import logoBHouse from '../assets/logos/Logo principal BHouse.png'
-import logoManuelPardo from '../assets/logos/LOGO-MANUEL PARDO@4x-8.png'
 
 const Hero = () => {
-  // Client logos for carousel
+  // Client logos for carousel (6 clientes)
   const clientLogos = [
-    { id: 1, src: logo1, alt: 'Cliente 1', className: '' },
-    { id: 2, src: logoBerseLine, alt: 'Berse Line', className: 'logo-berse' },
-    { id: 3, src: logoBlanco, alt: 'Logo Blanco', className: '' },
-    { id: 4, src: logoSpaKreativos, alt: 'Spa Kreativos', className: 'logo-spa' },
-    { id: 5, src: logoBHouse, alt: 'BHouse', className: 'logo-bhouse' },
-    { id: 6, src: logoManuelPardo, alt: 'Colegio Manuel Pardo', className: '' }
+    { id: 1, src: logoBerseLine, alt: 'Berse Line', className: 'logo-berse' },
+    { id: 2, src: logoGO, alt: 'Gran Oportunidad GO!', className: 'logo-go' },
+    { id: 3, src: logoJeny, alt: 'Dra. Jenny', className: 'logo-jeny' },
+    { id: 4, src: logoPardo, alt: 'Colegio Manuel Pardo', className: 'logo-pardo' },
+    { id: 5, src: logoProsadis, alt: 'Prosadis', className: 'logo-prosadis' },
+    { id: 6, src: logoSpaKreativos, alt: 'Spa Kreativos', className: 'logo-spa' }
   ]
 
   return (

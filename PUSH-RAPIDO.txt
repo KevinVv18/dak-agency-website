@@ -1,0 +1,137 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║           🚀 GUÍA RÁPIDA: ACTUALIZAR TU PÁGINA WEB           ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+
+✅ PROBLEMA SOLUCIONADO: Logos del Hero actualizados
+   Ahora muestra correctamente los 6 clientes
+
+
+═══════════════════════════════════════════════════════════════
+
+📦 MÉTODO 1: DOBLE CLICK (MÁS FÁCIL)
+
+1. Haz doble click en: deploy.bat
+2. Escribe un mensaje (ej: "Actualización proyectos")
+3. Presiona Enter
+4. ¡Listo!
+
+
+═══════════════════════════════════════════════════════════════
+
+⌨️  MÉTODO 2: LÍNEA DE COMANDOS
+
+Abre PowerShell en esta carpeta y ejecuta:
+
+   git add .
+   git commit -m "Descripción de tus cambios"
+   git push origin main
+
+
+═══════════════════════════════════════════════════════════════
+
+🔐 LOGIN EN HOSTINGER
+
+Para actualizar tu página en producción:
+
+1. Ve a: https://hpanel.hostinger.com/
+2. Ingresa con tu email y contraseña de Hostinger
+3. Opciones:
+
+   OPCIÓN A - File Manager (Manual):
+   • Click en "Files" → "File Manager"
+   • Ve a public_html/
+   • Primero haz: npm run build (local)
+   • Sube el contenido de la carpeta dist/
+
+   OPCIÓN B - Git Deploy (Automático):
+   • Click en "Git" en el menú
+   • Conecta tu GitHub
+   • Selecciona tu repo: dak-agency-website
+   • Cada push actualiza automático
+
+
+═══════════════════════════════════════════════════════════════
+
+🎯 FLUJO RECOMENDADO
+
+1. Haces cambios en el código
+2. Pruebas local: npm run dev
+3. Si todo funciona bien:
+   • Opción fácil: Doble click en deploy.bat
+   • O manual: git add . && git commit -m "..." && git push
+
+4. Para producción (Hostinger):
+   • Con Git Deploy: Se actualiza solo
+   • Sin Git Deploy: Sube dist/ manualmente
+
+
+═══════════════════════════════════════════════════════════════
+
+📝 CONFIGURAR GIT DEPLOY EN HOSTINGER (Solo una vez)
+
+1. https://hpanel.hostinger.com/
+2. Click en tu dominio
+3. Click "Git" en menú lateral
+4. "Connect to Git"
+5. Autoriza GitHub
+6. Repo: KevinVv18/dak-agency-website
+7. Branch: main
+8. Build command: npm install && npm run build
+9. Deploy path: dist
+10. ¡Activa auto-deploy!
+
+Ahora cada git push actualiza tu página automáticamente
+
+
+═══════════════════════════════════════════════════════════════
+
+❓ SI GIT PIDE CONTRASEÑA
+
+GitHub ya NO acepta contraseñas normales.
+Necesitas un Personal Access Token (PAT):
+
+1. https://github.com/settings/tokens
+2. "Generate new token (classic)"
+3. Nombre: DAK Deploy
+4. Marca: "repo" (todos)
+5. Generate token
+6. COPIA el token (no lo volverás a ver)
+7. Úsalo como contraseña cuando hagas push
+
+
+═══════════════════════════════════════════════════════════════
+
+🆘 PROBLEMAS COMUNES
+
+❌ "git not found"
+   → Reinicia PowerShell/CMD
+
+❌ "Permission denied"
+   → Usa Personal Access Token (ver arriba)
+
+❌ "failed to push"
+   → git pull origin main --rebase
+   → git push origin main
+
+❌ Cambios no aparecen en el sitio
+   → Verifica que Hostinger esté conectado a GitHub
+   → O sube dist/ manualmente via File Manager
+
+
+═══════════════════════════════════════════════════════════════
+
+📞 SOPORTE
+
+• GitHub: https://github.com/KevinVv18/dak-agency-website
+• Hostinger: https://hpanel.hostinger.com/
+• Hostinger Chat: Disponible 24/7 en hpanel
+
+
+═══════════════════════════════════════════════════════════════
+
+✨ ¡TODO LISTO PARA ACTUALIZAR TU PÁGINA! ✨
+
+Documentación completa: DEPLOY-GUIDE.md

@@ -1,0 +1,138 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║     🔐 CREAR TOKEN DE ACCESO PERSONAL (PAT) - GITHUB         ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+
+⚠️  IMPORTANTE: CAMBIA TU CONTRASEÑA DE GITHUB PRIMERO
+   
+   1. Ve a: https://github.com/settings/security
+   2. Click "Change password"
+   3. Crea una contraseña NUEVA y SEGURA
+   4. Activa "Two-factor authentication" (2FA)
+
+
+═══════════════════════════════════════════════════════════════
+
+🔑 CREAR PERSONAL ACCESS TOKEN (Para hacer push)
+
+GitHub YA NO acepta contraseñas en la terminal.
+Necesitas un TOKEN:
+
+
+PASO 1: Ir a GitHub Settings
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Abre: https://github.com/settings/tokens
+
+2. O manualmente:
+   • https://github.com
+   • Click en tu foto (arriba derecha)
+   • Settings
+   • Developer settings (abajo en el menú)
+   • Personal access tokens
+   • Tokens (classic)
+
+
+PASO 2: Generar Nuevo Token
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Click "Generate new token"
+2. Selecciona "Generate new token (classic)"
+3. Te pedirá tu contraseña
+
+   Configuración del Token:
+   ┌─────────────────────────────────────────┐
+   │ Note: DAK Agency Deploy                 │
+   │ Expiration: 90 days (o No expiration)   │
+   │                                          │
+   │ Select scopes:                           │
+   │ ✅ repo (MARCA TODO)                     │
+   │    ✅ repo:status                        │
+   │    ✅ repo_deployment                    │
+   │    ✅ public_repo                        │
+   │    ✅ repo:invite                        │
+   │    ✅ security_events                    │
+   │                                          │
+   │ [Generate token]                         │
+   └─────────────────────────────────────────┘
+
+4. Click "Generate token"
+
+
+PASO 3: COPIAR EL TOKEN (¡IMPORTANTE!)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Verás algo como:
+
+   ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+⚠️  ¡SOLO LO VERÁS UNA VEZ!
+
+1. COPIA el token completo
+2. Guárdalo en un lugar seguro (ej: Notepad)
+3. NO lo compartas con nadie
+4. NO lo subas a GitHub
+
+
+PASO 4: USAR EL TOKEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Cuando hagas:
+   git push origin main
+
+Te pedirá:
+   Username: kevinv15v@gmail.com
+   Password: [AQUÍ PEGA EL TOKEN, NO TU CONTRASEÑA]
+
+
+═══════════════════════════════════════════════════════════════
+
+💾 GUARDAR TOKEN EN WINDOWS (Opcional)
+
+Para NO tener que pegar el token cada vez:
+
+Windows Credential Manager lo guardará automáticamente
+la primera vez que lo uses.
+
+
+═══════════════════════════════════════════════════════════════
+
+🔄 PRIMER PUSH CON TOKEN
+
+1. Abre PowerShell en la carpeta dak-source
+
+2. Ejecuta:
+   git add .
+   git commit -m "Actualización: Nueva sección de proyectos"
+   git push origin main
+
+3. Cuando te pida:
+   Username: kevinv15v@gmail.com
+   Password: [PEGA TU TOKEN AQUÍ]
+
+4. ¡Listo! Windows guardará el token
+
+
+═══════════════════════════════════════════════════════════════
+
+❓ SI PERDISTE EL TOKEN
+
+1. Ve a: https://github.com/settings/tokens
+2. Elimina el token viejo
+3. Crea uno nuevo (repite los pasos de arriba)
+
+
+═══════════════════════════════════════════════════════════════
+
+✅ DESPUÉS DE CREAR EL TOKEN
+
+Vuelve aquí y:
+
+1. Doble click en: deploy.bat
+2. Pega tu token cuando te lo pida
+3. ¡Listo para siempre!
+
+
+═══════════════════════════════════════════════════════════════

@@ -2,8 +2,6 @@
   padding: 0;
   background: #030106;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
   position: relative;
   overflow: hidden;
 }
@@ -19,6 +17,11 @@
   z-index: 0;
 }
 
+.projects-content {
+  position: relative;
+  z-index: 1;
+}
+
 .projects-header {
   text-align: center;
   padding: var(--spacing-3xl) 4rem var(--spacing-2xl);
@@ -27,7 +30,6 @@
   box-shadow: 0 3px 20px rgba(176, 36, 255, 0.3);
   position: relative;
   overflow: hidden;
-  z-index: 1;
 }
 
 .projects-header::before {
@@ -38,349 +40,184 @@
   animation: pulse 4s ease-in-out infinite;
 }
 
-.projects-grid {
+.portfolio-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  padding: 4rem 4rem;
-  max-width: 1600px;
+  gap: 2rem;
+  padding: 4rem;
+  max-width: 1800px;
   margin: 0 auto;
   width: 100%;
-  position: relative;
-  z-index: 1;
 }
 
-.project-card {
-  background: rgba(15, 15, 20, 0.8);
-  border-radius: 1.25rem;
+/* Client Cards */
+.client-card {
+  background: rgba(15, 15, 20, 0.9);
+  border-radius: 1.5rem;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-  cursor: pointer;
-  will-change: transform;
-  position: relative;
-  display: flex;
-  flex-direction: column;
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
-.project-card::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  z-index: 0;
-  pointer-events: none;
-  border-radius: 1.25rem;
-  padding: 2px;
-  background: linear-gradient(135deg, transparent 0%, transparent 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-}
-
-/* Colores de borde para cada proyecto */
-.project-card.project-1::before {
-  background: linear-gradient(135deg, #B024FF 0%, #8B1ED9 100%);
-}
-
-.project-card.project-2::before {
-  background: linear-gradient(135deg, #00C8C8 0%, #00A8A8 100%);
-}
-
-.project-card.project-3::before {
-  background: linear-gradient(135deg, #00B478 0%, #009460 100%);
-}
-
-.project-card.project-4::before {
-  background: linear-gradient(135deg, #D4A574 0%, #B4855A 100%);
-}
-
-.project-card.project-5::before {
-  background: linear-gradient(135deg, #FF6B6B 0%, #D95555 100%);
-}
-
-.project-card.project-6::before {
-  background: linear-gradient(135deg, #4ECDC4 0%, #3EADA4 100%);
-}
-
-.project-card.project-7::before {
-  background: linear-gradient(135deg, #FFD93D 0%, #DFB91D 100%);
-}
-
-.project-card:hover {
+.client-card:hover {
   transform: translateY(-8px);
   border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
 }
 
-.project-card:hover::before {
-  opacity: 1;
-}
-
-/* Sombras específicas para cada proyecto al hacer hover */
-.project-card.project-1:hover {
-  box-shadow: 0 20px 50px -10px rgba(176, 36, 255, 0.5), 
-              0 0 30px -5px rgba(176, 36, 255, 0.3);
-}
-
-.project-card.project-2:hover {
-  box-shadow: 0 20px 50px -10px rgba(0, 200, 200, 0.5), 
-              0 0 30px -5px rgba(0, 200, 200, 0.3);
-}
-
-.project-card.project-3:hover {
-  box-shadow: 0 20px 50px -10px rgba(0, 180, 120, 0.5), 
-              0 0 30px -5px rgba(0, 180, 120, 0.3);
-}
-
-.project-card.project-4:hover {
-  box-shadow: 0 20px 50px -10px rgba(212, 165, 116, 0.5), 
-              0 0 30px -5px rgba(212, 165, 116, 0.3);
-}
-
-.project-card.project-5:hover {
-  box-shadow: 0 20px 50px -10px rgba(255, 107, 107, 0.5), 
-              0 0 30px -5px rgba(255, 107, 107, 0.3);
-}
-
-.project-card.project-6:hover {
-  box-shadow: 0 20px 50px -10px rgba(78, 205, 196, 0.5), 
-              0 0 30px -5px rgba(78, 205, 196, 0.3);
-}
-
-.project-card.project-7:hover {
-  box-shadow: 0 20px 50px -10px rgba(255, 217, 61, 0.5), 
-              0 0 30px -5px rgba(255, 217, 61, 0.3);
-}
-
-/* Layout especial - Segunda fila con proyecto destacado */
-.project-card.project-4 {
-  grid-column: 1 / -1;
-}
-
-.project-image-wrapper {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 16 / 10;
+.client-header {
+  padding: 1.5rem;
   background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.project-card.project-4 .project-image-wrapper {
-  aspect-ratio: 21 / 9;
-}
-
-.project-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-.project-card:hover .project-image {
-  transform: scale(1.08);
-}
-
-.project-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+.client-logo-container {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  background: white;
+  border-radius: 0.75rem;
+  padding: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.overlay-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3rem;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
+.client-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.project-card:hover .overlay-content {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: scale(1.05);
-}
-
-.view-project {
-  font-size: 1.1rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: #ffffff;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.overlay-content svg {
-  transition: transform 0.3s ease;
-}
-
-.project-card:hover .overlay-content svg {
-  transform: translate(4px, -4px);
-}
-
-/* Colores específicos para el overlay de cada proyecto */
-.project-card.project-1 .overlay-content {
-  box-shadow: 0 0 30px rgba(176, 36, 255, 0.4);
-}
-
-.project-card.project-2 .overlay-content {
-  box-shadow: 0 0 30px rgba(0, 200, 200, 0.4);
-}
-
-.project-card.project-3 .overlay-content {
-  box-shadow: 0 0 30px rgba(0, 180, 120, 0.4);
-}
-
-.project-card.project-4 .overlay-content {
-  box-shadow: 0 0 30px rgba(212, 165, 116, 0.4);
-}
-
-.project-card.project-5 .overlay-content {
-  box-shadow: 0 0 30px rgba(255, 107, 107, 0.4);
-}
-
-.project-card.project-6 .overlay-content {
-  box-shadow: 0 0 30px rgba(78, 205, 196, 0.4);
-}
-
-.project-card.project-7 .overlay-content {
-  box-shadow: 0 0 30px rgba(255, 217, 61, 0.4);
-}
-
-.project-info {
-  padding: 2rem;
-  position: relative;
-  z-index: 1;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+.client-info {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  min-width: 0;
 }
 
-.project-category {
+.client-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 0.5rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.client-tag {
   display: inline-block;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  margin-bottom: 0.75rem;
-  padding: 0.5rem 1rem;
-  border: 2px solid;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.75rem;
   border-radius: 2rem;
-  transition: all 0.3s ease;
-  width: fit-content;
+  border: 1.5px solid;
 }
 
-.project-card:hover .project-category {
+.client-carousel {
+  aspect-ratio: 4 / 3;
+  position: relative;
+}
+
+.client-services {
+  padding: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.service-badge {
+  font-size: 0.75rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 2rem;
+  border: 1.5px solid;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.service-badge:hover {
+  background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
 }
 
-/* Colores de categoría para cada proyecto */
-.project-card.project-1 .project-category {
-  color: #B024FF;
-  background: rgba(176, 36, 255, 0.12);
-  border-color: #B024FF;
-  box-shadow: 0 4px 15px rgba(176, 36, 255, 0.3);
+/* Banners Section */
+.banners-section {
+  grid-column: 1 / -1;
+  background: rgba(15, 15, 20, 0.9);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.project-card.project-2 .project-category {
-  color: #00C8C8;
-  background: rgba(0, 200, 200, 0.12);
-  border-color: #00C8C8;
-  box-shadow: 0 4px 15px rgba(0, 200, 200, 0.3);
+.banners-section:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.6);
 }
 
-.project-card.project-3 .project-category {
-  color: #00B478;
-  background: rgba(0, 180, 120, 0.12);
-  border-color: #00B478;
-  box-shadow: 0 4px 15px rgba(0, 180, 120, 0.3);
+.banners-header {
+  padding: 1.5rem 2rem;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.project-card.project-4 .project-category {
-  color: #D4A574;
-  background: rgba(212, 165, 116, 0.12);
-  border-color: #D4A574;
-  box-shadow: 0 4px 15px rgba(212, 165, 116, 0.3);
-}
-
-.project-card.project-5 .project-category {
-  color: #FF6B6B;
-  background: rgba(255, 107, 107, 0.12);
-  border-color: #FF6B6B;
-  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-}
-
-.project-card.project-6 .project-category {
-  color: #4ECDC4;
-  background: rgba(78, 205, 196, 0.12);
-  border-color: #4ECDC4;
-  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
-}
-
-.project-card.project-7 .project-category {
-  color: #FFD93D;
-  background: rgba(255, 217, 61, 0.12);
-  border-color: #FFD93D;
-  box-shadow: 0 4px 15px rgba(255, 217, 61, 0.3);
-}
-
-.project-title {
-  font-size: clamp(1.1rem, 2vw, 1.5rem);
+.banners-title {
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #ffffff;
-  margin: 1rem 0 0.75rem;
-  line-height: 1.3;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  transition: color 0.3s ease;
+  color: white;
+  margin: 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-.project-card:hover .project-title {
-  color: #ffffff;
-  text-shadow: 0 2px 15px rgba(255, 255, 255, 0.3);
+.banners-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  border: 1.5px solid;
 }
 
-.project-description {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.75);
-  line-height: 1.6;
-  font-style: italic;
-  transition: color 0.3s ease;
-}
-
-.project-card:hover .project-description {
-  color: rgba(255, 255, 255, 0.9);
+.banners-carousel {
+  aspect-ratio: 21 / 9;
+  position: relative;
 }
 
 /* Responsive */
 @media (max-width: 1400px) {
-  .projects-grid {
-    padding: 3rem 3rem;
-    gap: 1.25rem;
+  .portfolio-grid {
+    padding: 3rem;
+    gap: 1.5rem;
   }
 }
 
 @media (max-width: 1024px) {
-  .projects-grid {
+  .portfolio-grid {
     grid-template-columns: repeat(2, 1fr);
     padding: 3rem 2rem;
-    gap: 1.25rem;
+    gap: 1.5rem;
   }
 
-  .project-card.project-4 {
+  .banners-section {
     grid-column: 1 / -1;
   }
 
-  .project-card.project-4 .project-image-wrapper {
+  .banners-carousel {
     aspect-ratio: 16 / 9;
   }
 }
@@ -390,30 +227,53 @@
     padding: var(--spacing-2xl) var(--spacing-md);
   }
 
-  .projects-grid {
+  .portfolio-grid {
     grid-template-columns: 1fr;
     padding: 2rem 1.5rem;
-    gap: 1.5rem;
+    gap: 2rem;
   }
 
-  .project-card.project-4 {
-    grid-column: 1;
+  .client-header {
+    padding: 1.25rem;
   }
 
-  .project-card.project-4 .project-image-wrapper {
-    aspect-ratio: 16 / 10;
+  .client-logo-container {
+    width: 50px;
+    height: 50px;
   }
 
-  .project-info {
-    padding: 1.5rem;
+  .client-name {
+    font-size: 1.1rem;
   }
 
-  .view-project {
-    font-size: 1rem;
+  .client-tag,
+  .banners-tag {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.65rem;
   }
 
-  .overlay-content {
-    padding: 0.75rem 1.5rem;
+  .client-services {
+    padding: 1.25rem;
+  }
+
+  .service-badge {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .banners-header {
+    padding: 1.25rem 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .banners-title {
+    font-size: 1.3rem;
+  }
+
+  .banners-carousel {
+    aspect-ratio: 4 / 3;
   }
 }
 
@@ -422,26 +282,38 @@
     padding: var(--spacing-xl) var(--spacing-sm);
   }
 
-  .projects-grid {
+  .portfolio-grid {
     padding: 2rem 1rem;
-    gap: 1.25rem;
+    gap: 1.5rem;
   }
 
-  .project-info {
-    padding: 1.25rem;
+  .client-header {
+    padding: 1rem;
   }
 
-  .project-title {
-    font-size: 1.15rem;
+  .client-logo-container {
+    width: 45px;
+    height: 45px;
   }
 
-  .project-description {
-    font-size: 0.9rem;
+  .client-name {
+    font-size: 1rem;
   }
 
-  .project-category {
-    font-size: 0.7rem;
-    padding: 0.4rem 0.85rem;
+  .client-carousel {
+    aspect-ratio: 1 / 1;
+  }
+
+  .client-services {
+    padding: 1rem;
+  }
+
+  .banners-header {
+    padding: 1rem 1.25rem;
+  }
+
+  .banners-title {
+    font-size: 1.1rem;
   }
 }
 
