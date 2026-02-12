@@ -1,0 +1,275 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║         ✅ VIDEO VERTICAL CON ESPACIO LATERAL - MÓVIL        ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+
+🎯 PROBLEMA RESUELTO:
+
+El featured service desbordaba horizontalmente en móvil porque
+ocupaba el 100% del viewport sin espacio para respirar.
+
+
+═══════════════════════════════════════════════════════════════
+
+🔧 CORRECCIONES APLICADAS:
+
+
+1. ASPECT RATIO VERTICAL
+   Antes: aspect-ratio: 16/9 (horizontal)
+   Ahora: aspect-ratio: 9/16 (vertical) ✅
+   
+   Resultado: Video tipo stories/reels/TikTok
+
+
+2. ANCHO LIMITADO CON MAX-WIDTH
+   Antes: width: 100% (ocupa toda la pantalla)
+   Ahora: 
+   - width: 100% ✅
+   - max-width: 340px ✅
+   
+   Resultado: No desborda, tiene límite
+
+
+3. CENTRADO CON MARGIN AUTO
+   Nuevo: margin: 0 auto ✅
+   
+   Resultado: Video centrado con espacio a los lados
+
+
+4. PADDING LATERAL EN CONTENEDOR
+   Antes: padding: 0 1rem
+   Ahora: padding: 0 1.5rem ✅
+   
+   Resultado: Aire visual adicional
+
+
+5. ALTURA OPTIMIZADA
+   Antes:
+   - min-height: 280px
+   - max-height: 50vh
+   
+   Ahora:
+   - min-height: 400px ✅
+   - max-height: 65vh ✅
+   
+   Resultado: Video más alto, aprovecha mejor el espacio vertical
+
+
+═══════════════════════════════════════════════════════════════
+
+📐 ESTRUCTURA VISUAL MÓVIL:
+
+
+ANTES (DESBORDA):
+┌────────────────────────────────────────┐
+│┌──────────────────────────────────────┐│
+││                                      ││ ← Sin espacio!
+││  [Video horizontal 16:9 - 100% width]││
+││                                      ││
+│└──────────────────────────────────────┘│
+└────────────────────────────────────────┘
+
+
+AHORA (CON ESPACIO):
+┌────────────────────────────────────────┐
+│  1.5rem  ┌──────────┐  1.5rem          │
+│          │          │                  │ ← Espacio lateral!
+│          │  Video   │                  │
+│          │ Vertical │                  │
+│          │   9:16   │                  │
+│          │ 340px    │                  │
+│          │  max     │                  │
+│          │          │                  │
+│          └──────────┘                  │
+│         margin: 0 auto                 │
+└────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════
+
+💡 VALORES TÉCNICOS:
+
+
+FEATURED SERVICE (MOBILE):
+  width: 100%
+  max-width: 340px ← Límite!
+  margin: 0 auto ← Centrado!
+  aspect-ratio: 9/16 ← Vertical!
+  min-height: 400px
+  max-height: 65vh
+  border-radius: 1.25rem
+
+
+SHOWCASE LAYOUT (MOBILE):
+  padding: 0 1.5rem ← Aire lateral!
+  gap: 1.5rem
+
+
+CONTENIDO (MOBILE):
+  padding: 1.5rem (antes 1.25rem)
+  Títulos más grandes
+  CTA más prominente
+
+
+═══════════════════════════════════════════════════════════════
+
+📱 DIMENSIONES POR DISPOSITIVO:
+
+
+iPhone SE (375px viewport):
+  • Padding lateral: 1.5rem × 2 = 48px
+  • Espacio disponible: 375px - 48px = 327px
+  • Video width: 327px (menos que max-width 340px)
+  • Espacio lateral: ~24px cada lado ✅
+
+
+iPhone 12 (390px viewport):
+  • Padding lateral: 1.5rem × 2 = 48px
+  • Espacio disponible: 390px - 48px = 342px
+  • Video width: 340px (max-width aplica)
+  • Espacio lateral: ~25px cada lado ✅
+
+
+Pixel 5 (393px viewport):
+  • Padding lateral: 1.5rem × 2 = 48px
+  • Espacio disponible: 393px - 48px = 345px
+  • Video width: 340px (max-width aplica)
+  • Espacio lateral: ~26px cada lado ✅
+
+
+Samsung S8 (360px viewport):
+  • Padding lateral: 1.5rem × 2 = 48px
+  • Espacio disponible: 360px - 48px = 312px
+  • Video width: 312px (menos que max-width)
+  • Espacio lateral: ~24px cada lado ✅
+
+
+═══════════════════════════════════════════════════════════════
+
+✨ BENEFICIOS:
+
+
+1. FORMATO VERTICAL NATIVO
+   ✅ 9:16 como stories/reels/TikTok
+   ✅ Aprovecha altura de móvil
+   ✅ Experiencia familiar para usuarios
+
+
+2. ESPACIO PARA RESPIRAR
+   ✅ 1.5rem de padding lateral
+   ✅ max-width limita el ancho
+   ✅ margin: auto centra el video
+   ✅ No desborda horizontalmente
+
+
+3. MEJOR LEGIBILIDAD
+   ✅ Contenido más grande (padding 1.5rem)
+   ✅ Títulos escalados apropiadamente
+   ✅ CTA más visible
+
+
+4. RESPONSIVO
+   ✅ Se adapta a pantallas pequeñas (<340px)
+   ✅ Mantiene proporciones en grandes (>340px)
+   ✅ Altura flexible (65vh max)
+
+
+5. CONSISTENCIA VISUAL
+   ✅ Aire uniforme alrededor
+   ✅ Centrado perfecto
+   ✅ Border radius consistente (1.25rem)
+
+
+═══════════════════════════════════════════════════════════════
+
+🎨 LAYOUT COMPLETO MÓVIL:
+
+
+┌─────────────────────────────────────────┐
+│ [HEADER]                                │
+│                                         │
+│    ┌─────────────┐                      │
+│    │             │ ← 340px max          │
+│    │   Featured  │                      │
+│    │    Video    │   9:16 vertical      │
+│    │   Vertical  │                      │
+│    │    9:16     │   400-65vh altura    │
+│    │             │                      │
+│    │ [Contenido] │   Centrado con       │
+│    │   [CTA]     │   margin: auto       │
+│    └─────────────┘                      │
+│                                         │
+│         ┌────┐                          │
+│         │Thmb│ ← 220px, centrado       │
+│         └────┘                          │
+│  [Thumb] [Act] [Thumb] ← Scroll        │
+│                                         │
+└─────────────────────────────────────────┘
+   1.5rem           1.5rem
+   ← aire  →      ← aire →
+
+
+═══════════════════════════════════════════════════════════════
+
+🔍 COMPARACIÓN ANTES/DESPUÉS:
+
+
+ANTES:
+  • Video horizontal (16:9)
+  • Ocupaba 100% del ancho
+  • Desbordaba sin padding suficiente
+  • No había espacio lateral
+  • Muy ancho para móvil
+  ❌ Mala experiencia de usuario
+
+
+AHORA:
+  • Video vertical (9:16)
+  • Max 340px de ancho
+  • Centrado con margin auto
+  • Padding 1.5rem lateral
+  • Espacio para respirar
+  ✅ Experiencia tipo app nativa
+
+
+═══════════════════════════════════════════════════════════════
+
+📱 TESTING RECOMENDADO:
+
+
+1. Abre en DevTools responsive mode
+2. Configura viewport a 375px (iPhone SE)
+3. Ve a sección Servicios
+4. Verifica:
+   ✅ Video vertical (no horizontal)
+   ✅ Espacio visible a los lados
+   ✅ No hay scroll horizontal
+   ✅ Contenido legible
+   ✅ CTA accesible
+
+5. Prueba en tu móvil real:
+   ✅ Video tipo stories/reels
+   ✅ Aire visual lateral
+   ✅ Centrado perfecto
+   ✅ Click en thumbnails funciona
+
+
+═══════════════════════════════════════════════════════════════
+
+✨ RESULTADO FINAL:
+
+El featured service ahora es:
+• Vertical (9:16) como stories
+• Limitado a 340px de ancho
+• Centrado con espacio lateral
+• Sin desbordamiento
+• Experiencia móvil premium tipo app nativa
+
+
+Recarga la página en tu móvil! 📱✨
+El video ahora tiene el formato correcto y respira visualmente.
+
+
+═══════════════════════════════════════════════════════════════

@@ -121,7 +121,7 @@ const Hero = () => {
             <div className="social-grid">
               {/* Facebook */}
               <motion.a
-                href="https://facebook.com"
+                href="https://www.facebook.com/profile.php?id=61577374078273"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon-wrapper"
@@ -136,7 +136,7 @@ const Hero = () => {
 
               {/* Instagram */}
               <motion.a
-                href="https://instagram.com"
+                href="https://www.instagram.com/agency_dak/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon-wrapper"
@@ -151,7 +151,7 @@ const Hero = () => {
 
               {/* TikTok */}
               <motion.a
-                href="https://tiktok.com"
+                href="https://www.tiktok.com/@dakagency"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon-wrapper"
@@ -166,7 +166,7 @@ const Hero = () => {
 
               {/* WhatsApp */}
               <motion.a
-                href="https://wa.me/"
+                href="https://api.whatsapp.com/send/?phone=51906765040&text=Hola+DAK+Agency%2C+me+interesa+conocer+sus+servicios&type=phone_number&app_absent=0"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon-wrapper"
@@ -216,4 +216,3 @@ const Hero = () => {
 }
 
 export default Hero
-

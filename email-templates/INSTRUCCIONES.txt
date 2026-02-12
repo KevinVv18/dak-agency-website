@@ -1,0 +1,58 @@
+=============================================
+COMO CONFIGURAR LOS TEMPLATES EN EMAILJS
+=============================================
+
+Ya tienes:
+- Service ID: service_feg2or7
+- Cuenta conectada: marketing@dakagency.net
+
+Ahora necesitas crear 2 templates:
+
+=============================================
+TEMPLATE #1 - NOTIFICACION (te llega a ti)
+=============================================
+
+1. Ve a Email Templates > Create New Template
+2. En la pestana "Content":
+   - Subject: Nuevo contacto: {{from_name}} - {{service}}
+   - Cambia de "Design Editor" a "Code Editor" (boton arriba)
+   - Pega TODO el contenido de TEMPLATE-1-NOTIFICACION.html
+3. En la pestana "Settings":
+   - To Email: marketing@dakagency.net
+   - From Name: DAK Agency Web
+   - Reply To: {{from_email}}
+4. Click "Save"
+5. COPIA EL TEMPLATE ID (aparece arriba, ejemplo: template_abc123)
+
+=============================================
+TEMPLATE #2 - AUTO-REPLY (le llega al cliente)
+=============================================
+
+1. Ve a Email Templates > Create New Template
+2. En la pestana "Content":
+   - Subject: DAK Agency - Recibimos tu mensaje
+   - Cambia a "Code Editor"
+   - Pega TODO el contenido de TEMPLATE-2-AUTOREPLY.html
+3. En la pestana "Settings":
+   - To Email: {{from_email}}
+   - From Name: DAK Agency
+   - Reply To: marketing@dakagency.net
+4. Click "Save"
+5. COPIA EL TEMPLATE ID
+
+=============================================
+PUBLIC KEY
+=============================================
+
+1. Ve a Account > API Keys (menu izquierdo)
+2. Copia tu Public Key
+
+=============================================
+DAME ESTOS 3 DATOS Y LOS PONGO EN EL CODIGO:
+=============================================
+
+1. Template ID de Notificacion: template_______
+2. Template ID de Auto-Reply:   template_______
+3. Public Key:                  _______________
+
+(El Service ID ya lo tengo: service_feg2or7)

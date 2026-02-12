@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#0a0412;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0412;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+          <!-- HEADER -->
+          <tr>
+            <td style="padding:30px 40px 20px;text-align:center;border-bottom:2px solid #B024FF;">
+              <img src="https://res.cloudinary.com/dm4ijuzmi/image/upload/v1770859225/LOGO_DAK_-_1_300x-8_gazgyy.png" alt="DAK Agency" width="160" style="display:block;margin:0 auto 10px;height:auto;" />
+              <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.4);letter-spacing:0.15em;text-transform:uppercase;">Nuevo Contacto desde la Web</p>
+            </td>
+          </tr>
+
+          <!-- ALERT BADGE -->
+          <tr>
+            <td style="padding:30px 40px 10px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td style="background:rgba(176,36,255,0.15);border:1px solid rgba(176,36,255,0.4);border-radius:30px;padding:8px 20px;">
+                    <span style="font-size:13px;font-weight:700;color:#B024FF;">&#9679; Nuevo mensaje recibido</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CLIENT INFO CARD -->
+          <tr>
+            <td style="padding:20px 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;border-left:4px solid #B024FF;">
+
+                <!-- Name -->
+                <tr>
+                  <td style="padding:20px 24px 8px;">
+                    <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Nombre</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 24px 16px;">
+                    <span style="font-size:18px;font-weight:800;color:#ffffff;">{{from_name}}</span>
+                  </td>
+                </tr>
+
+                <!-- Divider -->
+                <tr>
+                  <td style="padding:0 24px;">
+                    <div style="height:1px;background:rgba(255,255,255,0.06);"></div>
+                  </td>
+                </tr>
+
+                <!-- Email -->
+                <tr>
+                  <td style="padding:16px 24px 8px;">
+                    <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Email</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 24px 16px;">
+                    <a href="mailto:{{from_email}}" style="font-size:16px;font-weight:600;color:#B024FF;text-decoration:none;">{{from_email}}</a>
+                  </td>
+                </tr>
+
+                <!-- Divider -->
+                <tr>
+                  <td style="padding:0 24px;">
+                    <div style="height:1px;background:rgba(255,255,255,0.06);"></div>
+                  </td>
+                </tr>
+
+                <!-- Service -->
+                <tr>
+                  <td style="padding:16px 24px 8px;">
+                    <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Servicio Interesado</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 24px 20px;">
+                    <span style="display:inline-block;background:rgba(176,36,255,0.15);border:1px solid rgba(176,36,255,0.3);border-radius:6px;padding:6px 14px;font-size:14px;font-weight:700;color:#B024FF;">{{service}}</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- MESSAGE -->
+          <tr>
+            <td style="padding:10px 40px 30px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;">
+                <tr>
+                  <td style="padding:20px 24px 8px;">
+                    <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Mensaje</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 24px 24px;">
+                    <p style="margin:0;font-size:15px;color:rgba(255,255,255,0.85);line-height:1.7;">{{message}}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- QUICK ACTIONS -->
+          <tr>
+            <td style="padding:0 40px 30px;text-align:center;">
+              <a href="mailto:{{from_email}}" style="display:inline-block;background:#B024FF;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:700;letter-spacing:0.02em;">Responder a {{from_name}}</a>
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="padding:20px 40px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+              <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.25);">Este mensaje fue enviado desde el formulario de contacto de dakagency.net</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

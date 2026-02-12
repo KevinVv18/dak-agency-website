@@ -219,8 +219,13 @@
 }
 
 .logo-image.logo-spa {
-  height: 57px; /* +15% +10% = +27% total */
-  max-width: 178px;
+  height: 70px; /* +40% del base (50px + 20px) */
+  max-width: 220px;
+}
+
+.logo-image.logo-go {
+  height: 100px; /* +100% del base (doble tamaño) */
+  max-width: 300px;
 }
 
 
@@ -701,4 +706,3 @@
     width: 100%;
   }
 }
-

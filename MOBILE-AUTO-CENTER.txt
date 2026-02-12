@@ -1,0 +1,283 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║     ✅ SCROLL AUTOMÁTICO AL CENTRO EN MÓVIL IMPLEMENTADO     ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+
+🎯 OBJETIVO:
+
+En móvil, al hacer click en un thumbnail del scroll horizontal,
+automáticamente se centra en la pantalla con el video como
+protagonista, permitiendo ver el contenido completo.
+
+
+═══════════════════════════════════════════════════════════════
+
+⚙️ IMPLEMENTACIÓN:
+
+
+1. JAVASCRIPT - Auto Scroll
+   
+   Nueva función en Services.jsx:
+   
+   handleThumbnailClick(index, event) {
+     • Cambia el activeIndex
+     • Detecta si es mobile
+     • Ejecuta scrollIntoView con:
+       - behavior: 'smooth' (transición fluida)
+       - inline: 'center' (centra horizontalmente)
+       - block: 'nearest' (mantiene posición vertical)
+     • Timeout de 100ms para permitir actualización
+   }
+
+
+2. CSS - Scroll Snap Mejorado
+   
+   CONTENEDOR (.services-thumbnails):
+   • scroll-snap-type: x mandatory (snap obligatorio)
+   • scroll-padding: 25vw (espacio para centrar)
+   • padding: 0.5rem 25vw (espacio lateral)
+   • gap: 1rem (separación entre thumbnails)
+   
+   THUMBNAILS:
+   • scroll-snap-align: center (alineación central)
+   • scroll-snap-stop: always (detiene en cada uno)
+   • width: 50vw (ocupa mitad de pantalla)
+   • max-width: 220px / min-width: 180px
+
+
+3. THUMBNAILS MÁS PROMINENTES EN MOBILE
+   
+   • Video ocupa todo el thumbnail (absolute)
+   • Número gigante centrado (2.5rem)
+   • Título más grande (1rem, weight 800)
+   • Tagline visible (0.75rem)
+   • border-radius: 1rem (más suave)
+   • Text-shadow fuerte para legibilidad
+
+
+4. FEATURED SERVICE OPTIMIZADO
+   
+   • aspect-ratio: 9/16 (vertical, tipo stories)
+   • min-height: 450px (más alto)
+   • max-height: 70vh (se adapta a pantalla)
+   • border-radius: 1.25rem (consistente)
+
+
+═══════════════════════════════════════════════════════════════
+
+📱 COMPORTAMIENTO MOBILE:
+
+
+ANTES DE CLICK:
+┌─────────────────────────────────────┐
+│ [Featured Service - Video Grande]   │
+└─────────────────────────────────────┘
+
+  [Thumb1]  [Thumb2]  [Thumb3]  [Thumb4]
+     ←──── scroll manual ────→
+
+
+DESPUÉS DE CLICK EN THUMB 3:
+┌─────────────────────────────────────┐
+│ [Featured Service - Cambia a 3]     │
+│         (animación suave)           │
+└─────────────────────────────────────┘
+
+              [Thumb 3]
+           ← CENTRADO →
+  [T2]    [ACTIVO]    [T4]
+          
+• Smooth scroll automático
+• Thumbnail centrado horizontalmente
+• Video y texto completamente visibles
+• Sin necesidad de deslizar manualmente
+
+
+═══════════════════════════════════════════════════════════════
+
+✨ CARACTERÍSTICAS:
+
+
+1. AUTO-CENTRADO AL CLICK
+   ✅ Click → scroll suave al centro
+   ✅ Thumbnail queda perfectamente centrado
+   ✅ Video completamente visible
+   ✅ Texto legible sin scroll adicional
+
+
+2. SCROLL SNAP MEJORADO
+   ✅ Snap obligatorio (mandatory)
+   ✅ Detiene en cada thumbnail (stop: always)
+   ✅ Padding lateral para centrar primer/último
+   ✅ Smooth scrolling nativo
+
+
+3. THUMBNAILS MÁS GRANDES
+   ✅ 50vw de ancho (mitad de pantalla)
+   ✅ Número gigante visible
+   ✅ Video de fondo completo
+   ✅ Título y tagline legibles
+
+
+4. FEATURED SERVICE VERTICAL
+   ✅ Aspect ratio 9:16 (tipo móvil)
+   ✅ Más alto (450px min)
+   ✅ Se adapta a viewport (70vh max)
+   ✅ Contenido optimizado para vertical
+
+
+5. TRANSICIONES FLUIDAS
+   ✅ Smooth scroll animation
+   ✅ Video fade in/out
+   ✅ Border y glow animados
+   ✅ 100ms delay para sincronización
+
+
+═══════════════════════════════════════════════════════════════
+
+🎮 INTERACCIÓN COMPLETA:
+
+
+1. Usuario hace SCROLL manual
+   → Thumbnails se desplazan
+   → Scroll snap ayuda a centrar
+   → No cambia el featured service automáticamente
+
+
+2. Usuario hace CLICK en thumbnail
+   → Featured service cambia (animación)
+   → Thumbnail clicked se centra automáticamente
+   → Smooth scroll horizontal
+   → Estado activo actualizado
+   → Borde y glow aparecen
+
+
+3. Usuario hace SWIPE rápido
+   → Scroll snap detiene en siguiente thumbnail
+   → No auto-cambia featured (solo click cambia)
+
+
+═══════════════════════════════════════════════════════════════
+
+💻 COMPATIBILIDAD:
+
+
+Desktop (>768px):
+• Grid 2x3 estático (sin cambios)
+• No hay auto-scroll
+• Movimiento manual normal
+
+Mobile (<768px):
+• Scroll horizontal con snap
+• Auto-center al click ✅
+• Thumbnails grandes (50vw)
+• Featured vertical optimizado
+
+Tablet (768-1024px):
+• Comportamiento desktop
+• Sin auto-scroll
+
+
+═══════════════════════════════════════════════════════════════
+
+🔧 CÓDIGO CLAVE:
+
+
+JavaScript (Services.jsx):
+```javascript
+const handleThumbnailClick = (index, event) => {
+  setActiveIndex(index)
+  
+  if (isMobile && event.currentTarget) {
+    setTimeout(() => {
+      event.currentTarget.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      })
+    }, 100)
+  }
+}
+```
+
+CSS Mobile:
+```css
+.services-thumbnails {
+  scroll-snap-type: x mandatory;
+  scroll-padding: 25vw;
+  padding: 0.5rem 25vw;
+}
+
+.thumbnail {
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  width: 50vw;
+}
+```
+
+
+═══════════════════════════════════════════════════════════════
+
+🎯 VENTAJAS:
+
+
+✅ UX mejorada: Usuario no necesita ajustar manualmente
+✅ Contenido visible: Todo el thumbnail centrado y legible
+✅ Feedback claro: Scroll suave indica cambio
+✅ Consistente: Siempre centra al click
+✅ Natural: Comportamiento esperado en mobile
+✅ Performante: Solo 100ms delay
+✅ Accesible: Funciona con touch y click
+✅ Responsive: Solo activo en mobile (<768px)
+
+
+═══════════════════════════════════════════════════════════════
+
+📱 TESTING:
+
+
+Para probar en DevTools:
+1. F12 → Responsive mode (Ctrl+Shift+M)
+2. Selecciona iPhone / Pixel / Samsung
+3. Ve a sección Servicios
+4. Scroll horizontal en thumbnails
+5. Click en cualquier thumbnail
+6. Observa:
+   ✅ Featured service cambia
+   ✅ Thumbnail clickeado se centra
+   ✅ Scroll es suave (smooth)
+   ✅ Contenido completamente visible
+   ✅ Bordes y glow se actualizan
+
+
+═══════════════════════════════════════════════════════════════
+
+✨ RESULTADO FINAL:
+
+En móvil, cada click en un thumbnail:
+• Cambia el video featured
+• Centra automáticamente el thumbnail
+• Transición fluida y suave
+• Todo el contenido visible
+• Experiencia de usuario premium
+
+En desktop:
+• Grid 2x3 sin cambios
+• Comportamiento estándar
+• No hay auto-scroll (no es necesario)
+
+
+═══════════════════════════════════════════════════════════════
+
+🚀 PRUEBA EN TU MÓVIL:
+
+1. Abre http://localhost:3001 en tu teléfono
+2. Ve a sección Servicios
+3. Desliza los thumbnails
+4. Toca cualquiera
+5. Mira cómo se centra automáticamente! 📱✨
+
+
+═══════════════════════════════════════════════════════════════

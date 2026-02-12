@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#0a0412;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0412;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+          <!-- HEADER WITH LOGO -->
+          <tr>
+            <td style="padding:40px 40px 24px;text-align:center;">
+              <img src="https://res.cloudinary.com/dm4ijuzmi/image/upload/v1770859225/LOGO_DAK_-_1_300x-8_gazgyy.png" alt="DAK Agency" width="180" style="display:block;margin:0 auto;height:auto;" />
+            </td>
+          </tr>
+
+          <!-- PURPLE SEPARATOR -->
+          <tr>
+            <td style="padding:0 60px 30px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="height:2px;background:linear-gradient(90deg, transparent, #B024FF, transparent);"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- GREETING -->
+          <tr>
+            <td style="padding:0 40px 8px;">
+              <h2 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;line-height:1.3;">Hola {{from_name}},</h2>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 40px 30px;">
+              <p style="margin:0;font-size:16px;color:rgba(255,255,255,0.7);line-height:1.7;">
+                Gracias por contactarnos. Hemos recibido tu mensaje y nuestro equipo ya lo est&aacute; revisando.
+              </p>
+            </td>
+          </tr>
+
+          <!-- SUMMARY CARD -->
+          <tr>
+            <td style="padding:0 40px 30px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(176,36,255,0.06);border:1px solid rgba(176,36,255,0.2);border-radius:12px;">
+                <tr>
+                  <td style="padding:24px;">
+                    <p style="margin:0 0 4px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;">Resumen de tu consulta</p>
+                    <p style="margin:0 0 12px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.6;"><strong style="color:#ffffff;">Servicio:</strong> {{service}}</p>
+                    <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.6;"><strong style="color:#ffffff;">Tu mensaje:</strong><br>{{message}}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- RESPONSE TIME -->
+          <tr>
+            <td style="padding:0 40px 30px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;">
+                <tr>
+                  <td style="padding:20px 24px;text-align:center;">
+                    <p style="margin:0 0 4px;font-size:28px;">&#9889;</p>
+                    <p style="margin:0 0 6px;font-size:15px;font-weight:700;color:#ffffff;">Te responderemos en menos de 24 horas</p>
+                    <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.5);">Normalmente respondemos en 2-4 horas h&aacute;biles</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- INSTANT CONTACT -->
+          <tr>
+            <td style="padding:0 40px 10px;">
+              <p style="margin:0;font-size:14px;font-weight:700;color:rgba(255,255,255,0.6);text-align:center;">&#128172; &iquest;Necesitas respuesta inmediata?</p>
+            </td>
+          </tr>
+
+          <!-- CONTACT BUTTONS -->
+          <tr>
+            <td style="padding:10px 40px 30px;text-align:center;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <!-- WhatsApp -->
+                  <td style="padding:0 6px;">
+                    <a href="https://api.whatsapp.com/send/?phone=51906765040&text=Hola+DAK+Agency%2C+soy+{{from_name}}+y+les+escribo+por+mi+consulta+sobre+{{service}}&type=phone_number&app_absent=0" target="_blank" style="display:inline-block;background:#25D366;color:#ffffff;text-decoration:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;">&#128172; WhatsApp</a>
+                  </td>
+                  <!-- Instagram -->
+                  <td style="padding:0 6px;">
+                    <a href="https://www.instagram.com/agency_dak/" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#833AB4,#E1306C,#F77737);color:#ffffff;text-decoration:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;">&#128247; Instagram</a>
+                  </td>
+                  <!-- Facebook -->
+                  <td style="padding:0 6px;">
+                    <a href="https://www.facebook.com/profile.php?id=61577374078273" target="_blank" style="display:inline-block;background:#1877F2;color:#ffffff;text-decoration:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;">&#128077; Facebook</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- DIVIDER -->
+          <tr>
+            <td style="padding:0 40px 30px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="height:1px;background:rgba(255,255,255,0.06);"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- SERVICES GRID -->
+          <tr>
+            <td style="padding:0 40px 10px;">
+              <p style="margin:0;font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.15em;text-align:center;">Nuestros Servicios</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:10px 40px 30px;text-align:center;">
+              <span style="display:inline-block;background:rgba(176,36,255,0.1);border:1px solid rgba(176,36,255,0.2);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#B024FF;margin:3px;">Branding</span>
+              <span style="display:inline-block;background:rgba(0,200,200,0.1);border:1px solid rgba(0,200,200,0.2);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#00C8C8;margin:3px;">Fotograf&iacute;a</span>
+              <span style="display:inline-block;background:rgba(0,180,120,0.1);border:1px solid rgba(0,180,120,0.2);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#00B478;margin:3px;">Video</span>
+              <span style="display:inline-block;background:rgba(212,165,116,0.1);border:1px solid rgba(212,165,116,0.2);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#D4A574;margin:3px;">Social Media</span>
+              <span style="display:inline-block;background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.2);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#FF6B35;margin:3px;">Dise&ntilde;o Web</span>
+              <span style="display:inline-block;background:rgba(74,144,226,0.1);border:1px solid rgba(74,144,226,0.2);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#4A90E2;margin:3px;">SEO &amp; Ads</span>
+              <span style="display:inline-block;background:rgba(155,89,182,0.1);border:1px solid rgba(155,89,182,0.2);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#9B59B6;margin:3px;">Automatizaci&oacute;n</span>
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="padding:20px 40px 30px;text-align:center;border-top:1px solid rgba(255,255,255,0.06);">
+              <img src="https://res.cloudinary.com/dm4ijuzmi/image/upload/v1770859225/LOGO_DAK_-_1_300x-8_gazgyy.png" alt="DAK Agency" width="100" style="display:block;margin:0 auto 8px;height:auto;opacity:0.7;" />
+              <p style="margin:0 0 4px;font-size:12px;color:rgba(255,255,255,0.4);">Digital Acceleration Key</p>
+              <p style="margin:12px 0 0;font-size:11px;color:rgba(255,255,255,0.25);">Mnz G. Lt.11 Av. Antenor Orrego, ZON La Victoria</p>
+              <p style="margin:4px 0 0;font-size:11px;color:rgba(255,255,255,0.25);">
+                <a href="mailto:marketing@dakagency.net" style="color:rgba(255,255,255,0.35);text-decoration:none;">marketing@dakagency.net</a>
+                &nbsp;&bull;&nbsp;
+                <a href="https://dakagency.net" style="color:rgba(255,255,255,0.35);text-decoration:none;">dakagency.net</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
