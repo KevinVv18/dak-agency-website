@@ -467,17 +467,24 @@
     text-align: center;
   }
 
-  /* Popups fixed on mobile */
+  /* Popups above the word on mobile */
   .word-popup {
-    position: fixed;
+    position: absolute;
     top: auto !important;
-    bottom: 80px;
+    bottom: calc(100% + 14px);
     left: 50% !important;
     transform: translateX(-50%) !important;
   }
 
   .word-popup::before {
-    display: none;
+    /* Arrow now points DOWN instead of up */
+    top: auto;
+    bottom: -6px;
+    border-top: none;
+    border-left: none;
+    border-bottom: 1.5px solid;
+    border-right: 1.5px solid;
+    border-color: inherit;
   }
 
   .cta-grid-bg {

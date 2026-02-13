@@ -38,12 +38,25 @@
   z-index: 1;
 }
 
+/* Subtle grid texture */
+.projects-content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(176, 36, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176, 36, 255, 0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,0.5) 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,0.5) 85%, transparent 100%);
+}
+
 .projects-header {
   text-align: center;
   padding: var(--spacing-3xl) 4rem var(--spacing-2xl);
-  background: linear-gradient(135deg, rgba(176, 36, 255, 0.08) 0%, #030106 100%);
-  border-bottom: 3px solid #B024FF;
-  box-shadow: 0 3px 20px rgba(176, 36, 255, 0.3);
   position: relative;
   overflow: hidden;
 }
@@ -52,8 +65,10 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(176, 36, 255, 0.1) 0%, transparent 70%);
-  animation: pulse 4s ease-in-out infinite;
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(176, 36, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 50%, rgba(0, 200, 200, 0.03) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .portfolio-grid {

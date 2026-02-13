@@ -39,7 +39,12 @@ const Blog = () => {
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="section-title">BLOG</h2>
+        <div className="blog-header-left">
+          <span className="section-tag">[ 04 ]</span>
+          <h2 className="section-title">
+            <span className="title-bold">Blog</span>
+          </h2>
+        </div>
         <motion.a
           href="https://dakagency.net/blog/"
           target="_blank"
@@ -48,7 +53,7 @@ const Blog = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          Todos los Artículos
+          Visitar Blog
         </motion.a>
       </motion.div>
 

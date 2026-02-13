@@ -67,6 +67,10 @@
   padding: 2rem 0;
 }
 
+.contact-tag {
+  margin-bottom: 0.5rem;
+}
+
 .contact-title {
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 900;

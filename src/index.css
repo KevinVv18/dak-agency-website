@@ -405,3 +405,27 @@ section {
   }
 }
 
+/* =============================================
+   CURSOR GRID REVEAL - Global
+   ============================================= */
+.cursor-grid-reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background-image:
+    linear-gradient(rgba(176, 36, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176, 36, 255, 0.12) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(circle 180px at var(--mx, -200px) var(--my, -200px), rgba(0,0,0,0.7) 0%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle 180px at var(--mx, -200px) var(--my, -200px), rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+
+@media (max-width: 768px) {
+  .cursor-grid-reveal {
+    display: none;
+  }
+}
+

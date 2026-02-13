@@ -114,6 +114,7 @@ const ContactForm = () => {
           animate={isInView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.7, ease: [0.19, 1, 0.22, 1] }}
         >
+          <span className="section-tag contact-tag">[ 05 ]</span>
           <h2 className="contact-title">Hablemos.</h2>
           <p className="contact-desc">
             Transformamos ideas en resultados digitales. Cuéntanos tu proyecto y hagámoslo realidad.

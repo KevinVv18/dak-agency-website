@@ -5,6 +5,22 @@
   padding-bottom: var(--spacing-lg);
 }
 
+/* Subtle grid texture */
+.photo-gallery::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(176, 36, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176, 36, 255, 0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,0.5) 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,0.5) 85%, transparent 100%);
+}
+
 /* Header */
 .gallery-header {
   text-align: center;
@@ -17,29 +33,32 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(176, 36, 255, 0.08) 0%, transparent 70%);
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(176, 36, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 50%, rgba(0, 200, 200, 0.03) 0%, transparent 50%);
   pointer-events: none;
 }
 
 .gallery-title {
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 900;
-  color: #ffffff;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
   letter-spacing: -0.04em;
   text-transform: uppercase;
-  text-shadow: 0 0 30px rgba(176, 36, 255, 0.6);
+  line-height: 1;
   position: relative;
   z-index: 1;
 }
 
 .gallery-subtitle {
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  color: #B024FF;
-  max-width: 700px;
+  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+  color: rgba(255, 255, 255, 0.45);
+  max-width: 500px;
   margin: 0 auto;
-  line-height: 1.6;
-  text-shadow: 0 0 10px rgba(176, 36, 255, 0.5);
+  line-height: 1.7;
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.02em;
   position: relative;
   z-index: 1;
 }

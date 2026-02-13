@@ -94,33 +94,33 @@
   text-align: center;
 }
 
-/* Subtitle strip - Dark with Subtle Glow */
+/* Subtitle strip - Client Wall */
 .hero-subtitle-strip {
   width: 100%;
   background: linear-gradient(90deg, 
     rgba(3, 1, 6, 0.95) 0%, 
     rgba(15, 8, 25, 0.9) 50%, 
     rgba(3, 1, 6, 0.95) 100%);
-  padding: 1.25rem 0;
+  padding: 0.4rem 1rem;
   border-top: 1px solid rgba(176, 36, 255, 0.6);
   border-bottom: 1px solid rgba(176, 36, 255, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 
-    0 0 20px rgba(176, 36, 255, 0.2);
+  gap: 0;
+  box-shadow: 0 0 20px rgba(176, 36, 255, 0.2);
   position: relative;
   overflow: hidden;
-  min-height: 85px;
+  min-height: 50px;
 }
 
 .hero-subtitle-strip::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
-  animation: shimmer 4s infinite;
-  z-index: 1;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%);
+  animation: shimmer 5s infinite;
+  z-index: 0;
 }
 
 @keyframes shimmer {
@@ -128,145 +128,82 @@
   50% { transform: translateX(100%); }
 }
 
-/* Logo Carousel */
-.logo-carousel-wrapper {
-  position: absolute;
-  inset: 0;
+/* Client logos - sides */
+.client-logos-side {
   display: flex;
   align-items: center;
-  overflow: hidden;
+  justify-content: space-evenly;
+  flex: 1;
   z-index: 1;
 }
 
-/* Fade edges for smooth logo appearance */
-.logo-carousel-wrapper::before,
-.logo-carousel-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100px;
-  z-index: 2;
-  pointer-events: none;
+.client-logos-side.left {
+  padding-right: 1.25rem;
 }
 
-.logo-carousel-wrapper::before {
-  left: 0;
-  background: linear-gradient(90deg, rgba(3, 1, 6, 1) 0%, transparent 100%);
+.client-logos-side.right {
+  padding-left: 1.25rem;
 }
 
-.logo-carousel-wrapper::after {
-  right: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(3, 1, 6, 1) 100%);
-}
-
-.logo-carousel {
-  display: flex;
-  gap: 5rem;
-  animation: scrollLogos 60s linear infinite;
-  will-change: transform;
-}
-
-@keyframes scrollLogos {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
+/* Each logo gets a fixed-size box for visual consistency */
 .logo-item {
-  flex-shrink: 0;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 2rem;
+  max-width: 140px;
 }
 
 .logo-image {
-  height: 50px;
+  height: 32px;
   width: auto;
-  max-width: 160px;
+  max-width: 100%;
   object-fit: contain;
-  opacity: 1;
+  opacity: 0.35;
   transition: all 0.4s ease;
-  
-  /* Efecto brillante con sombra */
-  filter: 
-    brightness(1.1)
-    drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))
-    drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+  filter: brightness(0.9) grayscale(0.2);
 }
 
 .logo-image:hover {
+  opacity: 0.9;
   filter: 
-    brightness(1.3)
-    drop-shadow(0 0 15px rgba(176, 36, 255, 0.6))
-    drop-shadow(0 6px 20px rgba(0, 0, 0, 0.6));
-  transform: scale(1.1) translateY(-3px);
+    brightness(1.2)
+    grayscale(0)
+    drop-shadow(0 0 8px rgba(176, 36, 255, 0.4));
+  transform: scale(1.08);
 }
 
-/* Custom sizes for specific logos */
-.logo-image.logo-bhouse {
-  height: 59px; /* +20% +10% = +32% total */
-  max-width: 185px;
+/* Per-logo size adjustments */
+.logo-image.logo-go {
+  height: 60px;
 }
 
 .logo-image.logo-berse {
-  height: 79px; /* +40% +25% = +75% total */
-  max-width: 245px;
+  height: 44px;
 }
 
 .logo-image.logo-spa {
-  height: 70px; /* +40% del base (50px + 20px) */
-  max-width: 220px;
+  height: 42px;
 }
 
-.logo-image.logo-go {
-  height: 100px; /* +100% del base (doble tamaño) */
-  max-width: 300px;
-}
-
-
-/* Text Overlay - Subtle Neon Outline Effect */
+/* Center text */
 .hero-subtitle {
-  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
   font-weight: 800;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
   margin: 0;
   text-align: center;
+  white-space: nowrap;
   position: relative;
-  z-index: 0;
-  font-family: 'Arial Black', 'Impact', sans-serif;
-  
-  /* Texto transparente con borde neón sutil */
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgba(176, 36, 255, 0.5);
-  
-  /* Efecto neón suave */
-  text-shadow: 
-    0 0 8px rgba(176, 36, 255, 0.4),
-    0 0 15px rgba(176, 36, 255, 0.2);
-  
-  /* Animación de pulso muy suave */
-  animation: neonPulse 4s ease-in-out infinite;
-}
-
-@keyframes neonPulse {
-  0%, 100% {
-    text-shadow: 
-      0 0 8px rgba(176, 36, 255, 0.4),
-      0 0 15px rgba(176, 36, 255, 0.2);
-    -webkit-text-stroke: 1.5px rgba(176, 36, 255, 0.5);
-  }
-  50% {
-    text-shadow: 
-      0 0 10px rgba(176, 36, 255, 0.5),
-      0 0 20px rgba(176, 36, 255, 0.3);
-    -webkit-text-stroke: 1.5px rgba(176, 36, 255, 0.65);
-  }
+  z-index: 2;
+  flex-shrink: 0;
+  padding: 0.4rem 1.5rem;
+  font-family: var(--font-sans);
+  color: rgba(255, 255, 255, 0.6);
+  border-left: 1px solid rgba(176, 36, 255, 0.35);
+  border-right: 1px solid rgba(176, 36, 255, 0.35);
+  text-shadow: 0 0 12px rgba(176, 36, 255, 0.25);
 }
 
 /* Bottom section with asymmetric blocks */
@@ -565,34 +502,38 @@
   }
 
   .hero-subtitle-strip {
-    padding: 1.25rem 0 !important;
-    min-height: 75px;
+    padding: 0.8rem 1rem !important;
+    min-height: 60px;
     width: 100% !important;
     margin: 0 !important;
   }
 
+  .client-logos-side {
+    display: none;
+  }
+
   .hero-subtitle {
-    font-size: clamp(1rem, 2vw, 1.5rem);
-    letter-spacing: 0.12em;
-    -webkit-text-stroke: 1px rgba(176, 36, 255, 0.5);
+    font-size: clamp(0.6rem, 2vw, 0.8rem);
+    letter-spacing: 0.2em;
+  }
+
+  .hero-subtitle::before,
+  .hero-subtitle::after {
+    display: none;
   }
   
-  .logo-carousel-wrapper::before,
-  .logo-carousel-wrapper::after {
-    width: 60px;
+  .client-logos-side {
+    display: none;
   }
-  
-  .logo-image {
-    height: 38px;
-    max-width: 110px;
+
+  .hero-subtitle {
+    font-size: clamp(0.6rem, 2vw, 0.8rem);
+    letter-spacing: 0.2em;
   }
-  
-  .logo-item {
-    padding: 0 1.5rem;
-  }
-  
-  .logo-carousel {
-    gap: 3rem;
+
+  .hero-subtitle::before,
+  .hero-subtitle::after {
+    display: none;
   }
 
   .hero-bottom-section {
@@ -663,21 +604,8 @@
   }
 
   .hero-subtitle-strip {
-    padding: 1rem 0;
-    min-height: 65px;
-  }
-  
-  .logo-image {
-    height: 32px;
-    max-width: 90px;
-  }
-  
-  .logo-item {
-    padding: 0 1rem;
-  }
-  
-  .logo-carousel {
-    gap: 2rem;
+    padding: 0.75rem 1rem;
+    min-height: 50px;
   }
 
   .hero-cta-block,

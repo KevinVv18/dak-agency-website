@@ -11,6 +11,55 @@
   box-shadow: 0 0 20px rgba(176, 36, 255, 0.5);
 }
 
+/* Subtle grid texture (like footer but ultra-faint) */
+.navigation::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(176, 36, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176, 36, 255, 0.018) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+/* Soft traveling light reflection */
+.navigation::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(176, 36, 255, 0.03) 30%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(176, 36, 255, 0.03) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: navLightSweep 10s ease-in-out infinite;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+@keyframes navLightSweep {
+  0%   { left: -60%; }
+  100% { left: 160%; }
+}
+
+/* Show texture + light only when scrolled */
+.navigation.scrolled::before {
+  opacity: 1;
+}
+
+.navigation.scrolled::after {
+  opacity: 1;
+}
+
 .navigation.scrolled {
   box-shadow: 0 5px 30px rgba(176, 36, 255, 0.4), 0 0 20px rgba(176, 36, 255, 0.5);
   padding: 1rem 0;
@@ -25,6 +74,8 @@
   justify-content: space-between;
   align-items: center;
   gap: 3rem;
+  position: relative;
+  z-index: 1;
 }
 
 .nav-logo {
@@ -252,6 +303,12 @@
   .logo-text {
     font-size: 1.1rem;
   }
+
+  /* Disable heavy effects on mobile */
+  .navigation::before,
+  .navigation::after {
+    display: none;
+  }
 }
 
 @media (max-width: 480px) {
@@ -284,4 +341,3 @@
     height: 18px;
   }
 }
-

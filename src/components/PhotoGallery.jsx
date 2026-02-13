@@ -201,7 +201,11 @@ const PhotoGallery = () => {
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="gallery-title">Nuestro Estudio</h2>
+        <span className="section-tag">[ 03 ]</span>
+        <h2 className="gallery-title">
+          <span className="title-bold">Estudio</span>
+        </h2>
+        <div className="title-line" />
         <p className="gallery-subtitle">
           Capturando momentos que cuentan historias
         </p>

@@ -213,7 +213,11 @@ const Services = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="section-title">Nuestros Servicios</h2>
+            <span className="section-tag">[ 01 ]</span>
+            <h2 className="section-title">
+              <span className="title-bold">Servicios</span>
+            </h2>
+            <div className="title-line" />
             <p className="section-subtitle">
               Soluciones digitales que impulsan tu negocio
             </p>

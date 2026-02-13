@@ -46,8 +46,8 @@ Ve a la Opción 2 abajo ↓
 cd "c:\Users\kevin\OneDrive\Documents\PROJECTOS IA\dak-source"
 
 # Configurar tu identidad (solo primera vez)
-git config --global user.name "Tu Nombre"
-git config --global user.email "tu@email.com"
+git config --global user.name "Kevon"
+git config --global user.email "kevinv15v@gmail.com"
 
 # Inicializar repo (si no está inicializado)
 git init

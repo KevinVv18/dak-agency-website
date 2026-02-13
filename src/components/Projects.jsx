@@ -42,9 +42,13 @@ const Projects = () => {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="section-title">Nuestros Proyectos</h2>
+          <span className="section-tag">[ 02 ]</span>
+          <h2 className="section-title">
+            <span className="title-bold">Proyectos</span>
+          </h2>
+          <div className="title-line" />
           <p className="section-subtitle">
-            Explora nuestro portafolio de trabajos con clientes de diferentes industrias
+            Portafolio de trabajos con clientes de diferentes industrias
           </p>
         </motion.div>
 

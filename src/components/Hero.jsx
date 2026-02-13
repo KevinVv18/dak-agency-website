@@ -45,43 +45,60 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Subtitle Strip with Logo Carousel */}
+        {/* Subtitle Strip - Client Wall */}
         <motion.div
           className="hero-subtitle-strip"
-          initial={{ opacity: 0, scaleX: 0 }}
-          animate={{ opacity: 1, scaleX: 1 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: [0.19, 1, 0.22, 1] }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
         >
-          {/* Logo Carousel Background */}
-          <div className="logo-carousel-wrapper">
-            <div className="logo-carousel">
-              {/* First set of logos */}
-              {clientLogos.map((logo) => (
-                <div key={`logo-${logo.id}`} className="logo-item">
-                  <img 
-                    src={logo.src} 
-                    alt={logo.alt} 
-                    className={`logo-image ${logo.className}`}
-                  />
-                </div>
-              ))}
-              {/* Duplicate set for infinite scroll */}
-              {clientLogos.map((logo) => (
-                <div key={`logo-duplicate-${logo.id}`} className="logo-item">
-                  <img 
-                    src={logo.src} 
-                    alt={logo.alt} 
-                    className={`logo-image ${logo.className}`}
-                  />
-                </div>
-              ))}
-            </div>
+          {/* Left logos */}
+          <div className="client-logos-side left">
+            {clientLogos.slice(0, 3).map((logo, i) => (
+              <motion.div
+                key={`logo-l-${logo.id}`}
+                className="logo-item"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 + i * 0.12 }}
+              >
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  className={`logo-image ${logo.className}`}
+                />
+              </motion.div>
+            ))}
           </div>
-          
-          {/* Text Overlay */}
-          <p className="hero-subtitle">
+
+          {/* Center text */}
+          <motion.p
+            className="hero-subtitle"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4, ease: [0.19, 1, 0.22, 1] }}
+          >
             Digital Acceleration Key
-          </p>
+          </motion.p>
+
+          {/* Right logos */}
+          <div className="client-logos-side right">
+            {clientLogos.slice(3, 6).map((logo, i) => (
+              <motion.div
+                key={`logo-r-${logo.id}`}
+                className="logo-item"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 + i * 0.12 }}
+              >
+                <img
+                  src={logo.src}
+                  alt={logo.alt}
+                  className={`logo-image ${logo.className}`}
+                />
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
         {/* Bottom Section - Asymmetric Blocks */}
