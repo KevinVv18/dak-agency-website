@@ -5,6 +5,24 @@
   padding-bottom: var(--spacing-lg);
 }
 
+/* Section divider — line + dot combined (::after is used for grid texture) */
+.photo-gallery::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 9px;
+  z-index: 5;
+  pointer-events: none;
+  background:
+    /* Dot at center */
+    radial-gradient(circle at 50% 50%, #B024FF 3.5px, transparent 4.5px) center / 9px 9px no-repeat,
+    /* Line (1px, centered vertically at 4px from top) */
+    linear-gradient(90deg, transparent 0%, rgba(176, 36, 255, 0.15) 15%, rgba(176, 36, 255, 0.5) 35%, #B024FF 50%, rgba(176, 36, 255, 0.5) 65%, rgba(176, 36, 255, 0.15) 85%, transparent 100%) center / 1200px 1px no-repeat;
+  filter: drop-shadow(0 0 12px rgba(176, 36, 255, 0.5));
+}
+
 /* Subtle grid texture */
 .photo-gallery::after {
   content: '';

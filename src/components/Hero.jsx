@@ -114,17 +114,35 @@ const Hero = () => {
               <h3 className="cta-small-text">- RUIDO</h3>
               <h2 className="cta-large-text">+ IMPACTO</h2>
             </div>
+            <motion.div
+              className="cta-accent-line"
+              initial={{ width: 0 }}
+              animate={{ width: 60 }}
+              transition={{ duration: 1.2, delay: 1, ease: [0.19, 1, 0.22, 1] }}
+            />
+            <motion.p
+              className="cta-tagline"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.2 }}
+            >
+              Transformamos ideas en resultados
+            </motion.p>
             <motion.a
               href="#contact"
-              className="btn btn-primary"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="btn-cta-hero"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               onClick={(e) => {
                 e.preventDefault()
                 document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })
               }}
             >
-              Contactar
+              <span>Comenzar Proyecto</span>
+              <svg className="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
             </motion.a>
           </motion.div>
 

@@ -16,7 +16,7 @@
 .contact-section::before {
   content: '';
   position: absolute;
-  top: 0;
+  top: 4px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -32,13 +32,14 @@
     rgba(176, 36, 255, 0.15) 85%,
     transparent 100%
   );
+  z-index: 5;
 }
 
 /* Glow dot at center of line */
 .contact-section::after {
   content: '';
   position: absolute;
-  top: -4px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 9px;
@@ -48,6 +49,7 @@
   box-shadow: 
     0 0 12px rgba(176, 36, 255, 0.8),
     0 0 30px rgba(176, 36, 255, 0.4);
+  z-index: 5;
 }
 
 .contact-layout {
