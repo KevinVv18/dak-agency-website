@@ -10,7 +10,7 @@ const useWordPressPosts = (limit = 3) => {
       try {
         setLoading(true)
         const response = await fetch(
-          `https://dakagency.net/blog/wp-json/wp/v2/posts?per_page=${limit}&_embed`
+          `https://blog.dakagency.net/wp-json/wp/v2/posts?per_page=${limit}&_embed`
         )
         
         if (!response.ok) {
@@ -24,14 +24,14 @@ const useWordPressPosts = (limit = 3) => {
           id: post.id,
           title: post.title.rendered,
           excerpt: post.excerpt.rendered
-            .replace(/<[^>]*>/g, '') // Remove HTML tags
-            .substring(0, 150) + '...', // Limit to 150 chars
+            .replace(/<[^>]*>/g, '')
+            .substring(0, 150) + '...',
           date: new Date(post.date).toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
           }),
-          link: post.link,
+          link: `/blog/${post.slug}`,
           featuredImage: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null,
           categories: post._embedded?.['wp:term']?.[0]?.map(cat => cat.name) || [],
           author: post._embedded?.author?.[0]?.name || 'DAK Agency'

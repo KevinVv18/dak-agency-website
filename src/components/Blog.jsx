@@ -46,9 +46,7 @@ const Blog = () => {
           </h2>
         </div>
         <motion.a
-          href="https://dakagency.net/blog/"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/blog/"
           className="blog-header-button"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -75,7 +73,7 @@ const Blog = () => {
       {error && (
         <div className="blog-error">
           <p>No se pudieron cargar los artículos.</p>
-          <a href="https://dakagency.net/blog/" target="_blank" rel="noopener noreferrer">
+          <a href="/blog/">
             Visitar Blog
           </a>
         </div>
@@ -95,7 +93,8 @@ const Blog = () => {
               variants={itemVariants}
               whileHover={{ y: -8 }}
               transition={{ duration: 0.3 }}
-              onClick={() => window.open(post.link, '_blank')}
+              onClick={() => window.location.href = post.link}
+              style={{ cursor: 'pointer' }}
             >
               <div className="blog-image-wrapper">
                 {post.featuredImage ? (
