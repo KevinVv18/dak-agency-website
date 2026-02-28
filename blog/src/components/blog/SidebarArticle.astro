@@ -1,0 +1,32 @@
+---
+/**
+ * SidebarArticle — Article card for hero sidebars (left/right)
+ */
+import type { WPPost } from '../../lib/wp-api';
+import { getFeaturedImage, getFeaturedImageAlt, getPrimaryCategory, getCategoryTagClass, stripHtml } from '../../lib/wp-api';
+
+interface Props {
+  post: WPPost;
+}
+
+const { post } = Astro.props;
+const image = getFeaturedImage(post);
+const imageAlt = getFeaturedImageAlt(post);
+const category = getPrimaryCategory(post);
+const tagClass = getCategoryTagClass(category.slug);
+const title = stripHtml(post.title.rendered);
+const excerpt = stripHtml(post.excerpt.rendered);
+---
+
+<article class="visual-article">
+  <a href={`/blog/${post.slug}`} class="visual-image-link">
+    <div class="visual-image-wrapper">
+      <img src={image} alt={imageAlt} loading="lazy">
+    </div>
+  </a>
+  <span class={`category-tag ${tagClass}`}>{category.name.toUpperCase()}</span>
+  <h3 class="visual-title">
+    <a href={`/blog/${post.slug}`}>{title}</a>
+  </h3>
+  <p class="visual-excerpt">{excerpt}</p>
+</article>

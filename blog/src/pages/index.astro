@@ -1,0 +1,150 @@
+---
+/**
+ * /blog — Blog Home Page
+ * Fetches posts from WordPress REST API and renders all sections.
+ */
+import BlogLayout from '../layouts/BlogLayout.astro';
+import HeroFeatured from '../components/blog/HeroFeatured.astro';
+import SidebarArticle from '../components/blog/SidebarArticle.astro';
+import CategorySection from '../components/blog/CategorySection.astro';
+import OpinionFeature from '../components/blog/OpinionFeature.astro';
+import InterviewHero from '../components/blog/InterviewHero.astro';
+import LatestArticle from '../components/blog/LatestArticle.astro';
+import LatestSidebar from '../components/blog/LatestSidebar.astro';
+import {
+  fetchPosts,
+  fetchCategories,
+  type WPPost,
+  type WPCategory,
+} from '../lib/wp-api';
+
+// ── Fetch data from WordPress ──
+let allPosts: WPPost[] = [];
+let categories: WPCategory[] = [];
+
+try {
+  [allPosts, categories] = await Promise.all([
+    fetchPosts({ per_page: 20 }),
+    fetchCategories(),
+  ]);
+} catch (e) {
+  console.warn('WP API not available, using empty data:', e);
+}
+
+// ── Categorize posts ──
+function findCategoryId(slug: string): number | undefined {
+  return categories.find((c) => c.slug === slug)?.id;
+}
+
+function getPostsByCategory(catSlug: string, count: number): WPPost[] {
+  const catId = findCategoryId(catSlug);
+  if (!catId) return allPosts.slice(0, count);
+  return allPosts.filter((p) => p.categories.includes(catId)).slice(0, count);
+}
+
+// Hero: 1 featured + 4 sidebar
+const featured = allPosts[0];
+const sidebarLeft = allPosts.slice(1, 3);
+const sidebarRight = allPosts.slice(3, 5);
+
+// Category sections
+const marketingPosts = getPostsByCategory('marketing', 4);
+const brandingPosts = getPostsByCategory('branding', 4);
+
+// Opinion
+const opinionPosts = getPostsByCategory('opinion', 1);
+const opinionPost = opinionPosts[0] ?? allPosts[5];
+
+// Interviews
+const interviewPosts = getPostsByCategory('entrevistas', 1);
+const interviewPost = interviewPosts[0] ?? allPosts[6];
+
+// Latest (most recent 3)
+const latestPosts = allPosts.slice(0, 3);
+
+// Most popular (fallback: pick a different post)
+const popularPost = allPosts[7] ?? allPosts[0];
+---
+
+<BlogLayout
+  title="DAK PANORAMA — Noticias, Tendencias & Marketing Digital"
+  description="DAK PANORAMA — Noticias de último momento, novedades y blogs sobre marketing digital, branding, video y diseño web por DAK Agency."
+>
+  <main>
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero-blog" id="heroBlog">
+      <div class="hero-grid-bg"></div>
+      <div class="hero-container">
+        <!-- LEFT SIDEBAR -->
+        <aside class="hero-sidebar hero-sidebar-left">
+          {sidebarLeft.map((post, i) => (
+            <>
+              <SidebarArticle post={post} />
+              {i < sidebarLeft.length - 1 && <hr class="sidebar-separator" />}
+            </>
+          ))}
+        </aside>
+
+        <!-- CENTER: Featured article -->
+        {featured && <HeroFeatured post={featured} />}
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="hero-sidebar hero-sidebar-right">
+          {sidebarRight.map((post, i) => (
+            <>
+              <SidebarArticle post={post} />
+              {i < sidebarRight.length - 1 && <hr class="sidebar-separator" />}
+            </>
+          ))}
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== CATEGORY SECTIONS ===== -->
+    {marketingPosts.length > 0 && (
+      <CategorySection
+        sectionId="marketing"
+        title="Marketing"
+        categorySlug="marketing"
+        posts={marketingPosts}
+      />
+    )}
+
+    {brandingPosts.length > 0 && (
+      <CategorySection
+        sectionId="branding"
+        title="Branding"
+        categorySlug="branding"
+        posts={brandingPosts}
+      />
+    )}
+
+    <!-- ===== OPINION ===== -->
+    {opinionPost && <OpinionFeature post={opinionPost} />}
+
+    <!-- ===== ENTREVISTAS ===== -->
+    {interviewPost && <InterviewHero post={interviewPost} />}
+
+    <!-- ===== LO ÚLTIMO ===== -->
+    <section class="latest-section" id="lo-ultimo">
+      <div class="section-divider-full"></div>
+      <div class="section-container">
+        <div class="section-header">
+          <h2 class="section-title">Lo Último</h2>
+          <a href="/blog" class="section-link">VER MÁS »</a>
+        </div>
+        <div class="latest-layout">
+          <div class="latest-main">
+            {latestPosts.map((post, i) => (
+              <>
+                <LatestArticle post={post} />
+                {i < latestPosts.length - 1 && <hr class="latest-separator" />}
+              </>
+            ))}
+          </div>
+          {popularPost && <LatestSidebar post={popularPost} />}
+        </div>
+      </div>
+    </section>
+  </main>
+</BlogLayout>

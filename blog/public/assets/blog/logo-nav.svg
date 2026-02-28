@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="-8 -8 1478 436.36" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #B024FF;
+      }
+
+      .cls-2 {
+        fill: #000000;
+      }
+
+      .cls-outline-outer {
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 12;
+        stroke-linejoin: miter;
+      }
+
+      .cls-outline-inner {
+        fill: none;
+        stroke: #000000;
+        stroke-width: 6;
+        stroke-linejoin: miter;
+      }
+    </style>
+  </defs>
+  
+  <g id="FONDO">
+    <g>
+      <!-- Letra D con relleno negro y doble borde -->
+      <g>
+        <polygon class="cls-2" points="521.16 123.61 398.75 420.36 49.35 420.36 49.87 419.85 0 419.85 76.23 236.93 200.97 236.93 174.41 300.63 316.74 300.63 391.92 119.75 133.8 119.75 26.6 0 441.69 0 521.16 123.61"/>
+        <polygon class="cls-outline-outer" points="521.16 123.61 398.75 420.36 49.35 420.36 49.87 419.85 0 419.85 76.23 236.93 200.97 236.93 174.41 300.63 316.74 300.63 391.92 119.75 133.8 119.75 26.6 0 441.69 0 521.16 123.61"/>
+        <polygon class="cls-outline-inner" points="521.16 123.61 398.75 420.36 49.35 420.36 49.87 419.85 0 419.85 76.23 236.93 200.97 236.93 174.41 300.63 316.74 300.63 391.92 119.75 133.8 119.75 26.6 0 441.69 0 521.16 123.61"/>
+      </g>
+      
+      <!-- Letra A (morada, sin cambios) -->
+      <polygon class="cls-1" points="698.28 275.48 622.19 55.94 470.31 420.36 645.56 420.36 698.28 275.48"/>
+      <polygon class="cls-1" points="650.75 .44 826 .44 971.2 420.36 795.95 420.36 650.75 .44"/>
+      
+      <!-- Letra K con relleno negro y doble borde -->
+      <g>
+        <polygon class="cls-2" points="1462 123.47 1327.27 258.2 1210.27 375.19 1165.1 420.36 1022.71 420.36 1022.71 .44 1165.1 .44 1165.1 219 1361.34 22.75 1462 123.47"/>
+        <polygon class="cls-2" points="1418.91 278.02 1418.91 420.36 1257.53 385.44 1374.58 268.39 1418.91 278.02"/>
+        <polygon class="cls-outline-outer" points="1462 123.47 1327.27 258.2 1210.27 375.19 1165.1 420.36 1022.71 420.36 1022.71 .44 1165.1 .44 1165.1 219 1361.34 22.75 1462 123.47"/>
+        <polygon class="cls-outline-outer" points="1418.91 278.02 1418.91 420.36 1257.53 385.44 1374.58 268.39 1418.91 278.02"/>
+        <polygon class="cls-outline-inner" points="1462 123.47 1327.27 258.2 1210.27 375.19 1165.1 420.36 1022.71 420.36 1022.71 .44 1165.1 .44 1165.1 219 1361.34 22.75 1462 123.47"/>
+        <polygon class="cls-outline-inner" points="1418.91 278.02 1418.91 420.36 1257.53 385.44 1374.58 268.39 1418.91 278.02"/>
+      </g>
+    </g>
+  </g>
+</svg>

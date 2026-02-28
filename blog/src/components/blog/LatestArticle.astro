@@ -1,0 +1,35 @@
+---
+/**
+ * LatestArticle — Horizontal article card for "Lo Último" section
+ */
+import type { WPPost } from '../../lib/wp-api';
+import { getFeaturedImage, getFeaturedImageAlt, getPrimaryCategory, getCategoryTagClass, formatDateLong, stripHtml } from '../../lib/wp-api';
+
+interface Props {
+  post: WPPost;
+}
+
+const { post } = Astro.props;
+const image = getFeaturedImage(post);
+const imageAlt = getFeaturedImageAlt(post);
+const category = getPrimaryCategory(post);
+const tagClass = getCategoryTagClass(category.slug);
+const date = formatDateLong(post.date);
+const title = stripHtml(post.title.rendered);
+const excerpt = stripHtml(post.excerpt.rendered);
+---
+
+<article class="latest-article">
+  <div class="latest-article-image">
+    <img src={image} alt={imageAlt} loading="lazy">
+  </div>
+  <div class="latest-article-body">
+    <h3 class="latest-article-title">
+      <a href={`/blog/${post.slug}`}>{title}</a>
+    </h3>
+    <span class={`category-tag ${tagClass}`}>{category.name.toUpperCase()}</span>
+    <span class="latest-article-date">{date}</span>
+    <p class="latest-article-excerpt">{excerpt}</p>
+    <a href={`/blog/${post.slug}`} class="opinion-read-more">LEER MÁS</a>
+  </div>
+</article>

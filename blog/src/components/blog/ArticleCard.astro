@@ -1,0 +1,35 @@
+---
+/**
+ * ArticleCard — Card for 4-column article grids (Marketing, Branding, etc.)
+ */
+import type { WPPost } from '../../lib/wp-api';
+import { getFeaturedImage, getFeaturedImageAlt, getAuthor, getPrimaryCategory, getCategoryTagClass, formatDate, stripHtml } from '../../lib/wp-api';
+
+interface Props {
+  post: WPPost;
+}
+
+const { post } = Astro.props;
+const image = getFeaturedImage(post);
+const imageAlt = getFeaturedImageAlt(post);
+const author = getAuthor(post);
+const category = getPrimaryCategory(post);
+const tagClass = getCategoryTagClass(category.slug);
+const date = formatDate(post.date);
+const excerpt = stripHtml(post.excerpt.rendered);
+const title = stripHtml(post.title.rendered);
+---
+
+<article class="article-card">
+  <div class="article-card-image">
+    <img src={image} alt={imageAlt} loading="lazy">
+  </div>
+  <div class="article-card-body">
+    <span class={`category-tag ${tagClass}`}>{category.name.toUpperCase()}</span>
+    <h3 class="article-card-title">
+      <a href={`/blog/${post.slug}`}>{title}</a>
+    </h3>
+    <p class="article-card-excerpt">{excerpt}</p>
+    <div class="article-card-meta">POR {author.toUpperCase()} · {date}</div>
+  </div>
+</article>

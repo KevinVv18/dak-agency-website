@@ -1,0 +1,40 @@
+---
+/**
+ * BlogLayout — Base layout for all blog pages.
+ * Loads Google Fonts, blog CSS, and wraps content with Header + Footer.
+ */
+import BlogHeader from '../components/blog/BlogHeader.astro';
+import BlogFooter from '../components/blog/BlogFooter.astro';
+import '../styles/blog.css';
+
+interface Props {
+  title: string;
+  description: string;
+  seoHead?: string; // Raw yoast_head HTML from RankMath
+}
+
+const { title, description, seoHead } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/assets/blog/favicon.svg`}>
+  <!-- Google Fonts: Playfair Display (serif headlines) + Inter (sans body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700&display=swap"
+    rel="stylesheet">
+  {seoHead && <Fragment set:html={seoHead} />}
+</head>
+<body>
+  <BlogHeader />
+  <slot />
+  <BlogFooter />
+</body>
+</html>

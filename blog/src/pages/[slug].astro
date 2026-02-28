@@ -1,0 +1,293 @@
+---
+/**
+ * /blog/[slug] — Individual Article Page
+ * Uses getStaticPaths() for static generation at build time.
+ * Fetches all posts to generate paths, then renders the full article.
+ */
+import BlogLayout from '../layouts/BlogLayout.astro';
+import {
+  fetchPosts,
+  fetchPostBySlug,
+  getFeaturedImage,
+  getFeaturedImageAlt,
+  getAuthor,
+  getPrimaryCategory,
+  getCategoryTagClass,
+  formatDateLong,
+  stripHtml,
+  type WPPost,
+} from '../lib/wp-api';
+
+export async function getStaticPaths() {
+  let posts: WPPost[] = [];
+
+  try {
+    // Fetch all posts for static generation
+    const allPosts: WPPost[] = [];
+    let page = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+      const batch = await fetchPosts({ per_page: 100, page });
+      allPosts.push(...batch);
+      hasMore = batch.length === 100;
+      page++;
+    }
+
+    posts = allPosts;
+  } catch (e) {
+    console.warn('WP API not available for getStaticPaths:', e);
+    return [];
+  }
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: WPPost;
+}
+
+const { post } = Astro.props;
+
+const image = getFeaturedImage(post);
+const imageAlt = getFeaturedImageAlt(post);
+const author = getAuthor(post);
+const category = getPrimaryCategory(post);
+const tagClass = getCategoryTagClass(category.slug);
+const date = formatDateLong(post.date);
+const title = stripHtml(post.title.rendered);
+const excerpt = stripHtml(post.excerpt.rendered).slice(0, 160);
+
+// SEO: RankMath head injection
+const seoHead = post.yoast_head ?? '';
+---
+
+<BlogLayout title={`${title} — DAK PANORAMA`} description={excerpt} seoHead={seoHead}>
+  <main>
+    <article class="article-single">
+      <!-- Hero image -->
+      <div class="article-single-hero">
+        <img src={image} alt={imageAlt} class="article-single-hero-img" loading="eager">
+        <div class="article-single-hero-overlay"></div>
+      </div>
+
+      <!-- Article header -->
+      <div class="article-single-container">
+        <div class="article-single-header">
+          <span class={`category-tag ${tagClass}`}>{category.name.toUpperCase()}</span>
+          <h1 class="article-single-title">{title}</h1>
+          <div class="article-single-meta">
+            <span>POR {author.toUpperCase()}</span>
+            <span class="meta-separator">·</span>
+            <span>{date}</span>
+          </div>
+        </div>
+
+        <!-- Article body -->
+        <div class="article-single-body" set:html={post.content.rendered} />
+
+        <!-- Back to blog -->
+        <div class="article-single-footer">
+          <a href="/blog" class="article-back-link">← Volver al blog</a>
+        </div>
+      </div>
+    </article>
+  </main>
+</BlogLayout>
+
+<style>
+  .article-single-hero {
+    position: relative;
+    width: 100%;
+    max-height: 520px;
+    overflow: hidden;
+  }
+
+  .article-single-hero-img {
+    width: 100%;
+    height: 520px;
+    object-fit: cover;
+  }
+
+  .article-single-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.5) 100%);
+  }
+
+  .article-single-container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .article-single-header {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    border-bottom: 2px solid var(--text-primary, #1A1A1A);
+    margin-bottom: 2.5rem;
+  }
+
+  .article-single-header .category-tag {
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+  }
+
+  .article-single-title {
+    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: var(--text-primary, #1A1A1A);
+    margin-bottom: 1.25rem;
+  }
+
+  .article-single-meta {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted, #999);
+  }
+
+  .article-single-meta .meta-separator {
+    margin: 0 0.5rem;
+    opacity: 0.4;
+  }
+
+  .article-single-body {
+    font-size: 1.1rem;
+    line-height: 1.85;
+    color: var(--text-secondary, #3A3A3A);
+    padding-bottom: 3rem;
+  }
+
+  .article-single-body :global(h2) {
+    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary, #1A1A1A);
+    margin: 2.5rem 0 1rem;
+    line-height: 1.25;
+  }
+
+  .article-single-body :global(h3) {
+    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary, #1A1A1A);
+    margin: 2rem 0 0.75rem;
+  }
+
+  .article-single-body :global(p) {
+    margin-bottom: 1.5rem;
+  }
+
+  .article-single-body :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: 0.4rem;
+    margin: 2rem 0;
+  }
+
+  .article-single-body :global(blockquote) {
+    border-left: 4px solid var(--color-primary, #B024FF);
+    margin: 2rem 0;
+    padding: 1rem 1.5rem;
+    font-style: italic;
+    color: var(--text-muted, #666);
+    background: var(--bg-card, #fff);
+    border-radius: 0 0.25rem 0.25rem 0;
+  }
+
+  .article-single-body :global(ul),
+  .article-single-body :global(ol) {
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .article-single-body :global(li) {
+    margin-bottom: 0.5rem;
+    list-style: disc;
+  }
+
+  .article-single-body :global(a) {
+    color: var(--color-primary, #B024FF);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .article-single-body :global(a:hover) {
+    opacity: 0.8;
+  }
+
+  .article-single-body :global(pre) {
+    background: var(--text-primary, #1A1A1A);
+    color: #e0e0e0;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 2rem 0;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  .article-single-body :global(code) {
+    background: rgba(176, 36, 255, 0.08);
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.2rem;
+    font-size: 0.9em;
+  }
+
+  .article-single-body :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  .article-single-body :global(figure) {
+    margin: 2rem 0;
+  }
+
+  .article-single-body :global(figcaption) {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text-muted, #999);
+    margin-top: 0.5rem;
+  }
+
+  .article-single-footer {
+    border-top: 1px solid var(--border-light, #e8e4df);
+    padding: 2rem 0 4rem;
+  }
+
+  .article-back-link {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted, #999);
+    transition: color 0.3s ease;
+  }
+
+  .article-back-link:hover {
+    color: var(--color-primary, #B024FF);
+  }
+
+  @media (max-width: 768px) {
+    .article-single-hero-img {
+      height: 300px;
+    }
+    .article-single-container {
+      padding: 0 1.25rem;
+    }
+    .article-single-body {
+      font-size: 1rem;
+    }
+  }
+</style>

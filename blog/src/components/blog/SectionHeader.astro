@@ -1,0 +1,21 @@
+---
+/**
+ * SectionHeader — Reusable section header with full-width divider,
+ * centered serif title, thick underline, and "VER MÁS" link.
+ */
+interface Props {
+  title: string;
+  linkHref?: string;
+  linkText?: string;
+}
+
+const { title, linkHref = '#', linkText = 'VER MÁS »' } = Astro.props;
+---
+
+<div class="section-divider-full"></div>
+<div class="section-container">
+  <div class="section-header">
+    <h2 class="section-title">{title}</h2>
+    <a href={linkHref} class="section-link">{linkText}</a>
+  </div>
+</div>

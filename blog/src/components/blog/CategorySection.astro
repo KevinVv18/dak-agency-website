@@ -1,0 +1,31 @@
+---
+/**
+ * CategorySection — Full section for a category (header + 4-column grid)
+ */
+import type { WPPost } from '../../lib/wp-api';
+import ArticleCard from './ArticleCard.astro';
+
+interface Props {
+  sectionId: string;
+  title: string;
+  categorySlug: string;
+  posts: WPPost[];
+}
+
+const { sectionId, title, categorySlug, posts } = Astro.props;
+---
+
+<section class="category-section" id={sectionId}>
+  <div class="section-divider-full"></div>
+  <div class="section-container">
+    <div class="section-header">
+      <h2 class="section-title">{title}</h2>
+      <a href={`/blog/categoria/${categorySlug}`} class="section-link">VER MÁS »</a>
+    </div>
+    <div class="articles-grid articles-grid-divided">
+      {posts.map((post) => (
+        <ArticleCard post={post} />
+      ))}
+    </div>
+  </div>
+</section>

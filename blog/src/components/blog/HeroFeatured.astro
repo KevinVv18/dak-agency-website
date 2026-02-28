@@ -1,0 +1,42 @@
+---
+/**
+ * HeroFeatured — Central featured article in the hero section
+ */
+import type { WPPost } from '../../lib/wp-api';
+import { getFeaturedImage, getFeaturedImageAlt, getAuthor, getPrimaryCategory, getCategoryTagClass, formatDateLong, stripHtml } from '../../lib/wp-api';
+
+interface Props {
+  post: WPPost;
+}
+
+const { post } = Astro.props;
+const image = getFeaturedImage(post);
+const imageAlt = getFeaturedImageAlt(post);
+const author = getAuthor(post);
+const category = getPrimaryCategory(post);
+const tagClass = getCategoryTagClass(category.slug);
+const date = formatDateLong(post.date);
+const title = stripHtml(post.title.rendered);
+const excerpt = stripHtml(post.excerpt.rendered);
+---
+
+<article class="hero-featured">
+  <a href={`/blog/${post.slug}`} class="featured-image-link">
+    <div class="featured-image-wrapper">
+      <img src={image} alt={imageAlt} class="featured-image" loading="eager">
+      <div class="featured-image-overlay"></div>
+    </div>
+  </a>
+  <div class="featured-content">
+    <span class={`category-tag ${tagClass}`}>{category.name.toUpperCase()}</span>
+    <h2 class="featured-title">
+      <a href={`/blog/${post.slug}`}>{title}</a>
+    </h2>
+    <p class="featured-excerpt">{excerpt}</p>
+    <div class="featured-meta">
+      <span>POR {author.toUpperCase()}</span>
+      <span class="meta-separator">·</span>
+      <span>{date}</span>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,28 @@
+---
+/**
+ * LatestSidebar — "Más Popular" sidebar for the Lo Último section
+ */
+import type { WPPost } from '../../lib/wp-api';
+import { getFeaturedImage, getFeaturedImageAlt, stripHtml } from '../../lib/wp-api';
+
+interface Props {
+  post: WPPost;
+}
+
+const { post } = Astro.props;
+const image = getFeaturedImage(post);
+const imageAlt = getFeaturedImageAlt(post);
+const title = stripHtml(post.title.rendered);
+const excerpt = stripHtml(post.excerpt.rendered);
+---
+
+<aside class="latest-sidebar">
+  <div class="latest-sidebar-header">MÁS POPULAR</div>
+  <div class="latest-sidebar-img">
+    <img src={image} alt={imageAlt} loading="lazy" style="aspect-ratio:3/4; border-radius:0.25rem; width:100%; height:100%; object-fit:cover;">
+  </div>
+  <h4 class="latest-sidebar-title">
+    <a href={`/blog/${post.slug}`}>{title}</a>
+  </h4>
+  <p class="latest-sidebar-excerpt">{excerpt}</p>
+</aside>

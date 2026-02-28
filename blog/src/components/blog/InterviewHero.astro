@@ -1,0 +1,38 @@
+---
+/**
+ * InterviewHero — Full-width hero with dark overlay for interviews
+ */
+import type { WPPost } from '../../lib/wp-api';
+import { getFeaturedImage, getFeaturedImageAlt, getPrimaryCategory, formatDateLong, stripHtml } from '../../lib/wp-api';
+
+interface Props {
+  post: WPPost;
+}
+
+const { post } = Astro.props;
+const image = getFeaturedImage(post);
+const imageAlt = getFeaturedImageAlt(post);
+const category = getPrimaryCategory(post);
+const date = formatDateLong(post.date);
+const title = stripHtml(post.title.rendered);
+const excerpt = stripHtml(post.excerpt.rendered);
+---
+
+<section class="interview-section" id="entrevistas">
+  <div class="section-divider-full"></div>
+  <div class="section-container">
+    <div class="section-header">
+      <h2 class="section-title">Entrevistas</h2>
+      <a href="/blog/categoria/entrevistas" class="section-link">VER MÁS »</a>
+    </div>
+  </div>
+  <div class="interview-hero">
+    <img src={image} alt={imageAlt} class="interview-hero-img" loading="lazy">
+    <div class="interview-hero-overlay">
+      <h3 class="interview-hero-title">{title.toUpperCase()}</h3>
+      <div class="interview-hero-meta">{category.name.toUpperCase()} · {date}</div>
+      <p class="interview-hero-excerpt">{excerpt}</p>
+      <a href={`/blog/${post.slug}`} class="interview-read-more">LEER MÁS</a>
+    </div>
+  </div>
+</section>
