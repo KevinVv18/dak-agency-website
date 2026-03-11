@@ -69,7 +69,8 @@ const Services = () => {
       description: 'Sitios web modernos y funcionales que convierten visitantes en clientes. Diseño responsivo, rápido y optimizado para resultados.',
       category: 'DESARROLLO',
       color: '#FF6B35',
-      videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765238189/Crea_un_video_202512081540_3trka_f71zay.mp4',
+      // videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765238189/Crea_un_video_202512081540_3trka_f71zay.mp4',
+      imageSrc: '/images/web_design.png',
       price: 'Desde S/ 2,500',
       clients: 3,
       icon: 'M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z'
@@ -81,7 +82,8 @@ const Services = () => {
       description: 'Posicionamiento orgánico y campañas publicitarias que maximizan tu inversión. Aparece donde tus clientes te buscan.',
       category: 'MARKETING',
       color: '#4A90E2',
-      videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765238189/a7bd9fdd-f753-4ef3-8a39-8e8d00b1afe0_gyqzwi.mp4',
+      // videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765238189/a7bd9fdd-f753-4ef3-8a39-8e8d00b1afe0_gyqzwi.mp4',
+      imageSrc: '/images/seo_ads.png',
       price: 'Desde S/ 800/mes',
       clients: 4,
       icon: 'M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'
@@ -93,7 +95,8 @@ const Services = () => {
       description: 'Sistemas inteligentes que automatizan tu marketing y ventas. CRM, email marketing y workflows que trabajan mientras duermes.',
       category: 'CRM',
       color: '#9B59B6',
-      videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765239599/7bb56f61-ca44-4c3f-9918-8b61aa68140d_jnv2ti.mp4',
+      // videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765239599/7bb56f61-ca44-4c3f-9918-8b61aa68140d_jnv2ti.mp4',
+      imageSrc: '/images/automation.png',
       price: 'Desde S/ 1,200',
       clients: 2,
       icon: 'M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z'
@@ -128,11 +131,11 @@ const Services = () => {
 
   // Reiniciar video al cambiar servicio
   useEffect(() => {
-    if (videoRef.current) {
+    if (videoRef.current && activeService.videoSrc) {
       videoRef.current.currentTime = 0
-      videoRef.current.play().catch(() => {})
+      videoRef.current.play().catch(() => { })
     }
-  }, [activeIndex])
+  }, [activeIndex, activeService])
 
   const handleScrollToContact = (e) => {
     e.preventDefault()
@@ -153,7 +156,7 @@ const Services = () => {
     setActiveIndex(index)
     setViewedServices(prev => new Set([...prev, index]))
     setDrawerOpen(false)
-    
+
     // Scroll to services section
     setTimeout(() => {
       if (servicesRef.current) {
@@ -180,11 +183,13 @@ const Services = () => {
     setViewedServices(p => new Set([...p, prev]))
   }
 
-  // Preload next video
+  // Preload next video/image
   useEffect(() => {
     const nextIndex = (activeIndex + 1) % services.length
-    if (preloadRef.current && services[nextIndex]) {
-      preloadRef.current.src = services[nextIndex].videoSrc
+    if (services[nextIndex]) {
+      if (services[nextIndex].videoSrc && preloadRef.current) {
+        preloadRef.current.src = services[nextIndex].videoSrc
+      }
     }
   }, [activeIndex, services])
 
@@ -236,18 +241,27 @@ const Services = () => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <video
-                    ref={videoRef}
-                    src={activeService.videoSrc}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="featured-video"
-                  />
-                  <div 
+                  {activeService.imageSrc ? (
+                    <img
+                      src={activeService.imageSrc}
+                      alt={activeService.title}
+                      className="featured-video"
+                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                    />
+                  ) : (
+                    <video
+                      ref={videoRef}
+                      src={activeService.videoSrc}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="featured-video"
+                    />
+                  )}
+                  <div
                     className="featured-overlay"
-                    style={{ 
+                    style={{
                       background: `linear-gradient(135deg, 
                         ${activeService.color}15 0%, 
                         rgba(0,0,0,0.7) 50%, 
@@ -283,16 +297,16 @@ const Services = () => {
                   transition={{ duration: 0.4, ease: 'easeOut' }}
                 >
                   <div className="featured-header-info">
-                    <span 
+                    <span
                       className="featured-number"
                       style={{ color: activeService.color }}
                     >
                       {String(activeIndex + 1).padStart(2, '0')}
                     </span>
-                    
-                    <span 
+
+                    <span
                       className="featured-category"
-                      style={{ 
+                      style={{
                         color: activeService.color,
                         backgroundColor: `${activeService.color}20`
                       }}
@@ -300,18 +314,18 @@ const Services = () => {
                       {activeService.category}
                     </span>
                   </div>
-                  
-                  <motion.div 
-                    className="featured-icon" 
+
+                  <motion.div
+                    className="featured-icon"
                     style={{ color: activeService.color }}
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     transition={{ duration: 0.5, delay: 0.2, type: 'spring' }}
                   >
-                    <svg 
-                      width="48" 
-                      height="48" 
-                      viewBox="0 0 24 24" 
+                    <svg
+                      width="48"
+                      height="48"
+                      viewBox="0 0 24 24"
                       fill="currentColor"
                       className="service-icon"
                     >
@@ -322,29 +336,49 @@ const Services = () => {
                   <h3 className="featured-title">{activeService.title}</h3>
                   <p className="featured-tagline">{activeService.tagline}</p>
                   <p className="featured-description">{activeService.description}</p>
-                  
+
                   <div className="featured-stats">
                     <span className="stat-badge">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
                       </svg>
                       {activeService.clients}+ clientes
                     </span>
                     <span className="stat-badge price-badge">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
                       </svg>
                       {activeService.price}
                     </span>
                   </div>
-                  
-                  <button
-                    className="featured-cta"
-                    onClick={handleScrollToContact}
-                    style={{ backgroundColor: activeService.color }}
-                  >
-                    Cotizar Servicio
-                  </button>
+
+                  <div className="featured-actions">
+                    <button
+                      className="featured-cta"
+                      onClick={handleScrollToContact}
+                      style={{ backgroundColor: activeService.color }}
+                    >
+                      Hablemos de tu proyecto
+                    </button>
+
+                    <a
+                      href="https://plan.dakagency.net"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="featured-calc-btn"
+                      style={{
+                        '--btn-color': activeService.color,
+                        borderColor: activeService.color,
+                        color: activeService.color,
+                        boxShadow: `0 0 15px ${activeService.color}30`
+                      }}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-6 16H6v-6h7v6zm8-2h-3v-2h3v2zm0-4h-3v-2h3v2zm0-4h-3V7h3v2zM6 11V7h11v4H6z" />
+                      </svg>
+                      Cotizar Paquetes
+                    </a>
+                  </div>
                 </motion.div>
               </AnimatePresence>
 
@@ -355,7 +389,7 @@ const Services = () => {
                     <motion.div
                       key={service.id}
                       className={`progress-segment ${viewedServices.has(index) ? 'viewed' : ''} ${index === activeIndex ? 'active' : ''}`}
-                      style={{ 
+                      style={{
                         backgroundColor: viewedServices.has(index) ? service.color : 'rgba(255,255,255,0.1)',
                         flex: 1
                       }}
@@ -386,8 +420,8 @@ const Services = () => {
                 </span>
                 <span className="thumbnails-label">Servicios</span>
               </div>
-              
-              <div 
+
+              <div
                 className="services-thumbnails"
                 ref={thumbnailsRef}
               >
@@ -399,7 +433,7 @@ const Services = () => {
                       key={service.id}
                       className={`thumbnail ${isActive ? 'active' : ''} ${isViewed ? 'viewed' : ''}`}
                       onClick={() => handleThumbnailClick(index)}
-                      style={{ 
+                      style={{
                         '--thumb-color': service.color,
                         borderColor: isActive ? service.color : 'transparent'
                       }}
@@ -407,17 +441,26 @@ const Services = () => {
                       whileTap={{ scale: 0.97 }}
                     >
                       <div className="thumbnail-video-wrapper">
-                        <video
-                          src={service.videoSrc}
-                          muted
-                          playsInline
-                          loop
-                          preload="metadata"
-                          className="thumbnail-video"
-                        />
+                        {service.imageSrc ? (
+                          <img
+                            src={service.imageSrc}
+                            alt=""
+                            className="thumbnail-video"
+                            style={{ objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <video
+                            src={service.videoSrc}
+                            muted
+                            playsInline
+                            loop
+                            preload="metadata"
+                            className="thumbnail-video"
+                          />
+                        )}
                         <div className="thumbnail-overlay" />
                       </div>
-                      
+
                       <div className="thumbnail-icon" style={{ color: service.color }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                           <path d={service.icon} />
@@ -425,7 +468,7 @@ const Services = () => {
                       </div>
 
                       <div className="thumbnail-info">
-                        <span 
+                        <span
                           className="thumbnail-number"
                           style={{ color: isActive ? service.color : 'rgba(255,255,255,0.4)' }}
                         >
@@ -439,7 +482,7 @@ const Services = () => {
                       </div>
 
                       {isActive && (
-                        <motion.div 
+                        <motion.div
                           className="thumbnail-active-indicator"
                           layoutId="activeIndicator"
                           style={{ backgroundColor: service.color }}
@@ -449,7 +492,7 @@ const Services = () => {
                       {isViewed && !isActive && (
                         <div className="thumbnail-viewed-badge">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
                           </svg>
                         </div>
                       )}
@@ -468,7 +511,7 @@ const Services = () => {
           <span className="sidebar-label">SERVICIOS</span>
           <div className="sidebar-track">
             <div className="sidebar-progress-line">
-              <motion.div 
+              <motion.div
                 className="sidebar-progress-fill"
                 style={{ backgroundColor: activeService.color }}
                 animate={{ height: `${((activeIndex) / (services.length - 1)) * 100}%` }}
@@ -495,7 +538,8 @@ const Services = () => {
                     style={{
                       color: isActive ? service.color : isViewed ? service.color : 'rgba(255,255,255,0.3)',
                       backgroundColor: isActive ? `${service.color}15` : 'transparent',
-                      borderColor: isActive ? `${service.color}40` : 'transparent'
+                      borderColor: isActive ? `${service.color}40` : 'transparent',
+                      boxShadow: isActive ? `0 0 16px ${service.color}50` : 'none'
                     }}
                     animate={{
                       scale: isActive ? 1.15 : 1,
@@ -506,14 +550,6 @@ const Services = () => {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                       <path d={service.icon} />
                     </svg>
-                    {isActive && (
-                      <motion.div
-                        className="sidebar-icon-glow"
-                        style={{ backgroundColor: service.color }}
-                        layoutId="sidebarGlow"
-                        transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                      />
-                    )}
                   </motion.div>
                   <div className="sidebar-tooltip">
                     <span className="sidebar-tooltip-title">{service.title}</span>
@@ -551,7 +587,7 @@ const Services = () => {
           <motion.div
             className="services-bottom-bar"
             initial={false}
-            animate={{ 
+            animate={{
               height: drawerOpen ? '75vh' : '56px'
             }}
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
@@ -559,7 +595,7 @@ const Services = () => {
             {/* Bar Header - siempre visible */}
             <div className="bottom-bar-header" onClick={toggleDrawer}>
               <div className="bottom-bar-left">
-                <div 
+                <div
                   className="bottom-bar-dot"
                   style={{ backgroundColor: activeService.color }}
                 />
@@ -572,15 +608,15 @@ const Services = () => {
                 <span className="bottom-bar-count">
                   {viewedServices.size}/{services.length}
                 </span>
-                <motion.svg 
-                  width="20" 
-                  height="20" 
-                  viewBox="0 0 24 24" 
+                <motion.svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
                   fill="white"
                   animate={{ rotate: drawerOpen ? 180 : 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+                  <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
                 </motion.svg>
               </div>
             </div>
@@ -623,7 +659,7 @@ const Services = () => {
                             </span>
                           </div>
                           {isActive && (
-                            <motion.div 
+                            <motion.div
                               className="drawer-card-active"
                               style={{ backgroundColor: service.color }}
                               layoutId="drawerActive"
@@ -632,7 +668,7 @@ const Services = () => {
                           {isViewed && !isActive && (
                             <div className="drawer-card-check">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
                               </svg>
                             </div>
                           )}
