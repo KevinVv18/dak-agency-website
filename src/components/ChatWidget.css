@@ -62,7 +62,7 @@
   right: 28px;
   z-index: 9989;
   width: 380px;
-  max-height: 520px;
+  max-height: 600px;
   border-radius: 20px;
   overflow: hidden;
   display: flex;
@@ -152,7 +152,7 @@
   flex-direction: column;
   gap: 12px;
   min-height: 200px;
-  max-height: 320px;
+  max-height: 420px;
   scrollbar-width: thin;
   scrollbar-color: rgba(176, 36, 255, 0.15) transparent;
 }
@@ -201,7 +201,7 @@
 .msg-bubble {
   padding: 10px 14px;
   border-radius: 14px;
-  font-size: 0.84rem;
+  font-size: 0.9rem;
   line-height: 1.5;
 }
 
@@ -358,20 +358,30 @@
 }
 
 /* ── Mobile Responsive ── */
-@media (max-width: 480px) {
-  .chat-panel {
-    right: 12px;
-    left: 12px;
-    bottom: 90px;
-    width: auto;
-    max-height: 70vh;
-    border-radius: 16px;
-  }
-
+@media (max-width: 768px) {
   .chat-trigger {
-    bottom: 20px;
+    bottom: 76px;
     right: 20px;
     width: 54px;
     height: 54px;
+  }
+
+  .chat-panel {
+    right: 12px;
+    left: 12px;
+    bottom: 146px;
+    width: auto;
+    max-height: 65vh;
+    border-radius: 16px;
+  }
+
+  .chat-messages {
+    max-height: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-panel {
+    max-height: 55vh;
   }
 }

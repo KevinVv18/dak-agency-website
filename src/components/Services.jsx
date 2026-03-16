@@ -631,6 +631,15 @@ const Services = () => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2, delay: 0.1 }}
                 >
+                  {/* Drawer Header */}
+                  <div className="drawer-header">
+                    <div className="drawer-header-left">
+                      <span className="drawer-header-title">Nuestros Servicios</span>
+                      <span className="drawer-header-badge">{services.length}</span>
+                    </div>
+                    <span className="drawer-header-hint">Toca para explorar</span>
+                  </div>
+
                   <div className="drawer-services-grid">
                     {services.map((service, index) => {
                       const isActive = index === activeIndex
@@ -640,38 +649,65 @@ const Services = () => {
                           key={service.id}
                           className={`drawer-service-card ${isActive ? 'active' : ''} ${isViewed ? 'viewed' : ''}`}
                           onClick={() => handleDrawerServiceClick(index)}
-                          style={{ borderColor: isActive ? service.color : 'transparent' }}
-                          whileTap={{ scale: 0.95 }}
+                          style={{
+                            '--card-color': service.color,
+                            borderColor: isActive ? service.color : 'transparent'
+                          }}
+                          whileTap={{ scale: 0.97 }}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.04 }}
+                          transition={{ delay: index * 0.05 }}
                         >
-                          <div className="drawer-card-icon" style={{ color: service.color }}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                          {/* Numbered label */}
+                          <span className="drawer-card-number" style={{ color: service.color }}>
+                            {String(index + 1).padStart(2, '0')}
+                          </span>
+
+                          {/* Icon with glow */}
+                          <div
+                            className="drawer-card-icon"
+                            style={{
+                              color: service.color,
+                              backgroundColor: `${service.color}15`,
+                              boxShadow: isActive ? `0 0 20px ${service.color}30` : 'none'
+                            }}
+                          >
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                               <path d={service.icon} />
                             </svg>
                           </div>
+
+                          {/* Info */}
                           <div className="drawer-card-info">
                             <h4 className="drawer-card-title">{service.title}</h4>
                             <p className="drawer-card-tagline">{service.tagline}</p>
+                            <p className="drawer-card-description">{service.description}</p>
                             <span className="drawer-card-price" style={{ color: service.color }}>
                               {service.price}
                             </span>
                           </div>
-                          {isActive && (
-                            <motion.div
-                              className="drawer-card-active"
-                              style={{ backgroundColor: service.color }}
-                              layoutId="drawerActive"
-                            />
-                          )}
-                          {isViewed && !isActive && (
-                            <div className="drawer-card-check">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+
+                          {/* Right side: arrow or check */}
+                          <div className="drawer-card-right">
+                            {isActive && (
+                              <motion.div
+                                className="drawer-card-active"
+                                style={{ backgroundColor: service.color }}
+                                layoutId="drawerActive"
+                              />
+                            )}
+                            {isViewed && !isActive ? (
+                              <div className="drawer-card-check">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                                  <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+                                </svg>
+                              </div>
+                            ) : (
+                              <svg className="drawer-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="9 6 15 12 9 18" />
                               </svg>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </motion.div>
                       )
                     })}
