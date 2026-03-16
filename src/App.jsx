@@ -8,6 +8,7 @@ import Blog from './components/Blog'
 import CTASection from './components/CTASection'
 import ContactForm from './components/ContactForm'
 import Footer from './components/Footer'
+import ChatWidget from './components/ChatWidget'
 
 function App() {
   const gridRef = useRef(null)
@@ -49,6 +50,7 @@ function App() {
         <ContactForm />
       </main>
       <Footer />
+      <ChatWidget />
     </div>
   )
 }

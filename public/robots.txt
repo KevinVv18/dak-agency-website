@@ -1,0 +1,30 @@
+# https://www.robotstxt.org/robotstxt.html
+
+# Allow all legitimate crawlers
+User-agent: *
+Allow: /
+Allow: /blog/
+
+# Block WordPress admin and login pages from indexing
+Disallow: /blog/wp-admin/
+Disallow: /blog/wp-login.php
+Disallow: /blog/wp-includes/
+
+# Block common scraping bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+# Sitemaps
+Sitemap: https://dakagency.net/blog/sitemap_index.xml

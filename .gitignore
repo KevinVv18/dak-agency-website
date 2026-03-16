@@ -24,11 +24,15 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment variables
+# Environment variables (SENSITIVE — never commit)
 .env
 .env.local
 .env.production.local
 .env.development.local
 .env.test.local
 
+# WordPress config with DB credentials (SENSITIVE)
+scripts/wp-config.php
 
+# Archive folder (dev notes, old assets)
+_archive/

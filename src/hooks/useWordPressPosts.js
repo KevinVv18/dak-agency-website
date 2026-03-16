@@ -10,7 +10,7 @@ const useWordPressPosts = (limit = 3) => {
       try {
         setLoading(true)
         const response = await fetch(
-          `https://blog.dakagency.net/wp-json/wp/v2/posts?per_page=${limit}&_embed`
+          `https://dakagency.net/blog/wp-json/wp/v2/posts?per_page=${limit}&_embed`
         )
         
         if (!response.ok) {
