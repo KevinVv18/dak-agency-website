@@ -122,9 +122,82 @@ function dak_get_clean_excerpt( $post = null, $length = 0 ) {
     $excerpt = get_the_excerpt( $post );
     $excerpt = wp_strip_all_tags( $excerpt );
     if ( $length > 0 ) {
-        $excerpt = mb_substr( $excerpt, 0, $length );
+        $excerpt = wp_trim_words( $excerpt, $length, '…' );
     }
     return $excerpt;
+}
+
+// ── Helper: Breadcrumbs (SEO) ──
+function dak_breadcrumbs() {
+    if ( is_front_page() ) return;
+
+    echo '<nav class="breadcrumbs" aria-label="Breadcrumb">';
+    echo '<ol class="breadcrumbs-list" itemscope itemtype="https://schema.org/BreadcrumbList">';
+
+    // Home
+    echo '<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
+    echo '<a itemprop="item" href="https://dakagency.net/"><span itemprop="name">Inicio</span></a>';
+    echo '<meta itemprop="position" content="1" />';
+    echo '</li>';
+
+    // Blog
+    echo '<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
+    echo '<a itemprop="item" href="' . esc_url( home_url( '/' ) ) . '"><span itemprop="name">Blog</span></a>';
+    echo '<meta itemprop="position" content="2" />';
+    echo '</li>';
+
+    // Category
+    if ( is_single() ) {
+        $cat = dak_get_primary_category();
+        echo '<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
+        echo '<a itemprop="item" href="' . esc_url( get_category_link( $cat->term_id ?? 0 ) ) . '"><span itemprop="name">' . esc_html( $cat->name ) . '</span></a>';
+        echo '<meta itemprop="position" content="3" />';
+        echo '</li>';
+
+        // Current post
+        echo '<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
+        echo '<span itemprop="name">' . esc_html( get_the_title() ) . '</span>';
+        echo '<meta itemprop="position" content="4" />';
+        echo '</li>';
+    }
+
+    echo '</ol>';
+    echo '</nav>';
+}
+
+// ── Helper: Article Schema JSON-LD ──
+function dak_article_schema() {
+    if ( ! is_single() ) return;
+
+    $post    = get_post();
+    $image   = dak_get_featured_image_url( $post->ID, 'large' );
+    $author  = get_the_author();
+    $excerpt = dak_get_clean_excerpt( $post, 30 );
+
+    $schema = array(
+        '@context'      => 'https://schema.org',
+        '@type'         => 'Article',
+        'headline'      => get_the_title(),
+        'description'   => $excerpt,
+        'image'         => $image,
+        'datePublished' => get_the_date( 'c' ),
+        'dateModified'  => get_the_modified_date( 'c' ),
+        'author'        => array(
+            '@type' => 'Person',
+            'name'  => $author,
+        ),
+        'publisher'     => array(
+            '@type' => 'Organization',
+            'name'  => 'DAK Agency',
+            'url'   => 'https://dakagency.net',
+        ),
+        'mainEntityOfPage' => array(
+            '@type' => 'WebPage',
+            '@id'   => get_permalink(),
+        ),
+    );
+
+    echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
 }
 
 // ── Disable WordPress admin bar on frontend (optional, for design purity) ──

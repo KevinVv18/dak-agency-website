@@ -4,8 +4,9 @@
 #  Installs WordPress core at /blog and deploys dak-informando theme
 # ============================================================
 
-WP_DIR="/home/u567580447/public_html/blog"
-THEME_SRC="./wordpress-theme/dak-informando"
+WP_DIR="/home/u567580447/domains/dakagency.net/public_html/blog"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+THEME_SRC="$SCRIPT_DIR/../wordpress-theme/dak-informando"
 THEME_DST="$WP_DIR/wp-content/themes/dak-informando"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 

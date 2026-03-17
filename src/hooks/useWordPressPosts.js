@@ -20,22 +20,33 @@ const useWordPressPosts = (limit = 3) => {
         const data = await response.json()
         
         // Formatear los datos
-        const formattedPosts = data.map(post => ({
-          id: post.id,
-          title: post.title.rendered,
-          excerpt: post.excerpt.rendered
-            .replace(/<[^>]*>/g, '')
-            .substring(0, 150) + '...',
-          date: new Date(post.date).toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-          }),
-          link: `/blog/${post.slug}`,
-          featuredImage: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null,
-          categories: post._embedded?.['wp:term']?.[0]?.map(cat => cat.name) || [],
-          author: post._embedded?.author?.[0]?.name || 'DAK Agency'
-        }))
+        const formattedPosts = data.map(post => {
+          // Convert absolute WP link to relative path for SPA routing
+          let postLink = post.link || `/blog/${post.slug}`
+          try {
+            const url = new URL(postLink)
+            postLink = url.pathname
+          } catch (e) {
+            // Already relative, keep as-is
+          }
+
+          return {
+            id: post.id,
+            title: post.title.rendered,
+            excerpt: post.excerpt.rendered
+              .replace(/<[^>]*>/g, '')
+              .substring(0, 150) + '...',
+            date: new Date(post.date).toLocaleDateString('es-ES', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            }),
+            link: postLink,
+            featuredImage: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null,
+            categories: post._embedded?.['wp:term']?.[0]?.map(cat => cat.name) || ['General'],
+            author: post._embedded?.author?.[0]?.name || 'DAK Agency'
+          }
+        })
 
         setPosts(formattedPosts)
         setError(null)

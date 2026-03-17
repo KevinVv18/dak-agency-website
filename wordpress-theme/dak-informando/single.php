@@ -17,6 +17,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
 ?>
 
 <main>
+  <?php dak_breadcrumbs(); ?>
   <article class="article-single">
     <!-- Hero image -->
     <div class="article-single-hero">

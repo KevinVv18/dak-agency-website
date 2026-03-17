@@ -93,6 +93,7 @@ $popular_post = $popular_query->have_posts() ? $popular_query->posts[0] : ( isse
 ?>
 
 <main>
+  <h1 class="screen-reader-text">Blog de Marketing Digital — DAK Agency</h1>
   <!-- ===== HERO SECTION ===== -->
   <section class="hero-blog" id="heroBlog">
     <div class="hero-grid-bg"></div>

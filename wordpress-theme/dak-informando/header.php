@@ -13,6 +13,8 @@
   <link rel="icon" type="image/svg+xml" href="<?php echo get_template_directory_uri(); ?>/assets/img/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap">
+  <?php dak_article_schema(); ?>
   <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
@@ -36,6 +38,10 @@
       <li><a href="<?php echo home_url( '/#opinion' ); ?>" class="mini-nav-link">SEO &amp; ADS</a></li>
     </ul>
     <a href="#newsletter" class="mini-nav-subscribe">SUSCRÍBETE</a>
+    <a href="<?php echo esc_url( admin_url() ); ?>" class="admin-login-btn" aria-label="Admin Login" title="Admin Login">
+      <svg class="icon-default" viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      <svg class="icon-wp" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.05-.18 2.986-.51-.024-.037-.046-.078-.065-.123l-2.763-7.572zm9.283-3.664c.008.31.018.611.018.895 0 1.954-.74 3.766-2.072 5.16l-4.14-11.517c1.83 1.258 3.328 3.12 4.195 5.462zm-15.532.895c0-1.87.674-3.58 1.808-4.94l3.52 9.778-5.263-4.838h-.065zm2.932-5.462l4.833 13.43c1.332-1.393 2.072-3.205 2.072-5.158 0-.285-.01-.586-.018-.896l-4.196-5.461c-.868-2.342-2.366-4.204-4.196-5.462l1.505 3.547zm3.159-2.555c-4.418 0-8 3.582-8 8 0 4.418 3.582 8 8 8 4.418 0 8-3.582 8-8 0-4.418-3.582-8-8-8zm0 17.5c-5.247 0-9.5-4.253-9.5-9.5s4.253-9.5 9.5-9.5 9.5 4.253 9.5 9.5-4.253 9.5-9.5 9.5z"/></svg>
+    </a>
   </div>
 </div>
 
@@ -66,6 +72,10 @@
           </a>
         </div>
         <a href="#newsletter" class="subscribe-btn">SUSCRÍBETE</a>
+        <a href="<?php echo esc_url( admin_url() ); ?>" class="admin-login-btn" aria-label="Admin Login" title="Admin Login">
+          <svg class="icon-default" viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <svg class="icon-wp" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.05-.18 2.986-.51-.024-.037-.046-.078-.065-.123l-2.763-7.572zm9.283-3.664c.008.31.018.611.018.895 0 1.954-.74 3.766-2.072 5.16l-4.14-11.517c1.83 1.258 3.328 3.12 4.195 5.462zm-15.532.895c0-1.87.674-3.58 1.808-4.94l3.52 9.778-5.263-4.838h-.065zm2.932-5.462l4.833 13.43c1.332-1.393 2.072-3.205 2.072-5.158 0-.285-.01-.586-.018-.896l-4.196-5.461c-.868-2.342-2.366-4.204-4.196-5.462l1.505 3.547zm3.159-2.555c-4.418 0-8 3.582-8 8 0 4.418 3.582 8 8 8 4.418 0 8-3.582 8-8 0-4.418-3.582-8-8-8zm0 17.5c-5.247 0-9.5-4.253-9.5-9.5s4.253-9.5 9.5-9.5 9.5 4.253 9.5 9.5-4.253 9.5-9.5 9.5z"/></svg>
+        </a>
       </div>
     </div>
   </div>

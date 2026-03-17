@@ -24,7 +24,7 @@ $current_year = date( 'Y' );
         <a href="<?php echo home_url( '/' ); ?>" class="footer-logo">
           <img src="<?php echo get_template_directory_uri(); ?>/assets/img/logo.svg" alt="DAK Agency" class="footer-logo-img">
         </a>
-        <p class="footer-tagline">DAK INFORMANDO</p>
+        <p class="footer-tagline">INFORMANDO</p>
         <p class="footer-description">Tu fuente de noticias, tendencias y análisis sobre marketing digital, branding y tecnología creativa. Publicado por DAK Agency.</p>
         <div class="footer-social">
           <a href="https://www.facebook.com/dakagency" class="footer-social-link" target="_blank" rel="noopener" aria-label="Facebook">

@@ -152,11 +152,19 @@ const Blog = () => {
 const getCategoryColor = (category) => {
   const colors = {
     'Marketing Digital': '#B024FF',
+    'Marketing': '#B024FF',
     'Redes Sociales': '#00C8C8',
     'SEO': '#00B478',
+    'SEO & Ads': '#00A5A5',
     'Email Marketing': '#FF6B35',
     'Inversión': '#D4A574',
-    'Startups': '#4A90E2'
+    'Startups': '#4A90E2',
+    'Branding': '#009462',
+    'Video': '#C08850',
+    'Diseño Web': '#00A5A5',
+    'Opinión': '#B024FF',
+    'Entrevistas': '#009462',
+    'General': '#B024FF'
   }
   return colors[category] || '#B024FF'
 }

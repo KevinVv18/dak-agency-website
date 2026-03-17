@@ -20,10 +20,10 @@ echo ""
 echo "📁 Deploying main site to public_html..."
 # Use rsync to skip the blog directory (WordPress lives there)
 if command -v rsync &> /dev/null; then
-    rsync -av --exclude='blog' dist/ /home/u567580447/public_html/
+    rsync -av --exclude='blog' dist/ /home/u567580447/domains/dakagency.net/public_html/
 else
     # Fallback: copy files manually, preserving blog dir
-    find dist/ -maxdepth 1 -not -name 'blog' -not -name 'dist' -exec cp -r {} /home/u567580447/public_html/ \;
+    find dist/ -maxdepth 1 -not -name 'blog' -not -name 'dist' -exec cp -r {} /home/u567580447/domains/dakagency.net/public_html/ \;
 fi
 echo "✅ Main site deployed"
 
