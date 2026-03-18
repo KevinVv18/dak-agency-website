@@ -82,14 +82,32 @@ $latest_query = new WP_Query( array(
 ) );
 $latest_posts = $latest_query->posts;
 
-// ── Most popular (by comment count as proxy, or fallback to offset post) ──
-$popular_query = new WP_Query( array(
-    'posts_per_page' => 1,
-    'post_status'    => 'publish',
-    'orderby'        => 'comment_count',
-    'order'          => 'DESC',
-) );
-$popular_post = $popular_query->have_posts() ? $popular_query->posts[0] : ( isset( $hero_posts[0] ) ? $hero_posts[0] : null );
+// ── Most popular (from "Tendencia" category, slug: mas-popular) ──
+$tendencia_cat = get_category_by_slug( 'mas-popular' );
+if ( ! $tendencia_cat ) {
+    $tendencia_cat = get_category_by_slug( 'tendencia' );
+}
+$popular_post = null;
+if ( $tendencia_cat ) {
+    $popular_query = new WP_Query( array(
+        'posts_per_page' => 1,
+        'post_status'    => 'publish',
+        'cat'            => $tendencia_cat->term_id,
+    ) );
+    if ( $popular_query->have_posts() ) {
+        $popular_post = $popular_query->posts[0];
+    }
+}
+// Fallback: most commented post
+if ( ! $popular_post ) {
+    $popular_query = new WP_Query( array(
+        'posts_per_page' => 1,
+        'post_status'    => 'publish',
+        'orderby'        => 'comment_count',
+        'order'          => 'DESC',
+    ) );
+    $popular_post = $popular_query->have_posts() ? $popular_query->posts[0] : ( isset( $hero_posts[0] ) ? $hero_posts[0] : null );
+}
 ?>
 
 <main>

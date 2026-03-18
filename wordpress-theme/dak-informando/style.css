@@ -676,6 +676,22 @@ ul {
   color: var(--color-warm);
 }
 
+.tag-blog {
+  color: #009462;
+}
+
+.tag-entrevistas {
+  color: #C08850;
+}
+
+.tag-opinion {
+  color: #00A5A5;
+}
+
+.tag-uncategorized {
+  color: #bbb;
+}
+
 .featured-title {
   font-family: var(--font-serif);
   font-size: clamp(1.7rem, 3vw, 2.5rem);
@@ -1580,7 +1596,6 @@ ul {
 .footer-logo-img {
   height: 50px;
   width: auto;
-  filter: brightness(0) saturate(100%) invert(22%) sepia(95%) saturate(5000%) hue-rotate(270deg) brightness(100%) contrast(100%);
 }
 
 .footer-tagline {
@@ -1591,8 +1606,6 @@ ul {
   color: var(--color-primary);
   text-transform: uppercase;
   margin-bottom: 0.75rem;
-  text-align: center;
-  width: 100%;
 }
 
 .footer-description {
@@ -2048,3 +2061,47 @@ ul {
     font-size: 1rem;
   }
 }
+
+/* ===================================
+   ADMIN PILL & BREADCRUMBS FIX
+   ================================== */
+/* Ocultar las breadcrumbs inyectadas por RankMath para que no rompan el diseño */
+.breadcrumbs {
+  display: none !important;
+}
+
+/* Botón de admin en el Header */
+.header-admin-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.8rem;
+  background: rgba(176, 36, 255, 0.08);
+  color: var(--color-primary);
+  border-radius: 50px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  text-decoration: none;
+  border: 1px solid rgba(176, 36, 255, 0.15);
+}
+
+.header-admin-pill:hover {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(176, 36, 255, 0.25);
+}
+
+.header-admin-pill svg {
+  flex-shrink: 0;
+  transition: transform 0.4s ease;
+}
+
+.header-admin-pill:hover svg {
+  transform: rotate(90deg);
+}
+

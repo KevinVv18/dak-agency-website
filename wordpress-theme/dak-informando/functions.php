@@ -68,12 +68,18 @@ function dak_get_category_tag_class( $slug ) {
         'seo'              => 'tag-seo',
         'seo-ads'          => 'tag-seo',
         'video'            => 'tag-video',
-        'opinion'          => 'tag-marketing',
-        'entrevistas'      => 'tag-branding',
+        'blog'             => 'tag-blog',
+        'blogs'            => 'tag-blog',
+        'opinion'          => 'tag-opinion',
+        'opiniones'        => 'tag-opinion',
+        'entrevistas'      => 'tag-entrevistas',
         'diseno-web'       => 'tag-seo',
         'tendencias'       => 'tag-video',
+        'mas-popular'      => 'tag-marketing',
+        'sin-categoria'    => 'tag-uncategorized',
+        'uncategorized'    => 'tag-uncategorized',
     );
-    return isset( $map[ $slug ] ) ? $map[ $slug ] : 'tag-marketing';
+    return isset( $map[ $slug ] ) ? $map[ $slug ] : 'tag-uncategorized';
 }
 
 // ── Helper: Format date in Spanish ──
@@ -200,8 +206,9 @@ function dak_article_schema() {
     echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
 }
 
-// ── Disable WordPress admin bar on frontend (optional, for design purity) ──
-// add_filter( 'show_admin_bar', '__return_false' );
+// ── Disable WordPress admin bar on frontend (for design purity) ──
+add_filter( 'show_admin_bar', '__return_false' );
+
 
 // ── Add excerpt support for pages ──
 add_post_type_support( 'page', 'excerpt' );
