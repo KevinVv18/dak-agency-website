@@ -3,7 +3,7 @@ name: Deploy to Hostinger
 on:
   push:
     branches:
-      - main # O la rama que uses para producción
+      - main
 
 jobs:
   deploy:
@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Ajusta según tu versión
+          node-version: '20'
           cache: 'npm'
 
       - name: Install Dependencies
@@ -24,20 +24,13 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Deploy via SSH (rsync)
+        uses: burnett01/rsync-deployments@7.0.1
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: ./public_html/
-          # CRÍTICO: Prevenir eliminación de WordPress y otros directorios importantes
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            blog/**
-            public_html/blog/**
-            .htaccess
-            wp-config.php
+          switches: -avz --delete --exclude='blog/' --exclude='.builds/'
+          path: dist/
+          remote_path: /home/u567580447/domains/dakagency.net/public_html/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
