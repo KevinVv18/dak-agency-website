@@ -376,7 +376,7 @@ const PhotoGallery = () => {
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         transition={{ duration: 0.6, delay: 0.6 }}
       >
-        <a href="/galeria" className="gallery-button">
+        <a href="/gallery" className="gallery-button">
           <span>Ver Galería Completa</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"></line>

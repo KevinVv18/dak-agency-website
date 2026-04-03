@@ -6,6 +6,14 @@ const Services = () => {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
   const [viewedServices, setViewedServices] = useState(new Set([0]))
+  const [swipeHintVisible, setSwipeHintVisible] = useState(true)
+
+  // Auto-dismiss swipe hint after 4 seconds
+  useEffect(() => {
+    if (!isMobile || !swipeHintVisible) return
+    const timer = setTimeout(() => setSwipeHintVisible(false), 4000)
+    return () => clearTimeout(timer)
+  }, [isMobile, swipeHintVisible])
   const [drawerOpen, setDrawerOpen] = useState(false)
   const thumbnailsRef = useRef(null)
   const videoRef = useRef(null)
@@ -149,6 +157,7 @@ const Services = () => {
   const handleThumbnailClick = (index) => {
     setActiveIndex(index)
     setViewedServices(prev => new Set([...prev, index]))
+    setSwipeHintVisible(false)
   }
 
   // Handle drawer service click (mobile) - scroll to services + change video
@@ -175,12 +184,14 @@ const Services = () => {
     const next = (activeIndex + 1) % services.length
     setActiveIndex(next)
     setViewedServices(prev => new Set([...prev, next]))
+    setSwipeHintVisible(false)
   }
 
   const goPrev = () => {
     const prev = (activeIndex - 1 + services.length) % services.length
     setActiveIndex(prev)
     setViewedServices(p => new Set([...p, prev]))
+    setSwipeHintVisible(false)
   }
 
   // Preload next video/image
@@ -271,7 +282,7 @@ const Services = () => {
                 </motion.div>
               </AnimatePresence>
 
-              {/* Mobile navigation arrows */}
+              {/* Mobile navigation arrows + swipe hint */}
               {isMobile && (
                 <>
                   <button className="nav-arrow nav-arrow-left" onClick={goPrev} aria-label="Anterior">
@@ -284,6 +295,31 @@ const Services = () => {
                       <polyline points="9 6 15 12 9 18" />
                     </svg>
                   </button>
+                  <AnimatePresence>
+                    {swipeHintVisible && (
+                      <motion.div
+                        className="services-swipe-hint"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.6 }}
+                        exit={{ opacity: 0, transition: { duration: 0.3 } }}
+                        transition={{ delay: 2, duration: 0.5 }}
+                      >
+                        <motion.span
+                          animate={{ x: [0, -6, 0] }}
+                          transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+                        >
+                          ‹
+                        </motion.span>
+                        <span className="swipe-hint-text">Desliza</span>
+                        <motion.span
+                          animate={{ x: [0, 6, 0] }}
+                          transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+                        >
+                          ›
+                        </motion.span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </>
               )}
 

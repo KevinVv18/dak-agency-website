@@ -1,14 +1,10 @@
 import React, { useEffect, useRef } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navigation from './components/Navigation'
-import Hero from './components/Hero'
-import Services from './components/Services'
-import Projects from './components/Projects'
-import PhotoGallery from './components/PhotoGallery'
-import Blog from './components/Blog'
-import CTASection from './components/CTASection'
-import ContactForm from './components/ContactForm'
 import Footer from './components/Footer'
 import ChatWidget from './components/ChatWidget'
+import Home from './pages/Home'
+import GalleryPage from './pages/GalleryPage'
 
 function App() {
   const gridRef = useRef(null)
@@ -36,25 +32,22 @@ function App() {
   }, [])
 
   return (
-    <div className="app">
-      {/* Cursor grid reveal */}
-      <div ref={gridRef} className="cursor-grid-reveal" />
-      <Navigation />
-      <main>
-        <Hero />
-        <CTASection />
-        <Services />
-        <Projects />
-        <PhotoGallery />
-        <Blog />
-        <ContactForm />
-      </main>
-      <Footer />
-      <ChatWidget />
-    </div>
+    <BrowserRouter>
+      <div className="app">
+        {/* Cursor grid reveal */}
+        <div ref={gridRef} className="cursor-grid-reveal" />
+        <Navigation />
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/gallery" element={<GalleryPage />} />
+          </Routes>
+        </main>
+        <Footer />
+        <ChatWidget />
+      </div>
+    </BrowserRouter>
   )
 }
 
 export default App
-
-

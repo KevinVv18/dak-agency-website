@@ -150,7 +150,8 @@
   color: #B024FF;
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links a.nav-link-active {
   color: #B024FF;
   text-shadow: 0 0 15px rgba(176, 36, 255, 0.8);
 }
