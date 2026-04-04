@@ -6,41 +6,53 @@ import './Gallery.css'
 /* ─────────────────────────────────────────
    Section 1: Hero + Category Filter
    ───────────────────────────────────────── */
+const heroImages = [
+  { src: galleryItems[0].src, alt: galleryItems[0].alt, className: 'hero-img-1' },
+  { src: bannerItems[0].src, alt: bannerItems[0].alt, className: 'hero-img-2' },
+  { src: galleryItems[9].src, alt: galleryItems[9].alt, className: 'hero-img-3' },
+  { src: photoItems[0].src, alt: photoItems[0].title, className: 'hero-img-4' },
+]
+
 const GalleryHero = () => {
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-80px' })
+  const isInView = useInView(ref, { once: true, margin: '-40px' })
 
   return (
     <div className="gallery-hero" ref={ref}>
-      <motion.div
-        className="gallery-hero-badge"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={isInView ? { opacity: 1, scale: 1 } : {}}
-        transition={{ duration: 0.6, type: 'spring', damping: 15 }}
-      >
-        <span className="badge-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-        </span>
-        <span>GALLERY</span>
-        <span className="badge-count">{galleryItems.length + bannerItems.length + photoItems.length}</span>
-      </motion.div>
+      {/* Overlapping images */}
+      <div className="hero-images-row">
+        {heroImages.map((img, i) => (
+          <motion.div
+            key={i}
+            className={`hero-img-card ${img.className}`}
+            initial={{ opacity: 0, y: 60, rotate: (i - 1.5) * 3 }}
+            animate={isInView ? { opacity: 1, y: 0, rotate: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.08 * i, ease: [0.19, 1, 0.22, 1] }}
+          >
+            <img src={img.src} alt={img.alt} />
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Title below the images */}
       <motion.h1
         className="gallery-hero-title"
         initial={{ opacity: 0, y: 40 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.7, delay: 0.1 }}
+        transition={{ duration: 0.7, delay: 0.35 }}
       >
         <span className="title-bold">Nuestro</span>{' '}
         <span className="title-accent">Trabajo</span>
       </motion.h1>
-      <div className="title-line" />
       <motion.p
         className="gallery-hero-sub"
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.6, delay: 0.25 }}
+        transition={{ duration: 0.6, delay: 0.45 }}
       >
-        Diseño, fotografía y estrategia visual — todo lo que hacemos, en un solo lugar.
+        Explora nuestra curaduría de proyectos digitales donde la estrategia
+        creativa se encuentra con la excelencia visual. Transformamos
+        marcas a través del diseño.
       </motion.p>
     </div>
   )
@@ -353,7 +365,7 @@ const GalleryCTA = () => {
       >
         <h3>Tu marca merece <span className="title-accent">verse así</span></h3>
         <p>Cuéntanos tu idea y la convertimos en algo que nadie pueda ignorar.</p>
-        <a href="#contact" className="gallery-cta-btn">
+        <a href="/#contact" className="gallery-cta-btn">
           <span>Conversemos</span>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
