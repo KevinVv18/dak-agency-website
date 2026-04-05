@@ -31,6 +31,14 @@ import banner2 from '../assets/banners/Portada dra. jenny.jpg'
 import banner3 from '../assets/banners/PORTADA PROSADIS.png'
 import banner4 from '../assets/banners/PORTADA SEÑOR DE LOS MILAGROS.png'
 
+// ── DAK showcase ──
+import dakFotografia from '../assets/dak/dak_Fotografía.png'
+import dakDron from '../assets/dak/dak_dron.png'
+import dakInmobiliario from '../assets/dak/dak_inmobiliario.png'
+import dakSephora from '../assets/dak/dak_sephora.png'
+import dakSkincare from '../assets/dak/dak_skincare.png'
+import vetPortada from '../assets/dak/2_portada video veterinaria.png'
+
 // ── Photography ──
 import babyPhoto from '../assets/gallery/baby1-min.jpg'
 import familiaPhoto from '../assets/gallery/Familia1-min.jpg'
@@ -38,6 +46,15 @@ import hermanosPhoto from '../assets/gallery/hermanos.jpg'
 import mamiPhoto from '../assets/gallery/mami1-min.jpg'
 import parejaPhoto from '../assets/gallery/pareja1-min.jpg'
 import pediatraPhoto from '../assets/gallery/PEDIATRA CORRALES@3x-min.jpg'
+
+// Hero images for Gallery page
+export const heroImages = [
+  { src: dakFotografia, alt: 'DAK Fotografía' },
+  { src: dakSephora, alt: 'DAK Sephora' },
+  { src: dakSkincare, alt: 'DAK Skincare' },
+  { src: dakDron, alt: 'DAK Dron' },
+  { src: dakInmobiliario, alt: 'DAK Inmobiliario' },
+]
 
 export const categories = [
   { id: 'all', label: 'Todo' },
@@ -75,6 +92,7 @@ export const galleryItems = [
   { id: 17, src: pardo5, alt: 'Aniversario Sacerdotal', client: 'Manuel Pardo', category: 'social', type: 'Post', color: '#2C3E50', aspect: 'square' },
   { id: 18, src: spa3, alt: 'Ubicación de Spa', client: 'Spa Kreativos', category: 'social', type: 'Post', color: '#9B59B6', aspect: 'square' },
   { id: 19, src: prosadis3, alt: 'Portada Reel Prosadis', client: 'Prosadis', category: 'social', type: 'Reel', color: '#16A085', aspect: 'portrait' },
+  { id: 20, src: vetPortada, alt: 'Portada Video Veterinaria', client: 'Veterinaria', category: 'social', type: 'Video', color: '#45B7D1', aspect: 'square' },
 ]
 
 export const bannerItems = [

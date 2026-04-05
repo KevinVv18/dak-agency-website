@@ -1,17 +1,13 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { motion, useInView, AnimatePresence, useScroll, useTransform } from 'framer-motion'
-import { galleryItems, bannerItems, photoItems, categories } from '../data/galleryData'
+import { useNavigate } from 'react-router-dom'
+import { galleryItems, bannerItems, photoItems, categories, heroImages } from '../data/galleryData'
 import './Gallery.css'
 
 /* ─────────────────────────────────────────
    Section 1: Hero + Category Filter
    ───────────────────────────────────────── */
-const heroImages = [
-  { src: galleryItems[0].src, alt: galleryItems[0].alt, className: 'hero-img-1' },
-  { src: bannerItems[0].src, alt: bannerItems[0].alt, className: 'hero-img-2' },
-  { src: galleryItems[9].src, alt: galleryItems[9].alt, className: 'hero-img-3' },
-  { src: photoItems[0].src, alt: photoItems[0].title, className: 'hero-img-4' },
-]
+const heroClassNames = ['hero-img-1', 'hero-img-2', 'hero-img-3', 'hero-img-4', 'hero-img-5']
 
 const GalleryHero = () => {
   const ref = useRef(null)
@@ -19,13 +15,13 @@ const GalleryHero = () => {
 
   return (
     <div className="gallery-hero" ref={ref}>
-      {/* Overlapping images */}
+      {/* Overlapping images — edge to edge */}
       <div className="hero-images-row">
         {heroImages.map((img, i) => (
           <motion.div
             key={i}
-            className={`hero-img-card ${img.className}`}
-            initial={{ opacity: 0, y: 60, rotate: (i - 1.5) * 3 }}
+            className={`hero-img-card ${heroClassNames[i] || ''}`}
+            initial={{ opacity: 0, y: 60, rotate: (i - 2) * 2.5 }}
             animate={isInView ? { opacity: 1, y: 0, rotate: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.08 * i, ease: [0.19, 1, 0.22, 1] }}
           >
@@ -328,12 +324,22 @@ const RevealRow = ({ item, index, reverse }) => {
 const GalleryCTA = () => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-60px' })
+  const navigate = useNavigate()
 
   const stats = [
     { number: '150+', label: 'Proyectos' },
     { number: '30+', label: 'Clientes' },
     { number: '5', label: 'Años' },
   ]
+
+  const handleCTA = (e) => {
+    e.preventDefault()
+    navigate('/')
+    setTimeout(() => {
+      const el = document.getElementById('contact')
+      if (el) el.scrollIntoView({ behavior: 'smooth' })
+    }, 100)
+  }
 
   return (
     <div className="gallery-cta-section" ref={ref}>
@@ -365,7 +371,7 @@ const GalleryCTA = () => {
       >
         <h3>Tu marca merece <span className="title-accent">verse así</span></h3>
         <p>Cuéntanos tu idea y la convertimos en algo que nadie pueda ignorar.</p>
-        <a href="/#contact" className="gallery-cta-btn">
+        <a href="/#contact" className="gallery-cta-btn" onClick={handleCTA}>
           <span>Conversemos</span>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
