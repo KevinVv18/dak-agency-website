@@ -45,7 +45,7 @@ function dak_informando_assets() {
         'dak-informando-style',
         get_stylesheet_uri(),
         array( 'dak-google-fonts' ),
-        wp_get_theme()->get( 'Version' )
+        filemtime( get_template_directory() . '/style.css' )
     );
 
     // JavaScript del header (cursor grid, hamburger, mini-nav)
