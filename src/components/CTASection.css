@@ -374,6 +374,41 @@
   transform: translateX(4px);
 }
 
+.cta-btn-schedule {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.95rem 2rem;
+  background: rgba(176, 36, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1.5px solid rgba(176, 36, 255, 0.25);
+  border-radius: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cta-btn-schedule svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke: #B024FF;
+  transition: stroke 0.3s ease;
+}
+
+.cta-btn-schedule:hover {
+  background: rgba(176, 36, 255, 0.15);
+  border-color: rgba(176, 36, 255, 0.5);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(176, 36, 255, 0.2);
+}
+
+.cta-btn-schedule:hover svg {
+  stroke: #fff;
+}
+
 .cta-btn-ghost {
   padding: 0.95rem 2rem;
   background: transparent;
@@ -442,6 +477,7 @@
   }
 
   .cta-btn-primary,
+  .cta-btn-schedule,
   .cta-btn-ghost {
     width: 100%;
     justify-content: center;

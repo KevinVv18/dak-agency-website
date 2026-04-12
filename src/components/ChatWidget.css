@@ -336,6 +336,36 @@
   color: #fff;
 }
 
+.chat-schedule-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(176, 36, 255, 0.12);
+  border: 1px solid rgba(176, 36, 255, 0.25);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.chat-schedule-btn svg {
+  width: 15px;
+  height: 15px;
+  stroke: #B024FF;
+  flex-shrink: 0;
+}
+
+.chat-schedule-btn:hover {
+  background: rgba(176, 36, 255, 0.2);
+  border-color: rgba(176, 36, 255, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(176, 36, 255, 0.25);
+}
+
 .chat-whatsapp-btn {
   display: flex;
   align-items: center;

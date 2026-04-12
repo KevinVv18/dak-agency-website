@@ -17,7 +17,8 @@ const Footer = () => {
     { name: 'Proyectos', href: '#projects' },
     { name: 'Blog', href: '#blog' },
     { name: 'Nosotros', href: '#about' },
-    { name: 'Contacto', href: '#contact' }
+    { name: 'Contacto', href: '#contact' },
+    { name: 'Agendar Reunión', href: 'https://plan.dakagency.net/agendar.html', external: true }
   ]
 
   const socialLinks = [
@@ -145,9 +146,10 @@ const Footer = () => {
                 >
                   <a
                     href={link.href}
-                    onClick={(e) => handleLinkClick(e, link.href)}
+                    onClick={(e) => !link.external && handleLinkClick(e, link.href)}
+                    {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   >
-                    <span className="nav-arrow">→</span>
+                    <span className="nav-arrow">{link.external ? '📅' : '→'}</span>
                     {link.name}
                   </a>
                 </motion.li>
