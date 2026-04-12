@@ -51,9 +51,11 @@ const ProjectsHeader = ({ count }) => {
         transition={{ duration: 0.7 }}
       >
         <span className="section-tag">[ 02 ]</span>
-        <h2 className="proj-title">Proyectos</h2>
+        <h2 className="section-title">
+          <span className="title-bold">Proyectos</span>
+        </h2>
         <div className="title-line" />
-        <p className="proj-subtitle">{count} clientes que confían en nosotros</p>
+        <p className="section-subtitle">{count} clientes que confían en nosotros</p>
       </motion.div>
     </div>
   )
@@ -295,8 +297,8 @@ const SplitLayout = ({ client, index, inView }) => {
   return (
     <motion.div
       className="split-layout"
-      initial={{ opacity: 0, y: 50 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
+      initial={{ opacity: 0 }}
+      animate={inView ? { opacity: 1 } : {}}
       transition={{ duration: 0.6 }}
     >
       <div className="split-left">

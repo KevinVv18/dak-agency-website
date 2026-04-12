@@ -158,55 +158,6 @@ a.contact-item:hover {
   color: rgba(255, 255, 255, 0.45);
 }
 
-/* Social Links */
-.contact-socials {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.socials-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.35);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-}
-
-.socials-row {
-  display: flex;
-  gap: 0.6rem;
-}
-
-.social-btn {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.6rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s ease;
-  text-decoration: none;
-}
-
-.social-btn svg {
-  width: 17px;
-  height: 17px;
-  fill: rgba(255, 255, 255, 0.4);
-  transition: all 0.3s ease;
-}
-
-.social-btn:hover {
-  background: rgba(176, 36, 255, 0.12);
-  border-color: rgba(176, 36, 255, 0.35);
-  transform: translateY(-3px);
-}
-
-.social-btn:hover svg {
-  fill: #B024FF;
-}
 
 /* =============================================
    RIGHT - Form Panel
@@ -438,10 +389,6 @@ textarea.form-input {
     transform: none;
   }
 
-  .contact-socials {
-    align-items: center;
-  }
-
   .contact-form-panel {
     padding: 2rem 1.5rem;
   }
@@ -472,67 +419,13 @@ textarea.form-input {
   }
 }
 
-/* ── Schedule Meeting CTA ── */
-.contact-schedule-cta {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 1rem 1.25rem;
-  margin-top: 1.5rem;
-  border-radius: 14px;
-  border: 1px solid rgba(176, 36, 255, 0.25);
-  background: rgba(176, 36, 255, 0.06);
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.contact-schedule-cta:hover {
-  border-color: rgba(176, 36, 255, 0.5);
-  background: rgba(176, 36, 255, 0.12);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(176, 36, 255, 0.15);
-}
-
-.schedule-cta-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(176, 36, 255, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ── Schedule contact item ── */
+.contact-item-icon.schedule {
+  background: rgba(176, 36, 255, 0.1);
   color: #B024FF;
-  flex-shrink: 0;
 }
 
-.schedule-cta-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.schedule-cta-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #fff;
-}
-
-.schedule-cta-sub {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.45);
-  letter-spacing: 0.02em;
-}
-
-.schedule-cta-arrow {
-  color: rgba(176, 36, 255, 0.6);
-  flex-shrink: 0;
-  transition: transform 0.2s, color 0.2s;
-}
-
-.contact-schedule-cta:hover .schedule-cta-arrow {
-  color: #B024FF;
-  transform: translateX(3px);
+a.contact-item-schedule:hover {
+  background: rgba(176, 36, 255, 0.08);
+  border-color: rgba(176, 36, 255, 0.3);
 }

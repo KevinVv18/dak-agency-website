@@ -178,25 +178,10 @@
   border-color: rgba(139, 90, 43, 0.5);
 }
 
-/* Colores de categoría por tarjeta */
-.blog-card:nth-child(1) .blog-category {
-  color: #B024FF;
-  text-shadow: 0 0 10px rgba(176, 36, 255, 0.8);
-}
-
-.blog-card:nth-child(2) .blog-category {
-  color: #00C8C8;
-  text-shadow: 0 0 10px rgba(0, 200, 200, 0.8);
-}
-
-.blog-card:nth-child(3) .blog-category {
-  color: #00B478;
-  text-shadow: 0 0 10px rgba(0, 180, 120, 0.8);
-}
-
-.blog-card:nth-child(4) .blog-category {
-  color: #D4A574;
-  text-shadow: 0 0 10px rgba(212, 165, 116, 0.8);
+/* Colores de categoría por tarjeta — fondo de color, texto blanco */
+.blog-card .blog-category {
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* Colores de flecha por tarjeta */

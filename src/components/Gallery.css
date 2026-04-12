@@ -868,6 +868,10 @@
 }
 
 @media (max-width: 768px) {
+  .banner-nav {
+    display: none;
+  }
+
   .gallery-hero {
     padding: 5rem 1rem 2rem;
   }

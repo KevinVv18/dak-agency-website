@@ -295,31 +295,6 @@ const Services = () => {
                       <polyline points="9 6 15 12 9 18" />
                     </svg>
                   </button>
-                  <AnimatePresence>
-                    {swipeHintVisible && (
-                      <motion.div
-                        className="services-swipe-hint"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 0.6 }}
-                        exit={{ opacity: 0, transition: { duration: 0.3 } }}
-                        transition={{ delay: 2, duration: 0.5 }}
-                      >
-                        <motion.span
-                          animate={{ x: [0, -6, 0] }}
-                          transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-                        >
-                          ‹
-                        </motion.span>
-                        <span className="swipe-hint-text">Desliza</span>
-                        <motion.span
-                          animate={{ x: [0, 6, 0] }}
-                          transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
-                        >
-                          ›
-                        </motion.span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </>
               )}
 

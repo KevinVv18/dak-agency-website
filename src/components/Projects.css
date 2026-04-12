@@ -19,18 +19,12 @@
   align-items: center;
 }
 
-.proj-title {
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 800;
-  line-height: 1;
-  margin: 0.5rem 0;
+.proj-header .section-title {
+  margin-bottom: 0;
 }
 
-.proj-subtitle {
-  font-size: 0.85rem;
-  color: rgba(249, 237, 253, 0.4);
+.proj-header .section-subtitle {
   margin-top: 0.75rem;
-  letter-spacing: 0.03em;
 }
 
 .projects-flow {
