@@ -84,7 +84,7 @@ const ProjectBlock = ({ client, index, total, layout }) => {
 const ClientBadge = ({ client, variant = 'default' }) => (
   <div className={`client-badge client-badge--${variant}`}>
     <div className="client-badge-logo">
-      <img src={client.logo} alt={client.nombre} />
+      <img src={client.logo} alt={client.nombre} loading="lazy" />
     </div>
     <div className="client-badge-text">
       <h3 className="client-badge-name">{client.nombre}</h3>
@@ -184,7 +184,7 @@ const MosaicLayout = ({ client, index, inView }) => {
             animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.5, delay: 0.1 * i }}
           >
-            <img src={img.src} alt={img.alt} />
+            <img src={img.src} alt={img.alt} loading="lazy" />
             <span className="mosaic-tipo" style={{ backgroundColor: client.color }}>{img.tipo}</span>
           </motion.div>
         ))}
@@ -272,7 +272,7 @@ const FilmstripLayout = ({ client, index, inView }) => (
           animate={inView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.4, delay: 0.12 * i }}
         >
-          <img src={img.src} alt={img.alt} />
+          <img src={img.src} alt={img.alt} loading="lazy" />
           <span className="film-tipo">{img.tipo}</span>
         </motion.div>
       ))}
@@ -320,7 +320,7 @@ const SplitLayout = ({ client, index, inView }) => {
           {String(index + 1).padStart(2, '0')}
         </span>
         <div className="split-logo-wrap">
-          <img src={client.logo} alt={client.nombre} />
+          <img src={client.logo} alt={client.nombre} loading="lazy" />
         </div>
         <h3 className="split-name">{client.nombre}</h3>
         <span className="split-cat" style={{ color: client.color }}>{client.categoria}</span>
@@ -331,7 +331,7 @@ const SplitLayout = ({ client, index, inView }) => {
               <button key={i} className={`split-thumb ${i === imgIdx ? 'active' : ''}`}
                 onClick={() => setImgIdx(i)}
                 style={{ borderColor: i === imgIdx ? client.color : 'transparent' }}>
-                <img src={img.src} alt={img.alt} />
+                <img src={img.src} alt={img.alt} loading="lazy" />
               </button>
             ))}
           </div>
@@ -373,7 +373,7 @@ const ScatteredLayout = ({ client, index, inView }) => {
             transition={{ duration: 0.5, delay: 0.15 * i }}
             whileHover={{ scale: 1.05, zIndex: 10, rotate: 0 }}
           >
-            <img src={img.src} alt={img.alt} />
+            <img src={img.src} alt={img.alt} loading="lazy" />
           </motion.div>
         ))}
       </div>
@@ -444,7 +444,7 @@ const MobileHeroCard = ({ client, index }) => {
         </AnimatePresence>
         <div className="pm-hero-overlay" />
         <div className="pm-hero-content">
-          <div className="pm-hero-logo"><img src={client.logo} alt={client.nombre} /></div>
+          <div className="pm-hero-logo"><img src={client.logo} alt={client.nombre} loading="lazy" /></div>
           <h3>{client.nombre}</h3>
           <span style={{ color: client.color }}>{client.categoria}</span>
         </div>
@@ -461,7 +461,7 @@ const MobileMosaicCard = ({ client, index }) => {
     <motion.div ref={ref} className="pm-mosaic"
       initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }}>
       <div className="pm-mosaic-head">
-        <div className="pm-mosaic-logo"><img src={client.logo} alt={client.nombre} /></div>
+        <div className="pm-mosaic-logo"><img src={client.logo} alt={client.nombre} loading="lazy" /></div>
         <div>
           <h3 className="pm-mosaic-name">{client.nombre}</h3>
           <span className="pm-mosaic-cat" style={{ color: client.color }}>{client.categoria}</span>
@@ -472,7 +472,7 @@ const MobileMosaicCard = ({ client, index }) => {
           <motion.div key={i} className="pm-mosaic-cell"
             initial={{ opacity: 0, scale: 0.9 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.4, delay: 0.08 * i }}>
-            <img src={img.src} alt={img.alt} />
+            <img src={img.src} alt={img.alt} loading="lazy" />
           </motion.div>
         ))}
       </div>
@@ -501,7 +501,7 @@ const MobileSimpleCard = ({ client, index, total }) => {
         </AnimatePresence>
       </div>
       <div className="pm-simple-info">
-        <div className="pm-simple-logo"><img src={client.logo} alt={client.nombre} /></div>
+        <div className="pm-simple-logo"><img src={client.logo} alt={client.nombre} loading="lazy" /></div>
         <div>
           <h3>{client.nombre}</h3>
           <span style={{ color: client.color }}>{client.categoria}</span>

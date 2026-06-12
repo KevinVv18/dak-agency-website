@@ -1,10 +1,13 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navigation from './components/Navigation'
 import Footer from './components/Footer'
 import ChatWidget from './components/ChatWidget'
+import ErrorBoundary from './components/ErrorBoundary'
 import Home from './pages/Home'
-import GalleryPage from './pages/GalleryPage'
+
+// Code-splitting: la galería completa solo se descarga al visitar /gallery
+const GalleryPage = lazy(() => import('./pages/GalleryPage'))
 
 function App() {
   const gridRef = useRef(null)
@@ -33,19 +36,23 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="app">
-        {/* Cursor grid reveal */}
-        <div ref={gridRef} className="cursor-grid-reveal" />
-        <Navigation />
-        <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/gallery" element={<GalleryPage />} />
-          </Routes>
-        </main>
-        <Footer />
-        <ChatWidget />
-      </div>
+      <ErrorBoundary>
+        <div className="app">
+          {/* Cursor grid reveal */}
+          <div ref={gridRef} className="cursor-grid-reveal" />
+          <Navigation />
+          <main>
+            <Suspense fallback={null}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/gallery" element={<GalleryPage />} />
+              </Routes>
+            </Suspense>
+          </main>
+          <Footer />
+          <ChatWidget />
+        </div>
+      </ErrorBoundary>
     </BrowserRouter>
   )
 }

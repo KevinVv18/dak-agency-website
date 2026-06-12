@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import './Services.css'
+import { scrollToSection } from '../utils/scrollToSection'
 
 const Services = () => {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -78,7 +79,7 @@ const Services = () => {
       category: 'DESARROLLO',
       color: '#FF6B35',
       // videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765238189/Crea_un_video_202512081540_3trka_f71zay.mp4',
-      imageSrc: '/images/web_design.png',
+      imageSrc: '/images/web_design.webp',
       price: 'Desde S/ 2,500',
       clients: 3,
       icon: 'M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z'
@@ -91,7 +92,7 @@ const Services = () => {
       category: 'MARKETING',
       color: '#4A90E2',
       // videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765238189/a7bd9fdd-f753-4ef3-8a39-8e8d00b1afe0_gyqzwi.mp4',
-      imageSrc: '/images/seo_ads.png',
+      imageSrc: '/images/seo_ads.webp',
       price: 'Desde S/ 800/mes',
       clients: 4,
       icon: 'M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'
@@ -104,7 +105,7 @@ const Services = () => {
       category: 'CRM',
       color: '#9B59B6',
       // videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765239599/7bb56f61-ca44-4c3f-9918-8b61aa68140d_jnv2ti.mp4',
-      imageSrc: '/images/automation.png',
+      imageSrc: '/images/automation.webp',
       price: 'Desde S/ 1,200',
       clients: 2,
       icon: 'M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z'
@@ -147,10 +148,7 @@ const Services = () => {
 
   const handleScrollToContact = (e) => {
     e.preventDefault()
-    const contactSection = document.querySelector('#contact')
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
+    scrollToSection('#contact')
   }
 
   // Handle thumbnail click (desktop)
@@ -455,7 +453,7 @@ const Services = () => {
                         {service.imageSrc ? (
                           <img
                             src={service.imageSrc}
-                            alt=""
+                            alt={service.title || service.name || 'Servicio DAK'}
                             className="thumbnail-video"
                             style={{ objectFit: 'cover' }}
                           />

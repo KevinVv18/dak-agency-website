@@ -1,48 +1,48 @@
 // Logos
 import logoBerse from '../assets/logos/logo-berse-line.svg'
-import logoGO from '../assets/logos/logo-go.png'
+import logoGO from '../assets/logos/logo-go.webp'
 import logoJeny from '../assets/logos/LOGO BLANCO.svg'
-import logoPardo from '../assets/logos/LOGO-MANUEL PARDO@4x-8.png'
+import logoPardo from '../assets/logos/LOGO-MANUEL PARDO@4x-8.webp'
 import logoProsadis from '../assets/logos/LOGO 1.svg'
 import logoSpa from '../assets/logos/logo-spa-kreativos.svg'
 
 // Berseline images
-import berse1 from '../assets/clients/berseline/2_REJUVENECIMIENTO.png'
-import berse2 from '../assets/clients/berseline/Mesa de trabajo 1 (1).png'
-import berse3 from '../assets/clients/berseline/Mesa de trabajo 3.png'
+import berse1 from '../assets/clients/berseline/2_REJUVENECIMIENTO.webp'
+import berse2 from '../assets/clients/berseline/Mesa de trabajo 1 (1).webp'
+import berse3 from '../assets/clients/berseline/Mesa de trabajo 3.webp'
 
 // Gran Oportunidad GO! images
-import go1 from '../assets/clients/go/2-carrusel 1.png'
-import go2 from '../assets/clients/go/5_RULETA.png'
-import go3 from '../assets/clients/go/6_ESTRENO.png'
-import go4 from '../assets/clients/go/GANADORES DE SORTEO.png'
+import go1 from '../assets/clients/go/2-carrusel 1.webp'
+import go2 from '../assets/clients/go/5_RULETA.webp'
+import go3 from '../assets/clients/go/6_ESTRENO.webp'
+import go4 from '../assets/clients/go/GANADORES DE SORTEO.webp'
 
 // Dra. Jenny images
-import jeny1 from '../assets/clients/jeny/Mesa de trabajo 1.jpg'
-import jeny2 from '../assets/clients/jeny/Mesa de trabajo 2.jpg'
+import jeny1 from '../assets/clients/jeny/Mesa de trabajo 1.webp'
+import jeny2 from '../assets/clients/jeny/Mesa de trabajo 2.webp'
 
 // Manuel Pardo images
-import pardo1 from '../assets/clients/pardo/2DA VELA DE ADVIENTO_INICIAL.jpg'
-import pardo2 from '../assets/clients/pardo/ADMISIONES 2026_7.jpg'
-import pardo3 from '../assets/clients/pardo/ADMISIONES 2026_8.jpg'
-import pardo4 from '../assets/clients/pardo/ADMISIONES ABIERTAS_2.jpg'
-import pardo5 from '../assets/clients/pardo/ANIVERSARIO SACERDOTAL - PADRE JAVIER.jpg'
+import pardo1 from '../assets/clients/pardo/2DA VELA DE ADVIENTO_INICIAL.webp'
+import pardo2 from '../assets/clients/pardo/ADMISIONES 2026_7.webp'
+import pardo3 from '../assets/clients/pardo/ADMISIONES 2026_8.webp'
+import pardo4 from '../assets/clients/pardo/ADMISIONES ABIERTAS_2.webp'
+import pardo5 from '../assets/clients/pardo/ANIVERSARIO SACERDOTAL - PADRE JAVIER.webp'
 
 // Prosadis images
-import prosadis1 from '../assets/clients/prosadis/Mesa de trabajo 1.png'
-import prosadis2 from '../assets/clients/prosadis/Mesa de trabajo 2.png'
-import prosadis3 from '../assets/clients/prosadis/PROSADIS PORTADA REEL.jpg'
+import prosadis1 from '../assets/clients/prosadis/Mesa de trabajo 1.webp'
+import prosadis2 from '../assets/clients/prosadis/Mesa de trabajo 2.webp'
+import prosadis3 from '../assets/clients/prosadis/PROSADIS PORTADA REEL.webp'
 
 // Spa Kreativos images
-import spa1 from '../assets/clients/spa/IMG_4062.jpg'
-import spa2 from '../assets/clients/spa/Tratamiendo de recuperación.jpg'
-import spa3 from '../assets/clients/spa/UBICACIÓN DE SPA.png'
+import spa1 from '../assets/clients/spa/IMG_4062.webp'
+import spa2 from '../assets/clients/spa/Tratamiendo de recuperación.webp'
+import spa3 from '../assets/clients/spa/UBICACIÓN DE SPA.webp'
 
 // Banners
-import banner1 from '../assets/banners/PORTADA ADMISIONES Y MATRÍCULAS 2026.jpg'
-import banner2 from '../assets/banners/Portada dra. jenny.jpg'
-import banner3 from '../assets/banners/PORTADA PROSADIS.png'
-import banner4 from '../assets/banners/PORTADA SEÑOR DE LOS MILAGROS.png'
+import banner1 from '../assets/banners/PORTADA ADMISIONES Y MATRÍCULAS 2026.webp'
+import banner2 from '../assets/banners/Portada dra. jenny.webp'
+import banner3 from '../assets/banners/PORTADA PROSADIS.webp'
+import banner4 from '../assets/banners/PORTADA SEÑOR DE LOS MILAGROS.webp'
 
 export const portfolioData = {
   clients: [

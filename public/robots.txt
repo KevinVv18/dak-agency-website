@@ -28,4 +28,5 @@ User-agent: BLEXBot
 Disallow: /
 
 # Sitemaps
+Sitemap: https://dakagency.net/sitemap.xml
 Sitemap: https://dakagency.net/blog/sitemap_index.xml

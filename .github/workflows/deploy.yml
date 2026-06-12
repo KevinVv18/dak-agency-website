@@ -23,13 +23,37 @@ jobs:
 
       - name: Build Project
         run: npm run build
+        env:
+          # Crear estos 4 secrets en GitHub: Settings > Secrets > Actions.
+          # Sin ellos, el formulario de contacto se compila SIN claves y no envía emails.
+          VITE_EMAILJS_PUBLIC_KEY: ${{ secrets.VITE_EMAILJS_PUBLIC_KEY }}
+          VITE_EMAILJS_SERVICE_ID: ${{ secrets.VITE_EMAILJS_SERVICE_ID }}
+          VITE_EMAILJS_TEMPLATE_NOTIFICATION: ${{ secrets.VITE_EMAILJS_TEMPLATE_NOTIFICATION }}
+          VITE_EMAILJS_TEMPLATE_AUTOREPLY: ${{ secrets.VITE_EMAILJS_TEMPLATE_AUTOREPLY }}
 
-      - name: Deploy via SSH (rsync)
+      # El build ya NO ejecuta deploy.sh (era no-op en el runner y el
+      # `|| true` ocultaba fallos reales de vite build).
+
+      - name: Deploy SPA via SSH (rsync)
         uses: burnett01/rsync-deployments@7.0.1
         with:
           switches: -avz --delete --exclude='blog/' --exclude='.builds/'
           path: dist/
           remote_path: /home/u567580447/domains/dakagency.net/public_html/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Despliega el tema WordPress explícitamente (antes nunca llegaba al
+      # servidor vía CI: deploy.sh solo funcionaba ejecutado en el servidor).
+      # Scoped al directorio del tema — no toca nada más del blog.
+      - name: Deploy WordPress theme via SSH (rsync)
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz
+          path: wordpress-theme/dak-informando/
+          remote_path: /home/u567580447/domains/dakagency.net/public_html/blog/wp-content/themes/dak-informando/
           remote_host: 89.116.115.11
           remote_port: 65002
           remote_user: u567580447

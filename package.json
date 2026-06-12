@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && bash .hostinger/deploy.sh || true",
+    "build": "vite build",
     "local-build": "vite build",
     "preview": "vite preview"
   },

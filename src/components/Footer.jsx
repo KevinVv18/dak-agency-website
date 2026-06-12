@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import './Footer.css'
 import logoSvg from '../assets/logo-nav.svg'
 import LiquidLogo from './LiquidLogo'
+import { scrollToSection } from '../utils/scrollToSection'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -63,10 +64,7 @@ const Footer = () => {
   const handleLinkClick = (e, href) => {
     if (href.startsWith('#')) {
       e.preventDefault()
-      const element = document.querySelector(href)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' })
-      }
+      scrollToSection(href)
     }
   }
 

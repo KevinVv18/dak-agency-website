@@ -3,12 +3,12 @@ import { motion, useInView, AnimatePresence } from 'framer-motion'
 import './PhotoGallery.css'
 
 // Import gallery images
-import babyPhoto from '../assets/gallery/baby1-min.jpg'
-import familiaPhoto from '../assets/gallery/Familia1-min.jpg'
-import hermanosPhoto from '../assets/gallery/hermanos.jpg'
-import mamiPhoto from '../assets/gallery/mami1-min.jpg'
-import parejaPhoto from '../assets/gallery/pareja1-min.jpg'
-import pediatraPhoto from '../assets/gallery/PEDIATRA CORRALES@3x-min.jpg'
+import babyPhoto from '../assets/gallery/baby1-min.webp'
+import familiaPhoto from '../assets/gallery/Familia1-min.webp'
+import hermanosPhoto from '../assets/gallery/hermanos.webp'
+import mamiPhoto from '../assets/gallery/mami1-min.webp'
+import parejaPhoto from '../assets/gallery/pareja1-min.webp'
+import pediatraPhoto from '../assets/gallery/PEDIATRA CORRALES@3x-min.webp'
 
 const PhotoGallery = () => {
   const sectionRef = useRef(null)
@@ -241,6 +241,7 @@ const PhotoGallery = () => {
                       src={currentPhoto.src}
                       alt={currentPhoto.title}
                       className="gallery-image"
+                      loading="lazy"
                     />
                   ) : (
                     <div className={`gallery-placeholder placeholder-${currentPhoto.id}`}>

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import './CTASection.css'
+import { scrollToSection } from '../utils/scrollToSection'
 
 const CTASection = () => {
   const sectionRef = useRef(null)
@@ -24,12 +25,12 @@ const CTASection = () => {
 
   const handleScrollToProjects = (e) => {
     e.preventDefault()
-    document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' })
+    scrollToSection('#projects')
   }
 
   const handleScrollToContact = (e) => {
     e.preventDefault()
-    document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })
+    scrollToSection('#contact')
   }
 
   // Interactive words data

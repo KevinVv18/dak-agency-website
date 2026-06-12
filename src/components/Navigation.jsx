@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import './Navigation.css'
 import logoSvg from '../assets/logo-nav.svg'
+import { scrollToSection } from '../utils/scrollToSection'
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -37,21 +38,15 @@ const Navigation = () => {
       return
     }
 
-    // Anchor link — if we're not on home, go home first then scroll
+    // Anchor link — if we're not on home, go home first then scroll.
+    // scrollToSection reintenta hasta que la sección (lazy) monte.
     if (location.pathname !== '/') {
       navigate('/')
-      // Wait for home to render, then scroll
-      setTimeout(() => {
-        const element = document.querySelector(href)
-        if (element) element.scrollIntoView({ behavior: 'smooth' })
-      }, 100)
+      scrollToSection(href)
       return
     }
 
-    const element = document.querySelector(href)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
+    scrollToSection(href)
   }
 
   const handleLogoClick = (e) => {

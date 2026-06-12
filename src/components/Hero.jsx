@@ -2,12 +2,13 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import './Hero.css'
 import logoSvg from '../assets/logo-nav.svg'
+import { scrollToSection } from '../utils/scrollToSection'
 
 // Import client logos for carousel
 import logoBerseLine from '../assets/logos/logo-berse-line.svg'
-import logoGO from '../assets/logos/logo-go.png'
+import logoGO from '../assets/logos/logo-go.webp'
 import logoJeny from '../assets/logos/LOGO BLANCO.svg'
-import logoPardo from '../assets/logos/LOGO-MANUEL PARDO@4x-8.png'
+import logoPardo from '../assets/logos/LOGO-MANUEL PARDO@4x-8.webp'
 import logoProsadis from '../assets/logos/LOGO 1.svg'
 import logoSpaKreativos from '../assets/logos/logo-spa-kreativos.svg'
 
@@ -135,7 +136,7 @@ const Hero = () => {
               whileTap={{ scale: 0.97 }}
               onClick={(e) => {
                 e.preventDefault()
-                document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })
+                scrollToSection('#contact')
               }}
             >
               <span>Comenzar Proyecto</span>
