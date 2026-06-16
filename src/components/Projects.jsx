@@ -3,9 +3,24 @@ import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'fra
 import { portfolioData } from '../data/portfolioData'
 import './Projects.css'
 
+/* Proyectos destacados: un cliente por estilo de preview.
+   El resto del trabajo vive en la galería completa (/gallery). */
+const FEATURED = [
+  { id: 'berseline', layout: 'hero' },
+  { id: 'jeny-dr', layout: 'minimal' },
+  { id: 'pardo', layout: 'filmstrip' },
+  { id: 'spa-kreativos', layout: 'scattered' },
+]
+
+const getFeatured = (clients) =>
+  FEATURED
+    .map(f => ({ client: clients.find(c => c.id === f.id), layout: f.layout }))
+    .filter(f => f.client)
+
 const Projects = () => {
   const [isMobile, setIsMobile] = useState(false)
   const { clients } = portfolioData
+  const featured = getFeatured(clients)
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 768)
@@ -14,31 +29,54 @@ const Projects = () => {
     return () => window.removeEventListener('resize', check)
   }, [])
 
-  if (isMobile) return <MobileProjects clients={clients} />
-
-  // Each client gets a different layout style
-  const layouts = ['hero', 'mosaic', 'minimal', 'filmstrip', 'split', 'scattered']
+  if (isMobile) return <MobileProjects featured={featured} />
 
   return (
     <section className="projects-section" id="projects">
-      <ProjectsHeader count={clients.length} />
+      <ProjectsHeader />
       <div className="projects-flow">
-        {clients.map((client, i) => (
+        {featured.map(({ client, layout }, i) => (
           <ProjectBlock
             key={client.id}
             client={client}
             index={i}
-            total={clients.length}
-            layout={layouts[i % layouts.length]}
+            total={featured.length}
+            layout={layout}
           />
         ))}
       </div>
+      <GalleryCTA />
     </section>
   )
 }
 
+/* ── CTA → galería completa ── */
+const GalleryCTA = () => {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+
+  return (
+    <motion.div
+      className="projects-cta"
+      ref={ref}
+      initial={{ opacity: 0, y: 30 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6 }}
+    >
+      <p className="projects-cta-text">¿Quieres ver más de nuestro trabajo?</p>
+      <a href="/gallery" className="projects-cta-btn">
+        <span>Ver galería completa</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </motion.div>
+  )
+}
+
 /* ── Section Header ── */
-const ProjectsHeader = ({ count }) => {
+const ProjectsHeader = () => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
@@ -55,7 +93,7 @@ const ProjectsHeader = ({ count }) => {
           <span className="title-bold">Proyectos</span>
         </h2>
         <div className="title-line" />
-        <p className="section-subtitle">{count} clientes que confían en nosotros</p>
+        <p className="section-subtitle">Una selección de clientes que confían en nosotros</p>
       </motion.div>
     </div>
   )
@@ -71,10 +109,8 @@ const ProjectBlock = ({ client, index, total, layout }) => {
   return (
     <div ref={ref} className={`proj-block proj-block--${layout}`}>
       {layout === 'hero' && <HeroLayout {...props} />}
-      {layout === 'mosaic' && <MosaicLayout {...props} />}
       {layout === 'minimal' && <MinimalLayout {...props} />}
       {layout === 'filmstrip' && <FilmstripLayout {...props} />}
-      {layout === 'split' && <SplitLayout {...props} />}
       {layout === 'scattered' && <ScatteredLayout {...props} />}
     </div>
   )
@@ -155,46 +191,7 @@ const HeroLayout = ({ client, index, inView }) => {
 }
 
 /* ═══════════════════════════════════════
-   LAYOUT 2: MOSAIC — multi-image grid
-   ═══════════════════════════════════════ */
-const MosaicLayout = ({ client, index, inView }) => {
-  const imgs = client.imagenes
-
-  return (
-    <motion.div
-      className="mosaic-layout"
-      initial={{ opacity: 0, y: 50 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="mosaic-info">
-        <span className="mosaic-number" style={{ color: `${client.color}18` }}>
-          {String(index + 1).padStart(2, '0')}
-        </span>
-        <ClientBadge client={client} />
-        <ServiceTags client={client} />
-        <span className="mosaic-count">{imgs.length} diseños</span>
-      </div>
-      <div className={`mosaic-grid mosaic-grid--${Math.min(imgs.length, 4)}`}>
-        {imgs.slice(0, 4).map((img, i) => (
-          <motion.div
-            key={i}
-            className="mosaic-cell"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={inView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.5, delay: 0.1 * i }}
-          >
-            <img src={img.src} alt={img.alt} loading="lazy" />
-            <span className="mosaic-tipo" style={{ backgroundColor: client.color }}>{img.tipo}</span>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  )
-}
-
-/* ═══════════════════════════════════════
-   LAYOUT 3: MINIMAL — centered showcase
+   LAYOUT 2: MINIMAL — centered showcase
    ═══════════════════════════════════════ */
 const MinimalLayout = ({ client, index, inView }) => {
   const [imgIdx, setImgIdx] = useState(0)
@@ -248,7 +245,7 @@ const MinimalLayout = ({ client, index, inView }) => {
 }
 
 /* ═══════════════════════════════════════
-   LAYOUT 4: FILMSTRIP — horizontal images
+   LAYOUT 3: FILMSTRIP — horizontal images
    ═══════════════════════════════════════ */
 const FilmstripLayout = ({ client, index, inView }) => (
   <motion.div
@@ -282,67 +279,7 @@ const FilmstripLayout = ({ client, index, inView }) => (
 )
 
 /* ═══════════════════════════════════════
-   LAYOUT 5: SPLIT — side-by-side asymmetric
-   ═══════════════════════════════════════ */
-const SplitLayout = ({ client, index, inView }) => {
-  const [imgIdx, setImgIdx] = useState(0)
-  const imgs = client.imagenes
-
-  useEffect(() => {
-    if (imgs.length <= 1) return
-    const t = setInterval(() => setImgIdx(p => (p + 1) % imgs.length), 3500)
-    return () => clearInterval(t)
-  }, [imgs.length])
-
-  return (
-    <motion.div
-      className="split-layout"
-      initial={{ opacity: 0 }}
-      animate={inView ? { opacity: 1 } : {}}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="split-left">
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={imgIdx}
-            src={imgs[imgIdx].src}
-            alt={imgs[imgIdx].alt}
-            className="split-main-img"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          />
-        </AnimatePresence>
-      </div>
-      <div className="split-right">
-        <span className="split-number" style={{ color: `${client.color}15` }}>
-          {String(index + 1).padStart(2, '0')}
-        </span>
-        <div className="split-logo-wrap">
-          <img src={client.logo} alt={client.nombre} loading="lazy" />
-        </div>
-        <h3 className="split-name">{client.nombre}</h3>
-        <span className="split-cat" style={{ color: client.color }}>{client.categoria}</span>
-        <ServiceTags client={client} />
-        {imgs.length > 1 && (
-          <div className="split-thumbs">
-            {imgs.map((img, i) => (
-              <button key={i} className={`split-thumb ${i === imgIdx ? 'active' : ''}`}
-                onClick={() => setImgIdx(i)}
-                style={{ borderColor: i === imgIdx ? client.color : 'transparent' }}>
-                <img src={img.src} alt={img.alt} loading="lazy" />
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </motion.div>
-  )
-}
-
-/* ═══════════════════════════════════════
-   LAYOUT 6: SCATTERED — overlapping cards
+   LAYOUT 4: SCATTERED — overlapping cards
    ═══════════════════════════════════════ */
 const ScatteredLayout = ({ client, index, inView }) => {
   const offsets = [
@@ -391,11 +328,12 @@ const ScatteredLayout = ({ client, index, inView }) => {
 /* ═══════════════════════════════════════
    MOBILE
    ═══════════════════════════════════════ */
-const MobileProjects = ({ clients }) => {
+const MobileProjects = ({ featured }) => {
   const headerRef = useRef(null)
   const headerInView = useInView(headerRef, { once: true, margin: '-60px' })
 
-  const mobileLayouts = ['mHero', 'mMosaic', 'mCard', 'mMosaic', 'mCard', 'mHero']
+  const mobileLayouts = ['mHero', 'mCard', 'mMosaic', 'mCard']
+  const total = featured.length
 
   return (
     <section className="projects-mobile" id="projects">
@@ -412,13 +350,15 @@ const MobileProjects = ({ clients }) => {
       </div>
 
       <div className="pm-cards">
-        {clients.map((client, i) => {
+        {featured.map(({ client }, i) => {
           const layout = mobileLayouts[i % mobileLayouts.length]
-          if (layout === 'mHero') return <MobileHeroCard key={client.id} client={client} index={i} total={clients.length} />
-          if (layout === 'mMosaic') return <MobileMosaicCard key={client.id} client={client} index={i} total={clients.length} />
-          return <MobileSimpleCard key={client.id} client={client} index={i} total={clients.length} />
+          if (layout === 'mHero') return <MobileHeroCard key={client.id} client={client} index={i} total={total} />
+          if (layout === 'mMosaic') return <MobileMosaicCard key={client.id} client={client} index={i} total={total} />
+          return <MobileSimpleCard key={client.id} client={client} index={i} total={total} />
         })}
       </div>
+
+      <GalleryCTA />
     </section>
   )
 }

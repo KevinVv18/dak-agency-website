@@ -30,10 +30,73 @@
 .projects-flow {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 2.5rem 5rem;
+  padding: 2rem 2.5rem 3rem;
   display: flex;
   flex-direction: column;
   gap: 4rem;
+}
+
+/* ── CTA → galería completa ── */
+.projects-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem 6rem;
+  text-align: center;
+}
+
+.projects-cta-text {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.projects-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.1rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: transparent;
+  border: 2px solid rgba(176, 36, 255, 0.5);
+  border-radius: 3rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.projects-cta-btn:hover {
+  background: rgba(176, 36, 255, 0.1);
+  border-color: #B024FF;
+  box-shadow: 0 0 30px rgba(176, 36, 255, 0.3);
+  transform: translateY(-3px);
+}
+
+.projects-cta-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.projects-cta-btn:hover svg {
+  transform: translateX(4px);
+}
+
+@media (max-width: 768px) {
+  .projects-cta {
+    padding: 0.5rem 1.5rem 3.5rem;
+  }
+
+  .projects-cta-btn {
+    width: 100%;
+    max-width: 360px;
+    justify-content: center;
+    padding: 1rem 2rem;
+    font-size: 0.9rem;
+  }
 }
 
 /* ── Shared Components ── */
