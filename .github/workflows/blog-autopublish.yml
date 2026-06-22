@@ -1,0 +1,59 @@
+name: Blog Auto-Publish (DAK)
+
+# Publica el siguiente post en cola (_blog-content/queue/) al blog WordPress
+# vía SSH + WP-CLI. Reutiliza el secret SSH_PRIVATE_KEY del deploy.
+#
+# Ritmo: Lun / Mié / Vie a las 09:00 hora Perú (14:00 UTC).
+# También se puede disparar manualmente desde la pestaña Actions.
+
+on:
+  schedule:
+    - cron: '0 14 * * 1,3,5'   # Lun, Mié, Vie — 14:00 UTC = 09:00 Perú (UTC-5)
+  workflow_dispatch:
+    inputs:
+      status:
+        description: 'Estado del post a crear'
+        type: choice
+        default: 'publish'
+        options:
+          - publish
+          - draft
+          - future
+
+permissions:
+  contents: write   # para commitear el movimiento queue/ -> published/
+
+concurrency:
+  group: blog-autopublish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar llave SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p 65002 89.116.115.11 >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Publicar siguiente post en cola
+        env:
+          POST_STATUS: ${{ github.event.inputs.status || 'publish' }}
+        run: bash _blog-content/publish.sh
+
+      - name: Commitear estado de la cola
+        run: |
+          git config user.name "dak-autopublish[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain _blog-content)" ]; then
+            git add _blog-content
+            git commit -m "chore(blog): auto-publish next queued post [skip ci]"
+            git push
+          else
+            echo "Sin cambios en la cola."
+          fi

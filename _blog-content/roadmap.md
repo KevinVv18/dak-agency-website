@@ -1,0 +1,85 @@
+# Roadmap de contenido SEO — DAK Agency blog
+
+> Objetivo: posicionar a DAK Agency para búsquedas de **marketing digital en
+> Chiclayo / Lambayeque**, por servicio y por rubro. Ritmo: **3 posts/semana**.
+> Modelo: Claude genera lotes localizados → cron publica (drip).
+
+## Posts ya existentes (NO repetir estos ángulos)
+
+| ID | Estado | Tema | Slug |
+|----|--------|------|------|
+| 33 | publish | Branding en Chiclayo | `branding-en-chiclayo-...` |
+| 30 | publish | Creación de páginas web en Chiclayo | `creacion-de-paginas-web-en-chiclayo` |
+| 26 | publish | SEO / SEM Chiclayo | `seo-sem-chiclayo-...` |
+| 22 | publish | Marketing digital inmobiliario Chiclayo | `marketing-inmobiliario-en-chiclayo-dak-agency` |
+| 42 | **draft** | Marketing inmobiliario (sin slug) | — ⚠️ casi-duplicado del #22 |
+| — | **en cola** | Gestión de redes sociales Chiclayo | `gestion-de-redes-sociales-para-empresas-en-chiclayo` |
+
+⚠️ **Acción pendiente sobre el ID 42:** es un segundo post de "marketing inmobiliario"
+que pisa al #22 ya publicado. Decidir: borrarlo, fusionarlo o reorientarlo a un
+sub-ángulo distinto (p. ej. "marketing para proyectos en planos en Pimentel").
+
+## Cobertura de servicios de la agencia
+
+| Servicio | ¿Cubierto? |
+|----------|-----------|
+| Branding | ✅ #33 |
+| Diseño Web | ✅ #30 |
+| SEO & Ads | ✅ #26 (ampliable) |
+| Social Media | 🟡 en cola (piloto) |
+| Inmobiliario (nicho) | ✅ #22 |
+| **Fotografía** | 🟡 en cola (borrador, falta imagen) |
+| **Video / Reels** | 🟡 en cola (borrador, falta imagen) |
+| **Automatización** (chatbots/CRM) | 🟡 en cola (borrador, falta imagen) |
+
+---
+
+## Clusters temáticos (cola priorizada)
+
+### Cluster A — Servicios core que faltan
+1. ✅ **Fotografía profesional para empresas en Chiclayo** — `queue/0002` (borrador, falta imagen).
+2. ✅ **Video marketing para empresas en Chiclayo** — `queue/0003` (borrador, falta imagen).
+3. ✅ **Automatización de marketing para empresas en Chiclayo** — `queue/0004` (borrador, falta imagen).
+4. **Publicidad en Meta Ads (Facebook/Instagram) para negocios de Lambayeque** — sub-ángulo de SEO&Ads.
+5. **Google Business Profile: cómo aparecer en el mapa de Chiclayo** — SEO local.
+
+### Imágenes destacadas — LISTAS ✅ (descargadas del Drive SEO-IMG y optimizadas)
+- `0002` Fotografía → `assets/0002-...webp` (de "1_POST Fotografía", 1.41MB→112KB).
+- `0003` Video → `assets/0003-...webp` (de "1_POST CONTENIDO AUDIOVISUAL", 1.55MB→142KB).
+- `0004` Automatización → `assets/0004-...webp` (de "1_POST AUTOMATIZACIÓN", 2.68MB→247KB).
+- Pendiente opcional: cambiar la imagen del piloto `0001` (hoy usa `dak_sephora` local) por una del Drive (p.ej. "1_HISTORIA Social media").
+
+### Cluster B — Por rubro local (alto intent comercial)
+6. **Marketing digital para clínicas dentales en Chiclayo** (caso: Prosadis, Dra. Jenny).
+7. **Marketing para restaurantes / pollerías / chifas en Chiclayo.**
+8. **Marketing para spas y centros de estética en Chiclayo** (caso: Berse Line, Spa Kreativos).
+9. **Marketing para colegios, academias e institutos en Lambayeque** (caso: Manuel Pardo).
+10. **Marketing para tiendas y retail en Chiclayo** (caso: Gran Oportunidad GO!).
+
+### Cluster C — Decisión / conversión (fondo de embudo)
+11. **¿Cuánto cuesta una página web en Chiclayo? Precios reales 2026.**
+12. **¿Cuánto cuesta la publicidad en redes en Chiclayo? Presupuesto realista.**
+13. **Cómo elegir una agencia de marketing digital en Chiclayo (checklist).**
+14. **Agencia vs. freelance vs. hacerlo tú mismo: qué le conviene a tu negocio.**
+
+### Cluster D — Local / geo
+15. **Marketing digital en La Victoria (Chiclayo): cómo destacar en tu distrito.**
+16. **Marketing digital en José Leonardo Ortiz: oportunidades para PYMES.**
+17. **Tendencias de marketing digital en Lambayeque 2026.**
+
+---
+
+## Enlazado interno (regla)
+
+Cada post enlaza a 2–4 de estos, según relevancia:
+- Branding → `/blog/branding-en-chiclayo-guia-para-potenciar-tu-marca-en-2026/`
+- Web → `/blog/creacion-de-paginas-web-en-chiclayo/`
+- SEO/SEM → `/blog/seo-sem-chiclayo-impulsa-tu-negocio-al-exito-digital/`
+- Redes → `/blog/gestion-de-redes-sociales-para-empresas-en-chiclayo/`
+- Servicios → `https://dakagency.net/#services`
+- Contacto/CTA → WhatsApp `https://wa.me/51906765040` · Agendar `https://plan.dakagency.net/agendar.html`
+
+## Pendientes de calidad (revisión humana)
+- Imágenes con ALT local por post (hoy se publican sin featured image — TODO).
+- Insertar 1–2 **casos reales** de clientes por post de rubro (Cluster B).
+- Verificar precios antes de publicar los del Cluster C.
