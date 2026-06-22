@@ -12,9 +12,12 @@ name: Blog Auto-Publish (DAK)
 #
 # Ritmo: Lun / Mié / Vie a las 09:00 hora Perú (14:00 UTC).
 
+# NOTA: el schedule está desactivado porque el SSH desde los runners de GitHub
+# es poco fiable hacia Hostinger (timeout intermitente según la IP del runner).
+# El cron real corre en el SERVIDOR (hPanel Cron) ejecutando
+# _blog-content/lib/publish-on-server.sh. Este workflow queda solo para disparo
+# manual (respaldo) desde la pestaña Actions.
 on:
-  schedule:
-    - cron: '0 14 * * 1,3,5'   # Lun, Mié, Vie — 14:00 UTC = 09:00 Perú (UTC-5)
   workflow_dispatch:
     inputs:
       status:

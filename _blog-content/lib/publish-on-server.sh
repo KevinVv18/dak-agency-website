@@ -17,9 +17,11 @@ STAGE="${1:-$HOME/dak-autopost}"
 WP_PATH="/home/u567580447/domains/dakagency.net/public_html/blog"
 PHP_LIB="$STAGE/lib/wp-create-post.php"
 STATUS="${POST_STATUS:-publish}"
+# Ruta completa de wp: en el entorno de cron el PATH suele venir vacío.
+WP="$(command -v wp 2>/dev/null || echo /usr/local/bin/wp)"
 
 cd "$WP_PATH"
-echo "[*] Blog: $(wp option get blogname 2>/dev/null || echo '??') | posts publicados: $(wp post list --post_type=post --post_status=publish --format=count 2>/dev/null || echo '??')"
+echo "[*] Blog: $("$WP" option get blogname 2>/dev/null || echo '??') | posts publicados: $("$WP" post list --post_type=post --post_status=publish --format=count 2>/dev/null || echo '??')"
 
 if [ ! -f "$PHP_LIB" ]; then
 	echo "[ERROR] No se encontró el runner PHP en $PHP_LIB (¿falló el rsync?)."
@@ -40,7 +42,7 @@ for f in "${files[@]}"; do
 		if [ -f "$STAGE/assets/$base.$ext" ]; then img="$STAGE/assets/$base.$ext"; break; fi
 	done
 	echo "[*] Intentando: $base ${img:+(con imagen)}"
-	out="$(wp eval-file "$PHP_LIB" "$f" "$STATUS" $img 2>&1)"
+	out="$("$WP" eval-file "$PHP_LIB" "$f" "$STATUS" $img 2>&1)"
 	echo "$out"
 	if echo "$out" | grep -q '^CREATED'; then
 		echo "[DONE] Publicado ($STATUS): $base"
