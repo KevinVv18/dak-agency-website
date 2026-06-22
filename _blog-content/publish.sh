@@ -26,7 +26,7 @@ PUBLISHED_DIR="$SCRIPT_DIR/published"
 PHP_LIB="$SCRIPT_DIR/lib/wp-create-post.php"
 REMOTE_TMP="/tmp/dak-autopost"
 
-SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new -o LogLevel=ERROR"
+SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=30 -o ConnectionAttempts=4 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o StrictHostKeyChecking=accept-new -o LogLevel=ERROR"
 SSH="ssh $SSH_OPTS -p $SSH_PORT $SSH_USER@$SSH_HOST"
 SCP="scp $SSH_OPTS -P $SSH_PORT"
 
