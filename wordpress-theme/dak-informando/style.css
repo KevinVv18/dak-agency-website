@@ -2105,3 +2105,149 @@ ul {
   transform: rotate(90deg);
 }
 
+/* ===================================
+   ARTICLE SINGLE — Layout 2 columnas
+   sidebar sticky · TOC · CTA · related
+   ================================== */
+
+/* Barra de progreso de lectura */
+.reading-progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: transparent;
+  z-index: var(--z-navigation, 1000);
+  pointer-events: none;
+}
+.reading-progress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--color-primary, #B024FF), var(--color-primary-dark, #8B1CC7));
+  transition: width 0.1s linear;
+}
+
+/* Grid contenido + sidebar */
+.article-single-layout {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 3.5rem;
+  align-items: start;
+}
+.article-single-main { min-width: 0; }
+
+.article-single-sidebar { position: relative; }
+.sidebar-sticky {
+  position: sticky;
+  top: 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Tabla de contenidos */
+.toc {
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border-light, rgba(0,0,0,0.08));
+  border-radius: 0.6rem;
+  padding: 1.2rem 1.3rem;
+}
+.toc-title {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted, #888);
+  margin-bottom: 0.8rem;
+}
+.toc-list { display: flex; flex-direction: column; gap: 0.15rem; }
+.toc-item a {
+  display: block;
+  padding: 0.35rem 0.6rem;
+  border-left: 2px solid transparent;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: var(--text-secondary, #4A4A4A);
+  text-decoration: none;
+  border-radius: 0 0.25rem 0.25rem 0;
+  transition: all var(--transition-fast, 0.15s);
+}
+.toc-item.toc-h3 a { padding-left: 1.4rem; font-size: 0.84rem; }
+.toc-item a:hover { color: var(--color-primary, #B024FF); background: rgba(176,36,255,0.05); }
+.toc-item a.active {
+  color: var(--color-primary, #B024FF);
+  font-weight: 700;
+  border-left-color: var(--color-primary, #B024FF);
+  background: rgba(176,36,255,0.07);
+}
+
+/* Tarjeta CTA */
+.sidebar-cta {
+  background: var(--text-primary, #1A1A1A);
+  color: #fff;
+  border-radius: 0.6rem;
+  padding: 1.5rem 1.4rem;
+}
+.sidebar-cta-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 0.6rem;
+  color: #fff;
+}
+.sidebar-cta-text {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 1.1rem;
+}
+.sidebar-cta-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.6rem;
+  transition: transform var(--transition-fast, 0.15s), opacity var(--transition-fast, 0.15s);
+}
+.sidebar-cta-btn:hover { transform: translateY(-2px); opacity: 0.92; }
+.sidebar-cta-btn.wa { background: #25D366; color: #06351a; }
+.sidebar-cta-btn.agendar { background: var(--color-primary, #B024FF); color: #fff; }
+.sidebar-cta-mail { text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-top: 0.4rem; }
+
+/* Posts relacionados */
+.related-posts {
+  background: var(--bg-surface, #F0EDE7);
+  margin-top: 3.5rem;
+  padding: 3rem 0 3.5rem;
+}
+.related-posts-inner { max-width: 1180px; margin: 0 auto; padding: 0 2rem; }
+.related-posts-title {
+  font-family: var(--font-serif);
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--text-primary, #1A1A1A);
+  margin-bottom: 1.8rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid var(--text-primary, #1A1A1A);
+}
+.related-posts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8rem; }
+
+/* Responsive: colapsa a 1 columna y oculta sidebar (en mobile ya se ve bien) */
+@media (max-width: 1024px) {
+  .article-single-layout { grid-template-columns: 1fr; max-width: 820px; }
+  .article-single-sidebar { display: none; }
+  .related-posts-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+}
+@media (max-width: 600px) {
+  .article-single-layout { padding: 0 1.25rem; }
+  .related-posts-inner { padding: 0 1.25rem; }
+}
+
