@@ -1873,20 +1873,34 @@ ul {
 .article-single-hero {
   position: relative;
   width: 100%;
-  max-height: 520px;
+  height: clamp(340px, 40vw, 520px);
   overflow: hidden;
+  background: var(--text-primary, #1A1A1A);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.article-single-hero-img {
-  width: 100%;
-  height: 520px;
-  object-fit: cover;
-}
-
-.article-single-hero-overlay {
+/* Fondo difuminado que rellena la franja (sirve para cualquier proporción) */
+.article-single-hero-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.5) 100%);
+  background-size: cover;
+  background-position: center;
+  filter: blur(30px) brightness(0.5);
+  transform: scale(1.2);
+}
+
+/* Imagen completa, centrada, sin recorte ni escalado hacia arriba (no se pixela) */
+.article-single-hero-img {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.45);
 }
 
 .article-single-container {

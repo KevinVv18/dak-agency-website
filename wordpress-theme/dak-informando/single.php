@@ -28,8 +28,8 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
   <article class="article-single">
     <!-- Hero image -->
     <div class="article-single-hero">
+      <div class="article-single-hero-bg" style="background-image:url('<?php echo esc_url( $image ); ?>')"></div>
       <img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $imageAlt ); ?>" class="article-single-hero-img" loading="eager">
-      <div class="article-single-hero-overlay"></div>
     </div>
 
     <div class="article-single-layout">
