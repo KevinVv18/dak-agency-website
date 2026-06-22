@@ -1,10 +1,16 @@
 name: Blog Auto-Publish (DAK)
 
-# Publica el siguiente post en cola (_blog-content/queue/) al blog WordPress
-# vía SSH + WP-CLI. Reutiliza el secret SSH_PRIVATE_KEY del deploy.
+# Publica el siguiente post en cola (_blog-content/queue/) al blog WordPress.
+#
+# Por qué este diseño: el `ssh`/`scp` plano del runner de GitHub da timeout
+# hacia el SSH de Hostinger (puerto 65002), pero los actions que corren en
+# DOCKER sí conectan. Por eso:
+#   1) burnett01/rsync-deployments (Docker) sube _blog-content/ a un staging.
+#   2) appleboy/ssh-action (Docker) ejecuta WP-CLI en el servidor.
+# Idempotente por slug: publica el primer post de la cola que aún no exista
+# (no necesita commit-back). 1 post por corrida = drip.
 #
 # Ritmo: Lun / Mié / Vie a las 09:00 hora Perú (14:00 UTC).
-# También se puede disparar manualmente desde la pestaña Actions.
 
 on:
   schedule:
@@ -21,7 +27,7 @@ on:
           - future
 
 permissions:
-  contents: write   # para commitear el movimiento queue/ -> published/
+  contents: read
 
 concurrency:
   group: blog-autopublish
@@ -34,26 +40,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configurar llave SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p 65002 89.116.115.11 >> ~/.ssh/known_hosts 2>/dev/null || true
+      # 1) Subir el contenido al servidor (rsync corre en Docker → sí conecta)
+      - name: Subir contenido al servidor
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: _blog-content/
+          remote_path: /home/u567580447/dak-autopost/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Publicar siguiente post en cola
+      # 2) Ejecutar WP-CLI en el servidor (SSH corre en Docker → sí conecta)
+      - name: Publicar siguiente post (WP-CLI vía SSH en Docker)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: 89.116.115.11
+          username: u567580447
+          port: 65002
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 10m
+          envs: POST_STATUS
+          script: bash /home/u567580447/dak-autopost/lib/publish-on-server.sh /home/u567580447/dak-autopost
         env:
           POST_STATUS: ${{ github.event.inputs.status || 'publish' }}
-        run: bash _blog-content/publish.sh
-
-      - name: Commitear estado de la cola
-        run: |
-          git config user.name "dak-autopublish[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [ -n "$(git status --porcelain _blog-content)" ]; then
-            git add _blog-content
-            git commit -m "chore(blog): auto-publish next queued post [skip ci]"
-            git push
-          else
-            echo "Sin cambios en la cola."
-          fi
