@@ -67,6 +67,7 @@ for f in "${queue_files[@]}"; do
 		echo "[OK] $out"
 		mv "$f" "$PUBLISHED_DIR/$base"
 		echo "$out" > "$PUBLISHED_DIR/${base%.json}.result.txt"
+		$SSH "cd $WP_PATH && wp rankmath sitemap generate >/dev/null 2>&1" && echo "[sitemap] regenerado (Google podrá descubrirlo)"
 		echo "[DONE] 1 post publicado ($POST_STATUS). Cola: $(( ${#queue_files[@]} - 1 )) restantes (incl. ya-existentes)."
 		exit 0
 	elif echo "$out" | grep -q '^EXISTS'; then

@@ -46,6 +46,7 @@ for f in "${files[@]}"; do
 	echo "$out"
 	if echo "$out" | grep -q '^CREATED'; then
 		echo "[DONE] Publicado ($STATUS): $base"
+		"$WP" rankmath sitemap generate >/dev/null 2>&1 && echo "[sitemap] regenerado (Google podrá descubrirlo)" || echo "[sitemap] aviso: no se pudo regenerar"
 		exit 0
 	elif echo "$out" | grep -q '^EXISTS'; then
 		continue
