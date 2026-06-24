@@ -2333,3 +2333,67 @@ ul {
   .related-posts-inner { padding: 0 1.25rem; }
 }
 
+/* ===================================
+   HOME — Franja de Servicios + Carruseles por categoría
+   ================================== */
+
+/* Franja de servicios (enlaza a las paginas pilar) */
+.servicios-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.servicio-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 1.2rem 2.6rem 1.2rem 1.3rem;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border-light, rgba(0,0,0,0.08));
+  border-radius: 0.6rem;
+  text-decoration: none;
+  transition: transform var(--transition-base, 0.3s), box-shadow var(--transition-base, 0.3s), border-color var(--transition-base, 0.3s);
+  overflow: hidden;
+}
+.servicio-card::before {
+  content: "";
+  position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: var(--color-primary, #B024FF);
+  transform: scaleY(0); transform-origin: bottom;
+  transition: transform var(--transition-base, 0.3s);
+}
+.servicio-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(176,36,255,0.15); border-color: transparent; }
+.servicio-card:hover::before { transform: scaleY(1); }
+.servicio-card-name { font-family: var(--font-serif); font-size: 1.12rem; font-weight: 800; color: var(--text-primary, #1A1A1A); line-height: 1.2; }
+.servicio-card-desc { font-size: 0.84rem; color: var(--text-muted, #888); }
+.servicio-card-arrow { position: absolute; top: 1.2rem; right: 1.2rem; color: var(--color-primary, #B024FF); font-weight: 800; transition: transform var(--transition-fast, 0.15s); }
+.servicio-card:hover .servicio-card-arrow { transform: translateX(4px); }
+
+/* Carrusel por categoria */
+.cat-carousel {
+  display: flex;
+  gap: 1.4rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0.25rem 0 1.3rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.cat-carousel::-webkit-scrollbar { height: 6px; }
+.cat-carousel::-webkit-scrollbar-thumb { background: var(--border-medium, rgba(0,0,0,0.15)); border-radius: 3px; }
+.cat-carousel::-webkit-scrollbar-track { background: transparent; }
+.cat-carousel > .article-card {
+  flex: 0 0 300px;
+  max-width: 300px;
+  scroll-snap-align: start;
+}
+
+@media (max-width: 900px) {
+  .servicios-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .servicios-grid { grid-template-columns: 1fr; }
+  .cat-carousel > .article-card { flex-basis: 80vw; max-width: 80vw; }
+}
+
