@@ -66,7 +66,7 @@ $postarr = array(
 	'post_content' => $content,
 	'post_excerpt' => isset( $data['excerpt'] ) ? $data['excerpt'] : '',
 	'post_status'  => $status,
-	'post_type'    => 'post',
+	'post_type'    => ! empty( $data['post_type'] ) ? $data['post_type'] : 'post',
 	'post_author'  => isset( $data['author'] ) ? intval( $data['author'] ) : 1,
 );
 
