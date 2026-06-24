@@ -86,6 +86,18 @@ if ( ! empty( $data['categories'] ) && is_array( $data['categories'] ) ) {
 		$cat_ids[] = intval( $c );
 	}
 }
+// Categoria por slug (se crea si no existe) — el "circuito": cada post cae en su seccion del home
+if ( ! empty( $data['category_slug'] ) ) {
+	$cs   = sanitize_title( $data['category_slug'] );
+	$term = get_term_by( 'slug', $cs, 'category' );
+	if ( ! $term ) {
+		$cname = ! empty( $data['category_name'] ) ? $data['category_name'] : ucwords( str_replace( '-', ' ', $cs ) );
+		$ins   = wp_insert_term( $cname, 'category', array( 'slug' => $cs ) );
+		if ( ! is_wp_error( $ins ) ) { $cat_ids[] = intval( $ins['term_id'] ); }
+	} else {
+		$cat_ids[] = intval( $term->term_id );
+	}
+}
 if ( $cat_ids ) {
 	$postarr['post_category'] = array_values( array_unique( array_filter( $cat_ids ) ) );
 }
