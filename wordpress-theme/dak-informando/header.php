@@ -4,6 +4,17 @@
  * Includes: DOCTYPE, <head>, cursor grid, mini-nav, utility bar, masthead, nav
  * Direct conversion from BlogHeader.astro + BlogLayout.astro
  */
+// Menú dinámico desde las categorías reales (el "circuito"): slug => etiqueta
+$dak_nav_cats = array(
+  'seo-buscadores' => 'SEO',
+  'diseno-web'     => 'Diseño Web',
+  'redes-sociales' => 'Redes',
+  'publicidad'     => 'Publicidad',
+  'automatizacion' => 'Automatización',
+  'branding'       => 'Branding',
+  'por-rubro'      => 'Por Rubro',
+  'guias-precios'  => 'Guías',
+);
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -31,17 +42,18 @@
     </a>
     <ul class="mini-nav-links">
       <li><a href="<?php echo home_url( '/' ); ?>" class="mini-nav-link active">TODOS</a></li>
-      <li><a href="<?php echo home_url( '/#branding' ); ?>" class="mini-nav-link">BRANDING</a></li>
-      <li><a href="<?php echo home_url( '/#marketing' ); ?>" class="mini-nav-link">MARKETING</a></li>
-      <li><a href="<?php echo home_url( '/#blogs' ); ?>" class="mini-nav-link">BLOGS</a></li>
-      <li><a href="<?php echo home_url( '/#entrevistas' ); ?>" class="mini-nav-link">ENTREVISTAS</a></li>
-      <li><a href="<?php echo home_url( '/#opinion' ); ?>" class="mini-nav-link">OPINIONES</a></li>
+      <?php foreach ( $dak_nav_cats as $cslug => $clabel ) :
+        $c = get_category_by_slug( $cslug ); if ( ! $c ) { continue; } ?>
+        <li><a href="<?php echo esc_url( get_category_link( $c->term_id ) ); ?>" class="mini-nav-link"><?php echo esc_html( strtoupper( $clabel ) ); ?></a></li>
+      <?php endforeach; ?>
     </ul>
     <a href="#newsletter" class="mini-nav-subscribe">SUSCRÍBETE</a>
-    <a href="<?php echo esc_url( admin_url() ); ?>" class="header-admin-pill" aria-label="Admin Login">
+    <?php if ( current_user_can( 'manage_options' ) ) : ?>
+    <a href="<?php echo esc_url( admin_url() ); ?>" class="header-admin-pill" aria-label="Ir al escritorio">
       <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-      <span>Admin</span>
+      <span>Escritorio</span>
     </a>
+    <?php endif; ?>
   </div>
 </div>
 
@@ -72,10 +84,12 @@
           </a>
         </div>
         <a href="#newsletter" class="subscribe-btn">SUSCRÍBETE</a>
-        <a href="<?php echo esc_url( admin_url() ); ?>" class="header-admin-pill" aria-label="Admin Login">
+        <?php if ( current_user_can( 'manage_options' ) ) : ?>
+        <a href="<?php echo esc_url( admin_url() ); ?>" class="header-admin-pill" aria-label="Ir al escritorio">
           <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          <span>Admin</span>
+          <span>Escritorio</span>
         </a>
+        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -96,11 +110,10 @@
     <div class="nav-inner">
       <ul class="nav-menu" id="navMenu">
         <li><a href="<?php echo home_url( '/' ); ?>" class="nav-link active">TODOS</a></li>
-        <li><a href="<?php echo home_url( '/#branding' ); ?>" class="nav-link">BRANDING</a></li>
-        <li><a href="<?php echo home_url( '/#marketing' ); ?>" class="nav-link">MARKETING</a></li>
-        <li><a href="<?php echo home_url( '/#blogs' ); ?>" class="nav-link">BLOGS</a></li>
-        <li><a href="<?php echo home_url( '/#entrevistas' ); ?>" class="nav-link">ENTREVISTAS</a></li>
-        <li><a href="<?php echo home_url( '/#opinion' ); ?>" class="nav-link">OPINIONES</a></li>
+        <?php foreach ( $dak_nav_cats as $cslug => $clabel ) :
+          $c = get_category_by_slug( $cslug ); if ( ! $c ) { continue; } ?>
+          <li><a href="<?php echo esc_url( get_category_link( $c->term_id ) ); ?>" class="nav-link"><?php echo esc_html( strtoupper( $clabel ) ); ?></a></li>
+        <?php endforeach; ?>
       </ul>
     </div>
   </nav>

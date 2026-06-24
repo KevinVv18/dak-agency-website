@@ -2397,3 +2397,34 @@ ul {
   .cat-carousel > .article-card { flex-basis: 80vw; max-width: 80vw; }
 }
 
+/* ===== Archivo / página de categoría ===== */
+.cat-archive-header {
+  padding: 2rem 0 1.5rem;
+  text-align: center;
+  border-bottom: 2px solid var(--text-primary, #1A1A1A);
+  margin-bottom: 2.5rem;
+}
+.cat-archive-eyebrow {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-primary, #B024FF);
+  margin-bottom: 0.5rem;
+}
+.cat-archive-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.1;
+  color: var(--text-primary, #1A1A1A);
+}
+.cat-archive-desc { max-width: 640px; margin: 0.8rem auto 0; color: var(--text-secondary, #4A4A4A); }
+.cat-archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.8rem; }
+.cat-archive-pagination { margin: 2.5rem 0 1rem; text-align: center; }
+.cat-archive-pagination .page-numbers {
+  display: inline-block; padding: 0.5rem 0.9rem; margin: 0 0.15rem;
+  border: 1px solid var(--border-medium, rgba(0,0,0,0.15)); border-radius: 0.35rem;
+  text-decoration: none; color: var(--text-primary, #1A1A1A); font-weight: 700; font-size: 0.9rem;
+}
+.cat-archive-pagination .page-numbers.current { background: var(--color-primary, #B024FF); color: #fff; border-color: transparent; }
+.cat-archive-pagination .page-numbers:hover { border-color: var(--color-primary, #B024FF); }
+.cat-archive-empty { text-align: center; color: var(--text-secondary, #4A4A4A); padding: 2rem 0; }
+
