@@ -21,7 +21,7 @@ $excerpt  = wp_strip_all_tags( get_the_excerpt( $post_obj ) );
     <h3 class="latest-article-title">
       <a href="<?php echo get_permalink( $post_obj ); ?>"><?php echo esc_html( $title ); ?></a>
     </h3>
-    <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( strtoupper( $category->name ) ); ?></span>
+    <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( dak_upper( $category->name ) ); ?></span>
     <span class="latest-article-date"><?php echo esc_html( $date ); ?></span>
     <p class="latest-article-excerpt"><?php echo esc_html( $excerpt ); ?></p>
     <a href="<?php echo get_permalink( $post_obj ); ?>" class="opinion-read-more">LEER MÁS</a>

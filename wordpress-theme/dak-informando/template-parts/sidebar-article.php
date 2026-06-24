@@ -18,7 +18,7 @@ $excerpt  = wp_strip_all_tags( get_the_excerpt( $post_obj ) );
       <img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $imageAlt ); ?>" loading="lazy">
     </div>
   </a>
-  <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( strtoupper( $category->name ) ); ?></span>
+  <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( dak_upper( $category->name ) ); ?></span>
   <h3 class="visual-title">
     <a href="<?php echo get_permalink( $post_obj ); ?>"><?php echo esc_html( $title ); ?></a>
   </h3>

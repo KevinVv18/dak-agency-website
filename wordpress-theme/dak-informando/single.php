@@ -59,10 +59,10 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
       <!-- Columna de contenido -->
       <div class="article-single-main">
         <div class="article-single-header">
-          <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( strtoupper( $category->name ) ); ?></span>
+          <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( dak_upper( $category->name ) ); ?></span>
           <h1 class="article-single-title"><?php echo esc_html( $title ); ?></h1>
           <div class="article-single-meta">
-            <span>POR <?php echo esc_html( strtoupper( $author ) ); ?></span>
+            <span>POR <?php echo esc_html( dak_upper( $author ) ); ?></span>
             <span class="meta-separator">·</span>
             <span><?php echo esc_html( $date ); ?></span>
             <span class="meta-separator">·</span>

@@ -24,8 +24,8 @@ $excerpt  = wp_strip_all_tags( get_the_excerpt( $post_obj ) );
   <div class="interview-hero">
     <img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $imageAlt ); ?>" class="interview-hero-img" loading="lazy">
     <div class="interview-hero-overlay">
-      <h3 class="interview-hero-title"><?php echo esc_html( strtoupper( $title ) ); ?></h3>
-      <div class="interview-hero-meta"><?php echo esc_html( strtoupper( $category->name ) . ' · ' . $date ); ?></div>
+      <h3 class="interview-hero-title"><?php echo esc_html( dak_upper( $title ) ); ?></h3>
+      <div class="interview-hero-meta"><?php echo esc_html( dak_upper( $category->name ) . ' · ' . $date ); ?></div>
       <p class="interview-hero-excerpt"><?php echo esc_html( $excerpt ); ?></p>
       <a href="<?php echo get_permalink( $post_obj ); ?>" class="interview-read-more">LEER MÁS</a>
     </div>

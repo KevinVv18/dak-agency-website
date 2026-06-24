@@ -31,7 +31,7 @@ $excerpt  = wp_strip_all_tags( get_the_excerpt( $post_obj ) );
         </a>
       </div>
       <div class="opinion-content-col">
-        <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( strtoupper( $category->name ) ); ?></span>
+        <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( dak_upper( $category->name ) ); ?></span>
         <h2 class="opinion-title">
           <a href="<?php echo get_permalink( $post_obj ); ?>"><?php echo esc_html( $title ); ?></a>
         </h2>
@@ -39,7 +39,7 @@ $excerpt  = wp_strip_all_tags( get_the_excerpt( $post_obj ) );
         <div class="opinion-meta">
           <span><?php echo esc_html( $date ); ?></span>
           <span class="meta-separator">·</span>
-          <span>POR <?php echo esc_html( strtoupper( $author ) ); ?></span>
+          <span>POR <?php echo esc_html( dak_upper( $author ) ); ?></span>
         </div>
         <a href="<?php echo get_permalink( $post_obj ); ?>" class="opinion-read-more">LEER MÁS</a>
       </div>

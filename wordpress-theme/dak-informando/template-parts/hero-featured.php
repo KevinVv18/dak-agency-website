@@ -22,13 +22,13 @@ $excerpt  = wp_strip_all_tags( get_the_excerpt( $post_obj ) );
     </div>
   </a>
   <div class="featured-content">
-    <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( strtoupper( $category->name ) ); ?></span>
+    <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( dak_upper( $category->name ) ); ?></span>
     <h2 class="featured-title">
       <a href="<?php echo get_permalink( $post_obj ); ?>"><?php echo esc_html( $title ); ?></a>
     </h2>
     <p class="featured-excerpt"><?php echo esc_html( $excerpt ); ?></p>
     <div class="featured-meta">
-      <span>POR <?php echo esc_html( strtoupper( $author ) ); ?></span>
+      <span>POR <?php echo esc_html( dak_upper( $author ) ); ?></span>
       <span class="meta-separator">·</span>
       <span><?php echo esc_html( $date ); ?></span>
     </div>

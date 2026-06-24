@@ -59,6 +59,11 @@ function dak_informando_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'dak_informando_assets' );
 
+// ── Helper: Uppercase multibyte-safe (ñ → Ñ, ó → Ó) ──
+function dak_upper( $str ) {
+    return function_exists( 'mb_strtoupper' ) ? mb_strtoupper( $str, 'UTF-8' ) : strtoupper( $str );
+}
+
 // ── Helper: Get category tag CSS class ──
 function dak_get_category_tag_class( $slug ) {
     $map = array(
@@ -74,6 +79,12 @@ function dak_get_category_tag_class( $slug ) {
         'opiniones'        => 'tag-opinion',
         'entrevistas'      => 'tag-entrevistas',
         'diseno-web'       => 'tag-seo',
+        'seo-buscadores'   => 'tag-seo',
+        'redes-sociales'   => 'tag-marketing',
+        'publicidad'       => 'tag-video',
+        'automatizacion'   => 'tag-entrevistas',
+        'por-rubro'        => 'tag-opinion',
+        'guias-precios'    => 'tag-blog',
         'tendencias'       => 'tag-video',
         'mas-popular'      => 'tag-marketing',
         'sin-categoria'    => 'tag-uncategorized',

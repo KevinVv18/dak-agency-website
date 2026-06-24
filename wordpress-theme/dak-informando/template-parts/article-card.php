@@ -19,11 +19,11 @@ $title    = wp_strip_all_tags( $post_obj->post_title );
     <img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $imageAlt ); ?>" loading="lazy">
   </div>
   <div class="article-card-body">
-    <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( strtoupper( $category->name ) ); ?></span>
+    <span class="category-tag <?php echo esc_attr( $tagClass ); ?>"><?php echo esc_html( dak_upper( $category->name ) ); ?></span>
     <h3 class="article-card-title">
       <a href="<?php echo get_permalink( $post_obj ); ?>"><?php echo esc_html( $title ); ?></a>
     </h3>
     <p class="article-card-excerpt"><?php echo esc_html( $excerpt ); ?></p>
-    <div class="article-card-meta">POR <?php echo esc_html( strtoupper( $author ) ); ?> · <?php echo esc_html( $date ); ?></div>
+    <div class="article-card-meta">POR <?php echo esc_html( dak_upper( $author ) ); ?> · <?php echo esc_html( $date ); ?></div>
   </div>
 </article>

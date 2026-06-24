@@ -44,7 +44,7 @@ $dak_nav_cats = array(
       <li><a href="<?php echo home_url( '/' ); ?>" class="mini-nav-link active">TODOS</a></li>
       <?php foreach ( $dak_nav_cats as $cslug => $clabel ) :
         $c = get_category_by_slug( $cslug ); if ( ! $c ) { continue; } ?>
-        <li><a href="<?php echo esc_url( get_category_link( $c->term_id ) ); ?>" class="mini-nav-link"><?php echo esc_html( strtoupper( $clabel ) ); ?></a></li>
+        <li><a href="<?php echo esc_url( get_category_link( $c->term_id ) ); ?>" class="mini-nav-link"><?php echo esc_html( dak_upper( $clabel ) ); ?></a></li>
       <?php endforeach; ?>
     </ul>
     <a href="#newsletter" class="mini-nav-subscribe">SUSCRÍBETE</a>
@@ -112,7 +112,7 @@ $dak_nav_cats = array(
         <li><a href="<?php echo home_url( '/' ); ?>" class="nav-link active">TODOS</a></li>
         <?php foreach ( $dak_nav_cats as $cslug => $clabel ) :
           $c = get_category_by_slug( $cslug ); if ( ! $c ) { continue; } ?>
-          <li><a href="<?php echo esc_url( get_category_link( $c->term_id ) ); ?>" class="nav-link"><?php echo esc_html( strtoupper( $clabel ) ); ?></a></li>
+          <li><a href="<?php echo esc_url( get_category_link( $c->term_id ) ); ?>" class="nav-link"><?php echo esc_html( dak_upper( $clabel ) ); ?></a></li>
         <?php endforeach; ?>
       </ul>
     </div>
