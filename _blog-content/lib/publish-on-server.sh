@@ -47,6 +47,13 @@ for f in "${files[@]}"; do
 	if echo "$out" | grep -q '^CREATED'; then
 		echo "[DONE] Publicado ($STATUS): $base"
 		"$WP" rankmath sitemap generate >/dev/null 2>&1 && echo "[sitemap] regenerado (Google podrá descubrirlo)" || echo "[sitemap] aviso: no se pudo regenerar"
+		# IndexNow (Bing): avisa al instante de la URL nueva
+		POST_URL=$(echo "$out" | grep '^CREATED' | awk '{print $3}')
+		INKEY=$(cat "$STAGE/lib/indexnow.key" 2>/dev/null)
+		if [ -n "$INKEY" ] && [ -n "$POST_URL" ]; then
+			code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST "https://api.indexnow.org/indexnow" -H "Content-Type: application/json" -d "{\"host\":\"dakagency.net\",\"key\":\"$INKEY\",\"keyLocation\":\"https://dakagency.net/blog/$INKEY.txt\",\"urlList\":[\"$POST_URL\"]}")
+			echo "[indexnow] Bing notificado (status $code)"
+		fi
 		exit 0
 	elif echo "$out" | grep -q '^EXISTS'; then
 		continue
