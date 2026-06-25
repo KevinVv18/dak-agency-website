@@ -31,7 +31,7 @@ $sections = array(
   'publicidad'     => 'Publicidad',
   'automatizacion' => 'Automatización',
   'branding'       => 'Branding',
-  'por-rubro'      => 'Marketing por Rubro',
+  'por-rubro'      => 'Marketing',
   'guias-precios'  => 'Guías y Precios',
 );
 

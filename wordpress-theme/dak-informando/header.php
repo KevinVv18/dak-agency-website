@@ -12,7 +12,7 @@ $dak_nav_cats = array(
   'publicidad'     => 'Publicidad',
   'automatizacion' => 'Automatización',
   'branding'       => 'Branding',
-  'por-rubro'      => 'Por Rubro',
+  'por-rubro'      => 'Marketing',
   'guias-precios'  => 'Guías',
 );
 ?>

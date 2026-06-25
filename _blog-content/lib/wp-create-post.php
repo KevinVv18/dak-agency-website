@@ -102,7 +102,9 @@ if ( $cat_ids ) {
 	$postarr['post_category'] = array_values( array_unique( array_filter( $cat_ids ) ) );
 }
 
-$post_id = wp_insert_post( $postarr, true );
+// wp_slash: WordPress aplica wp_unslash() internamente al guardar; sin esto
+// las barras del JSON-LD de FAQ (\") se pierden y el schema queda invalido.
+$post_id = wp_insert_post( wp_slash( $postarr ), true );
 if ( is_wp_error( $post_id ) ) {
 	WP_CLI::error( 'wp_insert_post falló: ' . $post_id->get_error_message() );
 }
