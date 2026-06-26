@@ -21,7 +21,15 @@ const Services = () => {
   const preloadRef = useRef(null)
   const servicesRef = useRef(null)
 
-  // Servicios con contenido completo
+  // ════════════════════════════════════════════════════════════
+  //  VIDEOS PERSONALIZADOS — cómo agregar los links
+  //  Para cada servicio:
+  //    videoDesktop → link del video HORIZONTAL (16:9) para escritorio
+  //    videoMobile  → link del video VERTICAL  (9:16) para móvil
+  //  Pega la URL completa de Cloudinary entre las comillas.
+  //  Mientras estén vacíos ('') se usa el video stock de videoSrc.
+  //  Orden de prioridad: videoMobile/videoDesktop → videoSrc → imageSrc
+  // ════════════════════════════════════════════════════════════
   const services = [
     {
       id: 1,
@@ -30,7 +38,9 @@ const Services = () => {
       description: 'Creamos identidades visuales únicas que destacan en el mercado. Desde logotipos hasta sistemas de marca completos que conectan emocionalmente con tu audiencia.',
       category: 'IDENTIDAD',
       color: '#B024FF',
-      videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763849733/60774eb1-3b74-41e0-9238-796bc61b4c36_hd_m5uts5.mp4',
+      videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/5_Branding_gs86zn.mp4', // HORIZONTAL (16:9)
+      videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318150/v4_branding_z4upbs.mp4',  // VERTICAL (9:16)
+      videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763849733/60774eb1-3b74-41e0-9238-796bc61b4c36_hd_m5uts5.mp4', // stock (fallback)
       price: 'Desde S/ 1,500',
       clients: 6,
       icon: 'M19 3H5L2 9l10 13L22 9l-3-6zM9.62 8l1.5-3h1.76l1.5 3H9.62zM11 10v6.68L5.44 10H11zm2 0h5.56L13 16.68V10zm6.26-2h-2.65l-1.5-3h2.65l1.5 3zM6.24 5h2.65l-1.5 3H4.74l1.5-3z'
@@ -42,7 +52,9 @@ const Services = () => {
       description: 'Fotografía profesional que captura la esencia de tu marca. Productos, retratos corporativos y contenido visual que eleva tu presencia.',
       category: 'VISUAL',
       color: '#00C8C8',
-      videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763852525/12810774_2160_3840_30fps_srdrpp.mp4',
+      videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/1_Fotografia_wzigdo.mp4', // HORIZONTAL (16:9)
+      videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318151/v2_fotografia_g9fidq.mp4',  // VERTICAL (9:16)
+      videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763852525/12810774_2160_3840_30fps_srdrpp.mp4', // stock (fallback)
       price: 'Desde S/ 800',
       clients: 5,
       icon: 'M21 6h-3.17L16 4h-6v2h5.12l1.83 2H21v12H5v-9H3v9c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM8 14c0 2.76 2.24 5 5 5s5-2.24 5-5-2.24-5-5-5-5 2.24-5 5zm5-3c1.65 0 3 1.35 3 3s-1.35 3-3 3-3-1.35-3-3 1.35-3 3-3zM5 6h3V4H5V1H3v3H0v2h3v3h2z'
@@ -54,7 +66,9 @@ const Services = () => {
       description: 'Producción audiovisual de alto impacto. Comerciales, contenido para redes y videos corporativos que cuentan tu historia de forma memorable.',
       category: 'PRODUCCIÓN',
       color: '#00B478',
-      videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763854544/8906351-hd_1080_1920_24fps_axwmvp.mp4',
+      videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318081/3_Audiovisual_ereexn.mp4', // HORIZONTAL (16:9)
+      videoMobile: '',  // sin vertical aún → usa videoSrc (stock)
+      videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763854544/8906351-hd_1080_1920_24fps_axwmvp.mp4', // stock (fallback)
       price: 'Desde S/ 2,000',
       clients: 4,
       icon: 'M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z'
@@ -66,7 +80,9 @@ const Services = () => {
       description: 'Estrategias de contenido y gestión de redes que construyen comunidades activas. Engagement real que se traduce en resultados de negocio.',
       category: 'REDES',
       color: '#D4A574',
-      videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763858866/6003991-uhd_2160_3840_30fps_mnavuh.mp4',
+      videoDesktop: '', // sin horizontal aún → usa videoSrc (stock)
+      videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318150/v7_meta_ads_anezlx.mp4',  // VERTICAL (9:16)
+      videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763858866/6003991-uhd_2160_3840_30fps_mnavuh.mp4', // stock (fallback)
       price: 'Desde S/ 600/mes',
       clients: 6,
       icon: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z'
@@ -78,8 +94,9 @@ const Services = () => {
       description: 'Sitios web modernos y funcionales que convierten visitantes en clientes. Diseño responsivo, rápido y optimizado para resultados.',
       category: 'DESARROLLO',
       color: '#FF6B35',
-      // videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765238189/Crea_un_video_202512081540_3trka_f71zay.mp4',
-      imageSrc: '/images/web_design.webp',
+      videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318082/2_Web_pxlanb.mp4', // HORIZONTAL (16:9)
+      videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318150/v3_pagina_web_ashwff.mp4',  // VERTICAL (9:16)
+      imageSrc: '/images/web_design.webp', // imagen actual (fallback si no hay video)
       price: 'Desde S/ 2,500',
       clients: 3,
       icon: 'M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z'
@@ -91,8 +108,9 @@ const Services = () => {
       description: 'Posicionamiento orgánico y campañas publicitarias que maximizan tu inversión. Aparece donde tus clientes te buscan.',
       category: 'MARKETING',
       color: '#4A90E2',
-      // videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765238189/a7bd9fdd-f753-4ef3-8a39-8e8d00b1afe0_gyqzwi.mp4',
-      imageSrc: '/images/seo_ads.webp',
+      videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318081/8_Seo_y_Sem_syktwr.mp4', // HORIZONTAL (16:9)
+      videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318150/v6_seo_y_sem_f7zfh9.mp4',  // VERTICAL (9:16)
+      imageSrc: '/images/seo_ads.webp', // imagen actual (fallback si no hay video)
       price: 'Desde S/ 800/mes',
       clients: 4,
       icon: 'M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'
@@ -104,15 +122,21 @@ const Services = () => {
       description: 'Sistemas inteligentes que automatizan tu marketing y ventas. CRM, email marketing y workflows que trabajan mientras duermes.',
       category: 'CRM',
       color: '#9B59B6',
-      // videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1765239599/7bb56f61-ca44-4c3f-9918-8b61aa68140d_jnv2ti.mp4',
-      imageSrc: '/images/automation.webp',
+      videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318081/6_Automatizacion_vcbtoi.mp4', // HORIZONTAL (16:9)
+      videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318151/v5_automatizacion_hba6se.mp4',  // VERTICAL (9:16)
+      imageSrc: '/images/automation.webp', // imagen actual (fallback si no hay video)
       price: 'Desde S/ 1,200',
       clients: 2,
       icon: 'M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z'
     }
   ]
 
+  // Devuelve el video correcto según el dispositivo (con fallback a stock)
+  const getServiceVideo = (service) =>
+    (isMobile ? service.videoMobile : service.videoDesktop) || service.videoSrc || ''
+
   const activeService = services[activeIndex]
+  const activeVideo = getServiceVideo(activeService)
 
   // Detectar mobile
   useEffect(() => {
@@ -138,13 +162,13 @@ const Services = () => {
     }
   }, [activeIndex, isMobile])
 
-  // Reiniciar video al cambiar servicio
+  // Reiniciar video al cambiar servicio (o al cambiar orientación)
   useEffect(() => {
-    if (videoRef.current && activeService.videoSrc) {
+    if (videoRef.current && activeVideo) {
       videoRef.current.currentTime = 0
       videoRef.current.play().catch(() => { })
     }
-  }, [activeIndex, activeService])
+  }, [activeIndex, activeVideo])
 
   const handleScrollToContact = (e) => {
     e.preventDefault()
@@ -192,15 +216,16 @@ const Services = () => {
     setSwipeHintVisible(false)
   }
 
-  // Preload next video/image
+  // Preload next video/image (según orientación del dispositivo)
   useEffect(() => {
     const nextIndex = (activeIndex + 1) % services.length
-    if (services[nextIndex]) {
-      if (services[nextIndex].videoSrc && preloadRef.current) {
-        preloadRef.current.src = services[nextIndex].videoSrc
+    if (services[nextIndex] && preloadRef.current) {
+      const nextVideo = getServiceVideo(services[nextIndex])
+      if (nextVideo) {
+        preloadRef.current.src = nextVideo
       }
     }
-  }, [activeIndex, services])
+  }, [activeIndex, services, isMobile])
 
   // Keyboard navigation
   useEffect(() => {
@@ -250,22 +275,23 @@ const Services = () => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  {activeService.imageSrc ? (
-                    <img
-                      src={activeService.imageSrc}
-                      alt={activeService.title}
-                      className="featured-video"
-                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                    />
-                  ) : (
+                  {activeVideo ? (
                     <video
                       ref={videoRef}
-                      src={activeService.videoSrc}
+                      key={activeVideo}
+                      src={activeVideo}
                       autoPlay
                       muted
                       loop
                       playsInline
                       className="featured-video"
+                    />
+                  ) : (
+                    <img
+                      src={activeService.imageSrc}
+                      alt={activeService.title}
+                      className="featured-video"
+                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                     />
                   )}
                   <div
@@ -450,21 +476,21 @@ const Services = () => {
                       whileTap={{ scale: 0.97 }}
                     >
                       <div className="thumbnail-video-wrapper">
-                        {service.imageSrc ? (
-                          <img
-                            src={service.imageSrc}
-                            alt={service.title || service.name || 'Servicio DAK'}
-                            className="thumbnail-video"
-                            style={{ objectFit: 'cover' }}
-                          />
-                        ) : (
+                        {(service.videoDesktop || service.videoSrc) ? (
                           <video
-                            src={service.videoSrc}
+                            src={service.videoDesktop || service.videoSrc}
                             muted
                             playsInline
                             loop
                             preload="metadata"
                             className="thumbnail-video"
+                          />
+                        ) : (
+                          <img
+                            src={service.imageSrc}
+                            alt={service.title || service.name || 'Servicio DAK'}
+                            className="thumbnail-video"
+                            style={{ objectFit: 'cover' }}
                           />
                         )}
                         <div className="thumbnail-overlay" />
