@@ -201,7 +201,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 0.4rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 60%, transparent 100%);
+  /* scrim unificado en .featured-overlay (una sola capa = mas video visible) */
 }
 
 .featured-number {
@@ -231,6 +231,7 @@
   line-height: 1.1;
   letter-spacing: -0.03em;
   margin: 0;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65), 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .featured-tagline {
@@ -238,6 +239,7 @@
   color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
   margin: 0;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
 }
 
 .featured-description {
@@ -246,9 +248,13 @@
   line-height: 1.5;
   max-width: 550px;
   margin: 0.25rem 0 0;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
 }
 
 .featured-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.75rem 1.75rem;
   color: #ffffff;
   border: none;
@@ -300,6 +306,25 @@
 .featured-calc-btn:hover svg,
 .featured-calc-btn:hover {
   color: white !important;
+}
+
+/* Fase 4: micro-interacciones de botones */
+.featured-cta-arrow {
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.featured-cta:hover .featured-cta-arrow {
+  transform: translateX(4px);
+}
+
+.featured-cta:hover {
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--btn-color, #000) 38%, transparent);
+}
+
+.featured-cta:active,
+.featured-calc-btn:active {
+  transform: translateY(0) scale(0.97);
 }
 
 /* Progress Bar */
@@ -584,7 +609,7 @@
   }
 
   .featured-overlay {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.85) 100%) !important;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.55) 20%, rgba(0, 0, 0, 0.12) 42%, transparent 62%) !important;
   }
 
   .featured-content {
@@ -1573,5 +1598,45 @@
 @media (min-width: 769px) {
   .featured-service .nav-arrow {
     display: none;
+  }
+}
+
+/* =============================================
+   FASE 2 — Texto auto-ocultable en reposo
+   (deja titulo + categoria; oculta descripcion, stats y botones)
+   ============================================= */
+.featured-extra {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  width: 100%;
+  overflow: hidden;
+  max-height: 360px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, max-height 0.55s ease, transform 0.4s ease, margin 0.4s ease;
+}
+
+.featured-content.is-idle .featured-extra {
+  opacity: 0;
+  max-height: 0;
+  margin: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+.featured-content.is-idle .featured-icon {
+  opacity: 0;
+  transform: translateY(8px) scale(0.92);
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featured-extra,
+  .featured-content.is-idle .featured-extra,
+  .featured-content.is-idle .featured-icon {
+    transition: none;
   }
 }

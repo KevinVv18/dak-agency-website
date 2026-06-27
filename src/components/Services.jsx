@@ -3,6 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import './Services.css'
 import { scrollToSection } from '../utils/scrollToSection'
 
+// Optimizacion Cloudinary: f_auto (mejor codec por navegador) + q_auto (calidad
+// inteligente) + c_limit,w_N (solo reduce los videos mas grandes que N, NUNCA
+// agranda). No cambia los fps ni la resolucion util que se ve en pantalla.
+const cld = (url, w) => {
+  if (!url || !url.includes('/upload/')) return url
+  return url.replace('/upload/', `/upload/f_auto,q_auto,c_limit,w_${w}/`)
+}
+
 const Services = () => {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
@@ -16,10 +24,15 @@ const Services = () => {
     return () => clearTimeout(timer)
   }, [isMobile, swipeHintVisible])
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [textVisible, setTextVisible] = useState(true) // Fase 2: auto-ocultar texto en reposo
   const thumbnailsRef = useRef(null)
   const videoRef = useRef(null)
   const preloadRef = useRef(null)
   const servicesRef = useRef(null)
+  const idleTimerRef = useRef(null)        // Fase 2: timer de inactividad
+  const reducedMotionRef = useRef(false)   // respeta prefers-reduced-motion
+  const contentFocusedRef = useRef(false)  // no ocultar si un boton tiene foco
+  const hoveringRef = useRef(false)        // no ocultar mientras el mouse esta encima
 
   // ════════════════════════════════════════════════════════════
   //  VIDEOS PERSONALIZADOS — cómo agregar los links
@@ -35,7 +48,7 @@ const Services = () => {
       id: 1,
       title: 'Branding',
       tagline: 'Tu marca, inolvidable',
-      description: 'Creamos identidades visuales únicas que destacan en el mercado. Desde logotipos hasta sistemas de marca completos que conectan emocionalmente con tu audiencia.',
+      description: 'Tu identidad, imposible de ignorar. Diseñamos logo, colores y un sistema de marca completo para que destaques y conectes con tu cliente desde el primer segundo.',
       category: 'IDENTIDAD',
       color: '#B024FF',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/5_Branding_gs86zn.mp4', // HORIZONTAL (16:9)
@@ -49,7 +62,7 @@ const Services = () => {
       id: 2,
       title: 'Fotografía',
       tagline: 'Imágenes que venden por ti',
-      description: 'Fotografía profesional que captura la esencia de tu marca. Productos, retratos corporativos y contenido visual que eleva tu presencia.',
+      description: 'Imágenes que venden antes de decir una palabra. Fotografía profesional de producto, marca y equipo que transmite calidad y despierta las ganas de comprar.',
       category: 'VISUAL',
       color: '#00C8C8',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/1_Fotografia_wzigdo.mp4', // HORIZONTAL (16:9)
@@ -63,7 +76,7 @@ const Services = () => {
       id: 3,
       title: 'Video',
       tagline: 'Historias que conectan',
-      description: 'Producción audiovisual de alto impacto. Comerciales, contenido para redes y videos corporativos que cuentan tu historia de forma memorable.',
+      description: 'Historias en movimiento que enganchan y venden. Producción audiovisual para redes, anuncios y marca que detiene el scroll y se queda en la memoria.',
       category: 'PRODUCCIÓN',
       color: '#00B478',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318081/3_Audiovisual_ereexn.mp4', // HORIZONTAL (16:9)
@@ -77,7 +90,7 @@ const Services = () => {
       id: 4,
       title: 'Social Media',
       tagline: 'Convierte seguidores en clientes',
-      description: 'Estrategias de contenido y gestión de redes que construyen comunidades activas. Engagement real que se traduce en resultados de negocio.',
+      description: 'Redes que construyen comunidad y traen clientes, no solo likes. Contenido y gestión con estrategia, enfocados en resultados de negocio reales.',
       category: 'REDES',
       color: '#D4A574',
       videoDesktop: '', // sin horizontal aún → usa videoSrc (stock)
@@ -91,7 +104,7 @@ const Services = () => {
       id: 5,
       title: 'Diseño Web',
       tagline: 'Tu mejor vendedor 24/7',
-      description: 'Sitios web modernos y funcionales que convierten visitantes en clientes. Diseño responsivo, rápido y optimizado para resultados.',
+      description: 'Tu vendedor que nunca duerme. Webs rápidas y modernas, pensadas para convertir visitas en clientes y verse perfectas en cualquier pantalla.',
       category: 'DESARROLLO',
       color: '#FF6B35',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318082/2_Web_pxlanb.mp4', // HORIZONTAL (16:9)
@@ -105,7 +118,7 @@ const Services = () => {
       id: 6,
       title: 'SEO & Ads',
       tagline: 'Aparece primero, vende más',
-      description: 'Posicionamiento orgánico y campañas publicitarias que maximizan tu inversión. Aparece donde tus clientes te buscan.',
+      description: 'Aparece justo donde tu cliente te busca. Posicionamiento y campañas que aprovechan cada sol invertido y te traen contactos listos para comprar.',
       category: 'MARKETING',
       color: '#4A90E2',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318081/8_Seo_y_Sem_syktwr.mp4', // HORIZONTAL (16:9)
@@ -119,7 +132,7 @@ const Services = () => {
       id: 7,
       title: 'Automatización',
       tagline: 'Trabaja menos, logra más',
-      description: 'Sistemas inteligentes que automatizan tu marketing y ventas. CRM, email marketing y workflows que trabajan mientras duermes.',
+      description: 'Vende y atiende en piloto automático. CRM, correos y flujos que responden, hacen seguimiento y cierran ventas mientras tú te enfocas en crecer.',
       category: 'CRM',
       color: '#9B59B6',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318081/6_Automatizacion_vcbtoi.mp4', // HORIZONTAL (16:9)
@@ -137,6 +150,7 @@ const Services = () => {
 
   const activeService = services[activeIndex]
   const activeVideo = getServiceVideo(activeService)
+  const activeVideoSrc = activeVideo ? cld(activeVideo, isMobile ? 900 : 1600) : ''
 
   // Detectar mobile
   useEffect(() => {
@@ -169,6 +183,42 @@ const Services = () => {
       videoRef.current.play().catch(() => { })
     }
   }, [activeIndex, activeVideo])
+
+  // ── Fase 2: mostrar / ocultar el texto por inactividad ──
+  const IDLE_MS = 3500
+
+  useEffect(() => {
+    reducedMotionRef.current =
+      typeof window !== 'undefined' && window.matchMedia
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false
+  }, [])
+
+  const clearIdle = () => {
+    if (idleTimerRef.current) { clearTimeout(idleTimerRef.current); idleTimerRef.current = null }
+  }
+  const armIdle = () => {
+    clearIdle()
+    if (reducedMotionRef.current || contentFocusedRef.current || hoveringRef.current) return
+    idleTimerRef.current = setTimeout(() => setTextVisible(false), IDLE_MS)
+  }
+  const wakeText = () => { setTextVisible(true); armIdle() }
+
+  const handlePanelEnter = () => { if (isMobile) return; hoveringRef.current = true; clearIdle(); setTextVisible(true) }
+  const handlePanelLeave = () => { if (isMobile) return; hoveringRef.current = false; armIdle() }
+  const handleContentFocus = () => { contentFocusedRef.current = true; clearIdle(); setTextVisible(true) }
+  const handleContentBlur = () => { contentFocusedRef.current = false; armIdle() }
+  const handleVideoTap = () => {
+    if (!isMobile) return
+    setTextVisible((v) => { const next = !v; if (next) armIdle(); return next })
+  }
+
+  // Al cambiar de servicio: mostrar todo y re-armar el temporizador
+  useEffect(() => {
+    wakeText()
+    return clearIdle
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIndex, isMobile])
 
   const handleScrollToContact = (e) => {
     e.preventDefault()
@@ -222,7 +272,7 @@ const Services = () => {
     if (services[nextIndex] && preloadRef.current) {
       const nextVideo = getServiceVideo(services[nextIndex])
       if (nextVideo) {
-        preloadRef.current.src = nextVideo
+        preloadRef.current.src = cld(nextVideo, isMobile ? 900 : 1600)
       }
     }
   }, [activeIndex, services, isMobile])
@@ -265,7 +315,7 @@ const Services = () => {
           {/* Showcase Layout */}
           <div className="showcase-layout">
             {/* Panel principal - Servicio destacado */}
-            <div className="featured-service">
+            <div className="featured-service" onMouseEnter={handlePanelEnter} onMouseLeave={handlePanelLeave}>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeService.id}
@@ -278,8 +328,8 @@ const Services = () => {
                   {activeVideo ? (
                     <video
                       ref={videoRef}
-                      key={activeVideo}
-                      src={activeVideo}
+                      key={activeVideoSrc}
+                      src={activeVideoSrc}
                       autoPlay
                       muted
                       loop
@@ -296,11 +346,9 @@ const Services = () => {
                   )}
                   <div
                     className="featured-overlay"
+                    onClick={handleVideoTap}
                     style={{
-                      background: `linear-gradient(135deg, 
-                        ${activeService.color}15 0%, 
-                        rgba(0,0,0,0.7) 50%, 
-                        rgba(0,0,0,0.95) 100%)`
+                      background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 18%, rgba(0,0,0,0.12) 36%, transparent 55%), radial-gradient(130% 80% at 50% 100%, ${activeService.color}14 0%, transparent 60%)`
                     }}
                   />
                 </motion.div>
@@ -325,7 +373,9 @@ const Services = () => {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeService.id}
-                  className="featured-content"
+                  className={`featured-content ${textVisible ? '' : 'is-idle'}`}
+                  onFocusCapture={handleContentFocus}
+                  onBlurCapture={handleContentBlur}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -15 }}
@@ -370,6 +420,7 @@ const Services = () => {
 
                   <h3 className="featured-title">{activeService.title}</h3>
                   <p className="featured-tagline">{activeService.tagline}</p>
+                  <div className="featured-extra">
                   <p className="featured-description">{activeService.description}</p>
 
                   <div className="featured-stats">
@@ -391,9 +442,13 @@ const Services = () => {
                     <button
                       className="featured-cta"
                       onClick={handleScrollToContact}
-                      style={{ backgroundColor: activeService.color }}
+                      style={{ backgroundColor: activeService.color, '--btn-color': activeService.color }}
                     >
                       Hablemos de tu proyecto
+                      <svg className="featured-cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                      </svg>
                     </button>
 
                     <a
@@ -413,6 +468,7 @@ const Services = () => {
                       </svg>
                       Cotizar Paquetes
                     </a>
+                  </div>
                   </div>
                 </motion.div>
               </AnimatePresence>
@@ -478,7 +534,7 @@ const Services = () => {
                       <div className="thumbnail-video-wrapper">
                         {(service.videoDesktop || service.videoSrc) ? (
                           <video
-                            src={service.videoDesktop || service.videoSrc}
+                            src={cld(service.videoDesktop || service.videoSrc, 400)}
                             muted
                             playsInline
                             loop
