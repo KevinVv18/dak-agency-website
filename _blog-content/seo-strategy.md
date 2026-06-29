@@ -26,6 +26,35 @@ Hasta tener pilares, los posts enlazan a `/#services` y entre sí (parche, no id
 - **No inventar datos** (revisión adversaria lo caza), tildes correctas, 1 solo H1 (el del tema), 5 FAQs + schema FAQPage, 2–4 enlaces internos, imagen destacada optimizada (<300 KB WebP).
 - **Sitemap**: se regenera solo tras publicar (Rank Math) para que Google descubra.
 
+## 2.1 Variedad geográfica y de alcance (no todo es "en Chiclayo")
+
+No todos los posts deben terminar en "...en Chiclayo". Repetir el mismo gancho de
+ciudad cansa al lector y hace que nuestros propios posts compitan por la misma
+keyword. La variedad correcta abre **más búsquedas** y se ve más natural.
+
+> ⚠️ **Regla de oro (anti-doorway):** variar geografía **solo con sustancia local
+> real**. Clonar un post cambiando únicamente el nombre de la ciudad/distrito es una
+> *doorway page* y Google la penaliza. Si no puedes decir algo genuino y específico
+> de esa zona (rubros, zonas, problemas reales), **no crees esa variante**. Mejor 4
+> posts geográficos con contenido real que 20 clones.
+
+**Ejes de variedad permitidos:**
+1. **Local (Chiclayo)** — el núcleo, la mayoría de posts.
+2. **Distrital** (José Leonardo Ortiz, La Victoria, Pimentel, Pomalca, etc.) — válido
+   **solo** con contexto propio del distrito, como `0016-marketing-digital-en-jose-leonardo-ortiz`
+   (rubros de JLO, zonas, dinámica comercial). Pocos y buenos.
+3. **Nacional (Perú)** — para keywords informativas de mayor volumen donde no peleamos
+   con lo local (p. ej. "cuánto cuesta una página web en Perú", "tendencias de marketing
+   en Perú 2026"). Repetir un tópico ya cubierto pero en clave nacional es válido.
+4. **Otras ciudades donde SÍ vendemos: Lima y Trujillo** — DAK las atiende en
+   **modalidad remota**, con **paquetes y precio adicional** (por la distancia/logística).
+   Mencionarlo explícito y sin prometer oficina física: *"También trabajamos con negocios
+   de Lima y Trujillo con paquetes especiales para trabajo remoto."*
+
+**Calculadora de precios (CTA nuevo):** en posts de **costo/precio** o con CTA comercial,
+enlazar además la calculadora **https://plan.dakagency.net/** ("calcula una referencia de
+tu inversión al instante"), junto a WhatsApp y agendar. Es fondo de embudo y filtra leads.
+
 ## 3. Mapa de clusters (posts actuales → pilar)
 > Tenemos muchos posts de SOPORTE pero **faltan las páginas PILAR** (ver §1). Crearlas en WP es la prioridad estructural.
 

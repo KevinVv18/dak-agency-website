@@ -62,10 +62,41 @@ sub-ángulo distinto (p. ej. "marketing para proyectos en planos en Pimentel").
 13. **Cómo elegir una agencia de marketing digital en Chiclayo (checklist).**
 14. **Agencia vs. freelance vs. hacerlo tú mismo: qué le conviene a tu negocio.**
 
-### Cluster D — Local / geo
+### Cluster D — Local / geo (ver §2.1 de seo-strategy.md: variar CON sustancia, no doorway pages)
 15. **Marketing digital en La Victoria (Chiclayo): cómo destacar en tu distrito.**
-16. **Marketing digital en José Leonardo Ortiz: oportunidades para PYMES.**
+16. ✅ **Marketing digital en José Leonardo Ortiz** — `queue/0016` (en cola). Modelo de post distrital bien localizado.
 17. **Tendencias de marketing digital en Lambayeque 2026.**
+
+#### D.1 — Alcance nacional (keywords de más volumen, sin pelear con lo local)
+- 🟡 **¿Cuánto cuesta el marketing digital en Perú? Precios y paquetes 2026** — `drafts/0022` (creado, en espera de imagen). Showcase de la calculadora.
+- **Tendencias de marketing digital en Perú 2026** (idea futura — cuidar el "no inventar datos").
+- **Cómo elegir una agencia de marketing digital en Perú (checklist)** (idea futura).
+
+#### D.2 — Otras ciudades donde DAK vende (remoto, con paquete y precio adicional)
+- 🟡 **Marketing digital para empresas en Lima y Trujillo (modalidad remota)** — `drafts/0023` (creado, en espera de imagen).
+> **Decisión anti-doorway:** Lima y Trujillo van **combinados en UNA** página honesta sobre el
+> modelo remoto + paquetes, en vez de 2 páginas casi gemelas por ciudad (que Google penaliza).
+> Mencionar explícito: atención remota + paquetes especiales. No prometer oficina física.
+
+### Cluster E — Político / electoral (creado, en espera de imágenes → `drafts/`)
+18. 🟡 **Pilar — Marketing político en Chiclayo: cómo se gana una campaña digital** — `drafts/0018`.
+19. 🟡 **Redes sociales para candidatos** — `drafts/0019` (hermano).
+20. 🟡 **WhatsApp para campañas políticas** — `drafts/0020` (hermano).
+21. 🟡 **Video para campañas políticas** — `drafts/0021` (hermano).
+22. 🟡 **Propaganda electoral en Perú: qué permite y prohíbe la ley** — `drafts/0024` (hermano, E-E-A-T legal).
+23. 🟡 **Encuestas y escucha social en campaña** — `drafts/0025` (hermano).
+> Los 6 están **terminados y en espera de su imagen destacada** (ver `drafts/README.md`).
+> Enlazados entre sí + al pilar. Publicar pilar (0018) primero. Hermanos extra posibles a futuro:
+> "financiamiento de campaña", "manejo de crisis política", "marketing para elecciones municipales".
+
+### Cluster F — Web por rubro + sectores (EN COLA, con imagen ✅)
+Lote emparejado a imágenes del Drive SEO-IMG (optimizadas a `assets/`). Listos para el drip:
+24. ✅ **Marketing para agroindustria en Lambayeque** — `queue/0026` (img ✅). Ángulo B2B / exportación local.
+25. ✅ **Páginas web para hoteles** — `queue/0027` (img ✅).
+26. ✅ **Páginas web para agencias de viajes** — `queue/0028` (img ✅).
+27. ✅ **Páginas web para tiendas / ecommerce** — `queue/0029` (img ✅).
+> Las 3 web forman un mini-cluster bajo el pilar web (`creacion-de-paginas-web-en-chiclayo`),
+> diferenciadas por la funcionalidad real de cada rubro (reservas / cotización / carrito) → no son thin/doorway.
 
 ---
 
@@ -78,6 +109,7 @@ Cada post enlaza a 2–4 de estos, según relevancia:
 - Redes → `/blog/gestion-de-redes-sociales-para-empresas-en-chiclayo/`
 - Servicios → `https://dakagency.net/#services`
 - Contacto/CTA → WhatsApp `https://wa.me/51906765040` · Agendar `https://plan.dakagency.net/agendar.html`
+- **Calculadora de precios** → `https://plan.dakagency.net/` (úsala en posts de costo/precio y CTA comercial)
 
 ## Pendientes de calidad (revisión humana)
 - Imágenes con ALT local por post (hoy se publican sin featured image — TODO).
