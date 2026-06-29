@@ -54,6 +54,28 @@ $map = array(
 	'marketing-para-tiendas-y-retail-en-chiclayo'               => 'por-rubro',
 	'como-elegir-agencia-de-marketing-en-chiclayo'              => 'guias-precios',
 	'seo-vs-meta-ads-para-negocios-en-chiclayo'                 => 'guias-precios',
+	// Lote web por rubro + agroindustria (jun 2026)
+	'marketing-para-agroindustria-en-lambayeque'               => 'por-rubro',
+	'paginas-web-para-hoteles'                                 => 'diseno-web',
+	'paginas-web-para-agencias-de-viajes'                      => 'diseno-web',
+	'paginas-web-para-tiendas-y-ecommerce'                     => 'diseno-web',
+	'paginas-web-para-inmobiliarias'                           => 'diseno-web',
+	'marketing-para-constructoras-e-inmobiliarias'             => 'por-rubro',
+	// Lote servicios (fotografia producto, fechas clave, chatbots, reels, rebranding)
+	'fotografia-de-producto-para-vender-online'                => 'redes-sociales',
+	'campanas-publicitarias-fechas-clave'                      => 'publicidad',
+	'chatbots-de-whatsapp-para-negocios'                       => 'automatizacion',
+	'reels-y-tiktoks-para-empresas'                            => 'redes-sociales',
+	'rebranding-cuando-renovar-tu-marca'                       => 'branding',
+	// Cluster politico + geografico (borradores, se publican con su imagen)
+	'marketing-politico-en-chiclayo'                           => 'por-rubro',
+	'redes-sociales-para-candidatos'                           => 'redes-sociales',
+	'whatsapp-para-campanas-politicas'                         => 'por-rubro',
+	'video-para-campanas-politicas'                            => 'redes-sociales',
+	'cuanto-cuesta-el-marketing-digital-en-peru'               => 'guias-precios',
+	'marketing-digital-lima-trujillo'                          => 'por-rubro',
+	'propaganda-electoral-en-peru'                             => 'por-rubro',
+	'encuestas-y-escucha-social-en-campana'                    => 'por-rubro',
 );
 
 $done = 0; $pending = 0;
