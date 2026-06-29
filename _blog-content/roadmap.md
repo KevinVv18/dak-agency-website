@@ -98,6 +98,10 @@ Lote emparejado a imágenes del Drive SEO-IMG (optimizadas a `assets/`). Listos 
 > Las 3 web forman un mini-cluster bajo el pilar web (`creacion-de-paginas-web-en-chiclayo`),
 > diferenciadas por la funcionalidad real de cada rubro (reservas / cotización / carrito) → no son thin/doorway.
 
+**Actualización 2026-06-29:** `0026-0029` ya **PUBLICADOS** en vivo (IDs 121/123/125/127). Añadidos a la cola (mini-cluster bienes raíces):
+28. ✅ **Páginas web para inmobiliarias** — `queue/0030` (img ✅). Completa el cluster web por rubro.
+29. ✅ **Marketing para constructoras / venta en planos** — `queue/0031` (img ✅). Sub-niche distinto del #22 (general).
+
 ---
 
 ## Enlazado interno (regla)
