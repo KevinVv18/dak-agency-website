@@ -78,15 +78,16 @@ sub-ángulo distinto (p. ej. "marketing para proyectos en planos en Pimentel").
 > modelo remoto + paquetes, en vez de 2 páginas casi gemelas por ciudad (que Google penaliza).
 > Mencionar explícito: atención remota + paquetes especiales. No prometer oficina física.
 
-### Cluster E — Político / electoral (creado, en espera de imágenes → `drafts/`)
+### Cluster E — Político / electoral (✅ PUBLICADO con flyers DAK generados en SVG→WebP)
 18. 🟡 **Pilar — Marketing político en Chiclayo: cómo se gana una campaña digital** — `drafts/0018`.
 19. 🟡 **Redes sociales para candidatos** — `drafts/0019` (hermano).
 20. 🟡 **WhatsApp para campañas políticas** — `drafts/0020` (hermano).
 21. 🟡 **Video para campañas políticas** — `drafts/0021` (hermano).
 22. 🟡 **Propaganda electoral en Perú: qué permite y prohíbe la ley** — `drafts/0024` (hermano, E-E-A-T legal).
 23. 🟡 **Encuestas y escucha social en campaña** — `drafts/0025` (hermano).
-> Los 6 están **terminados y en espera de su imagen destacada** (ver `drafts/README.md`).
-> Enlazados entre sí + al pilar. Publicar pilar (0018) primero. Hermanos extra posibles a futuro:
+> Los 6 **PUBLICADOS en vivo** (IDs 129/131/133/135/137/139) con flyer DAK propio (SVG→WebP,
+> 6 layouts distintos: grilla, tarjetas, fondo oscuro, marco video, comparación legal, gráfico).
+> Enlazados entre sí + al pilar. Hermanos extra posibles a futuro:
 > "financiamiento de campaña", "manejo de crisis política", "marketing para elecciones municipales".
 
 ### Cluster F — Web por rubro + sectores (EN COLA, con imagen ✅)
