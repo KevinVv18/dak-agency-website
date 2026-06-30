@@ -102,6 +102,14 @@ Lote emparejado a imágenes del Drive SEO-IMG (optimizadas a `assets/`). Listos 
 28. ✅ **Páginas web para inmobiliarias** — `queue/0030` (img ✅). Completa el cluster web por rubro.
 29. ✅ **Marketing para constructoras / venta en planos** — `queue/0031` (img ✅). Sub-niche distinto del #22 (general).
 
+### Cluster G — Servicios, ángulos nuevos (EN COLA, con imagen ✅)
+Lote generado con workflow (5 subagentes en paralelo) + imágenes del Drive optimizadas. Cada uno con ángulo CLARAMENTE distinto al post general del mismo servicio (no duplican):
+30. ✅ **Fotografía de producto para vender online** — `queue/0032` (redes-sociales). ≠ 0002 (foto corporativa).
+31. ✅ **Campañas publicitarias para fechas clave** — `queue/0033` (publicidad). Calendario comercial peruano.
+32. ✅ **Chatbots de WhatsApp** — `queue/0034` (automatizacion). ≠ 0004 (automatización general).
+33. ✅ **Reels y TikToks para empresas** — `queue/0035` (redes-sociales). ≠ 0003 (video general).
+34. ✅ **Rebranding: cuándo renovar tu marca** — `queue/0036` (branding). ≠ branding general (crear de cero).
+
 ---
 
 ## Enlazado interno (regla)
