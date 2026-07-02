@@ -111,6 +111,17 @@ Lote generado con workflow (5 subagentes en paralelo) + imágenes del Drive opti
 33. ✅ **Reels y TikToks para empresas** — `queue/0035` (redes-sociales). ≠ 0003 (video general).
 34. ✅ **Rebranding: cuándo renovar tu marca** — `queue/0036` (branding). ≠ branding general (crear de cero).
 
+### Cluster H — Trending / newsjacking (✅ PUBLICADO 2026-07-02)
+Posts colgados de un momento cultural (Mundial 2026) con lección permanente de servicio.
+Imágenes = carrusel del editor sobre la identidad visual del Mundial (SEO-IMG `mundialN.jpeg`).
+35. ✅ **El logo del Mundial 2026 criticado por "simple"** — id 145, `logo-mundial-2026-identidad-visual` (branding). Logo ≠ identidad visual.
+36. ✅ **Una marca, 16 ciudades (consistencia de marca)** — id 147, `consistencia-de-marca-mundial-2026` (branding). Sistema flexible; cross-link con el 35.
+> Patrón validado: imagen trending del editor + lección evergreen del servicio = post oportuno sin fecha de caducidad dura.
+
+### Mantenimiento de imágenes (2026-07-02)
+- Pilar político (129): featured reemplazada por el **flyer real del editor** ("Sesión de fotos para campañas políticas", carpeta POLITICO del Drive). Los otros 5 políticos conservan sus flyers generados (el flyer del editor era de foto-sesión; no calzaba, no se forzó).
+- JLO (141): featured **repetía** la del post "cómo elegir agencia" (embudo) → reemplazada por flyer DAK generado del tema. Regla: antes de asignar imagen, verificar que no esté ya usada por otro post.
+
 ---
 
 ## Enlazado interno (regla)

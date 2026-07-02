@@ -21,19 +21,9 @@ nada aquí se publica por accidente (ni en el cron de Lun/Mié/Vie).
 ## En espera ahora
 
 > Cada uno necesita su imagen en `assets/<mismo-nombre>.webp` antes de pasar a `queue/`.
-> Nota: al 2026-06-29 las imágenes de SEO-IMG (Drive) son de otros temas (inmobiliario,
-> web por rubro, agroindustria…); **estos 8 aún no tienen imagen** y la política viene después.
-
-**Cluster político / electoral** (1 pilar + 5 hermanos, enlazados entre sí y al pilar):
-
-| Archivo | Tema | Falta |
-|---|---|---|
-| `0018-marketing-politico-en-chiclayo.json` | **Pilar:** Marketing político en Chiclayo | imagen → `assets/0018-...webp` |
-| `0019-redes-sociales-para-candidatos.json` | Redes sociales para candidatos | imagen → `assets/0019-...webp` |
-| `0020-whatsapp-para-campanas-politicas.json` | WhatsApp para campañas políticas | imagen → `assets/0020-...webp` |
-| `0021-video-para-campanas-politicas.json` | Video para campañas políticas | imagen → `assets/0021-...webp` |
-| `0024-propaganda-electoral-en-peru.json` | Propaganda electoral en Perú (ley) | imagen → `assets/0024-...webp` |
-| `0025-encuestas-y-escucha-social-en-campana.json` | Encuestas y escucha social | imagen → `assets/0025-...webp` |
+> (El cluster político 0018-0021/0024-0025 ya se publicó con flyers generados — 2026-06-30.)
+> Nota: cualquier borrador se puede desbloquear generándole un **flyer DAK** (SVG+sharp→WebP);
+> no es obligatorio esperar una imagen del Drive.
 
 **Variedad geográfica** (nacional + ciudades, modelo remoto):
 
@@ -41,6 +31,3 @@ nada aquí se publica por accidente (ni en el cron de Lun/Mié/Vie).
 |---|---|---|
 | `0022-cuanto-cuesta-el-marketing-digital-en-peru.json` | Precios marketing digital en Perú (nacional) | imagen → `assets/0022-...webp` |
 | `0023-marketing-digital-lima-trujillo.json` | Marketing en Lima y Trujillo (remoto) | imagen → `assets/0023-...webp` |
-
-> Orden de publicación sugerido para el cluster político: **pilar (0018) primero**, luego hermanos.
-> El cron publica 1 por corrida; el orden alfabético ya los deja en esa secuencia.

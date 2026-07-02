@@ -44,3 +44,31 @@ del título). Pon un ALT con la keyword local, p. ej.:
 > queda en SU contexto y no infla el principal.
 
 > ⚠️ Si el conector da `Not connected`, reconéctalo en Settings → Connectors.
+
+## Carpeta organizada del editor (mejor punto de partida)
+
+Además de SEO-IMG, el editor (fabian.gonzaga@dakagency.net) sube el material
+**organizado por servicio** aquí — normalmente conviene buscar primero en esta:
+
+- **Raíz "SERVICIOS"**: Drive folder `1Zvx1SpkRS1DOrqQXYRbh168IC5WSiQFo`
+- Subcarpetas (una por servicio): `SEO Y SEM`, `PÁGINA WEB`, `FOTOGRAFÍA`, `AUDIOVISUAL`,
+  `DISEÑO GRÁFICO`, `CAMPAÑAS PUBLICITARIAS`, `AUTOMATIZACIÓN`, `BRANDING`, `SOCIAL MEDIA`,
+  `POSTS FIJADO`, `INMOBILIARIA`, `AGROINDUSTRIA`, `POLITICO`.
+- Búsqueda típica: `parentId = '<id-subcarpeta>' and mimeType contains 'image/'`.
+
+**Ojo:** ahí también hay **fotos de clientes** (no solo flyers). Filtrar por nombre:
+los flyers suelen llamarse `N_POST <tema>`, `N_HISTORIA <tema>` o `<tema>.jpg/png`
+descriptivo; ante la duda, ver la imagen antes de usarla. Muchas imágenes de SEO-IMG
+son duplicados re-subidos de estas carpetas (SEO-IMG = buzón rápido; SERVICIOS = archivo).
+
+## Reemplazar la imagen destacada de un post YA publicado
+
+Usar `lib/update-featured.php` (por slug, no recrea el post):
+
+```bash
+# subir la imagen con NOMBRE DESCRIPTIVO (mejor SEO de imagen) y luego:
+wp eval-file update-featured.php <slug> /tmp/<nombre-descriptivo>.webp "ALT con keyword"
+```
+
+Se usó el 2026-07-02 para poner el flyer del editor en el pilar político y arreglar
+la imagen repetida del post de JLO.
