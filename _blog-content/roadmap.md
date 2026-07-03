@@ -118,6 +118,8 @@ Imágenes = carrusel del editor sobre la identidad visual del Mundial (SEO-IMG `
 36. ✅ **Una marca, 16 ciudades (consistencia de marca)** — id 147, `consistencia-de-marca-mundial-2026` (branding). Sistema flexible; cross-link con el 35.
 > Patrón validado: imagen trending del editor + lección evergreen del servicio = post oportuno sin fecha de caducidad dura.
 37. ✅ **Las "estampas" de tu presencia digital** — id 149, `estampas-presencia-digital` (por-rubro, 2026-07-02). Adaptado del carrusel IG de estampas; featured = flyer DAK generado estilo IG (**pendiente swap** cuando Kevin suba las láminas reales del carrusel al Drive).
+38. ✅ **La alineación de tu marketing digital (estrategia)** — id 152, `estrategia-de-marketing-digital` (por-rubro, 2026-07-02). Del carrusel IG "la alineación"; featured = PLANTILLAFLYER oficial. Post-hub: enlaza 7 guías internas.
+> Featured del 0039 estampas ya **cambiada a la imagen OFICIAL** (ESTAMPASFLYER, 2026-07-02); el flyer generado quedó de respaldo en el historial de medios.
 > **Pipeline nuevo validado: carrusel IG → blog.** Elegir carruseles con tema buscable y sustancia; el carrusel da el gancho, la estructura (1 slide ≈ 1 sección) y la featured. Candidato siguiente: "La alineación que tu marketing necesita" (formación de fútbol).
 > Nota 2026-07-02: `flyer3.jpeg` (IA 24/7) del Drive reasignado como imagen del 0034 chatbots (en cola). `flyer.jpeg` ("que todo encaje") y `flyer2.jpeg` (proceso campaña) quedan disponibles.
 
