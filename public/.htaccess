@@ -5,6 +5,12 @@
     RewriteEngine On
     RewriteBase /
 
+    # ── 301: URL huerfana del SEO anterior (sin /blog/) → post real en WordPress ──
+    RewriteRule ^blog-seo-sem-chiclayo-impulsa-tu-negocio-al-exito-digital/?$ https://dakagency.net/blog/seo-sem-chiclayo-impulsa-tu-negocio-al-exito-digital/ [R=301,L]
+
+    # ── 301: /home duplica el home → consolidar en / ──
+    RewriteRule ^home/?$ https://dakagency.net/ [R=301,L]
+
     # ── WordPress: Let /blog/ requests pass through to WordPress ──
     RewriteRule ^blog(/.*)?$ - [L]
 
