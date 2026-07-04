@@ -140,6 +140,8 @@ const Services = () => {
       imageSrc: '/images/automation.webp', // imagen actual (fallback si no hay video)
       price: 'Desde S/ 1,200',
       clients: 2,
+      demoUrl: 'https://admin.dakagency.net/simulator/',
+      demoLabel: 'Probar demo en vivo',
       icon: 'M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z'
     }
   ]
@@ -468,6 +470,26 @@ const Services = () => {
                       </svg>
                       Cotizar Paquetes
                     </a>
+
+                    {activeService.demoUrl && (
+                      <a
+                        href={activeService.demoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="featured-calc-btn"
+                        style={{
+                          '--btn-color': activeService.color,
+                          borderColor: activeService.color,
+                          color: activeService.color,
+                          boxShadow: `0 0 15px ${activeService.color}30`
+                        }}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                        {activeService.demoLabel || 'Probar demo en vivo'}
+                      </a>
+                    )}
                   </div>
                   </div>
                 </motion.div>

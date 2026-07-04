@@ -17,6 +17,98 @@ const getFeatured = (clients) =>
     .map(f => ({ client: clients.find(c => c.id === f.id), layout: f.layout }))
     .filter(f => f.client)
 
+/* ── Demos en vivo: productos reales que el visitante puede probar ── */
+const DEMOS = [
+  {
+    id: 'bot',
+    tag: 'Automatización',
+    color: '#9B59B6',
+    title: 'Asistente IA que cotiza y agenda',
+    desc: 'Chatea como si fueras un cliente: entiende lo que necesitas, arma la cotización y agenda la reunión. Solo.',
+    liveUrl: 'https://admin.dakagency.net/simulator/',
+    liveLabel: 'Probar el chatbot',
+    wa: 'Hola DAK, probé el chatbot de su web y quiero uno para mi negocio',
+  },
+  {
+    id: 'calc',
+    tag: 'Web · Automatización',
+    color: '#4ECDC4',
+    title: 'Calculadora de cotizaciones',
+    desc: 'Arma tu paquete, mira un precio referencial al instante y agenda una reunión sin escribirle a nadie.',
+    liveUrl: 'https://plan.dakagency.net/',
+    liveLabel: 'Usar la calculadora',
+    wa: 'Hola DAK, usé su calculadora y quiero una herramienta así para mi negocio',
+  },
+  {
+    id: 'av',
+    tag: 'E-commerce',
+    color: '#F39C12',
+    title: 'American Vault · catálogo en vivo',
+    desc: 'Tienda real en producción: stock en tiempo real, catálogo administrable y venta por WhatsApp.',
+    liveUrl: 'https://american-vault.com/',
+    liveLabel: 'Ver la tienda',
+    wa: 'Hola DAK, vi el catálogo de American Vault y quiero una web así para mi negocio',
+  },
+  {
+    id: 'seo',
+    tag: 'SEO',
+    color: '#2ECC71',
+    title: 'Nuestro SEO, en nuestra casa',
+    desc: 'El mismo posicionamiento que vendemos, aplicado a nuestro propio blog: guías rankeando en Google.',
+    liveUrl: 'https://dakagency.net/blog/',
+    liveLabel: 'Ver el blog',
+    wa: 'Hola DAK, quiero posicionar mi negocio en Google como lo hacen ustedes',
+  },
+]
+
+const LiveDemos = () => {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+
+  return (
+    <div className="live-demos" ref={ref}>
+      <motion.p
+        className="live-demos-kicker"
+        initial={{ opacity: 0, y: 20 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.5 }}
+      >
+        Demos en vivo — no te lo contamos, <span>pruébalo tú mismo</span>
+      </motion.p>
+      <div className="live-demos-grid">
+        {DEMOS.map((d, i) => (
+          <motion.article
+            key={d.id}
+            className="demo-card"
+            style={{ '--demo-color': d.color }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: i * 0.08 }}
+          >
+            <span className="demo-tag">{d.tag}</span>
+            <h3 className="demo-title">{d.title}</h3>
+            <p className="demo-desc">{d.desc}</p>
+            <div className="demo-actions">
+              <a className="demo-live-btn" href={d.liveUrl} target="_blank" rel="noopener noreferrer">
+                <span className="demo-live-dot" />
+                {d.liveLabel}
+              </a>
+              <a
+                className="demo-wa-btn"
+                href={`https://wa.me/51906765040?text=${encodeURIComponent(d.wa)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Quiero uno así
+              </a>
+            </div>
+          </motion.article>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 const Projects = () => {
   const [isMobile, setIsMobile] = useState(false)
   const { clients } = portfolioData
@@ -34,6 +126,7 @@ const Projects = () => {
   return (
     <section className="projects-section" id="projects">
       <ProjectsHeader />
+      <LiveDemos />
       <div className="projects-flow">
         {featured.map(({ client, layout }, i) => (
           <ProjectBlock
@@ -348,6 +441,8 @@ const MobileProjects = ({ featured }) => {
           <div className="title-line" />
         </motion.div>
       </div>
+
+      <LiveDemos />
 
       <div className="pm-cards">
         {featured.map(({ client }, i) => {

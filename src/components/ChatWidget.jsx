@@ -154,17 +154,16 @@ const ChatWidget = () => {
   // ── Submit lead to backend ──
   const submitLead = async (data) => {
     try {
-      const response = await fetch(`${API_URL}/api/leads`, {
+      const response = await fetch(`${API_URL}/api/lead`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          nombre: data.name,
+          name: data.name,
           email: data.email,
-          telefono: data.phone,
-          servicio: data.service,
-          mensaje: data.message,
-          fuente: data.source,
-          fecha: new Date().toISOString(),
+          phone: data.phone,
+          service: data.service,
+          message: data.message,
+          source: data.source || 'chat-widget-home',
         }),
       })
 
