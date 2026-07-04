@@ -997,8 +997,13 @@
 }
 
 .demo-live-btn:hover {
-  filter: brightness(1.12);
-  transform: scale(1.02);
+  background: #fff;
+  color: var(--demo-color);
+  transform: scale(1.03);
+}
+
+.demo-live-btn:hover .demo-live-dot {
+  background: var(--demo-color);
 }
 
 .demo-live-dot {
@@ -1048,5 +1053,118 @@
 @media (max-width: 560px) {
   .live-demos-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── Vida visual: halo del color del servicio (CSS puro, 0 KB) ── */
+.demo-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--demo-color) 16%, transparent), transparent 55%);
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.demo-card:hover::before {
+  opacity: 0.95;
+}
+
+/* ── Modal del demo embebido (se monta solo al hacer click) ── */
+.demo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(3, 1, 6, 0.82);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.demo-modal {
+  width: min(1040px, 100%);
+  height: min(82vh, 760px);
+  background: #0b0712;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.demo-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1.1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.demo-modal-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.demo-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.demo-modal-actions a {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.82rem;
+  text-decoration: none;
+}
+
+.demo-modal-actions a:hover {
+  color: #fff;
+}
+
+.demo-modal-close {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.demo-modal-close:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.demo-modal-iframe {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: #0b0712;
+}
+
+@media (max-width: 768px) {
+  .demo-modal-overlay {
+    padding: 0;
+  }
+  .demo-modal {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
   }
 }

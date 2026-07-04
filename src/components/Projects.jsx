@@ -64,6 +64,12 @@ const DEMOS = [
 const LiveDemos = () => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
+  const [botOpen, setBotOpen] = useState(false)
+
+  useEffect(() => {
+    document.body.style.overflow = botOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [botOpen])
 
   return (
     <div className="live-demos" ref={ref}>
@@ -89,7 +95,13 @@ const LiveDemos = () => {
             <h3 className="demo-title">{d.title}</h3>
             <p className="demo-desc">{d.desc}</p>
             <div className="demo-actions">
-              <a className="demo-live-btn" href={d.liveUrl} target="_blank" rel="noopener noreferrer">
+              <a
+                className="demo-live-btn"
+                href={d.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={d.id === 'bot' ? (e) => { e.preventDefault(); setBotOpen(true) } : undefined}
+              >
                 <span className="demo-live-dot" />
                 {d.liveLabel}
               </a>
@@ -105,6 +117,32 @@ const LiveDemos = () => {
           </motion.article>
         ))}
       </div>
+
+      {botOpen && (
+        <div className="demo-modal-overlay" onClick={() => setBotOpen(false)}>
+          <div className="demo-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="demo-modal-head">
+              <span className="demo-modal-title">
+                <span className="demo-live-dot" style={{ '--demo-color': '#9B59B6', background: '#9B59B6' }} />
+                Demo en vivo — Asistente IA de DAK
+              </span>
+              <div className="demo-modal-actions">
+                <a href="https://admin.dakagency.net/simulator/" target="_blank" rel="noopener noreferrer">
+                  Abrir en pestaña ↗
+                </a>
+                <button className="demo-modal-close" onClick={() => setBotOpen(false)} aria-label="Cerrar demo">
+                  ✕
+                </button>
+              </div>
+            </div>
+            <iframe
+              className="demo-modal-iframe"
+              src="https://admin.dakagency.net/simulator/"
+              title="Demo del asistente IA de DAK"
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
