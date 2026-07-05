@@ -9,7 +9,7 @@
 
 /* ── Header ── */
 .proj-header {
-  padding: 6rem 3rem 2rem;
+  padding: 2.5rem 3rem 2rem;
   text-align: center;
 }
 
@@ -331,9 +331,13 @@
 }
 
 .minimal-idx {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  display: block;
+  font-size: 4.5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+  margin-bottom: -0.25rem;
+  opacity: 0.2;
 }
 
 .minimal-name {

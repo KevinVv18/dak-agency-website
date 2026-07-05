@@ -49,8 +49,11 @@
 /* Header with title left, button right */
 .blog-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.25rem;
   padding: 0 4rem var(--spacing-2xl);
   margin-bottom: var(--spacing-xl);
   position: relative;
@@ -60,11 +63,11 @@
 .blog-header-left {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .blog-header-left .section-tag {
-  text-align: left;
+  text-align: center;
   margin-bottom: 0.4rem;
 }
 

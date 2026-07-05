@@ -44,6 +44,7 @@ const Blog = () => {
           <h2 className="section-title">
             <span className="title-bold">Blog</span>
           </h2>
+          <div className="title-line" />
         </div>
         <motion.a
           href="/blog/"
