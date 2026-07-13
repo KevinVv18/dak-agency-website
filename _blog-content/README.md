@@ -20,8 +20,13 @@ queue/*.json   ──(publish.sh)──>  SSH ──> wp eval-file lib/wp-create
   schema FAQ. Publica **uno por corrida** (drip).
 - Es **idempotente**: si el slug ya existe en el blog, no lo recrea (lo salta y
   mueve el archivo a `published/`).
-- **GitHub Actions** (`.github/workflows/blog-autopublish.yml`) corre el cron
-  **Lun/Mié/Vie 09:00 Perú** y commitea el cambio de estado de la cola.
+- El **cron real corre en el servidor** (hPanel, Lun/Mié/Vie 09:00 Perú) sobre el
+  staging `~/dak-autopost` y **no hace commit-back**: la cola del repo puede quedar
+  desfasada del estado real del blog (verificar con la REST pública o el sitemap).
+- ⚠️ El staging **solo se actualiza por rsync desde Actions**. Tras encolar posts
+  nuevos, dispara **"Blog Sync Staging"** (`blog-sync-staging.yml`, solo rsync) o el
+  cron nunca los verá. `blog-autopublish.yml` (dispatch manual) también sincroniza,
+  pero además publica 1 post al instante.
 
 ## Formato de un post en cola (`queue/NNNN-slug.json`)
 

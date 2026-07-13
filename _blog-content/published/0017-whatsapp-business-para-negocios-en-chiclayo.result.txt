@@ -1,0 +1,4 @@
+Publicado por el cron del servidor (hPanel) el 2026-07-03. Sin commit-back:
+este registro se añadió después, al reconciliar la cola con el estado real
+del blog (sonda REST del 2026-07-13).
+URL: https://dakagency.net/blog/whatsapp-business-para-negocios-en-chiclayo/
