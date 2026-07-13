@@ -7,6 +7,9 @@ name: Fetch Drive assets (temporal)
 # Se elimina junto con _drive-tmp/ cuando los assets finales estén listos.
 
 on:
+  push:
+    branches:
+      - claude/demos-section-redesign-bnkxbz
   workflow_dispatch:
 
 permissions:
@@ -14,6 +17,9 @@ permissions:
 
 jobs:
   fetch:
+    # Solo corre si el commit lo pide explícitamente (el push del propio bot
+    # usa GITHUB_TOKEN y nunca re-dispara workflows).
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[fetch-drive]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
