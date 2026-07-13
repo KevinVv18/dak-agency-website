@@ -1,0 +1,44 @@
+name: Blog Fix Comments (one-shot)
+
+# Limpieza puntual: borra pingbacks pendientes (auto-generados por los enlaces
+# internos entre posts), desactiva pingbacks futuros y apaga los correos de
+# moderación. NO toca comentarios humanos: los lista para revisarlos.
+# Se elimina tras ejecutarse.
+
+on:
+  push:
+    branches:
+      - claude/demos-section-redesign-bnkxbz
+
+jobs:
+  fix:
+    if: contains(github.event.head_commit.message, '[fix-comments]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Moderación y ajustes vía WP-CLI
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: 89.116.115.11
+          username: u567580447
+          port: 65002
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 10m
+          script: |
+            cd /home/u567580447/domains/dakagency.net/public_html/blog
+            echo '== pendientes total / pingbacks =='
+            wp comment list --status=hold --format=count
+            wp comment list --status=hold --type=pingback --format=count
+            echo '== pendientes NO pingback (para revisión humana) =='
+            wp comment list --status=hold --type=comment --fields=comment_ID,comment_author,comment_author_email,comment_date,comment_post_ID --format=table
+            echo '== borrando pingbacks/trackbacks pendientes =='
+            ids=$(wp comment list --status=hold --type=pingback --format=ids); [ -n "$ids" ] && wp comment delete $ids --force || echo 'sin pingbacks'
+            ids=$(wp comment list --status=hold --type=trackback --format=ids); [ -n "$ids" ] && wp comment delete $ids --force || echo 'sin trackbacks'
+            echo '== apagando correos de moderación y pings futuros =='
+            wp option update moderation_notify 0
+            wp option update comments_notify 0
+            wp option update default_pingback_flag 0
+            wp option update default_ping_status closed
+            echo '== cerrando pings en posts existentes =='
+            wp post list --post_type=post --format=ids | xargs -r -n40 wp post update --ping_status=closed >/dev/null && echo listo
+            echo '== pendientes tras limpieza =='
+            wp comment list --status=hold --format=count
