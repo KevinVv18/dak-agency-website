@@ -47,6 +47,7 @@
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   --font-mono: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  --font-display: 'Poppins', var(--font-sans);
   
   /* Transitions */
   --transition-fast: 0.15s ease;

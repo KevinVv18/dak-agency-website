@@ -926,87 +926,170 @@
   font-weight: 700;
 }
 
-.live-demos-grid {
+/* ── Escenario 2×2 con separadores en cruz y demo nuevo al centro ──
+   Réplica del diseño "apartado de proyectos": recortes flotando sobre el
+   fondo, título en color por demo, chips de color y cruz con hueco central. */
+.demo-stage {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 4rem;
+  column-gap: 0;
+  padding-top: 1.5rem;
 }
 
-.demo-card {
+.demo-axis {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.13);
+  pointer-events: none;
+}
+
+.demo-axis--v {
+  left: 50%;
+  top: 2%;
+  bottom: 2%;
+  width: 1px;
+}
+
+.demo-axis--h {
+  top: 50%;
+  left: 4%;
+  right: 4%;
+  height: 1px;
+  /* pequeño respiro donde cruza la vertical, como en el diseño */
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(50% - 28px), transparent calc(50% - 27px), transparent calc(50% + 27px), #000 calc(50% + 28px));
+  mask-image: linear-gradient(90deg, #000 calc(50% - 28px), transparent calc(50% - 27px), transparent calc(50% + 27px), #000 calc(50% + 28px));
+}
+
+.demo-cell {
+  position: relative;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top: 3px solid var(--demo-color);
-  border-radius: 16px;
-  padding: 1.5rem 1.35rem 1.35rem;
-  transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  padding: 0.5rem 1rem;
 }
 
-.demo-card:hover {
-  transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.05);
-  border-color: color-mix(in srgb, var(--demo-color) 45%, transparent);
-  border-top-color: var(--demo-color);
+/* aire hacia la cruz para que el centro respire */
+.demo-cell--tl,
+.demo-cell--bl { padding-right: 5rem; }
+
+.demo-cell--tr,
+.demo-cell--br { padding-left: 5rem; }
+
+.demo-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
-.demo-tag {
-  align-self: flex-start;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+.demo-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 1.9vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--demo-color);
-  background: color-mix(in srgb, var(--demo-color) 14%, transparent);
-  border-radius: 100px;
-  padding: 0.3rem 0.7rem;
-  margin-bottom: 0.9rem;
+  line-height: 1.15;
+  margin: 0;
 }
 
-.demo-title {
+.demo-sub {
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  font-weight: 600;
+  letter-spacing: 0.05em;
   color: #fff;
-  font-size: 1.08rem;
-  font-weight: 700;
-  line-height: 1.3;
-  margin: 0 0 0.5rem;
+  line-height: 1.4;
+  margin: 0;
 }
 
-.demo-desc {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.88rem;
-  line-height: 1.55;
-  margin: 0 0 1.2rem;
-  flex: 1;
-}
-
-.demo-actions {
+.demo-visual {
   display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-}
-
-.demo-live-btn {
-  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
+  gap: 1.6rem;
+  height: 280px;
+}
+
+/* chips mirando hacia la cruz central */
+.demo-cell--tr .demo-visual,
+.demo-cell--br .demo-visual { flex-direction: row-reverse; }
+
+.demo-img-link {
+  display: block;
+  height: 100%;
+}
+
+.demo-img {
+  height: 100%;
+  width: auto;
+  max-width: min(340px, 56vw);
+  object-fit: contain;
+  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.45));
+  transition: transform 0.4s var(--ease-out-expo), filter 0.4s ease;
+}
+
+.demo-cell:hover .demo-img {
+  transform: translateY(-6px) scale(1.03);
+  filter: drop-shadow(0 30px 55px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 42px color-mix(in srgb, var(--demo-color) 30%, transparent));
+}
+
+.demo-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  flex-shrink: 0;
+}
+
+.demo-chip {
+  display: block;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  transition: transform 0.3s var(--ease-bounce);
+}
+
+.demo-chip--fill {
   background: var(--demo-color);
-  color: #fff;
-  text-decoration: none;
-  font-size: 0.88rem;
-  font-weight: 700;
-  padding: 0.7rem 1rem;
-  border-radius: 100px;
-  transition: filter 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--demo-color) 40%, transparent);
 }
 
-.demo-live-btn:hover {
-  background: #fff;
+.demo-chip--line {
+  border: 2.5px solid #F39C12;
+}
+
+.demo-cell:hover .demo-chip--fill { transform: scale(1.12); }
+.demo-cell:hover .demo-chip--line { transform: scale(0.92); }
+
+.demo-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.demo-try {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
   color: var(--demo-color);
-  transform: scale(1.03);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
 }
 
-.demo-live-btn:hover .demo-live-dot {
+.demo-try:hover {
+  color: var(--demo-color);
+  filter: brightness(1.3);
+}
+
+.demo-try .demo-live-dot {
   background: var(--demo-color);
 }
 
@@ -1023,29 +1106,50 @@
   50% { opacity: 0.45; transform: scale(0.75); }
 }
 
-.demo-wa-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  text-decoration: none;
-  font-size: 0.85rem;
+.demo-wa {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
   font-weight: 600;
-  padding: 0.62rem 1rem;
-  border-radius: 100px;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 1px;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
-.demo-wa-btn:hover {
+.demo-wa:hover {
   color: #fff;
   border-color: var(--demo-color);
 }
 
-@media (max-width: 1024px) {
-  .live-demos-grid {
-    grid-template-columns: repeat(2, 1fr);
+/* ── Responsive del escenario ── */
+@media (max-width: 1100px) {
+  .demo-visual { height: 240px; }
+  .demo-cell--tl,
+  .demo-cell--bl { padding-right: 3.5rem; }
+  .demo-cell--tr,
+  .demo-cell--br { padding-left: 3.5rem; }
+}
+
+/* apilado en una columna */
+@media (max-width: 900px) {
+  .demo-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
   }
+
+  .demo-axis { display: none; }
+
+  .demo-cell--tl,
+  .demo-cell--bl { padding-right: 1rem; }
+  .demo-cell--tr,
+  .demo-cell--br { padding-left: 1rem; }
+
+  /* texto siempre arriba y chips al mismo lado al apilar */
+  .demo-cell--bl .demo-head,
+  .demo-cell--br .demo-head { order: -1; }
+  .demo-cell--tr .demo-visual,
+  .demo-cell--br .demo-visual { flex-direction: row; }
 }
 
 @media (max-width: 768px) {
@@ -1055,29 +1159,10 @@
 }
 
 @media (max-width: 560px) {
-  .live-demos-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ── Vida visual: halo del color del servicio (CSS puro, 0 KB) ── */
-.demo-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.demo-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--demo-color) 16%, transparent), transparent 55%);
-  opacity: 0.55;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
-
-.demo-card:hover::before {
-  opacity: 0.95;
+  .demo-visual { height: 205px; gap: 1.1rem; }
+  .demo-cell--center .demo-visual { height: 175px; }
+  .demo-chip { width: 30px; height: 30px; border-radius: 10px; }
+  .demo-links { flex-wrap: wrap; gap: 0.6rem 1.1rem; }
 }
 
 /* ── Modal del demo embebido (se monta solo al hacer click) ── */

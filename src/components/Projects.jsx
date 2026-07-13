@@ -1,6 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion'
 import { portfolioData } from '../data/portfolioData'
+import imgCartera from '../assets/demos/cartera.webp'
+import imgPeriodico from '../assets/demos/periodico.webp'
+import imgRobot from '../assets/demos/robot.webp'
+import imgInmobiliaria from '../assets/demos/inmobiliaria.webp'
 import './Projects.css'
 
 /* Proyectos destacados: un cliente por estilo de preview.
@@ -17,49 +21,130 @@ const getFeatured = (clients) =>
     .map(f => ({ client: clients.find(c => c.id === f.id), layout: f.layout }))
     .filter(f => f.client)
 
-/* ── Demos en vivo: productos reales que el visitante puede probar ── */
+/* ── Demos en vivo: productos reales que el visitante puede probar ──
+   Diseño "apartado de proyectos": cuadrícula 2×2 con separadores en cruz
+   y recortes flotando sobre el fondo. */
 const DEMOS = [
   {
-    id: 'bot',
-    tag: 'Automatización',
-    color: '#9B59B6',
-    title: 'Asistente IA que cotiza y agenda',
-    desc: 'Chatea como si fueras un cliente: entiende lo que necesitas, arma la cotización y agenda la reunión. Solo.',
-    liveUrl: 'https://admin.dakagency.net/simulator/',
-    liveLabel: 'Probar el chatbot',
-    wa: 'Hola DAK, probé el chatbot de su web y quiero uno para mi negocio',
-  },
-  {
-    id: 'calc',
-    tag: 'Web · Automatización',
-    color: '#4ECDC4',
-    title: 'Calculadora de cotizaciones',
-    desc: 'Arma tu paquete, mira un precio referencial al instante y agenda una reunión sin escribirle a nadie.',
-    liveUrl: 'https://plan.dakagency.net/',
-    liveLabel: 'Usar la calculadora',
-    wa: 'Hola DAK, usé su calculadora y quiero una herramienta así para mi negocio',
-  },
-  {
     id: 'av',
-    tag: 'E-commerce',
+    pos: 'tl',
+    label: 'E-commerce',
+    sub: 'American Vault · Catálogo',
     color: '#F39C12',
-    title: 'American Vault · catálogo en vivo',
-    desc: 'Tienda real en producción: stock en tiempo real, catálogo administrable y venta por WhatsApp.',
+    img: imgCartera,
+    alt: 'Cartera del catálogo en vivo de American Vault',
     liveUrl: 'https://american-vault.com/',
     liveLabel: 'Ver la tienda',
     wa: 'Hola DAK, vi el catálogo de American Vault y quiero una web así para mi negocio',
   },
   {
     id: 'seo',
-    tag: 'SEO',
+    pos: 'tr',
+    label: 'SEO',
+    sub: 'Blog · Comunidad',
     color: '#2ECC71',
-    title: 'Nuestro SEO, en nuestra casa',
-    desc: 'El mismo posicionamiento que vendemos, aplicado a nuestro propio blog: guías rankeando en Google.',
+    img: imgPeriodico,
+    alt: 'Periódico de DAK Agency: nuestro blog posicionando en Google',
     liveUrl: 'https://dakagency.net/blog/',
     liveLabel: 'Ver el blog',
     wa: 'Hola DAK, quiero posicionar mi negocio en Google como lo hacen ustedes',
   },
+  {
+    id: 'bot',
+    pos: 'bl',
+    label: 'Automatización',
+    sub: 'Asistente IA',
+    color: '#9B59B6',
+    img: imgRobot,
+    alt: 'Robot del asistente IA de DAK que cotiza y agenda solo',
+    liveUrl: 'https://admin.dakagency.net/simulator/',
+    liveLabel: 'Probar el chatbot',
+    wa: 'Hola DAK, probé el chatbot de su web y quiero uno para mi negocio',
+  },
+  {
+    id: 'inmo',
+    pos: 'br',
+    label: 'Website',
+    sub: 'Página de inmobiliaria',
+    color: '#4ECDC4',
+    img: imgInmobiliaria,
+    alt: 'Colgador de puerta del demo inmobiliario de DAK',
+    liveUrl: 'https://inmobiliaria.dakagency.com/',
+    liveLabel: 'Ver el demo',
+    wa: 'Hola DAK, vi su demo de web inmobiliaria y quiero una así para mi negocio',
+  },
 ]
+
+const DemoLinks = ({ d, onLive }) => (
+  <div className="demo-links">
+    <a
+      className="demo-try"
+      href={d.liveUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={onLive}
+    >
+      <span className="demo-live-dot" />
+      {d.liveLabel}
+    </a>
+    <a
+      className="demo-wa"
+      href={`https://wa.me/51906765040?text=${encodeURIComponent(d.wa)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Quiero uno así
+    </a>
+  </div>
+)
+
+const DemoChips = () => (
+  <span className="demo-chips" aria-hidden="true">
+    <i className="demo-chip demo-chip--fill" />
+    <i className="demo-chip demo-chip--line" />
+  </span>
+)
+
+const DemoCell = ({ d, index, inView, onLive }) => {
+  const isTop = d.pos === 'tl' || d.pos === 'tr'
+
+  const head = (
+    <header className="demo-head">
+      <h3 className="demo-name">{d.label}</h3>
+      <p className="demo-sub">{d.sub}</p>
+    </header>
+  )
+
+  const visual = (
+    <div className="demo-visual">
+      <a
+        className="demo-img-link"
+        href={d.liveUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${d.label} — ${d.liveLabel}`}
+        onClick={onLive}
+      >
+        <img className="demo-img" src={d.img} alt={d.alt} loading="lazy" />
+      </a>
+      <DemoChips />
+    </div>
+  )
+
+  return (
+    <motion.article
+      className={`demo-cell demo-cell--${d.pos}`}
+      style={{ '--demo-color': d.color }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.55, delay: index * 0.1 }}
+    >
+      {isTop ? head : visual}
+      {isTop ? visual : head}
+      <DemoLinks d={d} onLive={onLive} />
+    </motion.article>
+  )
+}
 
 const LiveDemos = () => {
   const ref = useRef(null)
@@ -71,6 +156,8 @@ const LiveDemos = () => {
     return () => { document.body.style.overflow = '' }
   }, [botOpen])
 
+  const openBot = (e) => { e.preventDefault(); setBotOpen(true) }
+
   return (
     <div className="live-demos" ref={ref}>
       <motion.p
@@ -81,40 +168,19 @@ const LiveDemos = () => {
       >
         Demos en vivo — no te lo contamos, <span>pruébalo tú mismo</span>
       </motion.p>
-      <div className="live-demos-grid">
+
+      <div className="demo-stage">
+        <span className="demo-axis demo-axis--v" aria-hidden="true" />
+        <span className="demo-axis demo-axis--h" aria-hidden="true" />
+
         {DEMOS.map((d, i) => (
-          <motion.article
+          <DemoCell
             key={d.id}
-            className="demo-card"
-            style={{ '--demo-color': d.color }}
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: i * 0.08 }}
-          >
-            <span className="demo-tag">{d.tag}</span>
-            <h3 className="demo-title">{d.title}</h3>
-            <p className="demo-desc">{d.desc}</p>
-            <div className="demo-actions">
-              <a
-                className="demo-live-btn"
-                href={d.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={d.id === 'bot' ? (e) => { e.preventDefault(); setBotOpen(true) } : undefined}
-              >
-                <span className="demo-live-dot" />
-                {d.liveLabel}
-              </a>
-              <a
-                className="demo-wa-btn"
-                href={`https://wa.me/51906765040?text=${encodeURIComponent(d.wa)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Quiero uno así
-              </a>
-            </div>
-          </motion.article>
+            d={d}
+            index={i}
+            inView={inView}
+            onLive={d.id === 'bot' ? openBot : undefined}
+          />
         ))}
       </div>
 
