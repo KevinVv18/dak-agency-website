@@ -1,0 +1,38 @@
+name: Blog Sync Staging (DAK)
+
+# Sincroniza _blog-content/ → staging del servidor (~/dak-autopost) SIN
+# publicar nada. Úsalo cuando se agregan posts a la cola y quieres que el
+# cron del servidor (hPanel, Lun/Mié/Vie 09:00 Perú) los vea sin esperar a
+# un disparo de "Blog Auto-Publish".
+#
+# Contexto: el cron publica desde el staging, y el staging solo se actualiza
+# por rsync desde Actions. Si se encola contenido y nadie sincroniza, el cron
+# se queda "sin nada nuevo" indefinidamente (pasó del 03-jul al 13-jul-2026).
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: blog-autopublish
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Subir contenido al servidor (solo rsync, no publica)
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: _blog-content/
+          remote_path: /home/u567580447/dak-autopost/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
