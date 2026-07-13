@@ -1,9 +1,8 @@
-name: Fetch Drive assets (temporal)
+name: Fetch remote assets (temporal)
 
-# Workflow de un solo uso: descarga los diseños/imágenes del folder de Drive
-# (compartido por enlace) y los commitea a la rama para que la sesión cloud
-# de Claude pueda verlos y optimizarlos. El sandbox de la sesión no tiene
-# acceso a drive.google.com, pero los runners de GitHub sí.
+# Workflow de apoyo para la sesión cloud de Claude: el sandbox no tiene
+# acceso a internet general, pero los runners de GitHub sí. Fase 2: captura
+# pantallas de plan.dakagency.net (demo Calculadora) y las commitea a la rama.
 # Se elimina junto con _drive-tmp/ cuando los assets finales estén listos.
 
 on:
@@ -16,7 +15,7 @@ permissions:
   contents: write
 
 jobs:
-  fetch:
+  shots:
     # Solo corre si el commit lo pide explícitamente (el push del propio bot
     # usa GITHUB_TOKEN y nunca re-dispara workflows).
     if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[fetch-drive]')
@@ -25,38 +24,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download from Google Drive
+      - name: Screenshot plan.dakagency.net
         run: |
-          pip install --quiet gdown
           mkdir -p _drive-tmp
-          declare -A files=(
-            ["diseno-borrador.jpg"]="19Ej-er43qOIu-7nT90cKhBTBaaDMDcVy"
-            ["inmobiliaria.png"]="19BSQgVRwGyvqGK-O48Jeb8d19NwuktSw"
-            ["robot.png"]="10n8ITjGbr8yz-xdkjXNzgw5WruF3gksU"
-            ["cartera.png"]="1rDKZ54d-4ZMb9hbzJrXLNLwLLXeGSO_O"
-            ["periodico.png"]="1RXukMubDYkf3KdhNZuffLfnjtRLB-BS8"
-            ["web1.png"]="1qYZ2-YcHs-rTIcgMNvDdmPI6VUFD13EO"
-          )
-          fail=0
-          for name in "${!files[@]}"; do
-            id="${files[$name]}"
-            echo "→ $name ($id)"
-            gdown --quiet "https://drive.google.com/uc?id=${id}" -O "_drive-tmp/${name}" || { echo "::error::gdown falló para ${name}"; fail=1; continue; }
-            mime=$(file --brief --mime-type "_drive-tmp/${name}")
-            if [[ "$mime" != image/* ]]; then
-              echo "::error::${name} no es imagen (mime: ${mime}) — ¿el archivo es público por enlace?"
-              head -c 400 "_drive-tmp/${name}" || true
-              rm -f "_drive-tmp/${name}"
-              fail=1
-            fi
-          done
-          ls -la _drive-tmp/
-          exit $fail
+          npx -y playwright@1.49.1 install --with-deps chromium
+          npx -y playwright@1.49.1 screenshot \
+            --device="iPhone 13 Pro" \
+            --wait-for-timeout=6000 \
+            "https://plan.dakagency.net/" _drive-tmp/calc-mobile.png
+          npx -y playwright@1.49.1 screenshot \
+            --viewport-size="1280,800" \
+            --wait-for-timeout=6000 \
+            "https://plan.dakagency.net/" _drive-tmp/calc-desktop.png
+          file _drive-tmp/calc-*.png
 
       - name: Commit assets to branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add _drive-tmp
-          git commit -m "chore: assets temporales del Drive para rediseño de demos"
+          git commit -m "chore: capturas de plan.dakagency.net para el demo Calculadora"
           git push origin "HEAD:${GITHUB_REF_NAME}"
