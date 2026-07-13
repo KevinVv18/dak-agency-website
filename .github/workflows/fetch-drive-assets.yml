@@ -29,10 +29,12 @@ jobs:
           mkdir -p _drive-tmp
           npx -y playwright@1.49.1 install --with-deps chromium
           npx -y playwright@1.49.1 screenshot \
+            -b chromium \
             --device="iPhone 13 Pro" \
             --wait-for-timeout=6000 \
             "https://plan.dakagency.net/" _drive-tmp/calc-mobile.png
           npx -y playwright@1.49.1 screenshot \
+            -b chromium \
             --viewport-size="1280,800" \
             --wait-for-timeout=6000 \
             "https://plan.dakagency.net/" _drive-tmp/calc-desktop.png
