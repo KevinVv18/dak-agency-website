@@ -69,7 +69,7 @@ const DEMOS = [
     color: '#4ECDC4',
     img: imgInmobiliaria,
     alt: 'Colgador de puerta del demo inmobiliario de DAK',
-    liveUrl: 'https://inmobiliaria.dakagency.com/',
+    liveUrl: 'https://inmobiliaria.dakagency.net/',
     liveLabel: 'Ver el demo',
     wa: 'Hola DAK, vi su demo de web inmobiliaria y quiero una así para mi negocio',
   },
