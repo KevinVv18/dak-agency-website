@@ -1,7 +1,7 @@
 name: Diagnóstico inmobiliaria (one-shot)
 
-# Fase 2: identifica qué hay en cada WordPress staging (blogname/siteurl)
-# para ubicar el demo inmobiliario. Solo lectura. Se elimina tras usarse.
+# Fase 3: sonda de solo lectura del blog (qué slugs están publicados) para
+# saber si el cron del servidor ya drenó 0031/0032 esta semana.
 
 on:
   push:
@@ -13,21 +13,7 @@ jobs:
     if: contains(github.event.head_commit.message, '[diag-inmo]')
     runs-on: ubuntu-latest
     steps:
-      - name: Identidad de cada sitio (SSH, solo lectura)
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: 89.116.115.11
-          username: u567580447
-          port: 65002
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          command_timeout: 5m
-          script: |
-            WP="$(command -v wp 2>/dev/null || echo /usr/local/bin/wp)"
-            for d in lightyellow-barracuda-660475.hostingersite.com peachpuff-lobster-117727.hostingersite.com; do
-              p="/home/u567580447/domains/$d/public_html"
-              echo "== $d =="
-              [ -f "$p/wp-config.php" ] || { echo '(no es WP)'; continue; }
-              cd "$p" && echo "blogname: $("$WP" option get blogname 2>/dev/null)" && echo "siteurl:  $("$WP" option get siteurl 2>/dev/null)" && echo "home:     $("$WP" option get home 2>/dev/null)" && echo "tema:     $("$WP" theme list --status=active --field=name 2>/dev/null)"
-            done
-            echo '== htaccess de dakagency.net (por si atrapa subdominios) =='
-            head -40 /home/u567580447/domains/dakagency.net/public_html/.htaccess
+      - name: Slugs publicados (REST pública)
+        run: |
+          curl -sS --max-time 30 "https://dakagency.net/blog/wp-json/wp/v2/posts?per_page=20&_fields=slug,link,date" \
+            | python3 -c "import json,sys; [print(p['date'][:10], '|', p['slug']) for p in json.load(sys.stdin)]"
