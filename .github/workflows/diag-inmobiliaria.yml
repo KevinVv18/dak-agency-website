@@ -1,0 +1,41 @@
+name: Diagnóstico inmobiliaria (one-shot)
+
+# Diagnostica por qué inmobiliaria.dakagency.net no responde:
+# 1) vista externa (DNS + HTTP) desde el runner
+# 2) vista interna (SSH al hosting): qué dominios/subdominios existen y qué
+#    hay en sus docroots. Solo lectura. Se elimina tras usarse.
+
+on:
+  push:
+    branches:
+      - claude/demos-section-redesign-bnkxbz
+
+jobs:
+  diag:
+    if: contains(github.event.head_commit.message, '[diag-inmo]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vista externa (DNS + HTTP)
+        run: |
+          for h in inmobiliaria.dakagency.net inmobiliaria.dakagency.com plan.dakagency.net dakagency.net; do
+            echo "== $h =="
+            python3 -c "import socket;print('DNS:', sorted({ai[4][0] for ai in socket.getaddrinfo('$h', 443)}))" 2>/dev/null || echo "DNS: NO RESUELVE"
+            curl -sS -o /dev/null -w "HTTP: %{http_code}  redirect: %{redirect_url}\n" --max-time 20 "https://$h/" || echo "HTTP: FALLO DE CONEXIÓN"
+          done
+
+      - name: Vista servidor (SSH, solo lectura)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: 89.116.115.11
+          username: u567580447
+          port: 65002
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 5m
+          script: |
+            echo '== dominios en la cuenta =='
+            ls -la /home/u567580447/domains/
+            echo '== docroots =='
+            for d in /home/u567580447/domains/*/; do
+              echo "── $d"
+              ls -la "${d}public_html" 2>/dev/null | head -12 || echo '(sin public_html)'
+            done
