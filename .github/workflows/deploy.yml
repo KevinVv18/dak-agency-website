@@ -33,11 +33,16 @@ jobs:
 
       # El build ya NO ejecuta deploy.sh (era no-op en el runner y el
       # `|| true` ocultaba fallos reales de vite build).
+      #
+      # IMPORTANTE: el rsync de la SPA usa --delete sobre public_html/, así que
+      # TODO subdominio que viva como carpeta ahí (blog/, inmobiliaria/) debe ir
+      # en --exclude o este deploy lo borra. (Esto borró el demo inmobiliario
+      # original; por eso inmobiliaria/ está excluido.)
 
       - name: Deploy SPA via SSH (rsync)
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avz --delete --exclude='blog/' --exclude='.builds/'
+          switches: -avz --delete --exclude='blog/' --exclude='.builds/' --exclude='inmobiliaria/'
           path: dist/
           remote_path: /home/u567580447/domains/dakagency.net/public_html/
           remote_host: 89.116.115.11
