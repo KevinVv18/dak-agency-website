@@ -1,0 +1,40 @@
+name: Deploy demo inmobiliaria (Norvia)
+
+# Publica el sitio-demo estático de _inmobiliaria-demo/ en el docroot del
+# subdominio inmobiliaria.dakagency.net
+# (/home/u567580447/domains/dakagency.net/public_html/inmobiliaria).
+#
+# Dispara:
+#  - manualmente (workflow_dispatch)
+#  - push a main que toque _inmobiliaria-demo/**
+#  - cualquier push cuyo commit incluya [deploy-inmo] (para desplegar desde una rama)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '_inmobiliaria-demo/**'
+      - '.github/workflows/deploy-inmobiliaria.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy-inmo]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Subir demo al docroot del subdominio (rsync en Docker)
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: _inmobiliaria-demo/
+          remote_path: /home/u567580447/domains/dakagency.net/public_html/inmobiliaria/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
