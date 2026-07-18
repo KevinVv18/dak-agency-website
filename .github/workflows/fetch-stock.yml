@@ -1,0 +1,81 @@
+name: Fetch stock assets (one-shot)
+
+# Descarga fotos de stock (Unsplash/Pexels — licencia libre para uso comercial)
+# y panoramas 360° equirectangulares (Poly Haven — CC0) para el rediseño del
+# demo inmobiliario, y las commitea a la rama en _stock-tmp/ para que la
+# sesión cloud las revise y optimice. Se elimina tras usarse.
+
+on:
+  push:
+    branches:
+      - claude/demos-section-redesign-bnkxbz
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    if: contains(github.event.head_commit.message, '[fetch-stock]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Descargar fotos (Unsplash/Pexels)
+        run: |
+          mkdir -p _stock-tmp
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
+          get(){ # get <archivo> <url>
+            if curl -sSL -A "$UA" --max-time 40 -o "_stock-tmp/$1" "$2"; then
+              mime=$(file --brief --mime-type "_stock-tmp/$1")
+              if [[ "$mime" == image/* ]]; then echo "OK  $1 ($mime, $(du -h "_stock-tmp/$1" | cut -f1))"; return 0; fi
+            fi
+            echo "FAIL $1"; rm -f "_stock-tmp/$1"; return 0
+          }
+          U="https://images.unsplash.com"
+          Q="?w=1800&q=82&fm=jpg&fit=crop"
+          # exteriores / fachadas
+          get casa-moderna-blanca.jpg     "$U/photo-1600585154340-be6161a56a0c$Q"
+          get casa-lujo-piscina.jpg       "$U/photo-1600596542815-ffad4c1539a9$Q"
+          get casa-fachada-moderna.jpg    "$U/photo-1580587771525-78b9dba3b914$Q"
+          get casa-contemporanea.jpg      "$U/photo-1512917774080-9991f1c4c750$Q"
+          get casa-jardin.jpg             "$U/photo-1568605114967-8130f3a36994$Q"
+          get villa-noche.jpg             "$U/photo-1613490493576-7fde63acd811$Q"
+          get casa-blanca-pexels.jpg      "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?w=1800&auto=compress"
+          # interiores
+          get interior-sala.jpg           "$U/photo-1600210492486-724fe5c67fb0$Q"
+          get interior-sala2.jpg          "$U/photo-1600566753086-00f18fb6b3ea$Q"
+          get interior-depa.jpg           "$U/photo-1522708323590-d24dbb6b0267$Q"
+          get interior-depa2.jpg          "$U/photo-1560448204-e02f11c3d0e2$Q"
+          get interior-cocina.jpg         "$U/photo-1556912173-3bb406ef7e77$Q"
+          get interior-dormitorio.jpg     "$U/photo-1560185007-cde436f6a4d0$Q"
+          # terreno / aéreas / hero
+          get aerea-casas.jpg             "$U/photo-1449844908441-8829872d2607$Q"
+          get terreno.jpg                 "$U/photo-1500382017468-9049fed747ef$Q"
+          get edificio-depas.jpg          "$U/photo-1486406146926-c627a92ad1ab$Q"
+          # retratos testimonios
+          get retrato-mujer.jpg           "$U/photo-1494790108377-be9c29b29330?w=400&q=80&fm=jpg&fit=crop"
+          get retrato-hombre.jpg          "$U/photo-1507003211169-0a1dd7228f2d?w=400&q=80&fm=jpg&fit=crop"
+          get retrato-mujer2.jpg          "$U/photo-1438761681033-6461ffad8d80?w=400&q=80&fm=jpg&fit=crop"
+          echo "── resumen fotos ──"; ls -la _stock-tmp/ | head -30
+
+      - name: Descargar panoramas 360 (Poly Haven, CC0)
+        run: |
+          UA="Mozilla/5.0"
+          for name in lebombo veranda small_empty_room_3 reading_room wooden_lounge artist_workshop; do
+            url=$(curl -sSL --max-time 20 "https://api.polyhaven.com/files/$name" | jq -r '.tonemapped.url // empty')
+            if [ -z "$url" ]; then echo "FAIL api $name"; continue; fi
+            if curl -sSL -A "$UA" --max-time 90 -o "_stock-tmp/pano-$name.jpg" "$url"; then
+              mime=$(file --brief --mime-type "_stock-tmp/pano-$name.jpg")
+              if [[ "$mime" == image/* ]]; then echo "OK  pano-$name.jpg ($(du -h "_stock-tmp/pano-$name.jpg" | cut -f1))"; else rm -f "_stock-tmp/pano-$name.jpg"; echo "FAIL mime $name"; fi
+            else echo "FAIL dl $name"; fi
+          done
+          echo "── resumen panos ──"; ls -la _stock-tmp/pano-* 2>/dev/null || echo "sin panoramas"
+
+      - name: Commit a la rama
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _stock-tmp
+          git commit -m "chore: assets de stock temporales para rediseño del demo inmobiliario"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
