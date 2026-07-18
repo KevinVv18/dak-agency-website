@@ -1,0 +1,53 @@
+name: Diag inmo docroot (one-shot)
+
+# El subdominio inmobiliaria.dakagency.net apunta a
+# /domains/dakagency.net/public_html/inmobiliaria (carpeta dentro del sitio
+# principal). Verificamos: (1) qué hay en esa carpeta, (2) si algún WP staging
+# es el demo inmobiliario (NAPOLES/astra), (3) estado HTTP actual. Solo lectura.
+
+on:
+  push:
+    branches:
+      - claude/demos-section-redesign-bnkxbz
+
+jobs:
+  diag:
+    if: contains(github.event.head_commit.message, '[diag-inmo2]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Estado HTTP del subdominio
+        run: |
+          curl -sS -o /dev/null -w "inmobiliaria.dakagency.net → HTTP %{http_code}\n" --max-time 20 "https://inmobiliaria.dakagency.net/" || echo "sin respuesta"
+          echo "--- primeras líneas del body ---"
+          curl -sS --max-time 20 "https://inmobiliaria.dakagency.net/" | head -20 || true
+
+      - name: Docroot real + identidad de WP staging (SSH, solo lectura)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: 89.116.115.11
+          username: u567580447
+          port: 65002
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 5m
+          script: |
+            WP="$(command -v wp 2>/dev/null || echo /usr/local/bin/wp)"
+            echo '== contenido de public_html/inmobiliaria =='
+            ls -la /home/u567580447/domains/dakagency.net/public_html/inmobiliaria/ 2>/dev/null || echo '(la carpeta no existe)'
+            echo
+            echo '== front page del WP NAPOLES (peachpuff) =='
+            p=/home/u567580447/domains/peachpuff-lobster-117727.hostingersite.com/public_html
+            if [ -f "$p/wp-config.php" ]; then
+              cd "$p"
+              echo "blogname: $("$WP" option get blogname 2>/dev/null)"
+              echo "template: $("$WP" option get template 2>/dev/null)"
+              echo "páginas:"
+              "$WP" post list --post_type=page --fields=ID,post_title,post_status --format=table 2>/dev/null | head -15
+              echo "posts/proyectos:"
+              "$WP" post list --post_type=any --posts_per_page=8 --fields=post_type,post_title --format=table 2>/dev/null | head -15
+            fi
+            echo
+            echo '== otros staging con contenido =='
+            for d in lightyellow-barracuda-660475 sandybrown-marten-661959 sienna-bison-796020; do
+              echo "-- $d --"
+              ls /home/u567580447/domains/$d.hostingersite.com/public_html/ 2>/dev/null | head -8
+            done
