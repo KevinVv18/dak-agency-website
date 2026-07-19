@@ -1,0 +1,188 @@
+/* ── Campanita "Lo nuevo" del nav ── */
+.notif {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.notif-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.notif-btn:hover,
+.notif-btn.open {
+  border-color: rgba(176, 36, 255, 0.55);
+  background: rgba(176, 36, 255, 0.12);
+  color: #fff;
+}
+
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 100px;
+  background: #B024FF;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  box-shadow: 0 0 0 2px #030106, 0 0 10px rgba(176, 36, 255, 0.6);
+}
+
+.notif-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 344px;
+  max-height: min(70vh, 480px);
+  display: flex;
+  flex-direction: column;
+  background: rgba(14, 8, 20, 0.96);
+  border: 1px solid rgba(176, 36, 255, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(176, 36, 255, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow: hidden;
+  z-index: 1200;
+}
+
+.notif-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem 0.7rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: var(--font-display, 'Poppins', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.notif-close {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.2rem 0.35rem;
+  border-radius: 6px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.notif-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.notif-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem;
+  overflow-y: auto;
+}
+
+.notif-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 0.6rem;
+  border-radius: 11px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.notif-item:hover {
+  background: rgba(176, 36, 255, 0.1);
+}
+
+.notif-ico {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  color: var(--n-color, #B024FF);
+  background: color-mix(in srgb, var(--n-color, #B024FF) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--n-color, #B024FF) 35%, transparent);
+}
+
+.notif-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.notif-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.35;
+}
+
+.notif-meta {
+  font-size: 0.66rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.03em;
+}
+
+.notif-meta b {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.notif-go {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.3);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.notif-item:hover .notif-go {
+  color: #B024FF;
+  transform: translate(2px, -2px);
+}
+
+/* Móvil: el panel ocupa el ancho de la pantalla bajo el nav */
+@media (max-width: 768px) {
+  /* En móvil el CTA y los links se ocultan: empuja la campanita
+     a la derecha, junto al hamburger. */
+  .notif {
+    margin-left: auto;
+  }
+  .notif-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .notif-panel {
+    position: fixed;
+    top: 72px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: min(65vh, 440px);
+  }
+}

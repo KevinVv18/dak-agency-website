@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import './Navigation.css'
 import logoSvg from '../assets/logo-nav.svg'
 import { scrollToSection } from '../utils/scrollToSection'
+import NotificationBell from './NotificationBell'
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -108,6 +109,9 @@ const Navigation = () => {
         <ul className="nav-links desktop">
           {navLinks.map((link, index) => renderLink(link, index, false))}
         </ul>
+
+        {/* Campanita de novedades */}
+        <NotificationBell />
 
         {/* CTA Button */}
         <motion.a

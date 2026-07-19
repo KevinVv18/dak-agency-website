@@ -1,0 +1,137 @@
+/* ── Ticker de anuncios del hero ── */
+/* Centrado con márgenes auto (framer-motion controla transform,
+   así que no podemos centrar con translateX). */
+.ann-ticker {
+  position: absolute;
+  top: 96px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  width: max-content;
+  max-width: min(92vw, 640px);
+}
+
+.ann-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.9rem 0.45rem 0.45rem;
+  border-radius: 100px;
+  background: rgba(16, 10, 22, 0.55);
+  border: 1px solid rgba(176, 36, 255, 0.28);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  text-decoration: none;
+  color: #fff;
+  max-width: 100%;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+
+.ann-pill:hover {
+  border-color: rgba(176, 36, 255, 0.6);
+  background: rgba(22, 12, 30, 0.72);
+  transform: translateY(-1px);
+  color: #fff;
+}
+
+.ann-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  background: color-mix(in srgb, var(--ann-color, #B024FF) 28%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ann-color, #B024FF) 55%, transparent);
+  padding: 0.28rem 0.65rem;
+  border-radius: 100px;
+}
+
+.ann-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ann-color, #B024FF);
+  box-shadow: 0 0 8px var(--ann-color, #B024FF);
+  animation: ann-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes ann-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.75); }
+}
+
+.ann-text-clip {
+  overflow: hidden;
+  min-width: 0;
+}
+
+.ann-text {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ann-arrow {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.55);
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.ann-pill:hover .ann-arrow {
+  transform: translateX(3px);
+  color: #B024FF;
+}
+
+.ann-dots {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.ann-step {
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  border: none;
+  background: rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s ease, width 0.3s ease;
+}
+
+.ann-step.on {
+  background: #B024FF;
+  width: 22px;
+}
+
+@media (max-width: 768px) {
+  .ann-ticker {
+    top: 76px;
+    gap: 0.35rem;
+    max-width: calc(100vw - 1.6rem);
+    width: calc(100vw - 1.6rem);
+  }
+  .ann-pill {
+    width: 100%;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem 0.4rem 0.4rem;
+  }
+  .ann-text { font-size: 0.78rem; }
+  .ann-tag { font-size: 0.6rem; padding: 0.24rem 0.55rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ann-dot { animation: none; }
+}
