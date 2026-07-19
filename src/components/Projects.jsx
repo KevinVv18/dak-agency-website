@@ -287,10 +287,10 @@ const ProjectsHeader = () => {
       >
         <span className="section-tag">[ 02 ]</span>
         <h2 className="section-title">
-          <span className="title-bold">Proyectos</span>
+          <span className="title-bold">Demos</span>
         </h2>
         <div className="title-line" />
-        <p className="section-subtitle">Una selección de clientes que confían en nosotros</p>
+        <p className="section-subtitle">No te lo contamos: pruébalo. Y mira proyectos de clientes que confían en nosotros</p>
       </motion.div>
     </div>
   )
@@ -541,7 +541,7 @@ const MobileProjects = ({ featured }) => {
           transition={{ duration: 0.6 }}
         >
           <span className="section-tag">[ 02 ]</span>
-          <h2 className="proj-title">Proyectos</h2>
+          <h2 className="proj-title">Demos</h2>
           <div className="title-line" />
         </motion.div>
       </div>

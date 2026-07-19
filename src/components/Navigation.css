@@ -156,6 +156,20 @@
   text-shadow: 0 0 15px rgba(176, 36, 255, 0.8);
 }
 
+/* Barra de progreso de lectura bajo el nav */
+.nav-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: linear-gradient(90deg, #B024FF, #00C8C8);
+  box-shadow: 0 0 10px rgba(176, 36, 255, 0.6);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
 .nav-links a:hover .link-arrow {
   transform: translateX(3px);
   color: #B024FF;
@@ -253,6 +267,61 @@
 
 .nav-links.mobile .link-arrow {
   font-size: 1.5rem;
+}
+
+/* Extras del menú móvil: CTA + redes */
+.mobile-menu-extras {
+  margin-top: 1.6rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(176, 36, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.mobile-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: #B024FF;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.9rem 1rem;
+  border: 2px solid #B024FF;
+  box-shadow: 0 0 20px rgba(176, 36, 255, 0.4);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.mobile-cta:active {
+  background: #030106;
+  color: #B024FF;
+}
+
+.mobile-social {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.mobile-social a {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+}
+
+.mobile-social a:active,
+.mobile-social a:hover {
+  border-color: #B024FF;
+  color: #B024FF;
+  background: rgba(176, 36, 255, 0.1);
 }
 
 /* Responsive */
