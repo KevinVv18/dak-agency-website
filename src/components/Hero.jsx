@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import './Hero.css'
 import logoSvg from '../assets/logo-nav.svg'
 import { scrollToSection } from '../utils/scrollToSection'
+import AnnouncementTicker from './AnnouncementTicker'
 
 // Import client logos for carousel
 import logoBerseLine from '../assets/logos/logo-berse-line.svg'
@@ -25,6 +26,7 @@ const Hero = () => {
 
   return (
     <section className="hero" id="hero">
+      <AnnouncementTicker />
       <div className="hero-container">
         {/* MASSIVE Title Section */}
         <div className="hero-title-section">
