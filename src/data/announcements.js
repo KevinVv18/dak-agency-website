@@ -19,6 +19,14 @@ export const TICKER_MAX = 4
 
 export const announcements = [
   {
+    id: 'seccion-nosotros',
+    date: '2026-07-19',
+    tag: 'Nuevo',
+    type: 'demo',
+    title: 'Conócenos: así trabajamos en DAK',
+    href: '#about',
+  },
+  {
     id: 'demo-inmobiliaria-360',
     date: '2026-07-18',
     tag: 'Nuevo demo',

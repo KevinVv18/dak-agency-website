@@ -15,7 +15,7 @@ const Footer = () => {
 
   const footerLinks = [
     { name: 'Servicios', href: '#services' },
-    { name: 'Proyectos', href: '#projects' },
+    { name: 'Demos', href: '#projects' },
     { name: 'Blog', href: '#blog' },
     { name: 'Nosotros', href: '#about' },
     { name: 'Contacto', href: '#contact' },
@@ -75,7 +75,7 @@ const Footer = () => {
   const marqueeText = marqueeItems.map(item => `${item} ✦`).join('  ')
 
   return (
-    <footer className="footer" id="about">
+    <footer className="footer">
       {/* Neon grid background */}
       <div className="footer-neon-grid" />
 
