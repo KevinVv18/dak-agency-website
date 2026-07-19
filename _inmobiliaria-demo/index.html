@@ -28,6 +28,7 @@
     --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
     --shadow:0 30px 60px -25px rgba(0,0,0,.75);
+    color-scheme:dark; /* controles nativos (dropdowns, scrollbars) en oscuro */
   }
   html{scroll-behavior:smooth}
   body{font-family:var(--sans);background:var(--ink);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -96,6 +97,7 @@
   .field label{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;padding-left:.3rem}
   .field select{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--text);font:inherit;font-size:.92rem;padding:.72rem .8rem;border-radius:12px;cursor:pointer;transition:.2s;appearance:none}
   .field select:focus{outline:none;border-color:var(--gold);background:rgba(255,255,255,.08)}
+  .field select option{background:#161a20;color:var(--text)}
   .field{position:relative}
   .field::after{content:'';position:absolute;right:.9rem;bottom:1.08rem;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);pointer-events:none}
   .search .btn-gold{height:47px;white-space:nowrap}
@@ -113,7 +115,7 @@
   .pill:hover{border-color:var(--line2);color:var(--text)}
   .pill.on{background:var(--text);color:var(--ink);border-color:var(--text)}
   .count{margin-left:auto;font-size:.85rem;color:var(--muted)}
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;perspective:1100px}
   @media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:620px){.grid{grid-template-columns:1fr}}
   .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform .4s var(--ease),border-color .4s,box-shadow .4s}
@@ -244,6 +246,93 @@
   .wa{position:fixed;z-index:110;right:20px;bottom:20px;width:56px;height:56px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 12px 30px -8px rgba(37,211,102,.6);transition:transform .3s var(--ease)}
   .wa:hover{transform:scale(1.08) translateY(-2px)}
   .wa svg{width:30px;height:30px;fill:#fff}
+
+  /* ── PALABRA ROTATIVA DEL HERO ── */
+  .hero h1 em.rot{display:block}
+  .rot-mask{display:inline-flex;overflow:hidden;vertical-align:bottom}
+  .rot-word{display:inline-block;animation:wordIn .7s var(--ease)}
+  @keyframes wordIn{from{transform:translateY(112%);opacity:0}to{transform:none;opacity:1}}
+  @media (prefers-reduced-motion:reduce){.rot-word{animation:none}}
+
+  /* ── MARQUEE ── */
+  .mq{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:.95rem 0;overflow:hidden;background:rgba(255,255,255,.02)}
+  .mq-track{display:flex;width:max-content;animation:mq 34s linear infinite}
+  .mq-track:hover{animation-play-state:paused}
+  .mq-track span{font-family:var(--serif);font-style:italic;font-size:1.02rem;color:var(--muted);white-space:nowrap;display:inline-flex;align-items:center;gap:2.4rem;padding-right:2.4rem}
+  .mq-track i{font-style:normal;color:var(--gold);font-size:.68rem}
+  @keyframes mq{to{transform:translateX(-50%)}}
+  @media (prefers-reduced-motion:reduce){.mq-track{animation:none}}
+
+  /* ── SIMULADOR DE CUOTA ── */
+  .sim-card{display:grid;grid-template-columns:1.15fr .85fr;background:var(--surface);border:1px solid var(--line2);border-radius:26px;overflow:hidden}
+  @media(max-width:840px){.sim-card{grid-template-columns:1fr}}
+  .sim-l{padding:clamp(1.5rem,3.5vw,2.5rem);display:flex;flex-direction:column;gap:1.45rem}
+  .sim-row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:.55rem}
+  .sim-row label{font-size:.72rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+  .sim-row output{font-weight:700;font-size:.95rem}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--gold) var(--p,50%),rgba(255,255,255,.12) var(--p,50%));outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;border-radius:50%;background:var(--gold-soft);border:3px solid #241804;box-shadow:0 0 0 5px rgba(201,168,106,.22);cursor:grab}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold-soft);border:3px solid #241804;cursor:grab}
+  .sim-note{font-size:.74rem;color:var(--muted);margin-top:auto}
+  .sim-r{background:linear-gradient(160deg,rgba(201,168,106,.16),rgba(201,168,106,.03));border-left:1px solid var(--line);padding:clamp(1.5rem,3.5vw,2.5rem);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:.7rem;text-align:center}
+  @media(max-width:840px){.sim-r{border-left:none;border-top:1px solid var(--line)}}
+  .sim-r .cuota{font-family:var(--serif);font-size:clamp(2.5rem,5.2vw,3.5rem);font-weight:700;color:var(--gold-soft);line-height:1}
+  .sim-r .cuota small{font-family:var(--sans);font-size:.9rem;color:var(--muted);font-weight:500}
+  .sim-fin{font-size:.86rem;color:var(--muted2)}
+  .sim-r .btn{margin-top:.6rem}
+
+  /* ── PROCESO ── */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+  @media(max-width:840px){.steps{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.steps{grid-template-columns:1fr}}
+  .step{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.6rem 1.4rem;overflow:hidden;transition:border-color .3s,transform .35s var(--ease)}
+  .step:hover{border-color:var(--gold);transform:translateY(-4px)}
+  .step::before{content:'';position:absolute;top:0;left:0;height:2px;width:100%;background:linear-gradient(90deg,var(--gold),transparent);transform:scaleX(0);transform-origin:left;transition:transform 1s var(--ease) .25s}
+  .step.in::before{transform:none}
+  .step .n{display:block;font-family:var(--serif);font-size:2.7rem;line-height:1;color:transparent;-webkit-text-stroke:1px var(--gold);margin-bottom:.8rem;opacity:.85}
+  .step h4{font-size:1.04rem;font-weight:650;margin-bottom:.4rem}
+  .step p{font-size:.87rem;color:var(--muted)}
+  .steps .step:nth-child(2){transition-delay:.1s}.steps .step:nth-child(2)::before{transition-delay:.35s}
+  .steps .step:nth-child(3){transition-delay:.2s}.steps .step:nth-child(3)::before{transition-delay:.45s}
+  .steps .step:nth-child(4){transition-delay:.3s}.steps .step:nth-child(4)::before{transition-delay:.55s}
+
+  /* ── CHAT NORA ── */
+  .chat-fab{position:fixed;z-index:120;right:20px;bottom:88px;width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--gold-soft),var(--gold));display:grid;place-items:center;box-shadow:0 12px 30px -8px rgba(201,168,106,.55);transition:transform .3s var(--ease)}
+  .chat-fab:hover{transform:scale(1.07)}
+  .chat-fab svg{width:26px;height:26px;stroke:#241804;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .chat-fab .dot{position:absolute;top:2px;right:2px;width:12px;height:12px;border-radius:50%;background:var(--danger);border:2px solid var(--ink);display:none}
+  .chat-fab.unread .dot{display:block}
+  .chat-nudge{position:fixed;z-index:120;right:88px;bottom:96px;background:var(--surface2);border:1px solid var(--line2);color:var(--text);font-size:.85rem;padding:.6rem .95rem;border-radius:14px 14px 4px 14px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);transition:.45s var(--ease);pointer-events:none;max-width:230px}
+  .chat-nudge.show{opacity:1;transform:none}
+  .chat{position:fixed;z-index:130;right:20px;bottom:156px;width:min(372px,calc(100vw - 24px));max-height:min(560px,calc(100svh - 176px));display:flex;flex-direction:column;background:var(--ink2);border:1px solid var(--line2);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;opacity:0;transform:translateY(14px) scale(.98);pointer-events:none;transition:opacity .3s var(--ease),transform .3s var(--ease)}
+  .chat.open{opacity:1;transform:none;pointer-events:auto}
+  .chat-head{display:flex;align-items:center;gap:.7rem;padding:.9rem 1rem;background:linear-gradient(135deg,rgba(201,168,106,.2),rgba(201,168,106,.05));border-bottom:1px solid var(--line)}
+  .chat-ava{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold-soft),var(--gold));display:grid;place-items:center;color:#241804;font-weight:800;font-size:1.05rem;position:relative;flex:0 0 auto}
+  .chat-ava::after{content:'';position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;border-radius:50%;background:var(--green);border:2px solid var(--ink2)}
+  .chat-head b{font-size:.94rem;display:block;line-height:1.25}
+  .chat-head span{font-size:.73rem;color:var(--muted)}
+  .chat-x{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.3rem .5rem;border-radius:8px;transition:.2s}
+  .chat-x:hover{color:#fff;background:rgba(255,255,255,.08)}
+  .chat-body{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.55rem}
+  .msg{max-width:86%;padding:.62rem .9rem;font-size:.88rem;line-height:1.45;border-radius:14px;animation:msgIn .35s var(--ease)}
+  @keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .msg.bot{align-self:flex-start;background:var(--surface2);border:1px solid var(--line);border-bottom-left-radius:4px}
+  .msg.bot b{color:var(--gold-soft)}
+  .msg.me{align-self:flex-end;background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#241804;font-weight:600;border-bottom-right-radius:4px}
+  .msg.typing{display:inline-flex;gap:5px;padding:.8rem .95rem}
+  .msg.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:tp 1s infinite}
+  .msg.typing i:nth-child(2){animation-delay:.15s}.msg.typing i:nth-child(3){animation-delay:.3s}
+  @keyframes tp{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+  .chat-chips{display:flex;flex-wrap:wrap;gap:.45rem;animation:msgIn .35s var(--ease)}
+  .chat-chips button{font-size:.8rem;font-weight:600;color:var(--gold-soft);background:rgba(201,168,106,.08);border:1px solid rgba(201,168,106,.4);border-radius:100px;padding:.44rem .9rem;cursor:pointer;transition:.2s;font-family:inherit}
+  .chat-chips button:hover{background:rgba(201,168,106,.22);color:#fff}
+  .chat-in{display:flex;gap:.5rem;padding:.7rem;border-top:1px solid var(--line);background:rgba(255,255,255,.02)}
+  .chat-in input{flex:1;min-width:0;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:100px;color:var(--text);font:inherit;font-size:.88rem;padding:.6rem 1rem}
+  .chat-in input:focus{outline:none;border-color:var(--gold)}
+  .chat-in button{width:42px;height:42px;flex:0 0 auto;border-radius:50%;border:none;background:linear-gradient(135deg,var(--gold-soft),var(--gold));cursor:pointer;display:grid;place-items:center;transition:transform .2s}
+  .chat-in button:hover{transform:scale(1.06)}
+  .chat-in button svg{width:18px;height:18px;stroke:#241804;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  @media(max-width:520px){.chat{right:12px;bottom:150px}.chat-fab{bottom:86px}.chat-nudge{right:84px;bottom:94px}}
 </style>
 </head>
 <body>
@@ -258,6 +347,7 @@
     <nav class="nav-links" id="navlinks">
       <a href="#propiedades">Propiedades</a>
       <a href="#recorrido">Recorrido 360°</a>
+      <a href="#simulador">Financiamiento</a>
       <a href="#servicios">Nosotros</a>
       <a href="#contacto">Contacto</a>
     </nav>
@@ -272,7 +362,7 @@
   <div class="hero-media"><img src="assets/hero.webp" alt="Villa moderna con piscina al atardecer" fetchpriority="high" /></div>
   <div class="wrap hero-inner">
     <p class="eyebrow reveal">Chiclayo · Lambayeque · Perú</p>
-    <h1 class="reveal">Construimos el norte que <em>quieres vivir</em>.</h1>
+    <h1 class="reveal">Construimos el norte que <em class="rot"><span class="rot-mask"><span class="rot-word" id="rotWord">quieres vivir</span></span>.</em></h1>
     <p class="lead reveal">Casas, departamentos y lotes con financiamiento directo, recorridos 360° reales y una asesora que te acompaña de la primera visita a la entrega de llaves.</p>
     <div class="hero-tags reveal">
       <span class="chip"><i class="dot"></i>12 proyectos activos</span>
@@ -306,6 +396,13 @@
     </div>
   </div>
 </section>
+
+<div class="mq" aria-hidden="true">
+  <div class="mq-track">
+    <span>Santa Victoria<i>✦</i>Pimentel<i>✦</i>Urb. Los Parques<i>✦</i>Recorridos 360°<i>✦</i>Financiamiento directo<i>✦</i>Lotes con partida registral<i>✦</i>Estrenos 2026<i>✦</i></span>
+    <span>Santa Victoria<i>✦</i>Pimentel<i>✦</i>Urb. Los Parques<i>✦</i>Recorridos 360°<i>✦</i>Financiamiento directo<i>✦</i>Lotes con partida registral<i>✦</i>Estrenos 2026<i>✦</i></span>
+  </div>
+</div>
 
 <section id="propiedades">
   <div class="wrap">
@@ -359,6 +456,41 @@
   </div>
 </section>
 
+<section id="simulador" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow">Financiamiento directo</p>
+        <h2>¿Cuánto sería tu cuota?</h2>
+      </div>
+      <p>Mueve los controles y mira el estimado al instante. Sin bancos de por medio: pre-califica con un mensaje.</p>
+    </div>
+    <div class="sim-card reveal">
+      <div class="sim-l">
+        <div>
+          <div class="sim-row"><label for="sPrice">Precio de la propiedad</label><output id="oPrice">S/ 300,000</output></div>
+          <input type="range" id="sPrice" min="80000" max="950000" step="5000" value="300000" aria-label="Precio de la propiedad" />
+        </div>
+        <div>
+          <div class="sim-row"><label for="sIni">Cuota inicial</label><output id="oIni">20% · S/ 60,000</output></div>
+          <input type="range" id="sIni" min="10" max="50" step="5" value="20" aria-label="Porcentaje de cuota inicial" />
+        </div>
+        <div>
+          <div class="sim-row"><label for="sYr">Plazo</label><output id="oYr">15 años</output></div>
+          <input type="range" id="sYr" min="5" max="25" step="1" value="15" aria-label="Plazo en años" />
+        </div>
+        <p class="sim-note">Cálculo referencial con TEA 8.9% (sistema francés). La cuota final depende de tu evaluación.</p>
+      </div>
+      <div class="sim-r">
+        <p class="eyebrow">Cuota mensual estimada</p>
+        <div class="cuota" id="oCuota">S/ 0 <small>/mes</small></div>
+        <p class="sim-fin" id="oFin"></p>
+        <a class="btn btn-wa" id="simWa" target="_blank" rel="noopener" href="#">Pre-califica por WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="servicios" style="padding-top:0">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -381,9 +513,27 @@
       </div>
       <div class="svc reveal">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg></div>
-        <h4>Una asesora, no un bot</h4>
-        <p>Camila y su equipo te acompañan por WhatsApp de verdad: dudas, visitas, papeleo y entrega de llaves.</p>
+        <h4>Acompañamiento 24/7</h4>
+        <p>Nora, nuestra asistente virtual, te orienta al instante a cualquier hora; y Camila y su equipo te acompañan de verdad: visitas, papeleo y entrega de llaves.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="proceso" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <p class="eyebrow">Cómo funciona</p>
+        <h2>De tu primera visita a las llaves</h2>
+      </div>
+      <p>Un camino claro y sin sorpresas: siempre sabes qué sigue y quién te acompaña en cada paso.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><span class="n">01</span><h4>Explora en línea</h4><p>Filtra el catálogo, guarda tus favoritas y camina cada ambiente en 360° desde tu celular.</p></div>
+      <div class="step reveal"><span class="n">02</span><h4>Visita real</h4><p>Camila agenda contigo y confirmas en persona lo que ya viste en pantalla.</p></div>
+      <div class="step reveal"><span class="n">03</span><h4>Plan a tu medida</h4><p>Simulas tu cuota, eliges inicial y plazo, y armamos tu financiamiento directo.</p></div>
+      <div class="step reveal"><span class="n">04</span><h4>Llaves en mano</h4><p>Firma, entrega puntual y bienvenido a tu nuevo norte. 🔑</p></div>
     </div>
   </div>
 </section>
@@ -459,6 +609,25 @@
 <a class="wa" href="https://wa.me/51906765040?text=Hola%20Norvia,%20vi%20el%20demo%20de%20su%20web%20y%20quiero%20info" target="_blank" rel="noopener" aria-label="WhatsApp">
   <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.6-1.6-.9-2.1-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 .9-1 2.3s1 2.7 1.2 2.9c.2.2 2 3.1 5 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2z"/></svg>
 </a>
+
+<!-- Chat Nora -->
+<button class="chat-fab" id="chatFab" aria-label="Chatear con Nora, asistente virtual">
+  <svg viewBox="0 0 24 24"><path d="M21 11.5a8 8 0 0 1-8 8c-1 0-2-.18-2.9-.52L5 20.5l1.6-4A8 8 0 1 1 21 11.5z"/><path d="M8.6 11.5h.01M12.1 11.5h.01M15.6 11.5h.01" stroke-width="2.6"/></svg>
+  <span class="dot"></span>
+</button>
+<div class="chat-nudge" id="chatNudge">¿Te ayudo a encontrar tu próxima casa? 🏡</div>
+<div class="chat" id="chatBox" role="dialog" aria-label="Chat con Nora, asistente virtual">
+  <div class="chat-head">
+    <div class="chat-ava">N</div>
+    <div><b>Nora · Norvia</b><span>Asistente virtual — en línea</span></div>
+    <button class="chat-x" id="chatX" aria-label="Cerrar chat">✕</button>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <form class="chat-in" id="chatForm">
+    <input id="chatTxt" type="text" placeholder="Escríbele a Nora…" autocomplete="off" aria-label="Mensaje para Nora" />
+    <button type="submit" aria-label="Enviar mensaje"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </form>
+</div>
 
 <!-- Modal ficha -->
 <div class="modal-ov" id="modalOv" role="dialog" aria-modal="true" aria-label="Ficha de propiedad">
@@ -659,6 +828,169 @@
     window.open('https://wa.me/51906765040?text='+encodeURIComponent('Hola Norvia, soy '+n+' ('+p+'). '+(m||'Quiero información sobre sus propiedades.')),'_blank');
   });
   document.getElementById('yr').textContent=new Date().getFullYear();
+
+  /* ── Palabra rotativa del hero ── */
+  var ROT=['quieres vivir','vas a estrenar','quieres invertir'];
+  var rw=document.getElementById('rotWord'),ri=0;
+  var noMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(rw&&!noMotion)setInterval(function(){
+    ri=(ri+1)%ROT.length;rw.textContent=ROT[ri];
+    rw.style.animation='none';void rw.offsetWidth;rw.style.animation='';
+  },3400);
+
+  /* ── Tilt 3D en cards (solo mouse) ── */
+  if(matchMedia('(pointer:fine)').matches&&!noMotion){
+    grid.addEventListener('pointermove',function(e){
+      var c=e.target.closest('.card');if(!c)return;
+      var r=c.getBoundingClientRect();
+      var x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+      c.style.transform='translateY(-6px) rotateX('+(-y*4).toFixed(2)+'deg) rotateY('+(x*5).toFixed(2)+'deg)';
+    });
+    grid.addEventListener('pointerout',function(e){
+      var c=e.target.closest('.card');
+      if(c&&!c.contains(e.relatedTarget))c.style.transform='';
+    });
+  }
+
+  /* ── Simulador de cuota (sistema francés, TEA 8.9%) ── */
+  var sP=document.getElementById('sPrice'),sI=document.getElementById('sIni'),sY=document.getElementById('sYr');
+  var oP=document.getElementById('oPrice'),oI=document.getElementById('oIni'),oY=document.getElementById('oYr');
+  var oC=document.getElementById('oCuota'),oF=document.getElementById('oFin'),simWa=document.getElementById('simWa');
+  function rangeFill(el){el.style.setProperty('--p',((el.value-el.min)/(el.max-el.min)*100)+'%')}
+  function calc(){
+    var P=+sP.value,pct=+sI.value,yrs=+sY.value;
+    var ini=Math.round(P*pct/100),loan=P-ini;
+    var i=Math.pow(1.089,1/12)-1,n=yrs*12;
+    var m=Math.round(loan*(i*Math.pow(1+i,n))/(Math.pow(1+i,n)-1));
+    oP.textContent=money(P);
+    oI.textContent=pct+'% · '+money(ini);
+    oY.textContent=yrs+' años';
+    oC.innerHTML=money(m)+' <small>/mes</small>';
+    oF.textContent='Financias '+money(loan)+' en '+n+' cuotas';
+    simWa.href='https://wa.me/51906765040?text='+encodeURIComponent('Hola Norvia, simulé una cuota de '+money(m)+'/mes (propiedad de '+money(P)+', inicial '+pct+'%, plazo '+yrs+' años). Quiero pre-calificar.');
+    [sP,sI,sY].forEach(rangeFill);
+  }
+  [sP,sI,sY].forEach(function(el){el.addEventListener('input',calc)});
+  calc();
+
+  /* ── Chat “Nora” ── */
+  var fab=document.getElementById('chatFab'),nudge=document.getElementById('chatNudge'),
+      cBox=document.getElementById('chatBox'),cBody=document.getElementById('chatBody'),
+      cForm=document.getElementById('chatForm'),cTxt=document.getElementById('chatTxt');
+  var chatStarted=false,chatOpen=false;
+  function scrollChat(){cBody.scrollTop=cBody.scrollHeight}
+  function say(html){var d=document.createElement('div');d.className='msg bot';d.innerHTML=html;cBody.appendChild(d);scrollChat()}
+  function me(t){var d=document.createElement('div');d.className='msg me';d.textContent=t;cBody.appendChild(d);scrollChat()}
+  function typing(cb,ms){
+    var t=document.createElement('div');t.className='msg bot typing';t.innerHTML='<i></i><i></i><i></i>';
+    cBody.appendChild(t);scrollChat();
+    setTimeout(function(){t.remove();cb()},ms||650+Math.random()*450);
+  }
+  function chips(list){
+    var w=document.createElement('div');w.className='chat-chips';
+    list.forEach(function(c){
+      var b=document.createElement('button');b.type='button';b.textContent=c[0];
+      b.onclick=function(){w.remove();me(c[0].replace(/^[^\w¿¡]+\s*/,''));typing(c[1])};
+      w.appendChild(b);
+    });
+    cBody.appendChild(w);scrollChat();
+  }
+  function go(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+  function applyFilter(op,cat,zone){
+    if(op){state.op=op;document.querySelectorAll('#opSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.op===op)})}
+    state.cat=cat||'Todos';state.zone=zone||'';state.type='';state.beds='';state.price='';
+    document.getElementById('fZone').value=state.zone;
+    document.getElementById('fType').value='';document.getElementById('fBeds').value='';document.getElementById('fPrice').value='';
+    document.querySelectorAll('.pill').forEach(function(x){x.classList.toggle('on',x.dataset.f===state.cat)});
+    draw();
+    return PROPS.filter(match).length;
+  }
+  function chipWa(txt){
+    return [txt||'💬 Abrir WhatsApp',function(){
+      window.open('https://wa.me/51906765040?text='+encodeURIComponent('Hola, vengo del chat de Nora en la web y quiero hablar con una asesora.'),'_blank');
+      say('Listo, te abrí el chat con <b>Camila</b> 💬 Si no se abrió, toca el botón verde de abajo a la derecha.');
+    }];
+  }
+  function homeChips(){
+    chips([
+      ['🏠 Quiero comprar',flowComprar],
+      ['🔑 Quiero alquilar',flowAlquilar],
+      ['🧮 Simular mi cuota',flowCuota],
+      ['🌀 Ver recorridos 360°',flow360]
+    ]);
+  }
+  function flowComprar(){
+    say('¡Vamos! ¿Tienes alguna zona en mente?');
+    chips([
+      ['Santa Victoria',function(){zoneReply('Santa Victoria')}],
+      ['Pimentel',function(){zoneReply('Pimentel')}],
+      ['Urb. Los Parques',function(){zoneReply('Urb. Los Parques')}],
+      ['Donde sea 🌎',function(){zoneReply('')}]
+    ]);
+  }
+  function zoneReply(z){
+    var n=applyFilter('Comprar','Todos',z);
+    if(n){say('Encontré <b>'+n+(n===1?' propiedad':' propiedades')+'</b> en venta'+(z?' en <b>'+z+'</b>':'')+'. Ya te dejé el catálogo filtrado abajo 👇');go('propiedades')}
+    else{say('En <b>'+z+'</b> no tengo disponibles ahora mismo, pero Camila maneja opciones que aún no publicamos 👇')}
+    chips([['🌀 Ver un 360°',flow360],['🧮 Simular cuota',flowCuota],chipWa('💬 Hablar con Camila')]);
+  }
+  function flowAlquilar(){
+    var n=applyFilter('Alquilar','Todos','');
+    say('Tenemos <b>'+n+(n===1?' propiedad':' propiedades')+'</b> en alquiler ahora mismo. Míralas abajo 👇');
+    go('propiedades');
+    chips([['🏠 Mejor comprar',flowComprar],chipWa('💬 Hablar con Camila')]);
+  }
+  function flowCuota(){
+    say('Te llevo al simulador: mueve los controles y mira tu cuota al instante. Cuando tengas tu número, pre-califica con un clic 👇');
+    go('simulador');
+    chips([['🏠 Ver propiedades',flowComprar],chipWa('💬 Hablar con Camila')]);
+  }
+  function flow360(){
+    say('Te llevo al recorrido: <b>arrastra dentro de la imagen</b> para mirar alrededor y cambia de ambiente con las miniaturas 🌀');
+    go('recorrido');
+    chips([['🏠 Ver propiedades',flowComprar],['🧮 Simular cuota',flowCuota]]);
+  }
+  function flowVisita(){
+    say('¡Claro! Déjanos tu nombre y celular en el formulario y <b>Camila te escribe hoy mismo</b> 📲');
+    go('contacto');
+    chips([chipWa('💬 Mejor por WhatsApp')]);
+  }
+  function think(q){
+    var s=q.toLowerCase();
+    if(/alquil|rentar|arrend/.test(s))return flowAlquilar();
+    if(/lote|terreno/.test(s)){var n=applyFilter('Comprar','Lote','');say('Tenemos <b>'+n+(n===1?' lote':' lotes')+'</b> con partida registral independiente 👇');go('propiedades');return chips([['🧮 Simular cuota',flowCuota],chipWa()])}
+    if(/depa|departamento/.test(s)){applyFilter('Comprar','Departamento','');say('Aquí van los departamentos disponibles 👇');go('propiedades');return chips([['🌀 Ver un 360°',flow360],chipWa()])}
+    if(/cuota|financ|cr[eé]dito|pr[eé]stamo|banco|inicial/.test(s))return flowCuota();
+    if(/360|recorrido|tour|virtual/.test(s))return flow360();
+    if(/visita|agendar|cita|conocer/.test(s))return flowVisita();
+    if(/precio|cu[aá]nto cuesta|costo/.test(s)){say('Los precios van desde <b>S/ 95 mil</b> (lotes) hasta <b>S/ 780 mil</b> (casa de lujo con piscina). Cada tarjeta muestra el suyo — y con el simulador ves tu cuota 👇');go('propiedades');return chips([['🧮 Simular cuota',flowCuota],chipWa()])}
+    if(/casa|comprar|propiedad/.test(s))return flowComprar();
+    if(/hola|buenas|hey|qu[eé] tal/.test(s)){say('¡Hola! 😊 ¿Qué estás buscando hoy?');return homeChips()}
+    if(/gracias|genial|perfecto/.test(s)){say('¡Con gusto! 🧡 Aquí sigo si necesitas algo más.');return homeChips()}
+    if(/humano|asesor|persona|camila|llamar|tel[eé]fono/.test(s)){say('Te conecto con <b>Camila</b>, nuestra asesora de carne y hueso 👇');return chips([chipWa()])}
+    say('Buena pregunta 🙌 Para responderte con datos exactos, mejor te conecto con <b>Camila</b>:');
+    chips([chipWa(),['🏠 Ver propiedades',flowComprar]]);
+  }
+  function openChat(){
+    chatOpen=true;cBox.classList.add('open');fab.classList.remove('unread');nudge.classList.remove('show');
+    try{sessionStorage.setItem('nora_seen','1')}catch(e){}
+    if(!chatStarted){chatStarted=true;typing(function(){
+      say('¡Hola! 👋 Soy <b>Nora</b>, la asistente de Norvia. Puedo filtrarte el catálogo, mostrarte recorridos 360° o simular tu cuota. ¿Por dónde empezamos?');
+      homeChips();
+    },800)}
+  }
+  function closeChat(){chatOpen=false;cBox.classList.remove('open')}
+  fab.addEventListener('click',function(){chatOpen?closeChat():openChat()});
+  document.getElementById('chatX').addEventListener('click',closeChat);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&chatOpen)closeChat()});
+  cForm.addEventListener('submit',function(e){
+    e.preventDefault();
+    var q=cTxt.value.trim();if(!q)return;
+    cTxt.value='';me(q);typing(function(){think(q)});
+  });
+  var seen=false;try{seen=!!sessionStorage.getItem('nora_seen')}catch(e){}
+  if(!seen)setTimeout(function(){if(!chatOpen){nudge.classList.add('show');fab.classList.add('unread');
+    setTimeout(function(){nudge.classList.remove('show')},6000)}},5000);
 })();
 </script>
 </body>
