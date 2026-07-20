@@ -22,7 +22,12 @@ jobs:
       - name: Install deps
         run: pip install --quiet rembg pillow requests onnxruntime
       - name: Generate candidates
-        run: python3 .github/scripts/gen_hero.py
+        run: |
+          if [ "${{ contains(github.event.head_commit.message, '[gen-hero-local]') }}" = "true" ]; then
+            python3 .github/scripts/gen_hero_local.py
+          else
+            python3 .github/scripts/gen_hero.py
+          fi
       - name: Commit candidates
         run: |
           git config user.name "Claude"
