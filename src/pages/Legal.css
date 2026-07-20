@@ -1,0 +1,121 @@
+/* ── Páginas legales ── */
+.legal-page {
+  background: #030106;
+  min-height: 100vh;
+  padding: calc(90px + 3rem) 1.5rem 5rem;
+  position: relative;
+}
+
+.legal-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(176, 36, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176, 36, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  opacity: 0.5;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent 60%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent 60%);
+}
+
+.legal-container {
+  position: relative;
+  z-index: 1;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.legal-tag {
+  display: inline-block;
+  font-family: var(--font-display, 'Poppins', sans-serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #B024FF;
+  margin-bottom: 1rem;
+}
+
+.legal-title {
+  font-family: var(--font-display, 'Poppins', sans-serif);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.05;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.legal-updated {
+  margin-top: 0.9rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.legal-body {
+  margin-top: 2.6rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.legal-lead {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 2rem;
+}
+
+.legal-body h2 {
+  font-family: var(--font-display, 'Poppins', sans-serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 2.2rem 0 0.7rem;
+}
+
+.legal-body p { margin-bottom: 1rem; }
+
+.legal-body ul,
+.legal-body ol {
+  margin: 0 0 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.legal-body li { padding-left: 0.3rem; }
+
+.legal-body strong { color: rgba(255, 255, 255, 0.95); font-weight: 600; }
+
+.legal-body a {
+  color: #C77DFF;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(199, 125, 255, 0.35);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.legal-body a:hover {
+  color: #fff;
+  border-color: #B024FF;
+}
+
+.legal-back {
+  display: inline-block;
+  margin-top: 3rem;
+  color: #B024FF;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.legal-back:hover {
+  color: #C77DFF;
+  transform: translateX(-3px);
+}
+
+@media (max-width: 600px) {
+  .legal-page { padding-top: calc(80px + 2rem); }
+  .legal-body { font-size: 0.95rem; }
+}
