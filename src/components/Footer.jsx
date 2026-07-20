@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import './Footer.css'
 import logoSvg from '../assets/logo-nav.svg'
 import LiquidLogo from './LiquidLogo'
@@ -210,9 +211,11 @@ const Footer = () => {
               <span>TOP</span>
             </motion.button>
             <div className="footer-legal">
-              <a href="#">Política de Privacidad</a>
+              <Link to="/privacidad">Política de Privacidad</Link>
               <span className="separator">·</span>
-              <a href="#">Términos de Servicio</a>
+              <Link to="/eliminacion-de-datos">Eliminación de datos</Link>
+              <span className="separator">·</span>
+              <Link to="/terminos">Términos de Servicio</Link>
             </div>
           </div>
         </div>

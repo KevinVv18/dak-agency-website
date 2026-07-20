@@ -8,6 +8,7 @@ import Home from './pages/Home'
 
 // Code-splitting: la galería completa solo se descarga al visitar /gallery
 const GalleryPage = lazy(() => import('./pages/GalleryPage'))
+const LegalPage = lazy(() => import('./pages/LegalPage'))
 
 function App() {
   const gridRef = useRef(null)
@@ -46,6 +47,9 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/gallery" element={<GalleryPage />} />
+                <Route path="/privacidad" element={<LegalPage doc="privacidad" />} />
+                <Route path="/eliminacion-de-datos" element={<LegalPage doc="eliminacion-de-datos" />} />
+                <Route path="/terminos" element={<LegalPage doc="terminos" />} />
               </Routes>
             </Suspense>
           </main>
