@@ -8,9 +8,9 @@
 <meta name="robots" content="noindex, follow" />
 <meta property="og:title" content="Norvia · Inmobiliaria — Demo por DAK Agency" />
 <meta property="og:description" content="Catálogo con fotos reales, recorridos 360° y filtros en vivo. Web-demo desarrollada por DAK Agency." />
-<meta property="og:image" content="assets/hero.webp" />
+<meta property="og:image" content="assets/prop-casa-lujo.webp" />
 <meta property="og:type" content="website" />
-<link rel="preload" as="image" href="assets/hero.webp" />
+<link rel="preload" as="image" href="assets/prop-casa-lujo.webp" />
 <link rel="stylesheet" href="vendor/pannellum.css" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 4 4 14v14h9v-8h6v8h9V14z' fill='none' stroke='%23c9a86a' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E" />
 <script type="application/ld+json">
@@ -72,23 +72,49 @@
     .burger{display:flex}
   }
 
-  /* ── HERO ── */
-  .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;padding:120px 0 clamp(2rem,6vh,4rem);overflow:hidden}
-  .hero-media{position:absolute;inset:0}
-  .hero-media img{width:100%;height:100%;object-fit:cover;object-position:center 65%}
-  .hero-media::after{content:'';position:absolute;inset:0;background:
-    linear-gradient(180deg,rgba(12,14,17,.55) 0%,rgba(12,14,17,.15) 34%,rgba(12,14,17,.6) 68%,var(--ink) 100%),
-    linear-gradient(90deg,rgba(12,14,17,.55),transparent 55%)}
-  .hero-inner{position:relative;z-index:2;width:100%}
-  .hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.5rem,6.2vw,4.8rem);line-height:1.04;letter-spacing:-.02em;max-width:17ch;text-shadow:0 4px 30px rgba(0,0,0,.45)}
+  /* ── HERO: showcase cinematográfico ── */
+  .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:104px clamp(1.1rem,4vw,2.6rem) clamp(1.4rem,3vh,2.2rem);overflow:hidden;background:var(--ink)}
+  .hero-bgs{position:absolute;inset:0;z-index:0}
+  .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center 52%;opacity:0;transition:opacity 1.3s var(--ease);will-change:opacity,transform}
+  .hero-slide.on{opacity:1;animation:kenburns 9s ease-out both}
+  @keyframes kenburns{from{transform:scale(1.05)}to{transform:scale(1.15)}}
+  .hero-scrim2{position:absolute;inset:0;z-index:1;pointer-events:none;background:
+    linear-gradient(180deg,rgba(6,8,10,.5) 0%,rgba(6,8,10,.1) 22%,transparent 40%,rgba(6,8,10,.5) 72%,rgba(6,8,10,.92) 100%),
+    radial-gradient(120% 95% at 28% 42%,transparent 42%,rgba(6,8,10,.55) 100%)}
+  .hero-grain{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .hero-inner{position:relative;z-index:3;width:100%;max-width:var(--maxw);margin:0 auto;display:flex;flex-direction:column;gap:clamp(1.5rem,4.5vh,3.2rem)}
+  .hero-top{max-width:min(100%,720px)}
+  .hero .eyebrow{margin-bottom:1rem;text-shadow:0 2px 18px rgba(0,0,0,.55)}
+  .hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.1rem,4.6vw,3.8rem);line-height:1.08;letter-spacing:-.02em;max-width:14ch;text-shadow:0 6px 44px rgba(0,0,0,.55)}
   .hero h1 em{font-style:italic;color:var(--gold-soft)}
-  .hero p.lead{margin:1.2rem 0 0;font-size:clamp(1rem,1.5vw,1.18rem);color:var(--muted2);max-width:56ch;text-shadow:0 2px 14px rgba(0,0,0,.5)}
-  .hero-tags{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.5rem}
-  .chip{display:inline-flex;align-items:center;gap:.45rem;font-size:.82rem;color:var(--muted2);background:rgba(10,12,15,.5);backdrop-filter:blur(8px);border:1px solid var(--line2);padding:.5rem .9rem;border-radius:100px}
+  .hero h1 .rot{display:inline-flex;vertical-align:bottom}
+  .hero-tags{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.4rem}
+  .chip{display:inline-flex;align-items:center;gap:.45rem;font-size:.8rem;color:var(--muted2);background:rgba(10,12,15,.42);backdrop-filter:blur(8px);border:1px solid var(--line2);padding:.5rem .9rem;border-radius:100px}
   .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(70,201,141,.15)}
+  .hero-mid{display:flex;align-items:flex-end;justify-content:space-between;gap:1.4rem;flex-wrap:wrap}
+  .hero-feature{background:rgba(13,16,21,.58);backdrop-filter:blur(18px) saturate(1.2);border:1px solid var(--line2);border-radius:18px;padding:1.05rem 1.25rem 1.2rem;width:min(360px,100%);box-shadow:var(--shadow);cursor:pointer;transition:transform .3s var(--ease),border-color .3s;text-align:left}
+  .hero-feature:hover{transform:translateY(-3px);border-color:var(--gold)}
+  .hf-eyebrow{font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .hf-name{font-family:var(--serif);font-size:1.28rem;font-weight:600;margin:.4rem 0 .25rem;line-height:1.15;transition:opacity .4s}
+  .hf-meta{font-size:.86rem;color:var(--muted2);transition:opacity .4s}
+  .hf-meta b{color:var(--gold-soft);font-weight:600}
+  .hf-row{display:flex;align-items:center;gap:.85rem;margin-top:.95rem}
+  .hf-cta{display:inline-flex;align-items:center;gap:.45rem;background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#241804;font-size:.82rem;font-weight:700;padding:.55rem 1.05rem;border-radius:100px}
+  .hf-360{font-size:.76rem;color:var(--muted2);letter-spacing:.02em}
+  .hero-switch{display:flex;gap:.5rem;align-items:center;padding-bottom:.4rem}
+  .hero-switch button{width:34px;height:4px;border-radius:3px;border:none;background:rgba(255,255,255,.28);cursor:pointer;padding:0;transition:background .3s,width .3s}
+  .hero-switch button.on{background:var(--gold);width:52px}
+  @media(max-width:768px){
+    .hero{padding-top:88px;min-height:auto}
+    .hero h1{font-size:clamp(2.1rem,9vw,3rem)}
+    .hero-mid{align-items:stretch}
+    .hero-feature{width:100%}
+    .hero-switch{padding-bottom:0}
+  }
 
-  /* ── SEARCH ── */
-  .search{position:relative;z-index:3;margin-top:2rem;background:rgba(17,20,25,.66);backdrop-filter:blur(20px) saturate(1.2);border:1px solid var(--line2);border-radius:22px;padding:1.1rem;box-shadow:var(--shadow)}
+  /* ── SEARCH: barra glass ── */
+  .search{position:relative;z-index:3;width:100%;background:rgba(13,16,21,.62);backdrop-filter:blur(22px) saturate(1.2);border:1px solid var(--line2);border-radius:20px;padding:1.1rem;box-shadow:var(--shadow)}
   .seg{display:flex;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:100px;padding:4px;gap:2px;width:max-content;margin-bottom:.85rem}
   .seg button{border:none;background:none;color:var(--muted);font-size:.85rem;font-weight:600;padding:.42rem 1.1rem;border-radius:100px;cursor:pointer;transition:.25s}
   .seg button.on{background:var(--gold);color:#241804}
@@ -248,7 +274,7 @@
   .wa svg{width:30px;height:30px;fill:#fff}
 
   /* ── PALABRA ROTATIVA DEL HERO ── */
-  .hero h1 em.rot{display:block}
+  .hero h1 em.rot{display:inline-flex;vertical-align:bottom}
   .rot-mask{display:inline-flex;overflow:hidden;vertical-align:bottom}
   .rot-word{display:inline-block;animation:wordIn .7s var(--ease)}
   @keyframes wordIn{from{transform:translateY(112%);opacity:0}to{transform:none;opacity:1}}
@@ -359,16 +385,36 @@
 </header>
 
 <section class="hero" id="top">
-  <div class="hero-media"><img src="assets/hero.webp" alt="Villa moderna con piscina al atardecer" fetchpriority="high" /></div>
-  <div class="wrap hero-inner">
-    <p class="eyebrow reveal">Chiclayo · Lambayeque · Perú</p>
-    <h1 class="reveal">Construimos el norte que <em class="rot"><span class="rot-mask"><span class="rot-word" id="rotWord">quieres vivir</span></span>.</em></h1>
-    <p class="lead reveal">Casas, departamentos y lotes con financiamiento directo, recorridos 360° reales y una asesora que te acompaña de la primera visita a la entrega de llaves.</p>
-    <div class="hero-tags reveal">
-      <span class="chip"><i class="dot"></i>12 proyectos activos</span>
-      <span class="chip"><i class="dot"></i>Recorridos 360° en vivo</span>
-      <span class="chip"><i class="dot"></i>Financiamiento directo</span>
+  <div class="hero-bgs" id="heroBgs" aria-hidden="true"></div>
+  <div class="hero-scrim2" aria-hidden="true"></div>
+  <div class="hero-grain" aria-hidden="true"></div>
+
+  <div class="hero-inner">
+    <div class="hero-top">
+      <p class="eyebrow reveal">Norvia · Chiclayo · Lambayeque</p>
+      <h1 class="reveal">El norte que <em class="rot"><span class="rot-mask"><span class="rot-word" id="rotWord">quieres vivir</span></span></em></h1>
+      <div class="hero-tags reveal">
+        <span class="chip"><i class="dot"></i>12 proyectos activos</span>
+        <span class="chip"><i class="dot"></i>Recorridos 360°</span>
+        <span class="chip"><i class="dot"></i>Financiamiento directo</span>
+      </div>
     </div>
+
+    <div class="hero-mid">
+      <div class="hero-feature" id="heroFeature" role="button" tabindex="0" aria-label="Ver la propiedad destacada">
+        <span class="hf-eyebrow">Propiedad destacada</span>
+        <h3 class="hf-name" id="hfName">—</h3>
+        <p class="hf-meta" id="hfMeta">—</p>
+        <div class="hf-row">
+          <span class="hf-cta">Ver propiedad
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </span>
+          <span class="hf-360" id="hf360"></span>
+        </div>
+      </div>
+      <div class="hero-switch" id="heroSwitch" role="tablist" aria-label="Cambiar propiedad destacada"></div>
+    </div>
+
     <div class="search reveal" role="search" aria-label="Buscador de propiedades">
       <div class="seg" id="opSeg">
         <button class="on" data-op="Comprar">Comprar</button>
@@ -828,6 +874,43 @@
     window.open('https://wa.me/51906765040?text='+encodeURIComponent('Hola Norvia, soy '+n+' ('+p+'). '+(m||'Quiero información sobre sus propiedades.')),'_blank');
   });
   document.getElementById('yr').textContent=new Date().getFullYear();
+
+  /* ── Hero showcase: propiedades destacadas rotativas ── */
+  (function(){
+    var HERO_IDS=['casa-lujo','casa-moderna','cabana','casa-clasica'];
+    var hp=HERO_IDS.map(function(id){return PROPS.find(function(p){return p.id===id})}).filter(Boolean);
+    var bgs=document.getElementById('heroBgs'),sw=document.getElementById('heroSwitch');
+    var hfName=document.getElementById('hfName'),hfMeta=document.getElementById('hfMeta'),
+        hf360=document.getElementById('hf360'),feat=document.getElementById('heroFeature');
+    if(!bgs||!hp.length)return;
+    hp.forEach(function(p,i){
+      var s=document.createElement('div');s.className='hero-slide';
+      s.style.backgroundImage='url("'+A+p.img+'")';bgs.appendChild(s);
+      var b=document.createElement('button');b.type='button';b.setAttribute('role','tab');
+      b.setAttribute('aria-label',p.t);b.addEventListener('click',function(){show(i,true)});sw.appendChild(b);
+    });
+    var slides=bgs.children,dots=sw.children,hi=-1,timer;
+    function show(i,manual){
+      if(i===hi)return;hi=i;var p=hp[i];
+      for(var k=0;k<slides.length;k++){slides[k].classList.toggle('on',k===i);dots[k].classList.toggle('on',k===i)}
+      var on=slides[i];on.style.animation='none';void on.offsetWidth;on.style.animation='';
+      hfName.style.opacity=0;hfMeta.style.opacity=0;
+      setTimeout(function(){
+        hfName.textContent=p.t;
+        hfMeta.innerHTML=p.zone+' · <b>'+money(p.price)+(p.rent?'/mes':'')+'</b>';
+        hf360.textContent=p.pano?'· 360° disponible':'';
+        hfName.style.opacity=1;hfMeta.style.opacity=1;
+      },220);
+      feat.onclick=function(){openModal(p)};
+      if(manual){clearInterval(timer);timer=setInterval(next,6000)}
+    }
+    function next(){show((hi+1)%hp.length)}
+    show(0);timer=setInterval(next,6000);
+    feat.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openModal(hp[hi])}});
+    var heroEl=document.querySelector('.hero');
+    heroEl.addEventListener('mouseenter',function(){clearInterval(timer)});
+    heroEl.addEventListener('mouseleave',function(){clearInterval(timer);timer=setInterval(next,6000)});
+  })();
 
   /* ── Palabra rotativa del hero ── */
   var ROT=['quieres vivir','vas a estrenar','quieres invertir'];
