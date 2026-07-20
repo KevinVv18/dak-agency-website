@@ -1,0 +1,23 @@
+# Sube los scripts de automatización de redes a ~/dak-social/ en Hostinger.
+# One-shot: se dispara con [deploy-social] en el mensaje del commit. Se elimina luego.
+# NO usa --delete y excluye config.php/data para no pisar secretos ni el estado.
+name: Deploy Social Scripts
+on:
+  push:
+    branches: [claude/demos-section-redesign-bnkxbz]
+jobs:
+  deploy:
+    if: contains(github.event.head_commit.message, '[deploy-social]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rsync scripts a ~/dak-social/
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --exclude='.git*' --exclude='config.php' --exclude='data'
+          path: _social-automation/
+          remote_path: /home/u567580447/dak-social/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
