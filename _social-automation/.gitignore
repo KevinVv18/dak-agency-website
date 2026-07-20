@@ -1,0 +1,3 @@
+# Nunca subir secretos ni datos generados
+config.php
+data/
