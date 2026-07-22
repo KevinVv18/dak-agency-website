@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { announcements, TICKER_MAX, typeColor } from '../data/announcements'
+import { TICKER_MAX, typeColor } from '../data/announcements'
+import useAnnouncements from '../hooks/useAnnouncements'
 import { scrollToSection } from '../utils/scrollToSection'
 import './AnnouncementTicker.css'
 
@@ -9,6 +10,7 @@ import './AnnouncementTicker.css'
 const ROTATE_MS = 5500
 
 const AnnouncementTicker = () => {
+  const announcements = useAnnouncements()
   const items = announcements.slice(0, TICKER_MAX)
   const [idx, setIdx] = useState(0)
   const paused = useRef(false)
@@ -56,7 +58,7 @@ const AnnouncementTicker = () => {
         <span className="ann-text-clip">
           <AnimatePresence mode="wait">
             <motion.span
-              key={a.id}
+              key={idx}
               className="ann-text"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}

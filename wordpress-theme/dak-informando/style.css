@@ -1091,6 +1091,58 @@ ul {
   object-fit: cover;
 }
 
+/* ─────────────────────────────────────────────────────────
+   Encuadre de portadas: mostrar el arte COMPLETO (contain) y
+   rellenar los bordes con una copia borrosa del mismo arte.
+   Los flyers verticales/cuadrados ya no se recortan (antes se
+   comía el texto de arriba/abajo). Los marcos conservan su
+   tamaño exacto, así que la grilla y los márgenes no cambian.
+   El fondo borroso llega por inline style en cada template
+   (background-image = misma imagen destacada del post).
+   ───────────────────────────────────────────────────────── */
+.featured-image-wrapper,
+.visual-image-wrapper,
+.article-card-image,
+.latest-article-image,
+.opinion-image-wrapper,
+.latest-sidebar-img {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.featured-image-wrapper::before,
+.visual-image-wrapper::before,
+.article-card-image::before,
+.latest-article-image::before,
+.opinion-image-wrapper::before,
+.latest-sidebar-img::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  filter: blur(20px) saturate(1.2) brightness(0.92);
+  transform: scale(1.15);
+  z-index: 0;
+}
+
+.featured-image-wrapper > img,
+.visual-image-wrapper > img,
+.article-card-image > img,
+.latest-article-image > img,
+.opinion-image-wrapper > img,
+.latest-sidebar-img > img {
+  position: relative;
+  z-index: 1;
+  object-fit: contain !important;
+}
+
+/* la superposición degradada del hero debe quedar sobre el relleno */
+.featured-image-overlay {
+  z-index: 2;
+}
+
 .latest-article-body {
   display: flex;
   flex-direction: column;
@@ -1155,6 +1207,10 @@ ul {
 }
 
 .latest-sidebar-img {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 0.25rem;
   margin-bottom: 1rem;
 }
 
