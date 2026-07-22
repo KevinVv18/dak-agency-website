@@ -4,7 +4,7 @@
  * Conversion from HeroFeatured.astro
  */
 $post_obj = $args['post'];
-$image    = dak_get_featured_image_url( $post_obj->ID, 'hero-featured' );
+$image    = dak_get_featured_image_url( $post_obj->ID, 'large' ); // completo (sin hard-crop) para contain + fondo borroso
 $imageAlt = get_post_meta( get_post_thumbnail_id( $post_obj->ID ), '_wp_attachment_image_alt', true ) ?: wp_strip_all_tags( $post_obj->post_title );
 $author   = get_the_author_meta( 'display_name', $post_obj->post_author );
 $category = dak_get_primary_category( $post_obj->ID );
@@ -16,7 +16,7 @@ $excerpt  = wp_strip_all_tags( get_the_excerpt( $post_obj ) );
 
 <article class="hero-featured">
   <a href="<?php echo get_permalink( $post_obj ); ?>" class="featured-image-link">
-    <div class="featured-image-wrapper">
+    <div class="featured-image-wrapper" style="background-image:url('<?php echo esc_url( $image ); ?>')">
       <img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $imageAlt ); ?>" class="featured-image" loading="eager">
       <div class="featured-image-overlay"></div>
     </div>

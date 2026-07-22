@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { announcements, typeColor, relativeDate } from '../data/announcements'
+import { typeColor, relativeDate } from '../data/announcements'
+import useAnnouncements from '../hooks/useAnnouncements'
 import { scrollToSection } from '../utils/scrollToSection'
 import './NotificationBell.css'
 
@@ -20,6 +21,7 @@ const readSeen = () => {
 }
 
 const NotificationBell = () => {
+  const announcements = useAnnouncements()
   const [open, setOpen] = useState(false)
   const [seen, setSeen] = useState(readSeen)
   const rootRef = useRef(null)

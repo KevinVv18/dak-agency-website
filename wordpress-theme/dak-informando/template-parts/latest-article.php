@@ -4,7 +4,7 @@
  * Conversion from LatestArticle.astro
  */
 $post_obj = $args['post'];
-$image    = dak_get_featured_image_url( $post_obj->ID, 'article-card' );
+$image    = dak_get_featured_image_url( $post_obj->ID, 'large' ); // completo (sin hard-crop) para contain + fondo borroso
 $imageAlt = get_post_meta( get_post_thumbnail_id( $post_obj->ID ), '_wp_attachment_image_alt', true ) ?: wp_strip_all_tags( $post_obj->post_title );
 $category = dak_get_primary_category( $post_obj->ID );
 $tagClass = dak_get_category_tag_class( $category->slug );
@@ -14,7 +14,7 @@ $excerpt  = wp_strip_all_tags( get_the_excerpt( $post_obj ) );
 ?>
 
 <article class="latest-article">
-  <div class="latest-article-image">
+  <div class="latest-article-image" style="background-image:url('<?php echo esc_url( $image ); ?>')">
     <img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $imageAlt ); ?>" loading="lazy">
   </div>
   <div class="latest-article-body">
