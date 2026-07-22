@@ -1,0 +1,24 @@
+# Publica las guías internas de _guias/ en dakagency.net/guias/.
+# Utilidad: se dispara con [deploy-guia] en el mensaje del commit.
+# La carpeta guias/ está excluida del rsync --delete de la SPA (ver deploy.yml),
+# así que sobrevive a los despliegues del sitio.
+name: Deploy Guías
+on:
+  push:
+    branches: [claude/demos-section-redesign-bnkxbz]
+jobs:
+  deploy:
+    if: contains(github.event.head_commit.message, '[deploy-guia]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rsync guías al docroot
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: _guias/
+          remote_path: /home/u567580447/domains/dakagency.net/public_html/guias/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}

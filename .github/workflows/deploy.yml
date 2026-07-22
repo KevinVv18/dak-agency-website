@@ -42,7 +42,7 @@ jobs:
       - name: Deploy SPA via SSH (rsync)
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avz --delete --exclude='blog/' --exclude='.builds/' --exclude='inmobiliaria/'
+          switches: -avz --delete --exclude='blog/' --exclude='.builds/' --exclude='inmobiliaria/' --exclude='guias/'
           path: dist/
           remote_path: /home/u567580447/domains/dakagency.net/public_html/
           remote_host: 89.116.115.11
