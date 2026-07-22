@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Guía interna de DAK Agency para conectar las APIs de Instagram, Facebook, WhatsApp y TikTok.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%91%3C/text%3E%3C/svg%3E">
+<title>Conecta las redes de DAK a las APIs — Runbook</title>
+<style>
+  :root{
+    --bg:#0b0711; --bg2:#0f0a17; --surf:#16101f; --surf2:#1c1529;
+    --line:rgba(176,36,255,.16); --line2:rgba(255,255,255,.09);
+    --ink:#efe9f4; --mut:#a99cbb; --mut2:#c8bdd6;
+    --brand:#b024ff; --brand-soft:#c77dff;
+    --ok:#4ecdc4; --warn:#f5a623;
+    --meta:#1877f2; --wa:#25d366; --tt:#ff4d6d;
+    --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --r:16px; --maxw:860px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:
+      radial-gradient(120% 60% at 100% -10%,rgba(176,36,255,.12),transparent 60%),
+      radial-gradient(100% 50% at -10% 0%,rgba(78,205,196,.07),transparent 55%),
+      var(--bg);
+    color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased;
+    padding:0 0 6rem}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(1.1rem,4vw,1.8rem)}
+  a{color:var(--brand-soft);text-decoration:none;border-bottom:1px solid rgba(199,125,255,.3)}
+  a:hover{color:#fff;border-color:var(--brand)}
+  code,.mono{font-family:var(--mono)}
+
+  /* progress bar */
+  .topbar{position:sticky;top:0;z-index:10;background:rgba(11,7,17,.86);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);padding:.7rem 0}
+  .topbar .wrap{display:flex;align-items:center;gap:1rem}
+  .brandtag{font-weight:800;letter-spacing:.02em;font-size:.95rem;white-space:nowrap}
+  .brandtag b{color:var(--brand-soft)}
+  .prog{flex:1;height:7px;border-radius:100px;background:rgba(255,255,255,.08);overflow:hidden}
+  .prog span{display:block;height:100%;width:0;border-radius:100px;
+    background:linear-gradient(90deg,var(--brand),var(--ok));transition:width .4s cubic-bezier(.22,1,.36,1)}
+  .progn{font-family:var(--mono);font-size:.8rem;color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  /* hero */
+  header.hero{padding:clamp(2.6rem,7vw,4.4rem) 0 clamp(1.6rem,4vw,2.4rem)}
+  .eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.72rem;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--brand-soft);
+    border:1px solid var(--line);background:rgba(176,36,255,.07);padding:.4rem .8rem;border-radius:100px}
+  h1{font-size:clamp(1.9rem,5.6vw,3.1rem);line-height:1.04;letter-spacing:-.02em;font-weight:800;
+    margin:1.1rem 0 0;text-wrap:balance}
+  h1 em{font-style:normal;color:var(--brand-soft)}
+  .lede{margin-top:1.1rem;font-size:clamp(1rem,1.6vw,1.14rem);color:var(--mut2);max-width:60ch}
+
+  .keybox{margin-top:1.8rem;display:flex;gap:.9rem;align-items:flex-start;
+    background:linear-gradient(180deg,rgba(78,205,196,.1),rgba(78,205,196,.03));
+    border:1px solid rgba(78,205,196,.32);border-radius:var(--r);padding:1.1rem 1.2rem}
+  .keybox .ic{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+    background:rgba(78,205,196,.16);color:var(--ok);font-size:1.1rem}
+  .keybox b{color:#eafcfa}
+  .keybox p{color:var(--mut2);font-size:.95rem}
+
+  /* platform badges row */
+  .plats{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem}
+  .plat{display:inline-flex;align-items:center;gap:.5rem;font-size:.82rem;font-weight:600;
+    padding:.45rem .8rem;border-radius:100px;border:1px solid var(--line2);background:var(--surf)}
+  .plat .dot{width:9px;height:9px;border-radius:50%}
+  .plat.free .tag{color:var(--ok);font-weight:700} .plat.aud .tag{color:var(--warn);font-weight:700}
+  .plat small{color:var(--mut)}
+
+  /* phase */
+  .phase{margin-top:2.6rem;scroll-margin-top:80px}
+  .phase-h{display:flex;align-items:center;gap:.9rem;margin-bottom:1rem}
+  .pn{flex:0 0 auto;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:1.05rem;color:var(--brand-soft);
+    background:rgba(176,36,255,.1);border:1px solid var(--line)}
+  .phase-h h2{font-size:clamp(1.2rem,2.6vw,1.5rem);font-weight:750;letter-spacing:-.01em;line-height:1.15}
+  .phase-h .sub{font-size:.82rem;color:var(--mut);margin-top:.15rem}
+
+  .card{background:linear-gradient(180deg,var(--surf),var(--bg2));border:1px solid var(--line2);
+    border-radius:var(--r);padding:.5rem .5rem}
+  /* checklist steps */
+  .step{display:flex;gap:.85rem;padding:.9rem 1rem;border-radius:12px;cursor:pointer;
+    transition:background .2s;align-items:flex-start}
+  .step + .step{border-top:1px solid rgba(255,255,255,.05)}
+  .step:hover{background:rgba(176,36,255,.05)}
+  .step input{position:absolute;opacity:0;pointer-events:none}
+  .box{flex:0 0 auto;width:22px;height:22px;margin-top:.15rem;border-radius:7px;border:1.5px solid var(--line2);
+    background:rgba(255,255,255,.03);display:grid;place-items:center;transition:.2s}
+  .box svg{width:13px;height:13px;stroke:#120a1c;stroke-width:3.4;fill:none;opacity:0;transition:.15s}
+  .step.done .box{background:linear-gradient(135deg,var(--brand-soft),var(--brand));border-color:transparent}
+  .step.done .box svg{opacity:1}
+  .step-t{font-size:.97rem;color:var(--ink)}
+  .step.done .step-t{color:var(--mut)}
+  .step-t .hint{display:block;font-size:.85rem;color:var(--mut);margin-top:.25rem}
+  .step-t b{font-weight:650}
+  .path{font-family:var(--mono);font-size:.82rem;color:var(--brand-soft);
+    background:rgba(176,36,255,.08);border:1px solid var(--line);border-radius:6px;padding:.05rem .4rem;
+    white-space:nowrap}
+
+  /* callouts */
+  .note{display:flex;gap:.8rem;margin-top:1rem;padding:.9rem 1rem;border-radius:12px;font-size:.9rem;align-items:flex-start}
+  .note .ic{flex:0 0 auto;font-size:1rem;line-height:1.4}
+  .note.ok{background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.3);color:#d6f7f4}
+  .note.warn{background:rgba(245,166,35,.09);border:1px solid rgba(245,166,35,.32);color:#f8e6c6}
+  .note b{color:#fff}
+
+  /* copy-able scopes */
+  .scopes{margin-top:1rem;background:var(--bg2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .scopes-h{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    padding:.6rem .9rem;border-bottom:1px solid var(--line2);background:rgba(255,255,255,.02)}
+  .scopes-h span{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+  .copy{font-family:var(--sans);font-size:.78rem;font-weight:600;color:var(--brand-soft);cursor:pointer;
+    background:rgba(176,36,255,.1);border:1px solid var(--line);border-radius:100px;padding:.3rem .75rem;transition:.2s}
+  .copy:hover{background:rgba(176,36,255,.22);color:#fff}
+  .copy.done{color:var(--ok);border-color:rgba(78,205,196,.4);background:rgba(78,205,196,.12)}
+  .scopes code{display:block;padding:.85rem .9rem;font-size:.82rem;color:#d9c7ea;line-height:1.9;
+    white-space:pre-wrap;word-break:break-word}
+
+  /* next / footer */
+  .next{margin-top:3rem;background:linear-gradient(135deg,rgba(176,36,255,.14),rgba(176,36,255,.04));
+    border:1px solid var(--line);border-radius:var(--r);padding:1.4rem 1.4rem}
+  .next h3{font-size:1.1rem;font-weight:750;margin-bottom:.5rem}
+  .next ul{margin:.6rem 0 0 1.1rem;color:var(--mut2);font-size:.93rem;display:flex;flex-direction:column;gap:.35rem}
+  .foot{margin-top:2.4rem;padding-top:1.4rem;border-top:1px solid var(--line2);
+    font-size:.82rem;color:var(--mut);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+  .reset{color:var(--mut);cursor:pointer;background:none;border:1px solid var(--line2);border-radius:100px;
+    padding:.35rem .8rem;font-size:.78rem;font-family:var(--sans)}
+  .reset:hover{color:var(--ink);border-color:var(--brand)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="brandtag"><b>DAK</b> · APIs de redes</span>
+    <div class="prog"><span id="progFill"></span></div>
+    <span class="progn" id="progN">0 / 0</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="hero">
+    <span class="eyebrow">Runbook · ruta propia · sin videos</span>
+    <h1>Conecta las redes de DAK a sus <em>APIs</em>, sin el app review</h1>
+    <p class="lede">Guía paso a paso para obtener tokens <b>permanentes</b> de Instagram, Facebook y WhatsApp
+      (y dejar TikTok listo) usando las cuentas propias de la agencia. Marca cada paso: tu avance se guarda solo.</p>
+
+    <div class="keybox">
+      <div class="ic">✓</div>
+      <div>
+        <p><b>La clave que te ahorra el trámite:</b> los videos y el “app review” de Meta solo se exigen
+        para publicar en cuentas de <b>terceros</b>. Para las cuentas <b>propias</b> de DAK, la app se queda
+        en <b>modo desarrollo</b> y usas un <b>token de Usuario de Sistema</b> que no expira. Cero videos.</p>
+      </div>
+    </div>
+
+    <div class="plats">
+      <span class="plat free"><span class="dot" style="background:var(--meta)"></span> Instagram + Facebook <span class="tag">· sin review</span></span>
+      <span class="plat free"><span class="dot" style="background:var(--wa)"></span> WhatsApp Business <span class="tag">· sin review</span></span>
+      <span class="plat aud"><span class="dot" style="background:var(--tt)"></span> TikTok <span class="tag">· auditoría si es automático</span></span>
+    </div>
+  </header>
+
+  <!-- PRERREQUISITOS -->
+  <section class="phase" id="p0">
+    <div class="phase-h">
+      <span class="pn">0</span>
+      <div><h2>Antes de empezar</h2><div class="sub">Ten esto a la mano (una sola vez)</div></div>
+    </div>
+    <div class="card" data-check>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">Cuenta de <b>Instagram Profesional</b> de DAK (Business o Creator). <span class="hint">Perfil → Configuración → Tipo de cuenta. Una cuenta personal no sirve para publicar por API.</span></span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">Una <b>Página de Facebook</b> de DAK <b>enlazada</b> a esa cuenta de Instagram. <span class="hint">Es requisito duro de Meta: sin la Página no hay publicación, insights ni moderación por API.</span></span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">El negocio DAK creado en <b>Meta Business Suite</b> <span class="path">business.facebook.com</span></span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">Las <b>URLs legales</b> (te las dejé publicadas): <span class="path">dakagency.net/privacidad</span> y <span class="path">dakagency.net/eliminacion-de-datos</span></span></label>
+    </div>
+  </section>
+
+  <!-- FASE 1 -->
+  <section class="phase" id="p1">
+    <div class="phase-h">
+      <span class="pn">1</span>
+      <div><h2>Crear la app de Meta (modo desarrollo)</h2><div class="sub">Una sola app cubre Instagram, Facebook y WhatsApp</div></div>
+    </div>
+    <div class="card" data-check>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">Entra a <span class="path">developers.facebook.com</span> → <b>My Apps</b> → <b>Create App</b>.</span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">Tipo de app: <b>Business</b>. Nombre: p. ej. <b>“DAK Automation”</b>. Asóciala al negocio DAK.</span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">En <span class="path">Settings → Basic</span> pega la <b>Privacy Policy URL</b> y la <b>User Data Deletion → Data Deletion Instructions URL</b> con las páginas de arriba. Guarda.</span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">Agrega los productos <b>Facebook Login for Business</b> e <b>Instagram Graph API</b> desde el panel de productos.</span></label>
+      <div class="note ok"><span class="ic">✅</span><div>La app se queda en <b>modo Desarrollo</b>. <b>No la publiques</b> ni pidas App Review: como solo tocas tus cuentas, no hace falta.</div></div>
+    </div>
+  </section>
+
+  <!-- FASE 2 -->
+  <section class="phase" id="p2">
+    <div class="phase-h">
+      <span class="pn">2</span>
+      <div><h2>Token permanente (Usuario de Sistema)</h2><div class="sub">El token que no expira, para IG + Facebook</div></div>
+    </div>
+    <div class="card" data-check>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">En <span class="path">business.facebook.com → Configuración del negocio → Usuarios → Usuarios del sistema</span>, crea uno con rol <b>Administrador</b> (p. ej. “dak-bot”).</span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t"><b>Asignar activos</b> al usuario de sistema: la <b>Página de Facebook</b>, la <b>cuenta de Instagram</b> y la <b>app</b> (control total).</span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">Clic en <b>Generar token</b> → elige la app <b>DAK Automation</b> → marca los permisos de abajo → <b>copia y guarda el token</b> en un lugar seguro.</span></label>
+      <div class="scopes">
+        <div class="scopes-h"><span>Permisos (scopes) a marcar</span><button class="copy" data-copy="pages_show_list, pages_read_engagement, pages_manage_posts, instagram_basic, instagram_content_publish, instagram_manage_insights, read_insights, business_management">Copiar</button></div>
+        <code>pages_show_list, pages_read_engagement, pages_manage_posts,
+instagram_basic, instagram_content_publish,
+instagram_manage_insights, read_insights, business_management</code>
+      </div>
+      <div class="note ok"><span class="ic">🔒</span><div>Este token de Usuario de Sistema <b>no expira</b> (a diferencia del token de usuario, que dura 60 días). Guárdalo como secreto — nunca en el código ni en el repo.</div></div>
+    </div>
+  </section>
+
+  <!-- FASE 3 -->
+  <section class="phase" id="p3">
+    <div class="phase-h">
+      <span class="pn">3</span>
+      <div><h2>WhatsApp Business (Cloud API)</h2><div class="sub">En la misma app — para automatizar de verdad</div></div>
+    </div>
+    <div class="card" data-check>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">En la app → <b>Add Product → WhatsApp → Set up</b>. Obtienes un <b>número de prueba</b>, el <span class="path">phone_number_id</span> y el <b>WABA ID</b>.</span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">Para producción: completa la <b>verificación del negocio</b> (subir datos de la empresa / RUC) y registra tu <b>número real</b> de DAK.</span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">Añade al Usuario de Sistema los scopes <span class="path">whatsapp_business_messaging</span> y <span class="path">whatsapp_business_management</span> y genera el token permanente. El <b>webhook</b> lo conectamos desde n8n.</span></label>
+      <div class="note warn"><span class="ic">📋</span><div>La <b>verificación de negocio</b> es un formulario con los datos de la empresa — <b>no son videos</b>. Gratis hasta <b>1,000 conversaciones de servicio al mes</b>; luego se cobra por conversación.</div></div>
+    </div>
+  </section>
+
+  <!-- FASE 4 -->
+  <section class="phase" id="p4">
+    <div class="phase-h">
+      <span class="pn">4</span>
+      <div><h2>TikTok</h2><div class="sub">Borrador ya; automático directo requiere auditoría</div></div>
+    </div>
+    <div class="card" data-check>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">En <span class="path">developers.tiktok.com</span> → <b>Manage apps</b> → crea una app y añade <b>Content Posting API</b>. Pega la privacy URL.</span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">Empieza con el scope <span class="path">video.upload</span> (modo <b>borrador</b>): el video llega a tus borradores de TikTok y lo publicas con un toque. <b>Sin auditoría.</b></span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t">Si más adelante quieres posteo <b>100% automático</b>, solicita el scope <span class="path">video.publish</span> → pasa la <b>auditoría</b> (2–4 semanas, con un video demo del flujo).</span></label>
+      <div class="note warn"><span class="ic">⚠️</span><div>Hasta pasar la auditoría, TikTok fuerza los posts a <b>privados</b> y máx. <b>5 usuarios/día</b>. Por eso arrancamos en <b>borrador</b> — funciona ya y sin trámite.</div></div>
+    </div>
+  </section>
+
+  <!-- FASE 5 -->
+  <section class="phase" id="p5">
+    <div class="phase-h">
+      <span class="pn">5</span>
+      <div><h2>Prueba antes de automatizar</h2><div class="sub">Confirma que el token y los permisos quedaron bien</div></div>
+    </div>
+    <div class="card" data-check>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t"><b>Instagram/Facebook:</b> publica un post de prueba y lee un insight (alcance) con el token. Si responde, los scopes están bien.</span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t"><b>WhatsApp:</b> envía un mensaje de plantilla de prueba a tu propio número.</span></label>
+      <label class="step"><input type="checkbox"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span>
+        <span class="step-t"><b>TikTok:</b> sube un video de prueba a borradores.</span></label>
+      <div class="note ok"><span class="ic">🧪</span><div>Estas llamadas de prueba las dejamos listas como flujos en <b>n8n</b> (siguiente entrega): no tienes que tocar código.</div></div>
+    </div>
+  </section>
+
+  <div class="next">
+    <h3>Lo que sigue — el motor n8n</h3>
+    <p style="color:var(--mut2);font-size:.95rem">Con los tokens en mano, levantamos <b>n8n autohospedado</b> (~$5–10/mes en un VPS o en tu Hostinger) y te dejo 3 flujos listos:</p>
+    <ul>
+      <li><b>Blog → redes:</b> cada post nuevo del blog se autopostea a IG/FB y avisa por WhatsApp.</li>
+      <li><b>Calendario → posteo:</b> programas contenido desde una hoja de Google y sale solo.</li>
+      <li><b>Métricas → hoja:</b> alcance e interacción de IG/FB/TikTok recolectados a diario para tus reportes.</li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    <span>DAK Agency · guía interna · jul 2026 · las cuentas son propias, sin app review</span>
+    <button class="reset" id="reset">Reiniciar checklist</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var KEY='dak_runbook_v1';
+  var steps=[].slice.call(document.querySelectorAll('.step'));
+  var fill=document.getElementById('progFill'), pn=document.getElementById('progN');
+  var saved={};
+  try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+  steps.forEach(function(s,i){
+    var cb=s.querySelector('input');
+    if(saved[i]){cb.checked=true;s.classList.add('done')}
+    s.addEventListener('click',function(e){
+      if(e.target.tagName!=='INPUT'){cb.checked=!cb.checked}
+      s.classList.toggle('done',cb.checked);
+      saved[i]=cb.checked;
+      try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(x){}
+      update();
+    });
+  });
+  function update(){
+    var done=steps.filter(function(s){return s.classList.contains('done')}).length;
+    fill.style.width=(steps.length?done/steps.length*100:0)+'%';
+    pn.textContent=done+' / '+steps.length;
+  }
+  update();
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.addEventListener('click',function(){
+      var t=b.getAttribute('data-copy');
+      navigator.clipboard&&navigator.clipboard.writeText(t).then(function(){
+        b.textContent='Copiado ✓';b.classList.add('done');
+        setTimeout(function(){b.textContent='Copiar';b.classList.remove('done')},1800);
+      });
+    });
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    saved={};try{localStorage.removeItem(KEY)}catch(x){}
+    steps.forEach(function(s){s.classList.remove('done');s.querySelector('input').checked=false});
+    update();
+  });
+})();
+</script>
+
+</body>
+</html>
