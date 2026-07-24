@@ -184,8 +184,12 @@
     font-family:var(--rot);font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.5rem .95rem;border-radius:var(--r)}
   .hf-360{font-family:var(--med);font-size:.74rem;color:var(--marca);letter-spacing:.04em}
   .hero-switch{display:flex;gap:.45rem;align-items:center;padding-bottom:.3rem}
-  .hero-switch button{width:30px;height:3px;border-radius:0;border:none;background:rgba(255,255,255,.3);cursor:pointer;padding:0;transition:background .25s,width .25s}
-  .hero-switch button.on{background:var(--cinta);width:52px}
+  /* ancho fijo y relleno por transform: nada de animar width. Con esquina dura
+     el escalado no deforma, y las barras vecinas ya no se desplazan. */
+  .hero-switch button{width:52px;height:3px;border-radius:0;border:none;background:rgba(255,255,255,.26);cursor:pointer;padding:0;position:relative;overflow:hidden}
+  .hero-switch button::after{content:'';position:absolute;inset:0;background:var(--cinta);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
+  .hero-switch button.on::after{transform:scaleX(1)}
+  @media (prefers-reduced-motion:reduce){.hero-switch button::after{transition:none}}
   @media(max-width:768px){
     .hero{padding-top:86px;min-height:auto}
     .hero h1{font-size:clamp(2.1rem,10vw,3.2rem)}
