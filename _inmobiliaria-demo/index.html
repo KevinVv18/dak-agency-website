@@ -66,17 +66,22 @@
   .brand{display:flex;align-items:center;gap:.62rem;font-weight:700;font-size:1.18rem}
   .brand .mark{width:34px;height:34px;flex:0 0 auto}
   .brand small{display:block;font-size:.7rem;letter-spacing:.2em;color:var(--gold);font-weight:600;text-transform:uppercase;margin-top:1px}
-  .nav-links{display:flex;align-items:center;gap:2rem}
-  .nav-links a{font-size:.92rem;color:var(--muted2);font-weight:500;position:relative;transition:color .25s}
+  .nav-links{display:flex;align-items:center;gap:1.75rem}
+  /* nada del nav se parte en dos líneas: o cabe entero, o pasa a menú móvil */
+  .nav-links a{font-size:.92rem;color:var(--muted2);font-weight:500;position:relative;transition:color .25s;white-space:nowrap}
+  .nav-cta-btn{white-space:nowrap;flex:0 0 auto}
+  .brand{white-space:nowrap;flex:0 0 auto}
   .nav-links a::after{content:'';position:absolute;left:0;bottom:-6px;width:100%;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
   .nav-links a:hover{color:var(--text)}
   .nav-links a:hover::after{transform:scaleX(1)}
   .burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px}
   .burger span{width:24px;height:2px;background:var(--text)}
-  @media(max-width:940px){
+  /* 1024px, no 940: el nav de escritorio necesita ~1011px para caber. Con el
+     corte anterior quedaba una franja de ~70px mostrándolo apretado y partido. */
+  @media(max-width:1024px){
     .nav-links{position:fixed;inset:76px 0 auto 0;flex-direction:column;gap:0;background:rgba(12,14,17,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:.5rem 0;transform:translateY(-130%);transition:transform .4s var(--ease);align-items:stretch}
     .nav-links.open{transform:none}
-    .nav-links a{padding:1rem 8vw}
+    .nav-links a{padding:1rem 8vw;white-space:normal}
     .nav-cta-btn{display:none}
     .burger{display:flex}
   }
@@ -87,28 +92,28 @@
   .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center 52%;opacity:0;transition:opacity 1.3s var(--ease);will-change:opacity,transform}
   .hero-slide.on{opacity:1;animation:kenburns 9s ease-out both}
   @keyframes kenburns{from{transform:scale(1.05)}to{transform:scale(1.15)}}
-  /* velo lateral: garantiza base oscura bajo la columna de texto, sea cual sea la foto */
   .hero-scrim2{position:absolute;inset:0;z-index:1;pointer-events:none;background:
-    linear-gradient(100deg,rgba(6,8,10,.92) 0%,rgba(6,8,10,.74) 32%,rgba(6,8,10,.38) 54%,rgba(6,8,10,.1) 72%,transparent 84%),
     linear-gradient(180deg,rgba(6,8,10,.5) 0%,rgba(6,8,10,.1) 22%,transparent 40%,rgba(6,8,10,.5) 72%,rgba(6,8,10,.92) 100%),
     radial-gradient(120% 95% at 28% 42%,transparent 42%,rgba(6,8,10,.55) 100%)}
   .hero-grain{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
   .hero-inner{position:relative;z-index:3;width:100%;max-width:var(--maxw);margin:0 auto;display:flex;flex-direction:column;gap:clamp(1.5rem,4.5vh,3.2rem)}
   .hero-top{max-width:min(100%,720px)}
-  .hero .eyebrow{margin-bottom:1rem;text-shadow:0 2px 18px rgba(0,0,0,.55)}
+  /* el hero conserva el kicker original en mayúsculas espaciadas; la cursiva
+     editorial de .eyebrow se queda en el resto de secciones */
+  .hero .eyebrow{margin-bottom:1rem;text-shadow:0 2px 18px rgba(0,0,0,.55);
+    font-family:var(--sans);font-style:normal;font-size:.75rem;letter-spacing:.28em;text-transform:uppercase;font-weight:700}
   .hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.1rem,4.6vw,3.8rem);line-height:1.08;letter-spacing:-.02em;max-width:14ch;text-shadow:0 6px 44px rgba(0,0,0,.55)}
   .hero h1 em{font-style:italic;color:var(--gold-soft)}
   .hero h1 .rot{display:inline-flex;vertical-align:bottom}
-  .hero-lede{margin-top:1.1rem;max-width:44ch;font-size:1.05rem;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.85),0 1px 3px rgba(0,0,0,.7)}
   .hero-tags{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.4rem}
   .chip{display:inline-flex;align-items:center;gap:.45rem;font-size:.8rem;color:var(--muted2);background:rgba(10,12,15,.42);backdrop-filter:blur(8px);border:1px solid var(--line2);padding:.5rem .9rem;border-radius:100px}
-  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(70,201,141,.15)}
   .hero-mid{display:flex;align-items:flex-end;justify-content:space-between;gap:1.4rem;flex-wrap:wrap}
   .hero-feature{background:rgba(13,16,21,.58);backdrop-filter:blur(18px) saturate(1.2);border:1px solid var(--line2);border-radius:18px;padding:1.05rem 1.25rem 1.2rem;width:min(360px,100%);box-shadow:var(--shadow);cursor:pointer;transition:transform .3s var(--ease),border-color .3s;text-align:left}
   .hero-feature:hover{transform:translateY(-3px);border-color:var(--gold)}
-  .hf-eyebrow{font-family:var(--serif);font-style:italic;font-size:.95rem;letter-spacing:0;text-transform:none;color:var(--gold);font-weight:400}
-  .hf-name{font-family:var(--serif);font-size:1.34rem;font-weight:600;margin:.3rem 0 .25rem;line-height:1.15;transition:opacity .4s}
+  .hf-eyebrow{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .hf-name{font-family:var(--serif);font-size:1.28rem;font-weight:600;margin:.4rem 0 .25rem;line-height:1.15;transition:opacity .4s}
   .hf-meta{font-size:.86rem;color:var(--muted2);transition:opacity .4s}
   .hf-meta b{color:var(--gold-soft);font-weight:600}
   .hf-row{display:flex;align-items:center;gap:.85rem;margin-top:.95rem}
@@ -405,8 +410,8 @@
 
   <div class="hero-inner">
     <div class="hero-top">
+      <p class="eyebrow reveal">Norvia · Chiclayo · Lambayeque</p>
       <h1 class="reveal">El norte que <em class="rot"><span class="rot-mask"><span class="rot-word" id="rotWord">quieres vivir</span></span></em></h1>
-      <p class="hero-lede reveal">Casas, departamentos y lotes en Chiclayo y Lambayeque, con recorridos 360° y financiamiento directo.</p>
       <div class="hero-tags reveal">
         <span class="chip"><i class="dot"></i>12 proyectos activos</span>
         <span class="chip"><i class="dot"></i>Recorridos 360°</span>
