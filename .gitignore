@@ -39,6 +39,9 @@ _archive/
 
 # impeccable (detector de diseño): skill vendorizada + caché de sesión.
 # Se reinstala con `npx impeccable install`; no hace falta versionar 2.9 MB.
-.impeccable/
+# .impeccable/config.json SÍ se versiona: es donde quedan las excepciones
+# aprobadas, con su motivo, en un solo sitio revisable.
+.impeccable/*
+!.impeccable/config.json
 .claude/skills/impeccable/
 .claude/settings.local.json
