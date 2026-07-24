@@ -55,11 +55,16 @@ Prohibidas por ser defaults de entrenamiento: Newsreader, Fraunces, Playfair, Co
 
 El símbolo de punto de control —triángulo sobre punto— es la firma. Aparece como marcador de estación, viñeta y ancla del logotipo. La cinta de señalización es el segundo motivo: filetes naranjas que delimitan.
 
-## Motion
+## Motion — estado real, no intención
 
-Un solo momento orquestado: la **visada**. Una línea de barrido recorre el elemento al entrar, como el instrumento girando hacia un punto. No hay efectos de hover dispersos.
+Lo construido hoy, dicho sin adornos:
 
-Respeta `prefers-reduced-motion`: sin barrido, contenido visible por defecto.
+- **Entrada:** `.reveal` es un fade-up de 10px. Es correcto y discreto, pero **no** es la "visada" orquestada que este documento prometía en su primera versión. Se corrigió el documento, no el archivo.
+- **El único barrido real** es `.step::before`, el filete que se dibuja de izquierda a derecha al entrar la bitácora. Ahí sí encaja el mundo, y por eso el filete de cinta se reserva para eso y para las estaciones.
+- **Azimut vivo** en el visor 360°: lectura en grados que cambia al girar. Es la demostración de la tesis, no su enunciado.
+- **Hover:** hay efectos dispersos heredados del build anterior (elevaciones de tarjeta, tilt 3D del catálogo, ken burns del hero). Están fuera del criterio de "un solo momento orquestado" y son **deuda declarada**, no diseño.
+
+`prefers-reduced-motion` detiene el fade-up, el ken burns, el filete de la bitácora y la palabra rotativa.
 
 ## Reglas heredadas que no se rompen
 

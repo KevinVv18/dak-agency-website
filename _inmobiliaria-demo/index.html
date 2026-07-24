@@ -111,7 +111,12 @@
   /* MOTION: un solo momento orquestado, la visada del instrumento */
   .reveal{opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
   .reveal.in{opacity:1;transform:none}
-  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}
+    /* el ken burns del hero también se detiene: es zoom continuo de 9s */
+    .hero-slide.on{animation:none}
+    .step::before{transition:none;transform:none}
+  }
 
   /* ── NAV ── */
   header.nav{position:fixed;inset:0 0 auto 0;z-index:100;transition:background .35s,backdrop-filter .35s,border-color .35s;border-bottom:1px solid transparent}
@@ -191,7 +196,7 @@
 
   /* ── CUADRO DE BÚSQUEDA ── */
   .search{position:relative;z-index:3;width:100%;background:rgba(16,19,22,.92);backdrop-filter:blur(14px);
-    border:1px solid var(--linea-2);border-radius:var(--r);padding:1.05rem;box-shadow:var(--elev-2)}
+    border:1px solid var(--linea-2);border-top:2px solid var(--cinta);border-radius:var(--r);padding:1.05rem;box-shadow:var(--elev-2)}
   .seg{display:flex;border:1px solid var(--linea);border-radius:var(--r);padding:3px;gap:2px;width:max-content;margin-bottom:.85rem;background:rgba(255,255,255,.03)}
   .seg button{border:none;background:none;color:var(--texto-2);font-family:var(--med);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;
     padding:.42rem 1rem;border-radius:2px;cursor:pointer;transition:.2s}
@@ -250,7 +255,7 @@
   /* toda cifra en amarillo de prisma, en mono tabular */
   .card-price-tag{position:absolute;left:.85rem;bottom:.7rem;z-index:2;font-family:var(--med);font-variant-numeric:tabular-nums;
     font-size:1.22rem;font-weight:600;color:var(--prisma);text-shadow:0 2px 10px rgba(0,0,0,.8)}
-  .card-price-tag small{font-size:.68rem;font-weight:400;color:var(--texto-2)}
+  .card-price-tag small{font-size:.73rem;font-weight:400;color:var(--texto-2)}
   .card-body{padding:.9rem .1rem 0;display:flex;flex-direction:column;gap:.45rem;flex:1}
   .card-loc{font-family:var(--med);font-size:.74rem;color:var(--cinta);letter-spacing:.08em;display:flex;align-items:center;gap:.35rem;text-transform:uppercase}
   .card-title{font-family:var(--rot);font-variation-settings:'wdth' 104;font-weight:700;text-transform:uppercase;font-size:1rem;line-height:1.2;letter-spacing:.005em}
@@ -271,7 +276,7 @@
   .card:first-child .card-specs{border-top-color:var(--linea-2);padding-top:.7rem;font-size:.86rem}
   .card:first-child .card-price-tag{left:auto;right:clamp(1.1rem,2.2vw,1.9rem);bottom:clamp(1.3rem,2.4vw,2.1rem);
     font-size:clamp(1.6rem,2.9vw,2.4rem);text-align:right;line-height:1.05}
-  .card:first-child .card-price-tag small{display:block;font-size:.74rem;margin-top:.15rem}
+  .card:first-child .card-price-tag small{display:block;font-size:.76rem;margin-top:.15rem}
   @media(max-width:620px){
     .card:first-child{grid-column:span 1;display:flex;flex-direction:column}
     .card:first-child>.card-media,.card:first-child>.card-body{grid-area:auto}
@@ -280,7 +285,7 @@
     .card:first-child .card-body{position:static;padding:.9rem .1rem 0;max-width:100%}
     .card:first-child .card-title{font-size:1.3rem}
     .card:first-child .card-price-tag{left:.85rem;right:auto;bottom:.7rem;font-size:1.3rem;text-align:left}
-    .card:first-child .card-price-tag small{display:inline;font-size:.68rem;margin:0}
+    .card:first-child .card-price-tag small{display:inline;font-size:.73rem;margin:0}
   }
 
   /* ── CINTA DE ZONAS ── */
@@ -294,12 +299,13 @@
   .v360{background:linear-gradient(180deg,var(--suelo),var(--suelo-2))}
   .viewer-wrap{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--linea-2);box-shadow:var(--elev-2);background:#000}
   #pano{width:100%;height:clamp(360px,62vh,600px)}
-  #pano .pnlm-load-button{background:var(--cinta);border-radius:var(--r);color:#1a0700;font-weight:700;font-family:var(--rot);text-transform:uppercase;letter-spacing:.08em;width:auto;padding:0 1.6rem;height:50px;line-height:50px;font-size:.85rem}
+  #pano .pnlm-load-button{background:var(--cinta);border-radius:var(--r);color:#1a0700;font-weight:700;font-family:var(--rot);text-transform:uppercase;letter-spacing:.08em;width:auto;padding:.9rem 1.7rem;height:auto;line-height:1.2;font-size:.85rem;white-space:nowrap}
   #pano .pnlm-load-button:hover{background:var(--cinta-2)}
   #pano .pnlm-about-msg{display:none!important}
   .pano-hud{position:absolute;left:0;right:0;bottom:0;z-index:5;pointer-events:none;display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;background:linear-gradient(0deg,rgba(8,10,13,.9),transparent)}
   .pano-hud .info h3{font-family:var(--rot);font-variation-settings:'wdth' 106;font-weight:700;text-transform:uppercase;font-size:.98rem;letter-spacing:.02em}
   .pano-hud .info span{font-family:var(--med);font-size:.78rem;color:var(--texto-2)}
+  .pano-hud .az{color:var(--prisma);border:1px solid var(--linea-2);padding:.1rem .45rem;margin-left:.4rem}
   .pano-hud .btn{pointer-events:auto}
   .scenes{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
   .scene-btn{display:flex;align-items:center;gap:.55rem;background:transparent;border:1px solid var(--linea);border-radius:var(--r);
@@ -486,6 +492,9 @@
   .chat-in button:hover{transform:translateY(-1px)}
   .chat-in button svg{width:17px;height:17px;stroke:#1a0700;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
   @media(max-width:520px){.chat{right:12px;bottom:144px}.chat-fab{bottom:82px}.chat-nudge{right:80px;bottom:90px}}
+  /* canal reservado para los FAB: tapaban la cola de los párrafos en todo el scroll */
+  @media(max-width:760px){.wrap{padding-right:calc(clamp(1.1rem,4vw,2.4rem) + 62px)}
+    .mq-row{padding-right:0}}
 </style>
 </head>
 <body>
@@ -615,7 +624,7 @@
     <div class="viewer-wrap reveal">
       <div id="pano"></div>
       <div class="pano-hud">
-        <div class="info"><h3 id="vTitle">Sala de entretenimiento</h3><span id="vSub">Casa de lujo · Urb. Los Parques</span></div>
+        <div class="info"><h3 id="vTitle">Sala de entretenimiento</h3><span id="vSub">Casa de lujo · Urb. Los Parques</span> <span class="az med" id="vAz">Az 000°</span></div>
         <a href="#contacto" class="btn btn-cinta" style="padding:.6rem 1.05rem;font-size:.76rem">Agendar visita real</a>
       </div>
     </div>
@@ -966,10 +975,19 @@
     cfgScenes[k]={type:'equirectangular',panorama:A+s.pano,preview:A+s.poster,autoLoad:false,hotSpots:s.hs,hfov:100};
   });
   var viewer=pannellum.viewer('pano',{
-    default:{firstScene:'lounge',sceneFadeDuration:900,autoRotate:-2,autoRotateInactivityDelay:6000,compass:false,showFullscreenCtrl:true,showZoomCtrl:true,friction:.18},
+    // brújula encendida y rótulo en español: la tesis (ocupar una estación y
+    // visar en todas direcciones) se demuestra, no se afirma en un párrafo
+    default:{firstScene:'lounge',sceneFadeDuration:900,autoRotate:-2,autoRotateInactivityDelay:6000,compass:true,showFullscreenCtrl:true,showZoomCtrl:true,friction:.18},
+    strings:{loadButtonLabel:'Ocupar estación'},
     scenes:cfgScenes
   });
   var vT=document.getElementById('vTitle'),vS=document.getElementById('vSub');
+  // lectura de azimut en vivo, como el instrumento
+  var azEl=document.getElementById('vAz');
+  if(azEl){
+    var showAz=function(){var y=Math.round((viewer.getYaw()+360)%360);azEl.textContent='Az '+String(y).padStart(3,'0')+'°';};
+    viewer.on('load',showAz); setInterval(showAz,140);
+  }
   var scWrap=document.getElementById('scenes');
   scWrap.innerHTML=Object.keys(SCENES).map(function(k){
     var s=SCENES[k];
