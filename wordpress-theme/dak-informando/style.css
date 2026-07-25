@@ -2052,15 +2052,6 @@ ul {
   margin: 2rem 0;
 }
 
-.article-single-body blockquote {
-  border-left: 4px solid var(--color-primary, #B024FF);
-  margin: 2rem 0;
-  padding: 1rem 1.5rem;
-  font-style: italic;
-  color: var(--text-muted, #666);
-  background: var(--bg-card, #fff);
-  border-radius: 0 0.25rem 0.25rem 0;
-}
 
 .article-single-body ul,
 .article-single-body ol {
@@ -3052,11 +3043,11 @@ body { overflow-x: visible; }
 .article-single-body blockquote:not(.aviso):not(.servicio-relacionado),
 .page-content blockquote:not(.aviso):not(.servicio-relacionado) {
   border: 1px solid var(--linea);
-  border-left: 3px solid var(--text-primary);
+  border-top: 3px solid var(--text-primary);
   background: var(--bg-surface);
   font-style: normal;
   font-family: var(--font-prosa);
-  padding: 1.3rem 1.5rem;
+  padding: 1.4rem 1.5rem 1.3rem;
   margin: 2.4rem 0;
   color: var(--text-secondary);
 }
