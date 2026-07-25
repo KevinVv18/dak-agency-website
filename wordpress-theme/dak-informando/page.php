@@ -60,7 +60,7 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
     if (!bar) return;
     var h = document.documentElement;
     var max = (h.scrollHeight - h.clientHeight) || 1;
-    bar.style.width = (Math.min(1, Math.max(0, h.scrollTop / max)) * 100) + '%';
+    bar.style.transform = 'scaleX(' + Math.min(1, Math.max(0, h.scrollTop / max)) + ')';
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();

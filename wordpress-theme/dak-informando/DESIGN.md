@@ -18,22 +18,33 @@ Un manual es el documento más serio que existe: nadie adorna las instrucciones 
 - **No es un manual de juguete**: nada de páginas celestes ni ilustración amable. El registro es instructivo profesional, no lúdico.
 - **No repite el mundo topográfico** del demo inmobiliario (grafito + naranja de señalización + rotulación condensada). Comparten la familia «documento técnico», pero sus recursos nativos son distintos: allá se ocupa una estación y se visa; aquí se ejecuta un procedimiento paso a paso.
 
-## Color — spot único sobre papel
+## Color — spot sobre papel
 
-Un manual se imprime a una tinta más el negro. Esa es la regla.
+Un manual se imprime a una tinta más el negro. Esa es la regla, con una excepción documentada abajo.
 
-| Rol | Token | Valor | Trabajo |
+Los nombres son los que el CSS define de verdad (heredados del tema, no inventados para este documento):
+
+| Rol | Token real | Valor | Trabajo |
 |---|---|---|---|
-| Papel | `--papel` | `#FFFFFF` | Fondo de página. Blanco de manual, no crema nostálgica. |
-| Papel 2 | `--papel-2` | `#F4F4F5` | Bandas y cajas de sección. |
-| Tinta | `--tinta` | `#141416` | Texto. Negro de impresión, no gris. |
-| Tinta 2 | `--tinta-2` | `#42424A` | Prosa larga y secundarios. |
-| Tinta 3 | `--tinta-3` | `#63636C` | Metadatos. Mínimo AA sobre papel. |
-| **Spot** | `--spot` | `#B024FF` | **La única tinta de color.** Números de paso, llamadas, flechas, reglas de sección, enlaces. Es el púrpura de DAK haciendo un trabajo, no decorando. |
-| Aviso | `--aviso` | `#B45309` | Ámbar de advertencia, solo en cajas de precaución. |
+| Papel | `--bg-main` | `#FFFFFF` | Fondo de página. Blanco de manual, no crema nostálgica. |
+| Papel 2 | `--bg-surface` | `#F4F4F5` | Bandas y cajas. |
+| Tinta | `--text-primary` | `#141416` | Texto. Negro de impresión, no gris. |
+| Tinta 2 | `--text-secondary` | `#42424A` | Prosa larga. |
+| Tinta 3 | `--text-muted` | `#63636C` | Metadatos. AA sobre papel. |
 | Línea | `--linea` | `#DEDEE3` | Filetes de retícula. |
+| Aviso | `--aviso` | `#B45309` | Ámbar, **solo** en cajas de precaución explícitas. |
 
-Regla de contención: el spot nunca es fondo de grandes superficies. Vive en filetes de 2–3px, números y llamadas. En un manual la tinta de color es cara: se usa donde dirige la atención.
+**La tinta spot en tres tonos.** El púrpura puro solo pasa AA como relleno; como texto necesita un tono por fondo. Medido, no estimado:
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--spot` | `#B024FF` | Rellenos, filetes, viñetas, cuadros de número (con texto blanco encima: 4.7:1). |
+| `--spot-texto` | `#8B1CC7` | Texto púrpura sobre papel — 6.8:1. |
+| `--spot-claro` | `#D89BFF` | Texto púrpura sobre tinta (pie) — 8.9:1. |
+
+Regla de contención: el spot nunca es fondo de grandes superficies. Vive en filetes de 2–3px, números y llamadas.
+
+**Excepción a la tinta única:** los rótulos de categoría conservan su código cromático (púrpura, teal `#00706F`, verde `#00694A`, marrón `#8A5A25`). No es decoración: son ocho secciones y el color es su clave de navegación, heredada del tema anterior y presente en toda la portada. Los cuatro se oscurecieron para pasar AA sobre papel al perder el fondo. Si algún día se decide que la tinta única manda, la alternativa es distinguir sección por posición y rótulo.
 
 ## Tipografía
 
@@ -53,7 +64,11 @@ Prohibidas por delatar defaults de entrenamiento: Inter, Playfair, Fraunces, New
 
 ## Motivo
 
-La **llamada numerada**: un número dentro de un cuadrado de tinta spot, del que sale un filete hacia el elemento que nombra. Aparece en los pasos del artículo, en la numeración de secciones y en el índice lateral.
+La **llamada numerada**: un número dentro de un cuadrado de tinta spot. Aparece en la numeración de secciones del artículo (los `h2`, sobre el filete que abre cada sección), en los pasos de las listas ordenadas y en el índice lateral.
+
+**Estado real, sin adornos:** el filete guía que sale del número hacia el elemento —la otra mitad del motivo— **no está construido**. Lo que hace de guía hoy es el filete superior que abre cada sección. Queda como deuda declarada.
+
+**Cobertura real del motivo de pasos:** el corpus está escrito casi todo con `<ul>` (165 frente a 1 `<ol>` en 48 documentos), así que la llamada numerada de pasos casi no se ve en producción. Para que el motivo exista de verdad hay que emitir `<ol>` en los procedimientos desde el generador de contenido (`_blog-content/`), no solo esperarlo desde el CSS.
 
 ## Motion
 

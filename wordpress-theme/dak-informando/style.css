@@ -2661,8 +2661,9 @@ ul {
 
 /* Caja de AVISO: los blockquote pasan a ser el recuadro de precaución del
    manual — enmarcado y rotulado, no un filete lateral suelto */
-.article-single-body blockquote,
-.page-content blockquote {
+.article-single-body blockquote.aviso,
+.article-single-body .is-style-aviso,
+.page-content blockquote.aviso {
   position: relative;
   border: 1px solid var(--aviso);
   border-left-width: 1px;
@@ -2674,8 +2675,9 @@ ul {
   margin: 2.4rem 0;
 }
 
-.article-single-body blockquote::before,
-.page-content blockquote::before {
+.article-single-body blockquote.aviso::before,
+.article-single-body .is-style-aviso::before,
+.page-content blockquote.aviso::before {
   content: 'AVISO';
   position: absolute;
   top: 0;
@@ -3011,3 +3013,147 @@ body { overflow-x: visible; }
   transition: border-top-color var(--transition-base), transform var(--transition-base);
 }
 .servicio-card:hover { border-top-color: var(--spot); }
+
+/* ═══ CORRECCIONES DEL REVISOR DE ACABADO ═══ */
+
+/* ── 1. Los blockquote del corpus NO son advertencias ──
+   45 son el CTA de cierre y 31 son el bloque de enlazado interno
+   «servicio-relacionado». Rotularlos «AVISO» en ámbar leía como plantilla
+   rota justo donde el lector decide. Cada uno recibe su tratamiento. */
+
+/* Bloque de servicio relacionado: siguiente paso, en tinta spot */
+.article-single-body blockquote.servicio-relacionado,
+.page-content blockquote.servicio-relacionado {
+  position: relative;
+  border: 1px solid var(--linea);
+  border-top: 3px solid var(--spot);
+  background: var(--bg-surface);
+  font-style: normal;
+  font-family: var(--font-prosa);
+  padding: 1.9rem 1.5rem 1.35rem;
+  margin: 2.6rem 0;
+  color: var(--text-secondary);
+}
+
+.article-single-body blockquote.servicio-relacionado::before,
+.page-content blockquote.servicio-relacionado::before {
+  content: 'SIGUIENTE PASO';
+  position: absolute;
+  top: 1.05rem;
+  left: 1.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--spot-texto);
+}
+
+/* Cierre sin clase: caja sobria de tinta, no de alarma */
+.article-single-body blockquote:not(.aviso):not(.servicio-relacionado),
+.page-content blockquote:not(.aviso):not(.servicio-relacionado) {
+  border: 1px solid var(--linea);
+  border-left: 3px solid var(--text-primary);
+  background: var(--bg-surface);
+  font-style: normal;
+  font-family: var(--font-prosa);
+  padding: 1.3rem 1.5rem;
+  margin: 2.4rem 0;
+  color: var(--text-secondary);
+}
+
+/* ── 2. Red de contención en móvil ──
+   Al pasar body a overflow-x:visible se perdió la contención: una tabla de
+   5 columnas daba 936px de documento en un viewport de 360. */
+.article-single-body,
+.page-content {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.article-single-body table,
+.page-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.article-single-body img,
+.page-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── 3. El h2 numerado no puede depender de flex ──
+   Con marcado inline (<em>, <a>, <strong>) el flex generaba varios items
+   que no envuelven entre sí y desbordaban. Se publica sin diseñador tres
+   veces por semana: tiene que aguantar cualquier encabezado. */
+.article-single-body h2,
+.page-content h2 {
+  display: block;
+  position: relative;
+  padding-left: 3.1rem;
+  gap: 0;
+}
+
+.article-single-body h2::before,
+.page-content h2::before {
+  position: absolute;
+  left: 0;
+  top: 1.4rem;
+}
+
+@media (max-width: 620px) {
+  .article-single-body h2,
+  .page-content h2 { padding-left: 2.6rem; }
+}
+
+/* ── 4. El índice numeraba h2 y h3 por igual, así que mentía:
+   la sección «08» del cuerpo aparecía como «13» en el índice. ── */
+.toc-list li { counter-increment: none; }
+.toc-list li.toc-h2 { counter-increment: toc; }
+.toc-list li.toc-h3 > a::before { content: none; }
+.toc-list li.toc-h3 > a { padding-left: 1.6rem; }
+
+/* ── 5. Selectores reales: los de la lista de esquina dura no existían,
+   así que el hero de la portada seguía redondeado ── */
+.featured-image-wrapper,
+.visual-image-wrapper,
+.latest-sidebar-img,
+.article-single-hero-img,
+.hero-featured-img,
+.sidebar-article-image {
+  border-radius: 0 !important;
+}
+
+.article-single-hero-img,
+.featured-image-wrapper {
+  box-shadow: none !important;
+}
+
+/* ── 6. El filete de sección sí pasa a tinta spot (la regla anterior
+   apuntaba a border-color sobre elementos dibujados con background) ── */
+.section-divider-full { background: var(--spot) !important; }
+.section-title { border-bottom-color: var(--spot) !important; }
+
+/* ── 7. Escalón real entre título de sección y título de ficha ── */
+.section-title,
+.section-header-title { font-size: 1.35rem; letter-spacing: 0.16em; }
+
+/* ── 8. Medida remedida con Source Serif 4 (41rem daba 81 caracteres) ── */
+.article-single-body { max-width: 38rem; }
+
+/* ── 9. El acento de la ficha de servicio existía solo en :hover ──
+   En táctil no aparecía nunca. */
+.servicio-card { border-top-color: var(--linea); }
+@media (hover: none) {
+  .servicio-card { border-top-color: var(--spot); }
+}
+
+/* ── 10. El rótulo de categoría vuelve a ser texto, no chip:
+   el borde lo convertía en el «eyebrow chip» que DESIGN.md rechaza ── */
+.article-single-header .category-tag {
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+}
