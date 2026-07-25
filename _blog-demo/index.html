@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Blog DAK · Actual vs. propuesta «Manual» — comparador</title>
+<meta name="description" content="Comparador del rediseño del blog de DAK Agency: la versión actual estilo periódico frente a la propuesta «Manual»." />
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400..900;1,400..700&family=Source+Serif+4:opsz,wght@8..60,400..600&family=Playfair+Display:wght@700;900&display=swap" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='5' y='5' width='22' height='22' fill='none' stroke='%23B024FF' stroke-width='3'/%3E%3C/svg%3E" />
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --spot:#B024FF; --spot-texto:#8B1CC7; --spot-claro:#D89BFF;
+    --tinta:#141416; --tinta2:#42424A; --tinta3:#63636C;
+    --linea:#DEDEE3; --papel:#fff; --papel2:#F4F4F5;
+    --crema:#F8F6F2;
+    --sans:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --prosa:'Source Serif 4',Georgia,serif;
+    --diario:'Playfair Display',Georgia,serif;
+  }
+  body{font-family:var(--sans);background:var(--papel);color:var(--tinta);-webkit-font-smoothing:antialiased;line-height:1.55}
+  a{color:inherit;text-decoration:none}
+  .wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 clamp(1.1rem,4vw,2rem)}
+
+  header.top{border-bottom:1px solid var(--linea);padding:1rem 0}
+  .top-in{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+  .marca{display:flex;align-items:center;gap:.6rem;font-weight:800;letter-spacing:.02em}
+  .marca .cuad{width:22px;height:22px;border:3px solid var(--spot);flex:0 0 auto}
+  .rotulo{font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--spot-texto);
+    border:1px solid var(--spot-texto);padding:.2rem .55rem}
+  .top-in .quien{font-size:.82rem;color:var(--tinta3)}
+
+  .intro{padding:clamp(2.2rem,5vw,3.4rem) 0 1.6rem;max-width:62ch}
+  .intro h1{font-size:clamp(1.8rem,4vw,2.7rem);font-weight:800;letter-spacing:-.025em;line-height:1.12;margin-bottom:.9rem}
+  .intro p{font-family:var(--prosa);font-size:1.06rem;color:var(--tinta2)}
+  .intro .nota{margin-top:1rem;font-family:var(--sans);font-size:.88rem;color:var(--tinta3);
+    border-left:3px solid var(--linea);padding-left:.9rem}
+
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;padding-bottom:1.4rem}
+  @media(max-width:860px){.duo{grid-template-columns:1fr}}
+
+  .op{border:1px solid var(--linea);display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
+  .op:hover{border-color:var(--tinta);transform:translateY(-2px)}
+  .op .cab{padding:1.05rem 1.2rem;border-bottom:1px solid var(--linea);display:flex;align-items:baseline;justify-content:space-between;gap:.7rem}
+  .op .num{font-variant-numeric:tabular-nums;font-weight:800;font-size:.78rem;letter-spacing:.14em;color:#fff;background:var(--tinta);padding:.14rem .42rem}
+  .op.nueva .num{background:var(--spot)}
+  .op .est{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta3)}
+
+  .mira{aspect-ratio:16/10;overflow:hidden;background:var(--papel2);position:relative;border-bottom:1px solid var(--linea)}
+  .mira iframe{position:absolute;top:0;left:0;width:1440px;height:900px;border:0;
+    transform:scale(.42);transform-origin:top left;pointer-events:none}
+  @media(max-width:1100px){.mira iframe{transform:scale(.34)}}
+  @media(max-width:860px){.mira iframe{transform:scale(.46)}}
+  @media(max-width:560px){.mira iframe{transform:scale(.3)}}
+
+  .cuerpo{padding:1.2rem;display:flex;flex-direction:column;gap:.7rem;flex:1}
+  .cuerpo h2{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+  .op.actual h2{font-family:var(--diario);font-weight:900}
+  .cuerpo p{font-family:var(--prosa);color:var(--tinta2);font-size:.98rem}
+  .rasgos{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.2rem}
+  .rasgos span{font-size:.72rem;color:var(--tinta3);border:1px solid var(--linea);padding:.24rem .5rem}
+  .vinculos{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:auto;padding-top:.9rem}
+  .vinculos a{font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    padding:.62rem 1rem;border:1px solid var(--tinta);white-space:nowrap}
+  .vinculos a.pri{background:var(--tinta);color:#fff}
+  .op.nueva .vinculos a.pri{background:var(--spot);border-color:var(--spot);color:#fff}
+  .op.nueva .vinculos a{border-color:var(--spot-texto);color:var(--spot-texto)}
+  .vinculos a:hover{opacity:.85}
+
+  .cambios{border-top:1px solid var(--linea);padding:2rem 0 3rem}
+  .cambios h3{font-size:.76rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta3);margin-bottom:1rem}
+  table{width:100%;border-collapse:collapse;font-size:.92rem}
+  th{text-align:left;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta3);
+    border-bottom:2px solid var(--tinta);padding:.5rem .7rem}
+  td{border-bottom:1px solid var(--linea);padding:.62rem .7rem;vertical-align:top}
+  td:first-child{font-weight:700;width:34%}
+  td.n{font-variant-numeric:tabular-nums;color:var(--spot-texto);font-weight:700;white-space:nowrap}
+  @media(max-width:620px){
+    table,tbody,tr,td,th{display:block}
+    thead{display:none}
+    tr{border-bottom:1px solid var(--linea);padding:.6rem 0}
+    td{border:0;padding:.15rem .1rem}
+    td:first-child{width:auto;color:var(--tinta)}
+  }
+
+  footer.pie{border-top:1px solid var(--linea);padding:1.3rem 0 2.4rem;font-size:.82rem;color:var(--tinta3);
+    display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+  footer.pie a{color:var(--spot-texto);font-weight:600}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <span class="marca"><span class="cuad"></span>DAK <span class="rotulo">Comparador</span></span>
+    <span class="quien">Rediseño del blog · uso interno</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="intro">
+    <h1>El blog, en dos versiones</h1>
+    <p>La misma web y el mismo contenido, con dos tratamientos visuales distintos. Abre cada uno y navégalo como lo haría un lector.</p>
+    <p class="nota">Son copias congeladas para comparar, no el blog real. El blog en vivo sigue con la versión actual: nada de esto está publicado todavía.</p>
+  </section>
+
+  <section class="duo">
+
+    <article class="op actual">
+      <div class="cab"><span class="num">A</span><span class="est">En vivo hoy</span></div>
+      <div class="mira"><iframe src="actual/index.html" title="Vista previa de la versión actual" loading="lazy" scrolling="no" tabindex="-1"></iframe></div>
+      <div class="cuerpo">
+        <h2>Periódico</h2>
+        <p>Lo que está publicado: maqueta de diario con serif de titulares, fondo crema y portada a varias columnas.</p>
+        <div class="rasgos"><span>Playfair Display</span><span>Fondo crema</span><span>Portada de diario</span></div>
+        <div class="vinculos">
+          <a class="pri" href="actual/index.html">Ver portada</a>
+          <a href="actual/articulo.html">Ver un artículo</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="op nueva">
+      <div class="cab"><span class="num">B</span><span class="est">Propuesta</span></div>
+      <div class="mira"><iframe src="manual/index.html" title="Vista previa de la propuesta Manual" loading="lazy" scrolling="no" tabindex="-1"></iframe></div>
+      <div class="cuerpo">
+        <h2>Manual</h2>
+        <p>El blog tratado como el manual del negocio del lector: papel blanco, una sola tinta de color y cada artículo leído como un procedimiento con secciones numeradas.</p>
+        <div class="rasgos"><span>Public Sans + Source Serif</span><span>Papel blanco</span><span>Secciones numeradas</span></div>
+        <div class="vinculos">
+          <a class="pri" href="manual/index.html">Ver portada</a>
+          <a href="manual/articulo.html">Ver un artículo</a>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <section class="cambios">
+    <h3>Qué cambia, en concreto</h3>
+    <table>
+      <thead><tr><th>Punto</th><th>Actual</th><th>Propuesta</th></tr></thead>
+      <tbody>
+        <tr><td>Legibilidad de fechas y autores</td><td>Gris claro sobre crema, 2.1:1</td><td class="n">Pasa AA — cero fallos medidos</td></tr>
+        <tr><td>Problemas de diseño detectados</td><td class="n">294 en portada · 92 en artículo</td><td class="n">8 · 6</td></tr>
+        <tr><td>Lectura del artículo</td><td>Sans a todo lo ancho, ~90 caracteres por línea</td><td>Serif de lectura, ~75 caracteres</td></tr>
+        <tr><td>Estructura del artículo</td><td>Títulos sueltos</td><td>Secciones numeradas como un procedimiento</td></tr>
+        <tr><td>Contenido existente</td><td>—</td><td>Los 49 artículos ya publicados se benefician sin reescribir nada</td></tr>
+        <tr><td>Posicionamiento en Google</td><td>—</td><td>Sin cambios: mismas URLs, mismo contenido, misma estructura</td></tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<footer class="pie">
+  <div class="wrap top-in">
+    <span>Comparador interno · DAK Agency</span>
+    <span>Blog real: <a href="https://dakagency.net/blog/" target="_blank" rel="noopener">dakagency.net/blog</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
