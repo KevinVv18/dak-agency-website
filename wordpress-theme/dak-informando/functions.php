@@ -32,10 +32,11 @@ add_action( 'after_setup_theme', 'dak_informando_setup' );
 
 // ── Enqueue Styles & Scripts ──
 function dak_informando_assets() {
-    // Google Fonts: Playfair Display + Inter
+    // Google Fonts: Public Sans (estructura, registro de documentación)
+    // + Source Serif 4 (prosa larga de los artículos)
     wp_enqueue_style(
         'dak-google-fonts',
-        'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700&display=swap',
+        'https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400..900;1,400..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400..600&display=swap',
         array(),
         null
     );

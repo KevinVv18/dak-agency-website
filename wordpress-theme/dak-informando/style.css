@@ -19,34 +19,43 @@ Tags: blog, one-column, custom-menu, featured-images, translation-ready
    ================================== */
 
 :root {
-  /* Brand */
+  /* ══ MUNDO «MANUAL» ══ un manual se imprime a una tinta más el negro ══ */
+
+  /* Brand — el púrpura DAK es LA tinta spot: números de paso, llamadas,
+     filetes de sección y enlaces. Nunca fondo de superficies grandes. */
   --color-primary: #B024FF;
   --color-primary-dark: #8B1CC7;
   --color-teal: #00A5A5;
   --color-green: #009462;
   --color-warm: #C08850;
+  --spot: #B024FF;
+  --aviso: #B45309;
 
-  /* Light mode palette */
-  --bg-main: #F8F6F2;
+  /* Papel — blanco de manual, no crema nostálgica */
+  --bg-main: #FFFFFF;
   --bg-card: #FFFFFF;
-  --bg-surface: #F0EDE7;
+  --bg-surface: #F4F4F5;
 
-  /* Text — muted/light oscurecidos para pasar AA sobre la crema #F8F6F2:
-     #888 daba 3.3:1 y #ABABAB 2.1:1 (fechas y bylines ilegibles). Ahora
-     #636363 = 5.6:1 y #6F6F6F = 4.7:1, conservando la jerarquía. */
-  --text-primary: #1A1A1A;
-  --text-secondary: #4A4A4A;
-  --text-muted: #636363;
-  --text-light: #6F6F6F;
+  /* Tinta — todos pasan AA sobre papel blanco */
+  --text-primary: #141416;
+  --text-secondary: #42424A;
+  --text-muted: #63636C;
+  --text-light: #63636C;
 
-  /* Borders */
-  --border-light: rgba(0, 0, 0, 0.08);
-  --border-medium: rgba(0, 0, 0, 0.15);
-  --border-dark: rgba(0, 0, 0, 0.25);
+  /* Filetes de retícula */
+  --border-light: rgba(20, 20, 22, 0.12);
+  --border-medium: rgba(20, 20, 22, 0.22);
+  --border-dark: rgba(20, 20, 22, 0.42);
+  --linea: #DEDEE3;
 
-  /* Typography — Fox Newspaper style */
-  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  /* Tipografía — Public Sans (linaje de sistema de documentación público)
+     para toda la estructura; Source Serif 4 para la prosa larga.
+     --font-serif queda como ALIAS de Public Sans a propósito: así los ~20
+     titulares que lo usaban pasan al registro de manual sin tocarlos uno a uno.
+     La prosa pide --font-prosa explícitamente. */
+  --font-serif: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-prosa: 'Source Serif 4', Georgia, 'Times New Roman', serif;
 
   /* Transitions */
   --transition-fast: 0.15s ease;
@@ -103,8 +112,7 @@ ul {
   opacity: 0;
   transition: opacity 0.4s ease;
   background-image:
-    linear-gradient(rgba(176, 36, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(176, 36, 255, 0.06) 1px, transparent 1px);
+    none;
   background-size: 60px 60px;
   mask-image: radial-gradient(circle 180px at var(--mx, -200px) var(--my, -200px), rgba(0, 0, 0, 0.5) 0%, transparent 100%);
   -webkit-mask-image: radial-gradient(circle 180px at var(--mx, -200px) var(--my, -200px), rgba(0, 0, 0, 0.5) 0%, transparent 100%);
@@ -179,7 +187,7 @@ ul {
 
 .mini-nav-subscribe {
   padding: 0.35rem 1rem;
-  font-size: 0.6rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--text-primary);
@@ -503,8 +511,7 @@ ul {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(176, 36, 255, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(176, 36, 255, 0.018) 1px, transparent 1px);
+    none;
   background-size: 60px 60px;
   pointer-events: none;
   z-index: 0;
@@ -1486,7 +1493,7 @@ ul {
 
   .subscribe-btn {
     padding: 0.35rem 0.75rem;
-    font-size: 0.6rem;
+    font-size: 0.72rem;
   }
 
   .masthead {
@@ -1502,7 +1509,7 @@ ul {
   }
 
   .masthead-tagline {
-    font-size: 0.45rem;
+    font-size: 0.7rem;
     letter-spacing: 0.08em;
   }
 
@@ -1598,7 +1605,7 @@ ul {
 .marquee-track {
   display: flex;
   white-space: nowrap;
-  animation: marqueeScroll 40s linear infinite;
+  /* sin animación: un manual no desfila (ver DESIGN.md, un solo momento) */
 }
 
 .marquee-content {
@@ -1696,7 +1703,7 @@ ul {
   color: var(--color-primary);
   border-color: var(--color-primary);
   transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(176, 36, 255, 0.25);
+  box-shadow: 0 2px 6px rgba(20,20,22,0.18);
 }
 
 /* Footer columns */
@@ -1817,7 +1824,7 @@ ul {
   align-items: center;
   gap: 0.3rem;
   padding: 0.4rem 0.75rem;
-  font-size: 0.6rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.15em;
   font-family: var(--font-sans);
@@ -2171,7 +2178,7 @@ ul {
   color: #fff;
   border-color: var(--color-primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(176, 36, 255, 0.25);
+  box-shadow: 0 2px 6px rgba(20,20,22,0.18);
 }
 
 .header-admin-pill svg {
@@ -2240,7 +2247,7 @@ ul {
 .share-float-label {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-size: 0.6rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -2424,15 +2431,7 @@ ul {
   transition: transform var(--transition-base, 0.3s), box-shadow var(--transition-base, 0.3s), border-color var(--transition-base, 0.3s);
   overflow: hidden;
 }
-.servicio-card::before {
-  content: "";
-  position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-  background: var(--color-primary, #B024FF);
-  transform: scaleY(0); transform-origin: bottom;
-  transition: transform var(--transition-base, 0.3s);
-}
-.servicio-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(176,36,255,0.15); border-color: transparent; }
-.servicio-card:hover::before { transform: scaleY(1); }
+.servicio-card:hover { transform: translateY(-3px); box-shadow: none; border-color: transparent; }
 .servicio-card-name { font-family: var(--font-serif); font-size: 1.12rem; font-weight: 800; color: var(--text-primary, #1A1A1A); line-height: 1.3; }
 .servicio-card-desc { font-size: 0.84rem; color: var(--text-muted, #888); }
 .servicio-card-arrow { position: absolute; top: 1.2rem; right: 1.2rem; color: var(--color-primary, #B024FF); font-weight: 800; transition: transform var(--transition-fast, 0.15s); }
@@ -2496,3 +2495,519 @@ ul {
 .cat-archive-pagination .page-numbers:hover { border-color: var(--color-primary, #B024FF); }
 .cat-archive-empty { text-align: center; color: var(--text-secondary, #4A4A4A); padding: 2rem 0; }
 
+
+/* ═══════════════════════════════════════════════════════════════════
+   MUNDO «MANUAL» — capa de mundo
+   Tesis: el blog no es un periódico, es el manual del negocio del lector.
+   Cada artículo es un procedimiento. Ver DESIGN.md.
+   Va al final a propósito: los tokens de :root ya transformaron color y
+   tipografía en todo el tema; aquí viven los recursos propios del mundo.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Esquina dura: un manual no redondea ── */
+.article-card, .article-card-img, .article-card-image,
+.featured-image, .featured-img, .latest-article-img, .latest-article-image,
+.opinion-image, .opinion-img, .interview-hero, .sidebar-article-img,
+.sidebar-cta, .servicio-card, .toc, .article-single-body img,
+.article-single-hero, .article-single-hero-img, .newsletter-input,
+.footer-newsletter-input, .footer-newsletter-btn, .subscribe-btn,
+.category-tag, .latest-sidebar-header, .cat-pill, .related-card,
+.related-card-img, .article-single-body blockquote {
+  border-radius: 0 !important;
+}
+
+/* ── Sin sombras: la profundidad de un manual son sus filetes ── */
+.article-card, .featured-card, .latest-article, .sidebar-cta,
+.servicio-card, .opinion-feature, .related-card, .toc {
+  box-shadow: none !important;
+}
+
+/* ── El spot es tinta plana, nunca degradado ── */
+.reading-progress span,
+.sidebar-cta,
+.footer-newsletter-btn,
+.subscribe-btn {
+  background-image: none !important;
+}
+.reading-progress span { background-color: var(--spot); }
+.sidebar-cta { background-color: var(--text-primary) !important; }
+
+/* ── Rótulos: versales de manual con cifras tabulares ── */
+.category-tag, .article-card-meta, .opinion-meta, .interview-hero-meta,
+.latest-article-date, .latest-sidebar-header, .masthead-tagline,
+.mini-nav-link, .nav-link, .article-single-meta, .footer-col-title {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Filete de sección en tinta spot ── */
+.section-divider-full,
+.section-header {
+  border-color: var(--spot);
+}
+
+/* ═══ EL ARTÍCULO COMO PROCEDIMIENTO ═══ */
+
+/* Prosa en Source Serif 4: cara de lectura sostenida, no de lucimiento */
+.article-single-body,
+.page-content {
+  font-family: var(--font-prosa);
+  counter-reset: seccion;
+}
+
+.article-single-body p,
+.page-content p {
+  font-family: var(--font-prosa);
+}
+
+/* Secciones numeradas: los h2 del contenido reciben su número automáticamente.
+   Funciona sobre los 49 posts ya publicados sin tocar su HTML. */
+.article-single-body h2,
+.page-content h2 {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  counter-increment: seccion;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  border-top: 1px solid var(--linea);
+  padding-top: 1.4rem;
+  margin-top: 3rem;
+}
+
+.article-single-body h2::before,
+.page-content h2::before {
+  content: counter(seccion, decimal-leading-zero);
+  flex: 0 0 auto;
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78em;
+  font-weight: 700;
+  color: #fff;
+  background: var(--spot);
+  padding: 0.1em 0.42em;
+  line-height: 1.35;
+}
+
+.article-single-body h3,
+.page-content h3 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Procedimiento: las listas numeradas se convierten en pasos con llamada
+   cuadrada en tinta spot — el motivo del sistema */
+.article-single-body ol,
+.page-content ol {
+  list-style: none;
+  counter-reset: paso;
+  padding-left: 0;
+}
+
+.article-single-body ol > li,
+.page-content ol > li {
+  list-style: none;
+  counter-increment: paso;
+  position: relative;
+  padding-left: 2.9rem;
+  margin-bottom: 1.1rem;
+}
+
+.article-single-body ol > li::before,
+.page-content ol > li::before {
+  content: counter(paso);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  width: 1.9rem;
+  height: 1.9rem;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--spot);
+}
+
+/* Viñetas: cuadrado de tinta, no disco */
+.article-single-body ul,
+.page-content ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.article-single-body ul > li,
+.page-content ul > li {
+  list-style: none;
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.article-single-body ul > li::before,
+.page-content ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0.15rem;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  background: var(--spot);
+}
+
+/* Caja de AVISO: los blockquote pasan a ser el recuadro de precaución del
+   manual — enmarcado y rotulado, no un filete lateral suelto */
+.article-single-body blockquote,
+.page-content blockquote {
+  position: relative;
+  border: 1px solid var(--aviso);
+  border-left-width: 1px;
+  background: #FFFBF5;
+  color: var(--text-secondary);
+  font-style: normal;
+  font-family: var(--font-prosa);
+  padding: 1.8rem 1.4rem 1.2rem;
+  margin: 2.4rem 0;
+}
+
+.article-single-body blockquote::before,
+.page-content blockquote::before {
+  content: 'AVISO';
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-50%);
+  margin-left: 1rem;
+  background: var(--bg-main);
+  padding: 0 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--aviso);
+}
+
+/* Tablas: cuadro de datos con filetes */
+.article-single-body table,
+.page-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  margin: 2rem 0;
+}
+
+.article-single-body th,
+.page-content th {
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--text-primary);
+  padding: 0.6rem 0.8rem;
+}
+
+.article-single-body td,
+.page-content td {
+  border-bottom: 1px solid var(--linea);
+  padding: 0.65rem 0.8rem;
+}
+
+/* Enlaces de prosa: subrayado de tinta spot; en un manual la referencia se
+   marca, no se repinta el texto */
+.article-single-body a,
+.page-content a {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--spot);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.article-single-body a:hover,
+.page-content a:hover {
+  color: var(--spot);
+  opacity: 1;
+}
+
+/* ── Índice lateral = tabla de contenido del manual ── */
+.toc {
+  border: 1px solid var(--linea);
+  border-top: 2px solid var(--spot);
+  padding: 1.1rem 1.2rem;
+}
+
+.toc-title {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.toc-list {
+  counter-reset: toc;
+  list-style: none;
+}
+
+.toc-list li {
+  counter-increment: toc;
+  list-style: none;
+}
+
+.toc-list a::before {
+  content: counter(toc, decimal-leading-zero);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--spot);
+  margin-right: 0.55rem;
+}
+
+/* ── Ficha de artículo = entrada de índice ── */
+.article-card-title,
+.latest-article-title,
+.latest-sidebar-title,
+.featured-title,
+.opinion-title {
+  font-family: var(--font-sans);
+  letter-spacing: -0.02em;
+}
+
+.category-tag {
+  border: 1px solid currentColor;
+  background: transparent !important;
+  padding: 0.22rem 0.5rem;
+  font-weight: 700;
+}
+
+/* ── Cabecera de artículo ── */
+.article-single-title {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+/* ── Pie ── */
+.footer {
+  background: var(--text-primary);
+}
+
+.footer-col-title {
+  color: var(--spot);
+  letter-spacing: 0.16em;
+}
+
+/* ── Movimiento: solo el avance; respeta reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress span,
+  .nav-link::after {
+    transition: none;
+  }
+}
+
+/* ── Móvil: la numeración no debe empujar el texto fuera ── */
+@media (max-width: 620px) {
+  .article-single-body h2,
+  .page-content h2 {
+    gap: 0.55rem;
+    margin-top: 2.2rem;
+  }
+  .article-single-body ol > li,
+  .page-content ol > li {
+    padding-left: 2.5rem;
+  }
+}
+
+/* ── Correcciones de la primera pasada del detector sobre el mundo nuevo ── */
+
+/* El spot puro no pasa AA sobre el negro del pie (4.0:1). Sobre fondo oscuro
+   se usa una versión clara del mismo púrpura; sobre papel sigue el spot puro. */
+:root { --spot-claro: #D89BFF; }
+
+/* En el pie (fondo #141416) el spot puro da 4.0:1 y no pasa AA. El TEXTO
+   usa el púrpura claro (8.9:1); los BOTONES conservan el fondo púrpura
+   con texto blanco, que sí pasa (4.7:1). */
+.footer { --color-primary: var(--spot-claro); }
+.footer-newsletter-btn {
+  background: #B024FF !important;
+  border-color: #B024FF !important;
+  color: #fff !important;
+}
+
+/* La marquesina infinita contradice el sistema: un manual no desfila.
+   Se queda el mismo contenido, quieto y legible. */
+.marquee-track {
+  animation: none !important;
+  white-space: normal;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 1.4rem;
+}
+.marquee-content {
+  color: rgba(255, 255, 255, 0.55) !important;
+  padding-right: 0;
+}
+.marquee-content:nth-child(n+4) { display: none; }
+
+/* Sin pestaña lateral: en este mundo el acento es un filete superior */
+
+/* El body recortaba capas posicionadas. La banda que se salía del viewport
+   se recorta en su propio contenedor, como en el resto del sistema. */
+body { overflow-x: visible; }
+.footer-marquee, .hero-blog, .interview-hero { overflow: hidden; }
+
+/* ── Encabezado accesible que arregla el salto h1→h3 del esquema ── */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Jerarquía tipográfica: la escala estaba comprimida (1.9:1 entre el
+      cuerpo y el mayor). Un manual distingue con claridad nivel de sección,
+      subsección y cuerpo. Se abre la escala en la portada. ── */
+.featured-title {
+  font-size: clamp(2.1rem, 4vw, 3.4rem);
+  line-height: 1.08;
+}
+
+.opinion-title {
+  font-size: clamp(1.9rem, 3.4vw, 2.8rem);
+  line-height: 1.12;
+}
+
+.section-header-title,
+.section-title {
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  letter-spacing: 0.14em;
+}
+
+/* Titulares de ficha: un escalón claro por debajo del destacado */
+.article-card-title { font-size: 1.22rem; line-height: 1.3; }
+.latest-article-title { font-size: 1.18rem; line-height: 1.3; }
+
+/* ── Los resúmenes son prosa: van en la cara de lectura, no en la de
+      estructura. Además da a la portada las dos voces del sistema. ── */
+.article-card-excerpt,
+.featured-excerpt,
+.latest-article-excerpt,
+.sidebar-article-excerpt,
+.opinion-excerpt {
+  font-family: var(--font-prosa);
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+/* ── Interlineado mínimo en titulares multilínea (regla heredada) ── */
+/* Solo el display grande lleva interlineado apretado; los titulares
+   pequeños se quedan en 1.3, como manda la regla heredada. */
+.featured-title,
+.opinion-title,
+.interview-hero-title,
+.article-single-title {
+  line-height: 1.15;
+}
+.sidebar-cta-title,
+.servicio-card-name,
+.visual-title,
+.article-card-title,
+.latest-article-title,
+.latest-sidebar-title {
+  line-height: 1.3;
+}
+@media (max-width: 700px) {
+  .featured-title,
+  .opinion-title,
+  .article-single-title { line-height: 1.2; }
+}
+
+/* ═══ SISTEMA DE TINTA EN TRES TONOS ═══
+   Medido con los elementos reales: el púrpura puro solo pasa AA como RELLENO
+   (blanco encima) o como filete. Como TEXTO necesita un tono por fondo. */
+:root {
+  --spot: #B024FF;          /* rellenos, filetes, viñetas, números */
+  --spot-texto: #8B1CC7;    /* texto púrpura sobre papel — 6.8:1 */
+  --spot-claro: #D89BFF;    /* texto púrpura sobre tinta  — 8.9:1 */
+
+  /* Colores de categoría oscurecidos para pasar AA sobre papel blanco:
+     los originales (#00A5A5, #009462, #C08850) daban 3.0–4.2:1 al quedar
+     el rótulo con fondo transparente. */
+  --color-teal: #00706F;
+  --color-green: #00694A;
+  --color-warm: #8A5A25;
+}
+
+/* Texto púrpura sobre papel */
+.mini-nav-link.active,
+.nav-link.active,
+.toc-list a.active,
+.article-single-body a:hover,
+.page-content a:hover,
+.article-card-cta,
+.read-more {
+  color: var(--spot-texto);
+}
+
+.toc-list a::before { color: var(--spot-texto); }
+
+/* Sobre la tinta del pie, TODO el púrpura pasa al tono claro
+   (incluye --spot, que es lo que usa .footer-col-title) */
+.footer {
+  --color-primary: var(--spot-claro);
+  --spot: var(--spot-claro);
+}
+
+.footer-col-title { color: var(--spot-claro) !important; }
+
+/* Legales del pie: estaban a 3.2:1 */
+.footer-bottom,
+.footer-bottom a,
+.footer-legal,
+.footer-copyright {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+/* Rótulos de categoría: el borde se queda en el color, el texto se oscurece
+   lo justo para pasar AA sin perder el código cromático de cada sección */
+.tag-blog { color: #00694A; }
+.tag-entrevistas { color: #8A5A25; }
+.tag-opinion { color: #00706F; }
+
+/* tag-marketing usaba el púrpura puro como texto (4.2:1): pasa al tono de texto */
+.tag-marketing { color: var(--spot-texto); }
+
+/* ── Fuera las retículas decorativas heredadas ──
+   El mundo «Manual» estructura con filetes reales entre secciones, no con
+   un enrejado de fondo. Además el enrejado que sigue al cursor era una
+   floritura del tema anterior sin función en un documento de lectura. */
+.hero-grid-bg,
+.cursor-grid-reveal {
+  display: none !important;
+}
+
+/* ── El acento de la ficha de servicio deja de ser una pestaña pegada:
+      pasa a ser el propio filete superior de la ficha, que ya existe ── */
+.servicio-card {
+  border-top: 3px solid transparent;
+  transition: border-top-color var(--transition-base), transform var(--transition-base);
+}
+.servicio-card:hover { border-top-color: var(--spot); }

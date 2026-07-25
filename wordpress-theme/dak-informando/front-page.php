@@ -48,6 +48,9 @@ $popular_post  = $popular_query->have_posts() ? $popular_query->posts[0] : ( iss
   <!-- ===== HERO ===== -->
   <section class="hero-blog" id="heroBlog">
     <div class="hero-grid-bg"></div>
+    <?php /* Encabezado de sección para el lector de pantalla y el esquema del
+             documento: sin él la portada saltaba de h1 a h3. No cambia el diseño. */ ?>
+    <h2 class="visually-hidden">Artículos destacados</h2>
     <div class="hero-container">
       <aside class="hero-sidebar hero-sidebar-left">
         <?php foreach ( $sidebar_left as $i => $post ) :
