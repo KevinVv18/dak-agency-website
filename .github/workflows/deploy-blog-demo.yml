@@ -1,0 +1,37 @@
+name: Deploy comparador del blog
+
+# Publica el comparador estático del rediseño del blog en
+# dakagency.net/blog-demo/  (instantáneas congeladas: NO es el blog real).
+#
+# OJO: el rsync de la SPA en deploy.yml usa --delete sobre public_html/, así
+# que 'blog-demo/' DEBE seguir en su lista de --exclude o ese deploy lo borra.
+# (Es la misma trampa que ya se llevó por delante el demo inmobiliario.)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '_blog-demo/**'
+      - '.github/workflows/deploy-blog-demo.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Subir comparador (rsync en Docker)
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: _blog-demo/
+          remote_path: /home/u567580447/domains/dakagency.net/public_html/blog-demo/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
