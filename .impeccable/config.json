@@ -7,10 +7,10 @@
         "rule": "hero-eyebrow-chip",
         "value": "*",
         "files": [
-          "_inmobiliaria-demo/index.html"
+          "_inmobiliaria-demo/editorial/index.html"
         ],
         "createdAt": "2026-07-24T15:08:46.465Z",
-        "reason": "El hero y su carrusel se conservan tal cual por decision del cliente (2026-07-24)"
+        "reason": "Version Editorial: el hero y su carrusel se conservan tal cual por decision del cliente (2026-07-24). Tras dividir en dos versiones, esta es la ruta del sitio oro."
       }
     ]
   }

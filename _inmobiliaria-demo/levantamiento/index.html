@@ -1,0 +1,1311 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Norvia · Inmobiliaria en Chiclayo — Demo por DAK Agency</title>
+<meta name="description" content="Encuentra tu próximo hogar en Chiclayo y Lambayeque: catálogo con fotos reales, recorridos 360°, filtros inteligentes y asesoría humana. Demo desarrollado por DAK Agency." />
+<meta name="robots" content="noindex, follow" />
+<meta property="og:title" content="Norvia · Inmobiliaria — Demo por DAK Agency" />
+<meta property="og:description" content="Catálogo con fotos reales, recorridos 360° y filtros en vivo. Web-demo desarrollada por DAK Agency." />
+<meta property="og:image" content="../assets/prop-casa-lujo.webp" />
+<meta property="og:type" content="website" />
+<link rel="preload" as="image" href="../assets/prop-casa-lujo.webp" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&family=Spline+Sans+Mono:wght@300..700&display=swap" />
+<link rel="stylesheet" href="../vendor/pannellum.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 5 27 24H5z' fill='none' stroke='%23FF5A1F' stroke-width='2.6' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='19' r='2.6' fill='%23FF5A1F'/%3E%3C/svg%3E" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"RealEstateAgent","name":"Norvia Inmobiliaria (demo)","areaServed":"Chiclayo, Lambayeque, Perú","url":"https://inmobiliaria.dakagency.net/","parentOrganization":{"@type":"Organization","name":"DAK Agency","url":"https://dakagency.net"}}
+</script>
+
+<!--
+  ══════════════════════════════════════════════════════════════════════
+  CONTRATO DE DIRECCIÓN — «LEVANTAMIENTO»          seed 80a65467 · idx 7
+  ══════════════════════════════════════════════════════════════════════
+  TESIS: Una ficha de propiedad es la última página de un expediente que
+  empieza en una libreta de campo. Rechaza el hero fotográfico a sangre
+  con buscador superpuesto y grilla de fichas que publica todo el rubro.
+
+  MUNDO PROPIO: Instrumental de campo, no papelería. Suelo grafito con
+  retícula de coordenadas; naranja de cinta de señalización para acción y
+  límite; amarillo de prisma para toda cifra; rosa fluorescente para punto
+  hallado. Rotulación Archivo expandida en versales; medición en Spline
+  Sans Mono tabular. Sin serif. Firma: triángulo sobre punto.
+
+  HISTORIA: El dueño de la inmobiliaria reconoce el idioma de su propio
+  oficio ejecutado a nivel Lima, y entiende que el 360 no es adorno: es
+  una ocupación de estación, lo que su topógrafo ya hace.
+
+  PRIMER VIEWPORT: Foto de propiedad a sangre bajo retícula y marca de
+  estación con coordenadas. Titular en versales expandidas abajo a la
+  izquierda; ficha de la propiedad destacada como cuadro de datos en mono;
+  el cuadro de búsqueda, con filete de cinta, cierra el viewport.
+
+  FORMA: Candidato 7 de la lista ordenada por resonancia (libreta de
+  topógrafo), asignado por el dado. Staging: composición propia por
+  estaciones numeradas, no los corredores repartidos.
+  ══════════════════════════════════════════════════════════════════════
+-->
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    /* suelo de plano: grafito, nunca negro puro */
+    --suelo:#15181C; --suelo-2:#1D2126; --suelo-3:#262B31;
+    /* roles de color: cada uno tiene un trabajo y no se usa fuera de él */
+    --cinta:#FF5A1F;   /* acción y límite */
+    --cinta-2:#FF7A45;
+    --prisma:#FFC300;  /* medición: toda cifra */
+    --marca:#FF2D78;   /* punto hallado */
+    --verde:#3ECF8E;
+    --texto:#EEF1F3; --texto-2:#A7B0B8; --texto-3:#848E97;
+    --linea:rgba(255,255,255,.10); --linea-2:rgba(255,255,255,.22);
+    /* esquina dura: el dibujo técnico no redondea. Además evita el cliché
+       del filete de acento sobre tarjeta redondeada. */
+    --r:0; --maxw:1260px;
+    --ease:cubic-bezier(.22,1,.36,1);
+    --rot:'Archivo',system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+    --ui:'Archivo',system-ui,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;
+    --med:'Spline Sans Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    /* elevación neutra: desplazamiento y desenfoque, sin halo de color */
+    --elev:0 18px 40px -22px rgba(0,0,0,.85);
+    --elev-2:0 30px 60px -30px rgba(0,0,0,.9);
+    color-scheme:dark;
+  }
+  html{scroll-behavior:smooth}
+  body{font-family:var(--ui);background:var(--suelo);color:var(--texto);line-height:1.6;-webkit-font-smoothing:antialiased;position:relative}
+  /* la hoja de plano: retícula de coordenadas presente, nunca protagonista */
+  /* los planos catastrales marcan la retícula con cruces en las intersecciones,
+     no con líneas continuas: más fiel al mundo y evita el fondo-rejilla genérico */
+  body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cpath d='M36 32v8M32 36h8' stroke='%23ffffff' stroke-opacity='0.10' stroke-width='1'/%3E%3C/svg%3E");
+    background-size:72px 72px}
+  body>*{position:relative;z-index:1}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  button{font-family:inherit}
+  ::selection{background:var(--cinta);color:#1a0700}
+  .wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 clamp(1.1rem,4vw,2.4rem)}
+
+  /* rotulación de ingeniería: versales expandidas, no editorial */
+  .rotulo{font-family:var(--rot);font-variation-settings:'wdth' 112;font-weight:700;text-transform:uppercase;letter-spacing:.02em;line-height:1.02}
+  .med{font-family:var(--med);font-variant-numeric:tabular-nums}
+
+  /* el kicker deja de ser mayúsculas espaciadas sueltas: es un rótulo de campo */
+  .eyebrow{font-family:var(--med);font-size:.78rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--cinta);
+    display:inline-flex;align-items:center;gap:.55rem}
+  .eyebrow::before{content:'';width:11px;height:10px;flex:0 0 auto;
+    background:var(--cinta);clip-path:polygon(50% 0,100% 100%,0 100%)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;border:none;cursor:pointer;
+    font-family:var(--rot);font-variation-settings:'wdth' 100;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+    padding:.9rem 1.5rem;border-radius:var(--r);transition:transform .22s var(--ease),background .22s,color .22s,border-color .22s}
+  .btn-cinta,.btn-gold{background:var(--cinta);color:#1a0700;box-shadow:var(--elev)}
+  .btn-cinta:hover,.btn-gold:hover{background:var(--cinta-2);transform:translateY(-2px)}
+  .btn-ghost{background:transparent;color:var(--texto);border:1px solid var(--linea-2)}
+  .btn-ghost:hover{border-color:var(--cinta);color:var(--cinta);transform:translateY(-2px)}
+  .btn-wa{background:#146c43;color:#fff}
+  .btn-wa:hover{background:#1a7f4f;transform:translateY(-2px)}
+
+  /* MOTION: un solo momento orquestado, la visada del instrumento */
+  .reveal{opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}
+    /* el ken burns del hero también se detiene: es zoom continuo de 9s */
+    .hero-slide.on{animation:none}
+    .step::before{transition:none;transform:none}
+  }
+
+  /* ── NAV ── */
+  header.nav{position:fixed;inset:0 0 auto 0;z-index:100;transition:background .35s,backdrop-filter .35s,border-color .35s;border-bottom:1px solid transparent}
+  header.nav.solid{background:rgba(16,19,22,.9);backdrop-filter:blur(14px);border-bottom-color:var(--cinta)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:74px}
+  .brand{display:flex;align-items:center;gap:.62rem;white-space:nowrap;flex:0 0 auto}
+  .brand .mark{width:30px;height:30px;flex:0 0 auto}
+  .brand b{font-family:var(--rot);font-variation-settings:'wdth' 118;font-weight:700;font-size:1.1rem;text-transform:uppercase;letter-spacing:.06em;display:block;line-height:1}
+  .brand small{display:block;font-family:var(--med);font-size:.73rem;letter-spacing:.14em;color:var(--texto-3);text-transform:uppercase;margin-top:3px}
+  .nav-links{display:flex;align-items:center;gap:1.7rem}
+  .nav-links a{font-family:var(--med);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--texto-2);position:relative;transition:color .2s;white-space:nowrap}
+  .nav-links a::after{content:'';position:absolute;left:0;bottom:-7px;width:100%;height:2px;background:var(--cinta);transform:scaleX(0);transform-origin:left;transition:transform .25s var(--ease)}
+  .nav-links a:hover{color:var(--texto)}
+  .nav-links a:hover::after{transform:scaleX(1)}
+  .nav-cta-btn{white-space:nowrap;flex:0 0 auto;padding:.7rem 1.15rem;font-size:.76rem}
+  .burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px}
+  .burger span{width:24px;height:2px;background:var(--cinta)}
+  @media(max-width:1024px){
+    .nav-links{position:fixed;inset:74px 0 auto 0;flex-direction:column;gap:0;background:rgba(16,19,22,.98);backdrop-filter:blur(12px);border-bottom:2px solid var(--cinta);padding:.4rem 0;transform:translateY(-140%);transition:transform .35s var(--ease);align-items:stretch}
+    .nav-links.open{transform:none}
+    .nav-links a{padding:1rem 8vw;white-space:normal}
+    .nav-cta-btn{display:none}
+    .burger{display:flex}
+  }
+
+  /* ── E-01 · HERO: la foto manda, el aparato la enmarca ── */
+  .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:100px clamp(1.1rem,4vw,2.4rem) clamp(1.4rem,3vh,2rem);overflow:hidden;background:var(--suelo)}
+  .hero-bgs{position:absolute;inset:0;z-index:0}
+  .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center 52%;opacity:0;transition:opacity 1.2s var(--ease);will-change:opacity,transform}
+  .hero-slide.on{opacity:1;animation:kenburns 9s ease-out both}
+  @keyframes kenburns{from{transform:scale(1.05)}to{transform:scale(1.15)}}
+  .hero-scrim2{position:absolute;inset:0;z-index:1;pointer-events:none;background:
+    linear-gradient(180deg,rgba(12,14,17,.55) 0%,rgba(12,14,17,.12) 20%,transparent 38%,rgba(12,14,17,.55) 70%,rgba(12,14,17,.94) 100%)}
+  /* retícula de campo sobre la foto: el instrumento mirando */
+  .hero-grain{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.75;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cpath d='M64 56v16M56 64h16' stroke='%23ffffff' stroke-opacity='0.16' stroke-width='1.2'/%3E%3C/svg%3E");
+    background-size:128px 128px}
+  .hero-inner{position:relative;z-index:3;width:100%;max-width:var(--maxw);margin:0 auto;display:flex;flex-direction:column;gap:clamp(1.3rem,3.6vh,2.4rem)}
+  /* panel de datos sobre la foto: contraste sin apagar la imagen, que sigue
+     a plena luz alrededor. Borde duro y filete de cinta, como el instrumento. */
+  /* panel de datos que no ahoga la foto: velo ligero + filete, no bloque opaco.
+     La imagen respira alrededor; en móvil se recompone (ver más abajo). */
+  .hero-top{max-width:min(100%,860px);
+    background:linear-gradient(105deg,rgba(13,15,18,.82) 60%,rgba(13,15,18,.5));backdrop-filter:blur(2px);border:1px solid var(--linea-2);
+    padding:1.3rem clamp(1.6rem,3.2vw,2.8rem) 1.5rem clamp(1.4rem,2.6vw,2rem)}
+  .hero .eyebrow{margin-bottom:.75rem;color:var(--texto)}
+  /* coordenadas de estación: notación de campo sobre la foto */
+  .hero-coord{position:absolute;top:100px;right:clamp(1.1rem,4vw,2.4rem);z-index:3;text-align:right;
+    font-family:var(--med);font-variant-numeric:tabular-nums;font-size:.72rem;letter-spacing:.04em;color:var(--texto-2);
+    text-shadow:0 1px 4px rgba(0,0,0,.9);line-height:1.7;pointer-events:none}
+  .hero-coord b{color:var(--prisma);font-weight:600}
+  @media(max-width:768px){.hero-coord{display:none}}
+  .hero h1{font-family:var(--rot);font-variation-settings:'wdth' 118;font-weight:700;text-transform:uppercase;
+    font-size:clamp(2.2rem,6.2vw,5rem);line-height:.96;letter-spacing:-.005em;max-width:15ch;
+    text-shadow:0 3px 26px rgba(0,0,0,.75)}
+  .hero h1 em{font-style:normal;color:var(--cinta)}
+  .hero h1 .rot{display:inline-flex;vertical-align:bottom}
+  .hero-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.3rem}
+  .chip{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--med);font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--texto);background:rgba(14,17,20,.72);backdrop-filter:blur(6px);border:1px solid var(--linea-2);padding:.45rem .85rem;border-radius:var(--r)}
+  .chip .dot{width:7px;height:7px;background:var(--verde);clip-path:polygon(50% 0,100% 100%,0 100%)}
+  .hero-mid{display:flex;align-items:flex-end;justify-content:space-between;gap:1.2rem;flex-wrap:wrap}
+  /* ficha de la propiedad destacada: cuadro de datos, no tarjeta de vidrio */
+  .hero-feature{background:rgba(16,19,22,.9);backdrop-filter:blur(10px);border:1px solid var(--linea-2);border-radius:var(--r);
+    padding:1rem 1.15rem 1.1rem;width:min(400px,100%);box-shadow:var(--elev-2);cursor:pointer;transition:transform .25s var(--ease),border-color .25s;text-align:left}
+  .hero-feature:hover{transform:translateY(-3px);border-color:var(--cinta)}
+  .hf-eyebrow{font-family:var(--med);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--marca)}
+  .hf-name{font-family:var(--rot);font-variation-settings:'wdth' 104;font-weight:700;text-transform:uppercase;font-size:1.12rem;letter-spacing:.01em;margin:.45rem 0 .3rem;line-height:1.12;transition:opacity .4s}
+  .hf-meta{font-family:var(--med);font-size:.82rem;color:var(--texto-2);transition:opacity .4s}
+  .hf-meta b{color:var(--prisma);font-weight:600}
+  .hf-row{display:flex;align-items:center;gap:.85rem;margin-top:.9rem}
+  .hf-cta{display:inline-flex;align-items:center;gap:.45rem;background:var(--cinta);color:#1a0700;
+    font-family:var(--rot);font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.5rem .95rem;border-radius:var(--r)}
+  .hf-360{font-family:var(--med);font-size:.74rem;color:var(--marca);letter-spacing:.04em}
+  .hero-switch{display:flex;gap:.45rem;align-items:center;padding-bottom:.3rem}
+  /* ancho fijo y relleno por transform: nada de animar width. Con esquina dura
+     el escalado no deforma, y las barras vecinas ya no se desplazan. */
+  .hero-switch button{width:52px;height:3px;border-radius:0;border:none;background:rgba(255,255,255,.26);cursor:pointer;padding:0;position:relative;overflow:hidden}
+  .hero-switch button::after{content:'';position:absolute;inset:0;background:var(--cinta);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
+  .hero-switch button.on::after{transform:scaleX(1)}
+  @media (prefers-reduced-motion:reduce){.hero-switch button::after{transition:none}}
+  @media(max-width:768px){
+    /* la foto recupera el primer viewport: título arriba sobre ella, y el
+       aparato (feature + buscador) baja al pie del hero en vez de apilarse
+       opaco sobre la imagen */
+    .hero{padding-top:82px;min-height:100svh;justify-content:space-between}
+    .hero h1{font-size:clamp(2.1rem,10vw,3.2rem)}
+    .hero-inner{gap:1rem}
+    .hero-top{align-self:flex-start}
+    .hero-mid{align-items:stretch}
+    .hero-feature{width:100%}
+    .hero-switch{padding-bottom:0}
+  }
+  @media(max-width:560px){
+    /* la propiedad destacada es redundante con el catálogo inmediato: se oculta
+       para que el buscador quepa sin ahogar la foto */
+    .hero-feature{display:none}
+    .hero-switch{display:none}
+  }
+
+  /* ── CUADRO DE BÚSQUEDA ── */
+  .search{position:relative;z-index:3;width:100%;background:rgba(16,19,22,.92);backdrop-filter:blur(14px);
+    border:1px solid var(--linea-2);border-top:2px solid var(--cinta);border-radius:var(--r);padding:1.05rem;box-shadow:var(--elev-2)}
+  .seg{display:flex;border:1px solid var(--linea);border-radius:var(--r);padding:3px;gap:2px;width:max-content;margin-bottom:.85rem;background:rgba(255,255,255,.03)}
+  .seg button{border:none;background:none;color:var(--texto-2);font-family:var(--med);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;
+    padding:.42rem 1rem;border-radius:2px;cursor:pointer;transition:.2s}
+  .seg button.on{background:var(--cinta);color:#1a0700;font-weight:600}
+  .search-row{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:.65rem;align-items:end}
+  .field{display:flex;flex-direction:column;gap:.3rem;min-width:0;position:relative}
+  .field label{font-family:var(--med);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-3);padding-left:.15rem}
+  .field select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--linea);color:var(--texto);font-family:var(--ui);font-size:.9rem;
+    padding:.72rem .8rem;border-radius:var(--r);cursor:pointer;transition:.2s;appearance:none}
+  .field select:focus{outline:none;border-color:var(--cinta);background:rgba(255,255,255,.07)}
+  .field select option{background:#1D2126;color:var(--texto)}
+  .field::after{content:'';position:absolute;right:.85rem;bottom:1.05rem;width:7px;height:7px;border-right:2px solid var(--texto-3);border-bottom:2px solid var(--texto-3);transform:rotate(45deg);pointer-events:none}
+  .search .btn{height:45px;white-space:nowrap}
+  @media(max-width:860px){.search-row{grid-template-columns:1fr 1fr}.search .btn{grid-column:1/-1}}
+  @media(max-width:520px){.search-row{grid-template-columns:1fr}}
+
+  /* ── ESTACIONES: cada sección se numera y abre con filete de cinta ── */
+  section{padding:clamp(3.6rem,8vw,6rem) 0;position:relative}
+  .sec-head{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:end;gap:1rem 3rem;margin-bottom:2.4rem;
+    padding-top:1.5rem;border-top:2px solid var(--cinta)}
+  /* marca de estación: el símbolo de punto de control (triángulo sobre punto)
+     junto al número, la firma del sistema y no solo texto */
+  .sec-head::before{content:attr(data-est);position:absolute;top:-1.5rem;right:0;
+    font-family:var(--med);font-size:.76rem;letter-spacing:.16em;color:var(--cinta);background:var(--suelo);
+    padding:0 0 0 1.5rem;transform:translateY(-50%);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='13'%3E%3Cpath d='M6 0 11 8H1z' fill='none' stroke='%23FF5A1F' stroke-width='1.4'/%3E%3Ccircle cx='6' cy='10' r='1.6' fill='%23FF5A1F'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:left center}
+  .sec-head{position:relative}
+  @media(max-width:900px){.sec-head{grid-template-columns:1fr;gap:.9rem}}
+  .sec-head h2{font-family:var(--rot);font-variation-settings:'wdth' 112;font-weight:700;text-transform:uppercase;
+    font-size:clamp(1.8rem,4vw,2.9rem);line-height:1.0;letter-spacing:-.005em;max-width:19ch;margin-top:.55rem}
+  .sec-head>p{color:var(--texto-2);max-width:46ch;font-size:.95rem}
+
+  /* ── E-02 · CATÁLOGO ── */
+  .filters-bar{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.6rem;align-items:center}
+  .pill{font-family:var(--med);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--texto-2);
+    background:transparent;border:1px solid var(--linea);padding:.5rem 1rem;border-radius:var(--r);cursor:pointer;transition:.2s}
+  .pill:hover{border-color:var(--cinta);color:var(--texto)}
+  .pill.on{background:var(--cinta);color:#1a0700;border-color:var(--cinta);font-weight:600}
+  .count{margin-left:auto;font-family:var(--med);font-size:.8rem;color:var(--texto-3);letter-spacing:.06em;text-transform:uppercase}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.2rem 1.3rem}
+  @media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:620px){.grid{grid-template-columns:1fr;gap:1.9rem}}
+  .card{background:none;border:none;display:flex;flex-direction:column;cursor:pointer;transition:transform .3s var(--ease);align-self:start}
+  .card:hover{transform:translateY(-5px)}
+  .card-media{position:relative;aspect-ratio:16/10.5;overflow:hidden;background:var(--suelo-2);border:1px solid var(--linea);border-radius:var(--r)}
+  .card-media img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
+  .card:hover .card-media img{transform:scale(1.06)}
+  .card-media::after{content:'';position:absolute;inset:auto 0 0 0;height:52%;background:linear-gradient(0deg,rgba(10,12,15,.86),transparent);pointer-events:none}
+  .card:hover .card-media{border-color:var(--cinta)}
+  .badges{position:absolute;top:.7rem;left:.7rem;display:flex;gap:.35rem;z-index:2}
+  .badge{font-family:var(--med);font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.28rem .55rem;border-radius:2px}
+  .badge.new{background:var(--verde);color:#04140c}
+  .badge.i360{background:var(--marca);color:#fff}
+  .badge.op{background:rgba(12,14,17,.8);color:var(--texto);border:1px solid var(--linea-2)}
+  .fav{position:absolute;top:.6rem;right:.6rem;z-index:3;width:36px;height:36px;border-radius:var(--r);border:1px solid var(--linea-2);
+    background:rgba(12,14,17,.7);backdrop-filter:blur(6px);cursor:pointer;display:grid;place-items:center;transition:.2s}
+  .fav:hover{background:rgba(12,14,17,.92);border-color:var(--marca)}
+  .fav svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:1.8;transition:.2s}
+  .fav.on svg{fill:var(--marca);stroke:var(--marca)}
+  /* toda cifra en amarillo de prisma, en mono tabular */
+  .card-price-tag{position:absolute;left:.85rem;bottom:.7rem;z-index:2;font-family:var(--med);font-variant-numeric:tabular-nums;
+    font-size:1.22rem;font-weight:600;color:var(--prisma);text-shadow:0 2px 10px rgba(0,0,0,.8)}
+  .card-price-tag small{font-size:.73rem;font-weight:400;color:var(--texto-2)}
+  .card-body{padding:.9rem .1rem 0;display:flex;flex-direction:column;gap:.45rem;flex:1}
+  .card-loc{font-family:var(--med);font-size:.74rem;color:var(--cinta);letter-spacing:.08em;display:flex;align-items:center;gap:.35rem;text-transform:uppercase}
+  .card-title{font-family:var(--rot);font-variation-settings:'wdth' 104;font-weight:700;text-transform:uppercase;font-size:1rem;line-height:1.2;letter-spacing:.005em}
+  /* cuadro de áreas: celdas separadas por filete, mono tabular, sin los
+     iconitos de portal — es un renglón de cuadro técnico, no un spec-row */
+  .card-specs{display:flex;font-family:var(--med);font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--texto);
+    margin-top:auto;padding-top:.55rem;border-top:1px solid var(--linea)}
+  .card-specs span{display:inline-flex;align-items:center;gap:.3rem;padding:0 .8rem;border-left:1px solid var(--linea)}
+  .card-specs span:first-child{padding-left:0;border-left:none}
+  .card-specs svg{display:none}
+  .card-cta{font-family:var(--med);font-size:.76rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--cinta);display:inline-flex;align-items:center;gap:.35rem;transition:gap .2s}
+  .card:hover .card-cta{gap:.6rem}
+  .empty{grid-column:1/-1;text-align:center;padding:3rem;color:var(--texto-2);border:1px dashed var(--linea-2);border-radius:var(--r)}
+
+  /* la primera coincidencia, a escala de portada */
+  .card:first-child{grid-column:span 2;display:grid;grid-template-columns:1fr}
+  .card:first-child>.card-media,.card:first-child>.card-body{grid-area:1/1}
+  .card:first-child .card-media{aspect-ratio:16/9.6}
+  .card:first-child .card-media::after{height:80%;background:linear-gradient(0deg,rgba(8,10,13,.95) 12%,rgba(8,10,13,.5) 50%,transparent)}
+  .card:first-child .card-body{position:relative;z-index:2;align-self:end;padding:clamp(1.1rem,2.2vw,1.9rem);gap:.5rem;max-width:min(64%,46ch)}
+  .card:first-child .card-title{font-variation-settings:'wdth' 112;font-size:clamp(1.4rem,2.7vw,2.2rem);line-height:1.03}
+  .card:first-child .card-specs{border-top-color:var(--linea-2);padding-top:.7rem;font-size:.86rem}
+  .card:first-child .card-price-tag{left:auto;right:clamp(1.1rem,2.2vw,1.9rem);bottom:clamp(1.3rem,2.4vw,2.1rem);
+    font-size:clamp(1.6rem,2.9vw,2.4rem);text-align:right;line-height:1.05}
+  .card:first-child .card-price-tag small{display:block;font-size:.76rem;margin-top:.15rem}
+  @media(max-width:620px){
+    .card:first-child{grid-column:span 1;display:flex;flex-direction:column}
+    .card:first-child>.card-media,.card:first-child>.card-body{grid-area:auto}
+    .card:first-child .card-media{aspect-ratio:16/10.5}
+    .card:first-child .card-media::after{height:52%;background:linear-gradient(0deg,rgba(10,12,15,.86),transparent)}
+    .card:first-child .card-body{position:static;padding:.9rem .1rem 0;max-width:100%}
+    .card:first-child .card-title{font-size:1.3rem}
+    .card:first-child .card-price-tag{left:.85rem;right:auto;bottom:.7rem;font-size:1.3rem;text-align:left}
+    .card:first-child .card-price-tag small{display:inline;font-size:.73rem;margin:0}
+  }
+
+  /* ── CINTA DE ZONAS ── */
+  .mq{border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);padding:1rem 0;background:rgba(255,255,255,.02)}
+  .mq-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.5rem 1.5rem;
+    font-family:var(--med);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-2)}
+  .mq-row i{font-style:normal;color:var(--cinta);font-size:.6rem}
+  @media(max-width:620px){.mq-row{gap:.4rem 1rem;font-size:.74rem}}
+
+  /* ── E-03 · OCUPACIÓN DE ESTACIÓN (360) ── */
+  .v360{background:linear-gradient(180deg,var(--suelo),var(--suelo-2))}
+  .viewer-wrap{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--linea-2);box-shadow:var(--elev-2);background:#000}
+  #pano{width:100%;height:clamp(360px,62vh,600px)}
+  #pano .pnlm-load-button{background:var(--cinta);border-radius:var(--r);color:#1a0700;font-weight:700;font-family:var(--rot);text-transform:uppercase;letter-spacing:.08em;width:auto;padding:.9rem 1.7rem;height:auto;line-height:1.2;font-size:.85rem;white-space:nowrap}
+  #pano .pnlm-load-button:hover{background:var(--cinta-2)}
+  #pano .pnlm-about-msg{display:none!important}
+  .pano-hud{position:absolute;left:0;right:0;bottom:0;z-index:5;pointer-events:none;display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;background:linear-gradient(0deg,rgba(8,10,13,.9),transparent)}
+  .pano-hud .info h3{font-family:var(--rot);font-variation-settings:'wdth' 106;font-weight:700;text-transform:uppercase;font-size:.98rem;letter-spacing:.02em}
+  .pano-hud .info span{font-family:var(--med);font-size:.78rem;color:var(--texto-2)}
+  .pano-hud .az{color:var(--prisma);border:1px solid var(--linea-2);padding:.1rem .45rem;margin-left:.4rem}
+  .pano-hud .btn{pointer-events:auto}
+  .scenes{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+  .scene-btn{display:flex;align-items:center;gap:.55rem;background:transparent;border:1px solid var(--linea);border-radius:var(--r);
+    padding:.35rem .75rem .35rem .35rem;cursor:pointer;color:var(--texto-2);font-family:var(--med);font-size:.78rem;letter-spacing:.04em;transition:.2s}
+  .scene-btn img{width:54px;height:32px;object-fit:cover;border-radius:2px}
+  .scene-btn.on{border-color:var(--marca);color:var(--texto);background:rgba(255,45,120,.1)}
+  .scene-btn:hover{border-color:var(--linea-2);color:var(--texto)}
+
+  /* ── CUADRO DE CONTROL (stats) ── */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;border-top:2px solid var(--cinta);border-bottom:1px solid var(--linea);padding:2.2rem 0}
+  .stat h3{font-family:var(--med);font-variant-numeric:tabular-nums;font-size:clamp(2rem,4.6vw,3rem);font-weight:600;color:var(--prisma);line-height:1}
+  .stat p{font-family:var(--med);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--texto-3);margin-top:.5rem}
+  @media(max-width:700px){.stats{grid-template-columns:1fr 1fr;gap:1.8rem 1rem}}
+
+  /* ── E-05 · CUADRO DE CÓMPUTO (simulador) ── */
+  .sim-card{display:grid;grid-template-columns:1.15fr .85fr;background:var(--suelo-2);border:1px solid var(--linea-2);border-radius:var(--r);overflow:hidden}
+  @media(max-width:840px){.sim-card{grid-template-columns:1fr}}
+  .sim-l{padding:clamp(1.4rem,3.2vw,2.2rem);display:flex;flex-direction:column;gap:1.4rem}
+  .sim-row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:.5rem}
+  .sim-row label{font-family:var(--med);font-size:.76rem;color:var(--texto-3);letter-spacing:.1em;text-transform:uppercase}
+  .sim-row output{font-family:var(--med);font-variant-numeric:tabular-nums;font-weight:600;font-size:.95rem;color:var(--prisma)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:0;background:linear-gradient(90deg,var(--cinta) var(--p,50%),rgba(255,255,255,.14) var(--p,50%));outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:0;background:var(--cinta);border:3px solid var(--suelo-2);cursor:grab;
+    clip-path:polygon(50% 0,100% 100%,0 100%)}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:0;background:var(--cinta);border:3px solid var(--suelo-2);cursor:grab}
+  .sim-note{font-family:var(--med);font-size:.78rem;color:var(--texto-3);margin-top:auto;max-width:56ch;line-height:1.5}
+  .sim-r{background:rgba(255,195,0,.05);border-left:1px solid var(--linea);padding:clamp(1.4rem,3.2vw,2.2rem);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:.6rem;text-align:center}
+  @media(max-width:840px){.sim-r{border-left:none;border-top:1px solid var(--linea)}}
+  .sim-r .cuota{font-family:var(--med);font-variant-numeric:tabular-nums;font-size:clamp(2.2rem,4.8vw,3.2rem);font-weight:600;color:var(--prisma);line-height:1}
+  .sim-r .cuota small{font-size:.85rem;color:var(--texto-3);font-weight:400}
+  .sim-fin{font-family:var(--med);font-size:.82rem;color:var(--texto-2)}
+  .sim-r .btn{margin-top:.5rem}
+
+  /* ── E-06 · INSTRUMENTAL (servicios) ── */
+  .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4rem}
+  @media(max-width:820px){.svc-grid{grid-template-columns:1fr;gap:2rem}}
+  .svc{padding-top:1.2rem;border-top:1px solid var(--linea-2);transition:border-color .3s}
+  .svc:hover{border-top-color:var(--cinta)}
+  .svc-head{display:flex;align-items:center;gap:.65rem;margin-bottom:.55rem}
+  .svc-head svg{width:21px;height:21px;flex:0 0 auto;stroke:var(--cinta);fill:none;stroke-width:1.7}
+  .svc h3{font-family:var(--rot);font-variation-settings:'wdth' 106;font-weight:700;text-transform:uppercase;font-size:1.02rem;line-height:1.15;letter-spacing:.01em}
+  .svc p{font-size:.93rem;color:var(--texto-2);max-width:42ch}
+
+  /* ── E-07 · BITÁCORA (proceso) ── */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem}
+  @media(max-width:840px){.steps{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.steps{grid-template-columns:1fr}}
+  .step{position:relative;background:var(--suelo-2);border:1px solid var(--linea);border-radius:var(--r);padding:1.4rem 1.25rem;overflow:hidden;transition:border-color .3s,transform .3s var(--ease)}
+  .step:hover{border-color:var(--cinta);transform:translateY(-4px)}
+  .step::before{content:'';position:absolute;top:0;left:0;height:3px;width:100%;background:var(--cinta);transform:scaleX(0);transform-origin:left;transition:transform .8s var(--ease) .2s}
+  .step.in::before{transform:none}
+  .step .n{display:block;font-family:var(--med);font-variant-numeric:tabular-nums;font-size:2.2rem;line-height:1;color:var(--cinta);margin-bottom:.7rem;opacity:.9}
+  .step h3{font-family:var(--rot);font-variation-settings:'wdth' 104;font-weight:700;text-transform:uppercase;font-size:.98rem;margin-bottom:.4rem;letter-spacing:.01em}
+  .step p{font-size:.88rem;color:var(--texto-2)}
+  .steps .step:nth-child(2){transition-delay:.08s}.steps .step:nth-child(2)::before{transition-delay:.3s}
+  .steps .step:nth-child(3){transition-delay:.16s}.steps .step:nth-child(3)::before{transition-delay:.4s}
+  .steps .step:nth-child(4){transition-delay:.24s}.steps .step:nth-child(4)::before{transition-delay:.5s}
+
+  /* ── TESTIMONIOS ── */
+  .t-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+  @media(max-width:820px){.t-grid{grid-template-columns:1fr}}
+  .t-card{background:var(--suelo-2);border:1px solid var(--linea);border-radius:var(--r);padding:1.5rem;display:flex;flex-direction:column;gap:.95rem;transition:border-color .3s}
+  .t-card:hover{border-color:var(--cinta)}
+  .t-stars{color:var(--prisma);letter-spacing:.15em;font-size:.85rem}
+  .t-card p{font-size:.93rem;color:var(--texto-2)}
+  .t-who{display:flex;align-items:center;gap:.75rem;margin-top:auto}
+  .t-who img{width:40px;height:40px;border-radius:var(--r);object-fit:cover;border:1px solid var(--linea-2)}
+  .t-who b{display:block;font-family:var(--rot);font-weight:700;text-transform:uppercase;font-size:.84rem;letter-spacing:.04em}
+  .t-who span{font-family:var(--med);font-size:.76rem;color:var(--texto-3)}
+
+  /* ── E-08 · CONTACTO ── */
+  .contact-card{display:grid;grid-template-columns:1fr 1fr;background:var(--suelo-2);border:1px solid var(--linea-2);border-radius:var(--r);overflow:hidden}
+  @media(max-width:840px){.contact-card{grid-template-columns:1fr}}
+  .c-media{position:relative;min-height:320px}
+  .c-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .c-media::after{content:'';position:absolute;inset:0;background:linear-gradient(120deg,rgba(12,14,17,.3),rgba(12,14,17,.8))}
+  /* frase larga: en versales se vuelve ilegible, así que va en caja baja */
+  .c-media blockquote{position:absolute;left:1.5rem;right:1.5rem;bottom:1.5rem;z-index:2;
+    font-family:var(--rot);font-variation-settings:'wdth' 100;font-weight:600;font-size:1.1rem;line-height:1.35;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.85)}
+  .c-form{padding:clamp(1.4rem,3.6vw,2.4rem);display:flex;flex-direction:column;gap:.85rem}
+  .c-form h2{font-family:var(--rot);font-variation-settings:'wdth' 112;font-weight:700;text-transform:uppercase;font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.05}
+  .c-form>p{color:var(--texto-2);font-size:.92rem}
+  .c-form input,.c-form textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--linea);color:var(--texto);font-family:var(--ui);font-size:.94rem;padding:.82rem 1rem;border-radius:var(--r)}
+  .c-form input:focus,.c-form textarea:focus{outline:none;border-color:var(--cinta)}
+  .c-form textarea{resize:vertical;min-height:86px}
+  .c-alt{display:flex;flex-wrap:wrap;gap:.55rem}
+
+  /* ── PIE = CAJETÍN DE LÁMINA ── el artefacto que identifica todo plano ── */
+  footer.site{padding:clamp(2.4rem,5vw,3.4rem) 0 2.2rem}
+  .cajetin{border:1px solid var(--linea-2)}
+  .cajetin-top{display:grid;grid-template-columns:2fr 1fr 1fr;border-bottom:1px solid var(--linea-2)}
+  @media(max-width:760px){.cajetin-top{grid-template-columns:1fr 1fr}}
+  @media(max-width:460px){.cajetin-top{grid-template-columns:1fr}}
+  /* cada celda del cajetín: rótulo arriba en mono, valor abajo */
+  .cj{padding:1rem 1.15rem;border-right:1px solid var(--linea-2);border-bottom:1px solid var(--linea-2)}
+  .cj:last-child{border-right:none}
+  .cj-lab{font-family:var(--med);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--texto-3);display:block;margin-bottom:.4rem}
+  .cj-val{font-family:var(--rot);font-variation-settings:'wdth' 104;font-weight:700;text-transform:uppercase;font-size:.95rem;letter-spacing:.02em;line-height:1.15}
+  .cj-val.num{font-family:var(--med);font-variant-numeric:tabular-nums;font-weight:600}
+  .cj-proj{grid-row:span 2;display:flex;flex-direction:column;gap:.55rem;justify-content:center}
+  .cj-proj .brand{margin:0}
+  .cj-proj p{font-family:var(--med);font-size:.8rem;color:var(--texto-2);line-height:1.5;max-width:34ch}
+  /* el sello de goma: el elemento obligatorio, ahora el mejor vestido */
+  .cj-sello{grid-column:2/-1;display:flex;align-items:center;justify-content:center;padding:1rem;border-bottom:1px solid var(--linea-2)}
+  @media(max-width:460px){.cj-sello{grid-column:1/-1}}
+  .sello{border:2px solid var(--cinta);color:var(--cinta);padding:.5rem 1.1rem;transform:rotate(-4deg);text-align:center;opacity:.92}
+  .sello b{display:block;font-family:var(--rot);font-variation-settings:'wdth' 112;font-weight:700;text-transform:uppercase;font-size:1rem;letter-spacing:.08em;line-height:1.05}
+  .sello span{font-family:var(--med);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinta)}
+  /* tabla de revisiones: la marginalia real de un plano */
+  .cajetin-rev{display:grid;grid-template-columns:auto auto 1fr auto;gap:0;font-family:var(--med);font-variant-numeric:tabular-nums;font-size:.74rem}
+  .cajetin-rev>div{padding:.55rem 1.15rem;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);color:var(--texto-2)}
+  .cajetin-rev .rh{color:var(--texto-3);letter-spacing:.1em;text-transform:uppercase;font-size:.66rem;background:rgba(255,255,255,.02)}
+  .cajetin-rev>div:nth-child(4n){border-right:none}
+  .cajetin-nav{display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;padding:1rem 1.15rem;border-bottom:1px solid var(--linea-2)}
+  .cajetin-nav a{font-family:var(--med);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;color:var(--texto-2);transition:color .2s}
+  .cajetin-nav a:hover{color:var(--cinta)}
+  .foot-bot{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding:1rem 1.15rem;
+    font-family:var(--med);font-size:.74rem;color:var(--texto-3)}
+  .foot-bot a{color:var(--cinta)}
+
+  /* señal de demo discreta en el nav: rótulo de campo, no cinta genérica de esquina */
+  .demo-tag{font-family:var(--med);font-size:.66rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--cinta);
+    border:1px solid var(--cinta);padding:.18rem .5rem;white-space:nowrap}
+  @media(max-width:520px){.demo-tag{display:none}}
+  .wa{position:fixed;z-index:110;right:20px;bottom:20px;width:54px;height:54px;border-radius:var(--r);background:#146c43;display:grid;place-items:center;box-shadow:var(--elev);transition:transform .25s var(--ease),background .2s}
+  .wa:hover{transform:translateY(-2px);background:#1a7f4f}
+  .wa svg{width:28px;height:28px;fill:#fff}
+
+  .rot-mask{display:inline-flex;overflow:hidden;vertical-align:bottom}
+  .rot-word{display:inline-block;animation:wordIn .6s var(--ease)}
+  @keyframes wordIn{from{transform:translateY(112%);opacity:0}to{transform:none;opacity:1}}
+  @media (prefers-reduced-motion:reduce){.rot-word{animation:none}}
+
+  /* ── MODAL FICHA ── */
+  .modal-ov{position:fixed;inset:0;z-index:200;background:rgba(8,10,13,.86);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:clamp(.6rem,3vw,2rem)}
+  .modal-ov.open{display:flex}
+  .modal{width:min(1060px,100%);max-height:92svh;overflow:auto;background:var(--suelo-2);border:1px solid var(--linea-2);border-radius:var(--r);box-shadow:var(--elev-2)}
+  .modal-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:0}
+  @media(max-width:840px){.modal-grid{grid-template-columns:1fr}}
+  .m-gallery{position:relative;background:#000;display:flex;flex-direction:column}
+  .m-main{flex:1;min-height:0;aspect-ratio:4/3;width:100%;object-fit:cover}
+  @media(max-width:840px){.m-main{flex:none}}
+  .m-thumbs{display:flex;gap:.45rem;padding:.65rem;background:rgba(255,255,255,.03)}
+  .m-thumbs img{width:72px;height:50px;object-fit:cover;border-radius:2px;cursor:pointer;border:2px solid transparent;opacity:.6;transition:.2s}
+  .m-thumbs img.on{border-color:var(--cinta);opacity:1}
+  .m-thumbs img:hover{opacity:1}
+  .m-info{padding:clamp(1.2rem,3vw,1.7rem);display:flex;flex-direction:column;gap:.85rem}
+  .m-info .card-loc{font-size:.76rem}
+  .m-title{font-family:var(--rot);font-variation-settings:'wdth' 110;font-weight:700;text-transform:uppercase;font-size:clamp(1.3rem,2.5vw,1.8rem);line-height:1.06}
+  .m-price{font-family:var(--med);font-variant-numeric:tabular-nums;font-size:1.6rem;font-weight:600;color:var(--prisma)}
+  .m-price small{font-size:.76rem;color:var(--texto-3);font-weight:400}
+  .m-desc{font-size:.92rem;color:var(--texto-2)}
+  .m-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+  .m-spec{background:rgba(255,255,255,.04);border:1px solid var(--linea);border-radius:var(--r);padding:.6rem .45rem;text-align:center}
+  .m-spec b{display:block;font-family:var(--med);font-variant-numeric:tabular-nums;font-size:.98rem;color:var(--prisma)}
+  .m-spec span{font-family:var(--med);font-size:.7rem;color:var(--texto-3);text-transform:uppercase;letter-spacing:.06em}
+  .m-amen{display:flex;flex-wrap:wrap;gap:.35rem}
+  .m-amen span{font-family:var(--med);font-size:.75rem;color:var(--texto-2);background:rgba(255,255,255,.04);border:1px solid var(--linea);padding:.3rem .65rem;border-radius:var(--r)}
+  .m-ctas{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:auto;padding-top:.4rem}
+  .m-ctas .btn{padding:.7rem 1.1rem;font-size:.78rem}
+  .m-close{position:sticky;top:0;margin-left:auto;transform:translate(-14px,14px);z-index:5;width:36px;height:36px;border-radius:var(--r);
+    border:1px solid var(--linea-2);background:rgba(12,14,17,.8);backdrop-filter:blur(8px);color:#fff;font-size:1rem;cursor:pointer;display:grid;place-items:center;float:right}
+  .m-close:hover{background:var(--cinta);color:#1a0700;border-color:var(--cinta)}
+
+  /* ── CHAT NORA ── */
+  .chat-fab{position:fixed;z-index:120;right:20px;bottom:84px;width:54px;height:54px;border-radius:var(--r);border:none;cursor:pointer;
+    background:var(--cinta);display:grid;place-items:center;box-shadow:var(--elev);transition:transform .25s var(--ease)}
+  .chat-fab:hover{transform:translateY(-2px)}
+  .chat-fab svg{width:25px;height:25px;stroke:#1a0700;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .chat-fab .dot{position:absolute;top:2px;right:2px;width:11px;height:11px;border-radius:50%;background:var(--marca);border:2px solid var(--suelo);display:none}
+  .chat-fab.unread .dot{display:block}
+  .chat-nudge{position:fixed;z-index:120;right:84px;bottom:92px;background:var(--suelo-3);border:1px solid var(--linea-2);color:var(--texto);
+    font-size:.85rem;padding:.6rem .9rem;border-radius:var(--r);box-shadow:var(--elev);opacity:0;transform:translateY(8px);transition:.4s var(--ease);pointer-events:none;max-width:230px}
+  .chat-nudge.show{opacity:1;transform:none}
+  .chat{position:fixed;z-index:130;right:20px;bottom:150px;width:min(372px,calc(100vw - 24px));max-height:min(560px,calc(100svh - 170px));
+    display:flex;flex-direction:column;background:var(--suelo-2);border:1px solid var(--linea-2);border-radius:var(--r);
+    box-shadow:var(--elev-2);overflow:hidden;opacity:0;transform:translateY(12px) scale(.98);pointer-events:none;transition:opacity .25s var(--ease),transform .25s var(--ease)}
+  .chat.open{opacity:1;transform:none;pointer-events:auto}
+  .chat-head{display:flex;align-items:center;gap:.65rem;padding:.85rem 1rem;background:rgba(255,90,31,.08);border-bottom:1px solid var(--linea)}
+  .chat-ava{width:36px;height:36px;border-radius:var(--r);background:var(--cinta);display:grid;place-items:center;color:#1a0700;
+    font-family:var(--rot);font-weight:700;font-size:1rem;position:relative;flex:0 0 auto}
+  .chat-ava::after{content:'';position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;background:var(--verde);border:2px solid var(--suelo-2);
+    clip-path:polygon(50% 0,100% 100%,0 100%)}
+  .chat-head b{font-family:var(--rot);font-weight:700;text-transform:uppercase;font-size:.86rem;letter-spacing:.04em;display:block;line-height:1.25}
+  .chat-head span{font-family:var(--med);font-size:.76rem;color:var(--texto-2)}
+  .chat-x{margin-left:auto;background:none;border:none;color:var(--texto-3);cursor:pointer;font-size:1rem;padding:.3rem .5rem;border-radius:var(--r);transition:.2s}
+  .chat-x:hover{color:#fff;background:rgba(255,255,255,.08)}
+  .chat-body{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.5rem}
+  .msg{max-width:86%;padding:.6rem .85rem;font-size:.88rem;line-height:1.45;border-radius:var(--r);animation:msgIn .3s var(--ease)}
+  @keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .msg.bot{align-self:flex-start;background:var(--suelo-3);border:1px solid var(--linea)}
+  .msg.bot b{color:var(--prisma)}
+  .msg.me{align-self:flex-end;background:var(--cinta);color:#1a0700;font-weight:500}
+  .msg.typing{display:inline-flex;gap:5px;padding:.75rem .9rem}
+  .msg.typing i{width:6px;height:6px;border-radius:50%;background:var(--texto-3);animation:tp 1s infinite}
+  .msg.typing i:nth-child(2){animation-delay:.15s}.msg.typing i:nth-child(3){animation-delay:.3s}
+  @keyframes tp{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+  .chat-chips{display:flex;flex-wrap:wrap;gap:.4rem;animation:msgIn .3s var(--ease)}
+  .chat-chips button{font-family:var(--med);font-size:.78rem;color:var(--cinta);background:transparent;border:1px solid var(--cinta);
+    border-radius:var(--r);padding:.42rem .8rem;cursor:pointer;transition:.2s}
+  .chat-chips button:hover{background:var(--cinta);color:#1a0700}
+  .chat-in{display:flex;gap:.45rem;padding:.65rem;border-top:1px solid var(--linea);background:rgba(255,255,255,.02)}
+  .chat-in input{flex:1;min-width:0;background:rgba(255,255,255,.05);border:1px solid var(--linea);border-radius:var(--r);color:var(--texto);
+    font-family:var(--ui);font-size:.88rem;padding:.58rem .9rem}
+  .chat-in input:focus{outline:none;border-color:var(--cinta)}
+  .chat-in button{width:40px;height:40px;flex:0 0 auto;border-radius:var(--r);border:none;background:var(--cinta);cursor:pointer;display:grid;place-items:center;transition:transform .2s}
+  .chat-in button:hover{transform:translateY(-1px)}
+  .chat-in button svg{width:17px;height:17px;stroke:#1a0700;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  @media(max-width:520px){.chat{right:12px;bottom:144px}.chat-fab{bottom:82px}.chat-nudge{right:80px;bottom:90px}}
+  /* canal reservado para los FAB: tapaban la cola de los párrafos en todo el scroll */
+  @media(max-width:760px){.wrap{padding-right:calc(clamp(1.1rem,4vw,2.4rem) + 62px)}
+    .mq-row{padding-right:0}}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand" aria-label="Norvia inicio">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 5 27 24H5z" fill="none" stroke="#FF5A1F" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="19" r="2.6" fill="#FF5A1F"/></svg>
+      <span><b>Norvia</b><small>Chiclayo · Lambayeque</small></span>
+    </a>
+    <nav class="nav-links" id="navlinks">
+      <a href="#propiedades">Catálogo</a>
+      <a href="#recorrido">Estación 360°</a>
+      <a href="#simulador">Cómputo</a>
+      <a href="#servicios">Instrumental</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:.8rem">
+      <span class="demo-tag" title="Sitio demostrativo de DAK Agency">Demo</span>
+      <a href="#contacto" class="btn btn-ghost nav-cta-btn">Agenda una visita</a>
+      <button class="burger" id="burger" aria-label="Menú"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-bgs" id="heroBgs" aria-hidden="true"></div>
+  <div class="hero-scrim2" aria-hidden="true"></div>
+  <div class="hero-grain" aria-hidden="true"></div>
+  <div class="hero-coord" aria-hidden="true">EST-01 · CHICLAYO<br><b>06°46′S</b> · <b>79°50′O</b><br>29 m s.n.m.</div>
+
+  <div class="hero-inner">
+    <div class="hero-top">
+      <p class="eyebrow reveal">E-01 · Levantamiento</p>
+      <h1 class="reveal">El norte que <em class="rot"><span class="rot-mask"><span class="rot-word" id="rotWord">quieres vivir</span></span></em></h1>
+      <div class="hero-tags reveal">
+        <span class="chip"><i class="dot"></i>12 proyectos activos</span>
+        <span class="chip"><i class="dot"></i>Recorridos 360°</span>
+        <span class="chip"><i class="dot"></i>Financiamiento directo</span>
+      </div>
+    </div>
+
+    <div class="hero-mid">
+      <div class="hero-feature" id="heroFeature" role="button" tabindex="0" aria-label="Ver la propiedad destacada">
+        <span class="hf-eyebrow">Punto marcado</span>
+        <p class="hf-name" id="hfName">—</p>
+        <p class="hf-meta" id="hfMeta">—</p>
+        <div class="hf-row">
+          <span class="hf-cta">Ver ficha
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </span>
+          <span class="hf-360" id="hf360"></span>
+        </div>
+      </div>
+      <div class="hero-switch" id="heroSwitch" role="tablist" aria-label="Cambiar propiedad destacada"></div>
+    </div>
+
+    <div class="search reveal" role="search" aria-label="Buscador de propiedades">
+      <div class="seg" id="opSeg">
+        <button class="on" data-op="Comprar">Comprar</button>
+        <button data-op="Alquilar">Alquilar</button>
+        <button data-op="Proyectos">Estrenos</button>
+      </div>
+      <div class="search-row">
+        <div class="field"><label>Tipo</label>
+          <select id="fType"><option value="">Todos</option><option>Casa</option><option>Departamento</option><option>Lote</option><option>Oficina</option></select>
+        </div>
+        <div class="field"><label>Zona</label>
+          <select id="fZone"><option value="">Toda la región</option><option>Santa Victoria</option><option>Urb. Los Parques</option><option>Pimentel</option><option>La Victoria</option><option>José Leonardo Ortiz</option><option>Pomalca</option></select>
+        </div>
+        <div class="field"><label>Dormitorios</label>
+          <select id="fBeds"><option value="">Cualquiera</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option></select>
+        </div>
+        <div class="field"><label>Precio máx.</label>
+          <select id="fPrice"><option value="">Sin límite</option><option value="120000">Hasta S/ 120 mil</option><option value="300000">Hasta S/ 300 mil</option><option value="500000">Hasta S/ 500 mil</option><option value="900000">Hasta S/ 900 mil</option></select>
+        </div>
+        <button class="btn btn-cinta" id="doSearch">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
+          Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="mq">
+  <div class="wrap mq-row">
+    <span>Santa Victoria</span><i aria-hidden="true">▲</i>
+    <span>Pimentel</span><i aria-hidden="true">▲</i>
+    <span>Urb. Los Parques</span><i aria-hidden="true">▲</i>
+    <span>Recorridos 360°</span><i aria-hidden="true">▲</i>
+    <span>Financiamiento directo</span><i aria-hidden="true">▲</i>
+    <span>Lotes con partida registral</span><i aria-hidden="true">▲</i>
+    <span>Estrenos 2026</span>
+  </div>
+</div>
+
+<section id="propiedades">
+  <div class="wrap">
+    <div class="sec-head reveal" data-est="E-02">
+      <div>
+        <p class="eyebrow">Catálogo en vivo</p>
+        <h2>Propiedades que puedes visitar hoy</h2>
+      </div>
+      <p>Filtra en tiempo real, guarda tus favoritas y abre la ficha completa de cada propiedad: fotos, características y contacto directo.</p>
+    </div>
+    <div class="filters-bar reveal" id="pills">
+      <button class="pill on" data-f="Todos">Todas</button>
+      <button class="pill" data-f="Casa">Casas</button>
+      <button class="pill" data-f="Departamento">Departamentos</button>
+      <button class="pill" data-f="Lote">Lotes</button>
+      <button class="pill" data-f="Oficina">Oficinas</button>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section id="recorrido" class="v360">
+  <div class="wrap">
+    <div class="sec-head reveal" data-est="E-03">
+      <div>
+        <p class="eyebrow">Ocupación de estación</p>
+        <h2>Planta el instrumento y mira en todas direcciones</h2>
+      </div>
+      <p>Es lo mismo que hace un topógrafo: ocupar un punto y visar 360°. Arrastra para mirar alrededor, cambia de ambiente y usa pantalla completa. También desde tu celular.</p>
+    </div>
+    <div class="viewer-wrap reveal">
+      <div id="pano"></div>
+      <div class="pano-hud">
+        <div class="info"><h3 id="vTitle">Sala de entretenimiento</h3><span id="vSub">Casa de lujo · Urb. Los Parques</span> <span class="az med" id="vAz">Az 000°</span></div>
+        <a href="#contacto" class="btn btn-cinta" style="padding:.6rem 1.05rem;font-size:.76rem">Agendar visita real</a>
+      </div>
+    </div>
+    <div class="scenes reveal" id="scenes"></div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="stats reveal">
+      <div class="stat"><h3 data-count="12">0</h3><p>años urbanizando el norte</p></div>
+      <div class="stat"><h3 data-count="9">0</h3><p>proyectos entregados</p></div>
+      <div class="stat"><h3 data-count="1850" data-suffix="+">0</h3><p>familias con casa propia</p></div>
+      <div class="stat"><h3 data-count="96" data-suffix="%">0</h3><p>clientes que recomiendan</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="simulador" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal" data-est="E-04">
+      <div>
+        <p class="eyebrow">Cuadro de cómputo</p>
+        <h2>¿Cuánto sería tu cuota?</h2>
+      </div>
+      <p>Mueve los controles y mira el estimado al instante. Sin bancos de por medio: pre-califica con un mensaje.</p>
+    </div>
+    <div class="sim-card reveal">
+      <div class="sim-l">
+        <div>
+          <div class="sim-row"><label for="sPrice">Precio de la propiedad</label><output id="oPrice">S/ 300,000</output></div>
+          <input type="range" id="sPrice" min="80000" max="950000" step="5000" value="300000" aria-label="Precio de la propiedad" />
+        </div>
+        <div>
+          <div class="sim-row"><label for="sIni">Cuota inicial</label><output id="oIni">20% · S/ 60,000</output></div>
+          <input type="range" id="sIni" min="10" max="50" step="5" value="20" aria-label="Porcentaje de cuota inicial" />
+        </div>
+        <div>
+          <div class="sim-row"><label for="sYr">Plazo</label><output id="oYr">15 años</output></div>
+          <input type="range" id="sYr" min="5" max="25" step="1" value="15" aria-label="Plazo en años" />
+        </div>
+        <p class="sim-note">Cálculo referencial con TEA 8.9% (sistema francés). La cuota final depende de tu evaluación.</p>
+      </div>
+      <div class="sim-r">
+        <p class="eyebrow">Cuota mensual estimada</p>
+        <div class="cuota" id="oCuota">S/ 0 <small>/mes</small></div>
+        <p class="sim-fin" id="oFin"></p>
+        <a class="btn btn-wa" id="simWa" target="_blank" rel="noopener" href="#">Pre-califica por WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="servicios" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal" data-est="E-05">
+      <div>
+        <p class="eyebrow">Instrumental</p>
+        <h2>Tecnología que acerca, personas que acompañan</h2>
+      </div>
+      <p>Lo digital te da libertad para explorar a tu ritmo. Lo humano te da confianza para la decisión más importante de tu vida.</p>
+    </div>
+    <div class="svc-grid">
+      <div class="svc reveal">
+        <div class="svc-head">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-6 9 6v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21V12h6v9"/></svg>
+          <h3>Financiamiento directo</h3>
+        </div>
+        <p>Cuotas pensadas para tu bolsillo, sin intermediarios ni letra chica. Te explicamos todo en simple, con números reales.</p>
+      </div>
+      <div class="svc reveal">
+        <div class="svc-head">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a15 15 0 0 1 0 18M3 12h18"/></svg>
+          <h3>Recorridos 360° reales</h3>
+        </div>
+        <p>Cada proyecto se fotografía en panorámicas de alta resolución. Recórrelo cuantas veces quieras antes de mover un pie.</p>
+      </div>
+      <div class="svc reveal">
+        <div class="svc-head">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
+          <h3>Acompañamiento 24/7</h3>
+        </div>
+        <p>Nora, nuestra asistente virtual, te orienta al instante a cualquier hora; y Camila y su equipo te acompañan de verdad: visitas, papeleo y entrega de llaves.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="proceso" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal" data-est="E-06">
+      <div>
+        <p class="eyebrow">Bitácora</p>
+        <h2>De tu primera visita a las llaves</h2>
+      </div>
+      <p>Un camino claro y sin sorpresas: siempre sabes qué sigue y quién te acompaña en cada paso.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><span class="n">01</span><h3>Explora en línea</h3><p>Filtra el catálogo, guarda tus favoritas y camina cada ambiente en 360° desde tu celular.</p></div>
+      <div class="step reveal"><span class="n">02</span><h3>Visita real</h3><p>Camila agenda contigo y confirmas en persona lo que ya viste en pantalla.</p></div>
+      <div class="step reveal"><span class="n">03</span><h3>Plan a tu medida</h3><p>Simulas tu cuota, eliges inicial y plazo, y armamos tu financiamiento directo.</p></div>
+      <div class="step reveal"><span class="n">04</span><h3>Llaves en mano</h3><p>Firma, entrega puntual y bienvenido a tu nuevo norte.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal" data-est="E-07"><div><p class="eyebrow">Testimonios</p><h2>Historias con llave propia</h2></div></div>
+    <div class="t-grid">
+      <div class="t-card reveal">
+        <div class="t-stars">★★★★★</div>
+        <p>“Vimos el depa en 360° un domingo de noche, agendamos el lunes y firmamos en dos semanas. Nunca sentimos presión, solo acompañamiento.”</p>
+        <div class="t-who"><img src="../assets/avatar-1.webp" alt="Rosa M." loading="lazy" /><div><b>Rosa Mendoza</b><span>Compró en Urb. Los Parques</span></div></div>
+      </div>
+      <div class="t-card reveal">
+        <div class="t-stars">★★★★★</div>
+        <p>“El financiamiento directo fue lo que nos convenció: cuotas claras desde el día uno y cero sorpresas en el camino.”</p>
+        <div class="t-who"><img src="../assets/avatar-2.webp" alt="Miguel T." loading="lazy" /><div><b>Miguel Torres</b><span>Casa propia en Pimentel</span></div></div>
+      </div>
+      <div class="t-card reveal">
+        <div class="t-stars">★★★★★</div>
+        <p>“Compré mi lote desde Lima sin viajar: recorrido virtual, papeles digitales y una asesora que respondía a toda hora.”</p>
+        <div class="t-who"><img src="../assets/avatar-3.webp" alt="Andrea C." loading="lazy" /><div><b>Andrea Castro</b><span>Lote en Pomalca</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contacto" style="padding-top:0">
+  <div class="wrap">
+    <div class="contact-card reveal">
+      <div class="c-media">
+        <img src="../assets/gal-sala.webp" alt="Sala moderna de un proyecto Norvia" loading="lazy" />
+        <blockquote>“Tu próxima dirección empieza con una conversación.”</blockquote>
+      </div>
+      <form class="c-form" id="leadForm">
+        <p class="eyebrow">E-08 · Hablemos</p>
+        <h2>Cuéntanos qué buscas y te enviamos opciones a tu medida.</h2>
+        <p>Te responde una persona, no un formulario perdido.</p>
+        <input type="text" id="lName" placeholder="Tu nombre" required />
+        <input type="tel" id="lPhone" placeholder="Tu celular / WhatsApp" required />
+        <textarea id="lMsg" placeholder="Ej: busco una casa de 3 dormitorios en Pimentel hasta S/ 450 mil"></textarea>
+        <button class="btn btn-wa" type="submit">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.6-1.6-.9-2.1-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 .9-1 2.3s1 2.7 1.2 2.9c.2.2 2 3.1 5 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2z"/></svg>
+          Enviar por WhatsApp
+        </button>
+        <div class="c-alt">
+          <a class="btn btn-ghost" style="padding:.6rem 1rem;font-size:.74rem" href="tel:+51906765040">+51 906 765 040</a>
+          <a class="btn btn-ghost" style="padding:.6rem 1rem;font-size:.74rem" href="https://wa.me/51906765040?text=Hola%20Norvia,%20vi%20su%20web%20y%20quiero%20informaci%C3%B3n" target="_blank" rel="noopener">WhatsApp directo</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="cajetin">
+      <div class="cajetin-top">
+        <div class="cj cj-proj">
+          <a href="#top" class="brand"><svg class="mark" viewBox="0 0 32 32"><path d="M16 5 27 24H5z" fill="none" stroke="#FF5A1F" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="19" r="2.6" fill="#FF5A1F"/></svg><span><b>Norvia</b><small>Chiclayo · Lambayeque</small></span></a>
+          <p>Vivienda con propósito en Chiclayo y Lambayeque. Explora, recorre en 360° y decide con confianza.</p>
+        </div>
+        <div class="cj"><span class="cj-lab">Lámina</span><span class="cj-val num">NRV-01 / 01</span></div>
+        <div class="cj"><span class="cj-lab">Escala</span><span class="cj-val num">1 : 1</span></div>
+        <div class="cj cj-sello">
+          <div class="sello"><b>Demostrativo</b><span>No válido para venta</span></div>
+        </div>
+        <div class="cj"><span class="cj-lab">Levantó</span><span class="cj-val">DAK Agency</span></div>
+        <div class="cj"><span class="cj-lab">Revisó</span><span class="cj-val">Dirección Norvia</span></div>
+      </div>
+      <div class="cajetin-rev" role="table" aria-label="Revisiones">
+        <div class="rh" role="columnheader">Rev</div><div class="rh" role="columnheader">Fecha</div><div class="rh" role="columnheader">Descripción</div><div class="rh" role="columnheader">Por</div>
+        <div>A</div><div>2026-07-08</div><div>Emisión inicial del mostrador</div><div>DAK</div>
+        <div>B</div><div>2026-07-24</div><div>Dirección «Levantamiento»</div><div>DAK</div>
+      </div>
+      <nav class="cajetin-nav" aria-label="Índice">
+        <a href="#propiedades">E-02 Catálogo</a>
+        <a href="#recorrido">E-03 Estación 360°</a>
+        <a href="#simulador">E-04 Cómputo</a>
+        <a href="#servicios">E-05 Instrumental</a>
+        <a href="#proceso">E-06 Bitácora</a>
+        <a href="#contacto">E-08 Contacto</a>
+      </nav>
+      <div class="foot-bot">
+        <span>© <span id="yr"></span> Norvia Inmobiliaria — proyecto demostrativo. Fotos: Unsplash/Pexels · Panorámicas: Poly Haven (CC0).</span>
+        <span>Levantamiento y desarrollo web: <a href="https://dakagency.net" target="_blank" rel="noopener">DAK Agency</a></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/51906765040?text=Hola%20Norvia,%20vi%20el%20demo%20de%20su%20web%20y%20quiero%20info" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.2-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.6-1.6-.9-2.1-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 .9-1 2.3s1 2.7 1.2 2.9c.2.2 2 3.1 5 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2z"/></svg>
+</a>
+
+<!-- Chat Nora -->
+<button class="chat-fab" id="chatFab" aria-label="Chatear con Nora, asistente virtual">
+  <svg viewBox="0 0 24 24"><path d="M21 11.5a8 8 0 0 1-8 8c-1 0-2-.18-2.9-.52L5 20.5l1.6-4A8 8 0 1 1 21 11.5z"/><path d="M8.6 11.5h.01M12.1 11.5h.01M15.6 11.5h.01" stroke-width="2.6"/></svg>
+  <span class="dot"></span>
+</button>
+<div class="chat-nudge" id="chatNudge">¿Te ayudo a encontrar tu próxima casa? 🏡</div>
+<div class="chat" id="chatBox" role="dialog" aria-label="Chat con Nora, asistente virtual">
+  <div class="chat-head">
+    <div class="chat-ava">N</div>
+    <div><b>Nora · Norvia</b><span>Asistente virtual — en línea</span></div>
+    <button class="chat-x" id="chatX" aria-label="Cerrar chat">✕</button>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <form class="chat-in" id="chatForm">
+    <input id="chatTxt" type="text" placeholder="Escríbele a Nora…" autocomplete="off" aria-label="Mensaje para Nora" />
+    <button type="submit" aria-label="Enviar mensaje"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </form>
+</div>
+
+<!-- Modal ficha -->
+<div class="modal-ov" id="modalOv" role="dialog" aria-modal="true" aria-label="Ficha de propiedad">
+  <div class="modal" id="modalBox"></div>
+</div>
+
+<script src="../vendor/pannellum.js"></script>
+<script>
+(function(){
+  'use strict';
+  var money=function(n){return 'S/ '+n.toLocaleString('es-PE')};
+  var A='../assets/';
+
+  var PROPS=[
+   {id:'casa-lujo',t:'Casa de lujo con piscina infinita',type:'Casa',zone:'Urb. Los Parques',op:'Comprar',price:780000,beds:4,baths:4,area:320,tag:'new',pano:'lounge',img:'prop-casa-lujo.webp',gal:['prop-casa-lujo.webp','gal-sala.webp','gal-cocina.webp','gal-comedor.webp'],desc:'Residencia de dos plantas con piscina infinita, terraza techada y acabados premium. Sala de doble altura con luz natural todo el día y vista despejada.',amen:['Piscina','Terraza','Cochera doble','Cocina con isla','Seguridad 24/7','Áreas verdes']},
+   {id:'casa-moderna',t:'Residencia moderna de dos plantas',type:'Casa',zone:'Santa Victoria',op:'Comprar',price:645000,beds:4,baths:3,area:280,tag:'new',pano:'sala',img:'prop-casa-moderna.webp',gal:['prop-casa-moderna.webp','gal-comedor.webp','gal-cocina.webp'],desc:'Arquitectura contemporánea con amplios ventanales, piscina y zona parrilla. A minutos del centro financiero de Chiclayo.',amen:['Piscina','Zona parrilla','Cochera doble','Walk-in closet','Estudio']},
+   {id:'casa-mediterranea',t:'Casa mediterránea con piscina',type:'Casa',zone:'Pimentel',op:'Comprar',price:520000,beds:3,baths:3,area:240,tag:'',pano:null,img:'prop-casa-mediterranea.webp',gal:['prop-casa-mediterranea.webp','gal-sala.webp','gal-comedor.webp'],desc:'Luz, blanco y brisa de mar: casa de un solo nivel con patio interior, piscina y jardines maduros a 10 minutos de la playa.',amen:['Piscina','Jardín','Cochera','Terraza','Cerca al mar']},
+   {id:'casa-minimalista',t:'Casa minimalista con jardín',type:'Casa',zone:'La Victoria',op:'Comprar',price:465000,beds:3,baths:2,area:210,tag:'',pano:'dormitorio',img:'prop-casa-minimalista.webp',gal:['prop-casa-minimalista.webp','gal-depa.webp','gal-cocina.webp'],desc:'Líneas puras, madera y vidrio. Sala comedor integrada abierta al jardín, ideal para quienes buscan diseño sin ostentación.',amen:['Jardín amplio','Cochera','Cocina equipada','Domótica básica']},
+   {id:'casa-clasica',t:'Casa familiar de estilo clásico',type:'Casa',zone:'José Leonardo Ortiz',op:'Comprar',price:365000,beds:4,baths:3,area:230,tag:'',pano:null,img:'prop-casa-clasica.webp',gal:['prop-casa-clasica.webp','gal-comedor.webp','gal-cocina.webp'],desc:'La casa de toda la vida, renovada: portón doble, jardín frontal y espacios generosos para una familia grande.',amen:['Cochera doble','Jardín frontal','Depósito','Lavandería']},
+   {id:'cabana',t:'Cabaña premium de campo',type:'Casa',zone:'Pomalca',op:'Alquilar',price:3200,rent:true,beds:3,baths:2,area:180,tag:'',pano:'terraza',img:'prop-cabana.webp',gal:['prop-cabana.webp','gal-sala.webp'],desc:'Madera, silencio y cielo estrellado a 20 minutos de la ciudad. Amoblada, con chimenea y terraza envolvente. Alquiler mensual o por temporada.',amen:['Amoblada','Chimenea','Terraza','Jardín','Pet friendly']},
+   {id:'depa-panoramico',t:'Departamento con sala panorámica',type:'Departamento',zone:'Santa Victoria',op:'Comprar',price:298000,beds:3,baths:2,area:95,tag:'new',pano:'sala',img:'prop-depa-panoramico.webp',gal:['prop-depa-panoramico.webp','gal-cocina.webp','gal-depa.webp'],desc:'Piso alto con vista abierta a la ciudad, sala de estar con ventanales de piso a techo y cocina integrada con barra.',amen:['Piso alto','Ascensor','Cochera','Depósito','Áreas comunes']},
+   {id:'loft',t:'Loft de estreno amoblado',type:'Departamento',zone:'Santa Victoria',op:'Alquilar',price:1850,rent:true,beds:2,baths:1,area:72,tag:'new',pano:null,img:'prop-loft.webp',gal:['prop-loft.webp','gal-depa.webp'],desc:'Doble altura, mobiliario de diseño y luz norte. Listo para entrar a vivir: solo trae tu maleta.',amen:['Amoblado','Doble altura','Coworking en el edificio','Gimnasio']},
+   {id:'lote',t:'Lote campestre con vista despejada',type:'Lote',zone:'Pomalca',op:'Comprar',price:95000,beds:0,baths:0,area:140,tag:'new',pano:null,img:'prop-lote.webp',gal:['prop-lote.webp'],desc:'Terreno urbano habilitado con partida registral independiente, agua, luz y acceso afirmado. Financiamiento directo hasta 60 cuotas.',amen:['Partida independiente','Servicios instalados','Financiamiento 60 cuotas','Vista despejada']},
+   {id:'oficina',t:'Oficina corporativa equipada',type:'Oficina',zone:'La Victoria',op:'Alquilar',price:2800,rent:true,beds:0,baths:1,area:64,tag:'',pano:null,img:'prop-oficina.webp',gal:['prop-oficina.webp'],desc:'Piso 12 con recepción, sala de reuniones y cableado de red listo. Edificio con seguridad y estacionamiento para visitas.',amen:['Sala de reuniones','Recepción','Seguridad 24/7','Estacionamiento']}
+  ];
+
+  var grid=document.getElementById('grid'),countEl=document.getElementById('count');
+  var favs={};try{favs=JSON.parse(localStorage.getItem('norvia_favs')||'{}')}catch(e){}
+  var state={cat:'Todos',op:'Comprar',type:'',zone:'',beds:'',price:''};
+
+  function icon(d){var i={bed:'<path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 14h18M6 10V7h12v3"/>',bath:'<path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4zM6 12V6a2 2 0 0 1 4 0"/>',area:'<path d="M3 9V3h6M21 15v6h-6M21 3l-7 7M3 21l7-7"/>'};return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+i[d]+'</svg>'}
+
+  function match(p){
+    if(state.cat!=='Todos'&&p.type!==state.cat)return false;
+    if(state.op==='Proyectos'){if(p.tag!=='new')return false}
+    else if(p.op!==state.op)return false;
+    if(state.type&&p.type!==state.type)return false;
+    if(state.zone&&p.zone!==state.zone)return false;
+    if(state.beds&&p.beds<+state.beds)return false;
+    if(state.price&&p.price>+state.price)return false;
+    return true;
+  }
+
+  function specs(p,cls){
+    return p.type==='Lote'?'<span>'+icon('area')+p.area+' m²</span><span>Terreno urbano</span>'
+      :p.type==='Oficina'?'<span>'+icon('area')+p.area+' m²</span><span>'+icon('bath')+p.baths+' baño</span>'
+      :'<span>'+icon('bed')+p.beds+' dorm</span><span>'+icon('bath')+p.baths+' baños</span><span>'+icon('area')+p.area+' m²</span>';
+  }
+
+  function draw(){
+    var list=PROPS.filter(match);
+    countEl.textContent=list.length+(list.length===1?' propiedad':' propiedades');
+    if(!list.length){grid.innerHTML='<div class="empty">No encontramos propiedades con esos filtros. Amplía la zona o el precio — o escríbenos y buscamos por ti. 💬</div>';return}
+    grid.innerHTML=list.map(function(p){
+      return '<article class="card" data-id="'+p.id+'" tabindex="0" aria-label="'+p.t+'">'
+        +'<div class="card-media"><img src="'+A+p.img+'" alt="'+p.t+' en '+p.zone+'" loading="lazy" />'
+        +'<div class="badges"><span class="badge op">'+(p.rent?'Alquiler':'Venta')+'</span>'
+        +(p.tag==='new'?'<span class="badge new">Estreno</span>':'')
+        +(p.pano?'<span class="badge i360">◐ 360°</span>':'')+'</div>'
+        +'<button class="fav'+(favs[p.id]?' on':'')+'" data-fav="'+p.id+'" aria-label="Guardar favorito"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-8.6C.8 9.6 2 6 5.2 6 7 6 8.3 7 12 10.2 15.7 7 17 6 18.8 6 22 6 23.2 9.6 21.5 12.4 19 16.4 12 21 12 21z"/></svg></button>'
+        +'<div class="card-price-tag">'+money(p.price)+(p.rent?' <small>/mes</small>':'')+'</div></div>'
+        +'<div class="card-body"><span class="card-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>'+p.zone+'</span>'
+        +'<h3 class="card-title">'+p.t+'</h3>'
+        +'<div class="card-specs">'+specs(p)+'</div>'
+        +'<span class="card-cta">Ver ficha completa →</span></div></article>';
+    }).join('');
+  }
+
+  document.getElementById('pills').addEventListener('click',function(e){
+    var b=e.target.closest('.pill');if(!b)return;
+    document.querySelectorAll('.pill').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on');state.cat=b.dataset.f;draw();
+  });
+  document.getElementById('opSeg').addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    this.querySelectorAll('button').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on');state.op=b.dataset.op;
+  });
+  document.getElementById('doSearch').addEventListener('click',function(){
+    state.type=document.getElementById('fType').value;
+    state.zone=document.getElementById('fZone').value;
+    state.beds=document.getElementById('fBeds').value;
+    state.price=document.getElementById('fPrice').value;
+    state.cat=state.type||'Todos';
+    document.querySelectorAll('.pill').forEach(function(x){x.classList.toggle('on',x.dataset.f===(state.type||'Todos'))});
+    draw();
+    document.getElementById('propiedades').scrollIntoView({behavior:'smooth'});
+  });
+
+  /* ── Modal ficha ── */
+  var ov=document.getElementById('modalOv'),box=document.getElementById('modalBox');
+  function openModal(p){
+    var thumbs=p.gal.map(function(g,i){return '<img src="'+A+g+'" alt="Foto '+(i+1)+'" class="'+(i===0?'on':'')+'" data-g="'+A+g+'" loading="lazy" />'}).join('');
+    box.innerHTML='<button class="m-close" id="mClose" aria-label="Cerrar">✕</button>'
+      +'<div class="modal-grid"><div class="m-gallery"><img class="m-main" id="mMain" src="'+A+p.gal[0]+'" alt="'+p.t+'" />'
+      +(p.gal.length>1?'<div class="m-thumbs" id="mThumbs">'+thumbs+'</div>':'')+'</div>'
+      +'<div class="m-info"><span class="card-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>'+p.zone+' · '+(p.rent?'Alquiler':'Venta')+'</span>'
+      +'<h3 class="m-title">'+p.t+'</h3>'
+      +'<div class="m-price">'+money(p.price)+(p.rent?' <small>/mes</small>':'<small> · financiamiento directo disponible</small>')+'</div>'
+      +'<p class="m-desc">'+p.desc+'</p>'
+      +'<div class="m-specs">'
+      +(p.beds?'<div class="m-spec"><b>'+p.beds+'</b><span>Dorms</span></div>':'')
+      +(p.baths?'<div class="m-spec"><b>'+p.baths+'</b><span>Baños</span></div>':'')
+      +'<div class="m-spec"><b>'+p.area+'</b><span>m²</span></div>'
+      +'<div class="m-spec"><b>'+(p.tag==='new'?'2026':'—')+'</b><span>'+(p.tag==='new'?'Estreno':'Usado')+'</span></div></div>'
+      +'<div class="m-amen">'+p.amen.map(function(a){return '<span>'+a+'</span>'}).join('')+'</div>'
+      +'<div class="m-ctas">'
+      +'<a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/51906765040?text='+encodeURIComponent('Hola Norvia, me interesa "'+p.t+'" en '+p.zone+' ('+money(p.price)+(p.rent?'/mes':'')+'). ¿Podemos coordinar una visita?')+'">Consultar por WhatsApp</a>'
+      +(p.pano?'<button class="btn btn-ghost" id="mGo360">Ver recorrido 360°</button>':'')
+      +'</div></div></div>';
+    ov.classList.add('open');document.body.style.overflow='hidden';
+    document.getElementById('mClose').onclick=closeModal;
+    var th=document.getElementById('mThumbs');
+    if(th)th.addEventListener('click',function(e){
+      var im=e.target.closest('img');if(!im)return;
+      document.getElementById('mMain').src=im.dataset.g;
+      th.querySelectorAll('img').forEach(function(x){x.classList.toggle('on',x===im)});
+    });
+    var g3=document.getElementById('mGo360');
+    if(g3)g3.onclick=function(){closeModal();gotoScene(p.pano);document.getElementById('recorrido').scrollIntoView({behavior:'smooth'})};
+  }
+  function closeModal(){ov.classList.remove('open');document.body.style.overflow=''}
+  ov.addEventListener('click',function(e){if(e.target===ov)closeModal()});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()});
+
+  grid.addEventListener('click',function(e){
+    var f=e.target.closest('.fav');
+    if(f){var id=f.dataset.fav;favs[id]=!favs[id];f.classList.toggle('on',favs[id]);try{localStorage.setItem('norvia_favs',JSON.stringify(favs))}catch(x){}e.stopPropagation();return}
+    var c=e.target.closest('.card');if(!c)return;
+    var p=PROPS.find(function(x){return x.id===c.dataset.id});if(p)openModal(p);
+  });
+  grid.addEventListener('keydown',function(e){
+    if(e.key!=='Enter')return;var c=e.target.closest('.card');if(!c)return;
+    var p=PROPS.find(function(x){return x.id===c.dataset.id});if(p)openModal(p);
+  });
+  draw();
+
+  /* ── 360 con Pannellum ── */
+  var SCENES={
+    lounge:{title:'Sala de entretenimiento',sub:'Casa de lujo · Urb. Los Parques',pano:'pano-lounge.jpg',poster:'pano-lounge-poster.webp',
+      hs:[{pitch:-1,yaw:150,type:'scene',text:'Ir a la sala por estrenar',sceneId:'sala'}]},
+    sala:{title:'Sala por estrenar',sub:'Residencia moderna · Santa Victoria',pano:'pano-sala.jpg',poster:'pano-sala-poster.webp',
+      hs:[{pitch:-2,yaw:-60,type:'scene',text:'Ir al dormitorio',sceneId:'dormitorio'}]},
+    dormitorio:{title:'Dormitorio principal',sub:'Casa minimalista · La Victoria',pano:'pano-dormitorio.jpg',poster:'pano-dormitorio-poster.webp',
+      hs:[{pitch:-2,yaw:100,type:'scene',text:'Ir a la terraza',sceneId:'terraza'}]},
+    terraza:{title:'Terraza y jardín',sub:'Cabaña premium · Pomalca',pano:'pano-terraza.jpg',poster:'pano-terraza-poster.webp',
+      hs:[{pitch:-2,yaw:180,type:'scene',text:'Volver a la sala de entretenimiento',sceneId:'lounge'}]}
+  };
+  var cfgScenes={};
+  Object.keys(SCENES).forEach(function(k){
+    var s=SCENES[k];
+    cfgScenes[k]={type:'equirectangular',panorama:A+s.pano,preview:A+s.poster,autoLoad:false,hotSpots:s.hs,hfov:100};
+  });
+  var viewer=pannellum.viewer('pano',{
+    // brújula encendida y rótulo en español: la tesis (ocupar una estación y
+    // visar en todas direcciones) se demuestra, no se afirma en un párrafo
+    default:{firstScene:'lounge',sceneFadeDuration:900,autoRotate:-2,autoRotateInactivityDelay:6000,compass:true,showFullscreenCtrl:true,showZoomCtrl:true,friction:.18},
+    strings:{loadButtonLabel:'Ocupar estación'},
+    scenes:cfgScenes
+  });
+  var vT=document.getElementById('vTitle'),vS=document.getElementById('vSub');
+  // lectura de azimut en vivo, como el instrumento
+  var azEl=document.getElementById('vAz');
+  if(azEl){
+    var showAz=function(){var y=Math.round((viewer.getYaw()+360)%360);azEl.textContent='Az '+String(y).padStart(3,'0')+'°';};
+    viewer.on('load',showAz); setInterval(showAz,140);
+  }
+  var scWrap=document.getElementById('scenes');
+  scWrap.innerHTML=Object.keys(SCENES).map(function(k){
+    var s=SCENES[k];
+    return '<button class="scene-btn'+(k==='lounge'?' on':'')+'" data-sc="'+k+'"><img src="'+A+s.poster+'" alt="" />'+s.title+'</button>';
+  }).join('');
+  function syncScene(k){
+    var s=SCENES[k];vT.textContent=s.title;vS.textContent=s.sub;
+    scWrap.querySelectorAll('.scene-btn').forEach(function(b){b.classList.toggle('on',b.dataset.sc===k)});
+  }
+  function gotoScene(k){try{viewer.loadScene(k)}catch(e){}syncScene(k)}
+  scWrap.addEventListener('click',function(e){var b=e.target.closest('.scene-btn');if(b)gotoScene(b.dataset.sc)});
+  viewer.on('scenechange',function(id){syncScene(id)});
+
+  /* ── nav / reveal / counters / form ── */
+  var nav=document.getElementById('nav');
+  var onScroll=function(){nav.classList.toggle('solid',window.scrollY>20)};
+  onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+  document.getElementById('burger').addEventListener('click',function(){document.getElementById('navlinks').classList.toggle('open')});
+  document.querySelectorAll('#navlinks a').forEach(function(a){a.addEventListener('click',function(){document.getElementById('navlinks').classList.remove('open')})});
+
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target)}})},{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
+
+  var counters=document.querySelectorAll('[data-count]'),cdone=false;
+  var cio=new IntersectionObserver(function(es){es.forEach(function(en){
+    if(en.isIntersecting&&!cdone){cdone=true;
+      counters.forEach(function(el){
+        var target=+el.dataset.count,suf=el.dataset.suffix||'',t0=performance.now(),dur=1400;
+        function tick(now){var p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3);
+          el.textContent=Math.round(target*e).toLocaleString('es-PE')+suf;if(p<1)requestAnimationFrame(tick)}
+        requestAnimationFrame(tick);
+      });
+    }
+  })},{threshold:.4});
+  var st=document.querySelector('.stats');if(st)cio.observe(st);
+
+  document.getElementById('leadForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var n=document.getElementById('lName').value.trim(),p=document.getElementById('lPhone').value.trim(),m=document.getElementById('lMsg').value.trim();
+    window.open('https://wa.me/51906765040?text='+encodeURIComponent('Hola Norvia, soy '+n+' ('+p+'). '+(m||'Quiero información sobre sus propiedades.')),'_blank');
+  });
+  document.getElementById('yr').textContent=new Date().getFullYear();
+
+  /* ── Hero showcase: propiedades destacadas rotativas ── */
+  (function(){
+    var HERO_IDS=['casa-lujo','casa-moderna','cabana','casa-clasica'];
+    var hp=HERO_IDS.map(function(id){return PROPS.find(function(p){return p.id===id})}).filter(Boolean);
+    var bgs=document.getElementById('heroBgs'),sw=document.getElementById('heroSwitch');
+    var hfName=document.getElementById('hfName'),hfMeta=document.getElementById('hfMeta'),
+        hf360=document.getElementById('hf360'),feat=document.getElementById('heroFeature');
+    if(!bgs||!hp.length)return;
+    hp.forEach(function(p,i){
+      var s=document.createElement('div');s.className='hero-slide';
+      s.style.backgroundImage='url("'+A+p.img+'")';bgs.appendChild(s);
+      var b=document.createElement('button');b.type='button';b.setAttribute('role','tab');
+      b.setAttribute('aria-label',p.t);b.addEventListener('click',function(){show(i,true)});sw.appendChild(b);
+    });
+    var slides=bgs.children,dots=sw.children,hi=-1,timer;
+    function show(i,manual){
+      if(i===hi)return;hi=i;var p=hp[i];
+      for(var k=0;k<slides.length;k++){slides[k].classList.toggle('on',k===i);dots[k].classList.toggle('on',k===i)}
+      var on=slides[i];on.style.animation='none';void on.offsetWidth;on.style.animation='';
+      hfName.style.opacity=0;hfMeta.style.opacity=0;
+      setTimeout(function(){
+        hfName.textContent=p.t;
+        hfMeta.innerHTML=p.zone+' · <b>'+money(p.price)+(p.rent?'/mes':'')+'</b>';
+        hf360.textContent=p.pano?'· 360° disponible':'';
+        hfName.style.opacity=1;hfMeta.style.opacity=1;
+      },220);
+      feat.onclick=function(){openModal(p)};
+      if(manual){clearInterval(timer);timer=setInterval(next,6000)}
+    }
+    function next(){show((hi+1)%hp.length)}
+    show(0);timer=setInterval(next,6000);
+    feat.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openModal(hp[hi])}});
+    var heroEl=document.querySelector('.hero');
+    heroEl.addEventListener('mouseenter',function(){clearInterval(timer)});
+    heroEl.addEventListener('mouseleave',function(){clearInterval(timer);timer=setInterval(next,6000)});
+  })();
+
+  /* ── Palabra rotativa del hero ── */
+  var ROT=['quieres vivir','vas a estrenar','quieres invertir'];
+  var rw=document.getElementById('rotWord'),ri=0;
+  var noMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(rw&&!noMotion)setInterval(function(){
+    ri=(ri+1)%ROT.length;rw.textContent=ROT[ri];
+    rw.style.animation='none';void rw.offsetWidth;rw.style.animation='';
+  },3400);
+
+  /* ── Tilt 3D en cards (solo mouse) ── */
+  if(matchMedia('(pointer:fine)').matches&&!noMotion){
+    grid.addEventListener('pointermove',function(e){
+      var c=e.target.closest('.card');if(!c)return;
+      var r=c.getBoundingClientRect();
+      var x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+      c.style.transform='translateY(-6px) rotateX('+(-y*4).toFixed(2)+'deg) rotateY('+(x*5).toFixed(2)+'deg)';
+    });
+    grid.addEventListener('pointerout',function(e){
+      var c=e.target.closest('.card');
+      if(c&&!c.contains(e.relatedTarget))c.style.transform='';
+    });
+  }
+
+  /* ── Simulador de cuota (sistema francés, TEA 8.9%) ── */
+  var sP=document.getElementById('sPrice'),sI=document.getElementById('sIni'),sY=document.getElementById('sYr');
+  var oP=document.getElementById('oPrice'),oI=document.getElementById('oIni'),oY=document.getElementById('oYr');
+  var oC=document.getElementById('oCuota'),oF=document.getElementById('oFin'),simWa=document.getElementById('simWa');
+  function rangeFill(el){el.style.setProperty('--p',((el.value-el.min)/(el.max-el.min)*100)+'%')}
+  function calc(){
+    var P=+sP.value,pct=+sI.value,yrs=+sY.value;
+    var ini=Math.round(P*pct/100),loan=P-ini;
+    var i=Math.pow(1.089,1/12)-1,n=yrs*12;
+    var m=Math.round(loan*(i*Math.pow(1+i,n))/(Math.pow(1+i,n)-1));
+    oP.textContent=money(P);
+    oI.textContent=pct+'% · '+money(ini);
+    oY.textContent=yrs+' años';
+    oC.innerHTML=money(m)+' <small>/mes</small>';
+    oF.textContent='Financias '+money(loan)+' en '+n+' cuotas';
+    simWa.href='https://wa.me/51906765040?text='+encodeURIComponent('Hola Norvia, simulé una cuota de '+money(m)+'/mes (propiedad de '+money(P)+', inicial '+pct+'%, plazo '+yrs+' años). Quiero pre-calificar.');
+    [sP,sI,sY].forEach(rangeFill);
+  }
+  [sP,sI,sY].forEach(function(el){el.addEventListener('input',calc)});
+  calc();
+
+  /* ── Chat “Nora” ── */
+  var fab=document.getElementById('chatFab'),nudge=document.getElementById('chatNudge'),
+      cBox=document.getElementById('chatBox'),cBody=document.getElementById('chatBody'),
+      cForm=document.getElementById('chatForm'),cTxt=document.getElementById('chatTxt');
+  var chatStarted=false,chatOpen=false;
+  function scrollChat(){cBody.scrollTop=cBody.scrollHeight}
+  function say(html){var d=document.createElement('div');d.className='msg bot';d.innerHTML=html;cBody.appendChild(d);scrollChat()}
+  function me(t){var d=document.createElement('div');d.className='msg me';d.textContent=t;cBody.appendChild(d);scrollChat()}
+  function typing(cb,ms){
+    var t=document.createElement('div');t.className='msg bot typing';t.innerHTML='<i></i><i></i><i></i>';
+    cBody.appendChild(t);scrollChat();
+    setTimeout(function(){t.remove();cb()},ms||650+Math.random()*450);
+  }
+  function chips(list){
+    var w=document.createElement('div');w.className='chat-chips';
+    list.forEach(function(c){
+      var b=document.createElement('button');b.type='button';b.textContent=c[0];
+      b.onclick=function(){w.remove();me(c[0].replace(/^[^\w¿¡]+\s*/,''));typing(c[1])};
+      w.appendChild(b);
+    });
+    cBody.appendChild(w);scrollChat();
+  }
+  function go(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+  function applyFilter(op,cat,zone){
+    if(op){state.op=op;document.querySelectorAll('#opSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.op===op)})}
+    state.cat=cat||'Todos';state.zone=zone||'';state.type='';state.beds='';state.price='';
+    document.getElementById('fZone').value=state.zone;
+    document.getElementById('fType').value='';document.getElementById('fBeds').value='';document.getElementById('fPrice').value='';
+    document.querySelectorAll('.pill').forEach(function(x){x.classList.toggle('on',x.dataset.f===state.cat)});
+    draw();
+    return PROPS.filter(match).length;
+  }
+  function chipWa(txt){
+    return [txt||'💬 Abrir WhatsApp',function(){
+      window.open('https://wa.me/51906765040?text='+encodeURIComponent('Hola, vengo del chat de Nora en la web y quiero hablar con una asesora.'),'_blank');
+      say('Listo, te abrí el chat con <b>Camila</b> 💬 Si no se abrió, toca el botón verde de abajo a la derecha.');
+    }];
+  }
+  function homeChips(){
+    chips([
+      ['🏠 Quiero comprar',flowComprar],
+      ['🔑 Quiero alquilar',flowAlquilar],
+      ['🧮 Simular mi cuota',flowCuota],
+      ['🌀 Ver recorridos 360°',flow360]
+    ]);
+  }
+  function flowComprar(){
+    say('¡Vamos! ¿Tienes alguna zona en mente?');
+    chips([
+      ['Santa Victoria',function(){zoneReply('Santa Victoria')}],
+      ['Pimentel',function(){zoneReply('Pimentel')}],
+      ['Urb. Los Parques',function(){zoneReply('Urb. Los Parques')}],
+      ['Donde sea 🌎',function(){zoneReply('')}]
+    ]);
+  }
+  function zoneReply(z){
+    var n=applyFilter('Comprar','Todos',z);
+    if(n){say('Encontré <b>'+n+(n===1?' propiedad':' propiedades')+'</b> en venta'+(z?' en <b>'+z+'</b>':'')+'. Ya te dejé el catálogo filtrado abajo 👇');go('propiedades')}
+    else{say('En <b>'+z+'</b> no tengo disponibles ahora mismo, pero Camila maneja opciones que aún no publicamos 👇')}
+    chips([['🌀 Ver un 360°',flow360],['🧮 Simular cuota',flowCuota],chipWa('💬 Hablar con Camila')]);
+  }
+  function flowAlquilar(){
+    var n=applyFilter('Alquilar','Todos','');
+    say('Tenemos <b>'+n+(n===1?' propiedad':' propiedades')+'</b> en alquiler ahora mismo. Míralas abajo 👇');
+    go('propiedades');
+    chips([['🏠 Mejor comprar',flowComprar],chipWa('💬 Hablar con Camila')]);
+  }
+  function flowCuota(){
+    say('Te llevo al simulador: mueve los controles y mira tu cuota al instante. Cuando tengas tu número, pre-califica con un clic 👇');
+    go('simulador');
+    chips([['🏠 Ver propiedades',flowComprar],chipWa('💬 Hablar con Camila')]);
+  }
+  function flow360(){
+    say('Te llevo al recorrido: <b>arrastra dentro de la imagen</b> para mirar alrededor y cambia de ambiente con las miniaturas 🌀');
+    go('recorrido');
+    chips([['🏠 Ver propiedades',flowComprar],['🧮 Simular cuota',flowCuota]]);
+  }
+  function flowVisita(){
+    say('¡Claro! Déjanos tu nombre y celular en el formulario y <b>Camila te escribe hoy mismo</b> 📲');
+    go('contacto');
+    chips([chipWa('💬 Mejor por WhatsApp')]);
+  }
+  function think(q){
+    var s=q.toLowerCase();
+    if(/alquil|rentar|arrend/.test(s))return flowAlquilar();
+    if(/lote|terreno/.test(s)){var n=applyFilter('Comprar','Lote','');say('Tenemos <b>'+n+(n===1?' lote':' lotes')+'</b> con partida registral independiente 👇');go('propiedades');return chips([['🧮 Simular cuota',flowCuota],chipWa()])}
+    if(/depa|departamento/.test(s)){applyFilter('Comprar','Departamento','');say('Aquí van los departamentos disponibles 👇');go('propiedades');return chips([['🌀 Ver un 360°',flow360],chipWa()])}
+    if(/cuota|financ|cr[eé]dito|pr[eé]stamo|banco|inicial/.test(s))return flowCuota();
+    if(/360|recorrido|tour|virtual/.test(s))return flow360();
+    if(/visita|agendar|cita|conocer/.test(s))return flowVisita();
+    if(/precio|cu[aá]nto cuesta|costo/.test(s)){say('Los precios van desde <b>S/ 95 mil</b> (lotes) hasta <b>S/ 780 mil</b> (casa de lujo con piscina). Cada tarjeta muestra el suyo — y con el simulador ves tu cuota 👇');go('propiedades');return chips([['🧮 Simular cuota',flowCuota],chipWa()])}
+    if(/casa|comprar|propiedad/.test(s))return flowComprar();
+    if(/hola|buenas|hey|qu[eé] tal/.test(s)){say('¡Hola! 😊 ¿Qué estás buscando hoy?');return homeChips()}
+    if(/gracias|genial|perfecto/.test(s)){say('¡Con gusto! 🧡 Aquí sigo si necesitas algo más.');return homeChips()}
+    if(/humano|asesor|persona|camila|llamar|tel[eé]fono/.test(s)){say('Te conecto con <b>Camila</b>, nuestra asesora de carne y hueso 👇');return chips([chipWa()])}
+    say('Buena pregunta 🙌 Para responderte con datos exactos, mejor te conecto con <b>Camila</b>:');
+    chips([chipWa(),['🏠 Ver propiedades',flowComprar]]);
+  }
+  function openChat(){
+    chatOpen=true;cBox.classList.add('open');fab.classList.remove('unread');nudge.classList.remove('show');
+    try{sessionStorage.setItem('nora_seen','1')}catch(e){}
+    if(!chatStarted){chatStarted=true;typing(function(){
+      say('¡Hola! 👋 Soy <b>Nora</b>, la asistente de Norvia. Puedo filtrarte el catálogo, mostrarte recorridos 360° o simular tu cuota. ¿Por dónde empezamos?');
+      homeChips();
+    },800)}
+  }
+  function closeChat(){chatOpen=false;cBox.classList.remove('open')}
+  fab.addEventListener('click',function(){chatOpen?closeChat():openChat()});
+  document.getElementById('chatX').addEventListener('click',closeChat);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&chatOpen)closeChat()});
+  cForm.addEventListener('submit',function(e){
+    e.preventDefault();
+    var q=cTxt.value.trim();if(!q)return;
+    cTxt.value='';me(q);typing(function(){think(q)});
+  });
+  var seen=false;try{seen=!!sessionStorage.getItem('nora_seen')}catch(e){}
+  if(!seen)setTimeout(function(){if(!chatOpen){nudge.classList.add('show');fab.classList.add('unread');
+    setTimeout(function(){nudge.classList.remove('show')},6000)}},5000);
+})();
+</script>
+</body>
+</html>
