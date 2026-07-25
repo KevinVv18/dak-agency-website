@@ -53,7 +53,14 @@ Prohibidas por ser defaults de entrenamiento: Newsreader, Fraunces, Playfair, Co
 
 ## Motivo
 
-El símbolo de punto de control —triángulo sobre punto— es la firma. Aparece como marcador de estación, viñeta y ancla del logotipo. La cinta de señalización es el segundo motivo: filetes naranjas que delimitan.
+El símbolo de punto de control —triángulo sobre punto— es la firma. Aparece en el logotipo, como viñeta del kicker y como marca junto al número de cada estación (`.sec-head::before`). La cinta de señalización es el segundo motivo: filetes naranjas que delimitan, reservados para estaciones y progreso, no para decorar todos los paneles.
+
+## Artefactos del mundo (lo que lo separa de un portal)
+
+- **Cajetín de lámina** en el pie: en vez de un footer de enlaces, el bloque identificador de un plano — número de lámina, escala, «levantó/revisó», tabla de revisiones fechada e índice de estaciones. Aquí viven el sello DEMOSTRATIVO (rotado, como sello de goma) y el crédito a DAK Agency.
+- **Notación de campo** sobre la foto del hero: coordenadas de estación, latitud/longitud y cota (`.hero-coord`), en mono tabular. La tesis del oficio, escrita en la esquina como en una libreta.
+- **Cuadro de áreas** en las fichas: los datos van en celdas separadas por filete y mono tabular, sin los pictogramas de portal.
+- **Azimut vivo** en el visor 360°, leído de la brújula de Pannellum.
 
 ## Motion — estado real, no intención
 

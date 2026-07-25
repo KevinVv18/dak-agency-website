@@ -157,10 +157,18 @@
   .hero-inner{position:relative;z-index:3;width:100%;max-width:var(--maxw);margin:0 auto;display:flex;flex-direction:column;gap:clamp(1.3rem,3.6vh,2.4rem)}
   /* panel de datos sobre la foto: contraste sin apagar la imagen, que sigue
      a plena luz alrededor. Borde duro y filete de cinta, como el instrumento. */
+  /* panel de datos que no ahoga la foto: velo ligero + filete, no bloque opaco.
+     La imagen respira alrededor; en móvil se recompone (ver más abajo). */
   .hero-top{max-width:min(100%,860px);
-    background:rgba(13,15,18,.87);backdrop-filter:blur(3px);border:1px solid var(--linea-2);
+    background:linear-gradient(105deg,rgba(13,15,18,.82) 60%,rgba(13,15,18,.5));backdrop-filter:blur(2px);border:1px solid var(--linea-2);
     padding:1.3rem clamp(1.6rem,3.2vw,2.8rem) 1.5rem clamp(1.4rem,2.6vw,2rem)}
   .hero .eyebrow{margin-bottom:.75rem;color:var(--texto)}
+  /* coordenadas de estación: notación de campo sobre la foto */
+  .hero-coord{position:absolute;top:100px;right:clamp(1.1rem,4vw,2.4rem);z-index:3;text-align:right;
+    font-family:var(--med);font-variant-numeric:tabular-nums;font-size:.72rem;letter-spacing:.04em;color:var(--texto-2);
+    text-shadow:0 1px 4px rgba(0,0,0,.9);line-height:1.7;pointer-events:none}
+  .hero-coord b{color:var(--prisma);font-weight:600}
+  @media(max-width:768px){.hero-coord{display:none}}
   .hero h1{font-family:var(--rot);font-variation-settings:'wdth' 118;font-weight:700;text-transform:uppercase;
     font-size:clamp(2.2rem,6.2vw,5rem);line-height:.96;letter-spacing:-.005em;max-width:15ch;
     text-shadow:0 3px 26px rgba(0,0,0,.75)}
@@ -191,11 +199,22 @@
   .hero-switch button.on::after{transform:scaleX(1)}
   @media (prefers-reduced-motion:reduce){.hero-switch button::after{transition:none}}
   @media(max-width:768px){
-    .hero{padding-top:86px;min-height:auto}
+    /* la foto recupera el primer viewport: título arriba sobre ella, y el
+       aparato (feature + buscador) baja al pie del hero en vez de apilarse
+       opaco sobre la imagen */
+    .hero{padding-top:82px;min-height:100svh;justify-content:space-between}
     .hero h1{font-size:clamp(2.1rem,10vw,3.2rem)}
+    .hero-inner{gap:1rem}
+    .hero-top{align-self:flex-start}
     .hero-mid{align-items:stretch}
     .hero-feature{width:100%}
     .hero-switch{padding-bottom:0}
+  }
+  @media(max-width:560px){
+    /* la propiedad destacada es redundante con el catálogo inmediato: se oculta
+       para que el buscador quepa sin ahogar la foto */
+    .hero-feature{display:none}
+    .hero-switch{display:none}
   }
 
   /* ── CUADRO DE BÚSQUEDA ── */
@@ -221,8 +240,13 @@
   section{padding:clamp(3.6rem,8vw,6rem) 0;position:relative}
   .sec-head{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:end;gap:1rem 3rem;margin-bottom:2.4rem;
     padding-top:1.5rem;border-top:2px solid var(--cinta)}
+  /* marca de estación: el símbolo de punto de control (triángulo sobre punto)
+     junto al número, la firma del sistema y no solo texto */
   .sec-head::before{content:attr(data-est);position:absolute;top:-1.5rem;right:0;
-    font-family:var(--med);font-size:.76rem;letter-spacing:.16em;color:var(--cinta);background:var(--suelo);padding:0 0 0 .8rem;transform:translateY(-50%)}
+    font-family:var(--med);font-size:.76rem;letter-spacing:.16em;color:var(--cinta);background:var(--suelo);
+    padding:0 0 0 1.5rem;transform:translateY(-50%);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='13'%3E%3Cpath d='M6 0 11 8H1z' fill='none' stroke='%23FF5A1F' stroke-width='1.4'/%3E%3Ccircle cx='6' cy='10' r='1.6' fill='%23FF5A1F'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:left center}
   .sec-head{position:relative}
   @media(max-width:900px){.sec-head{grid-template-columns:1fr;gap:.9rem}}
   .sec-head h2{font-family:var(--rot);font-variation-settings:'wdth' 112;font-weight:700;text-transform:uppercase;
@@ -263,9 +287,13 @@
   .card-body{padding:.9rem .1rem 0;display:flex;flex-direction:column;gap:.45rem;flex:1}
   .card-loc{font-family:var(--med);font-size:.74rem;color:var(--cinta);letter-spacing:.08em;display:flex;align-items:center;gap:.35rem;text-transform:uppercase}
   .card-title{font-family:var(--rot);font-variation-settings:'wdth' 104;font-weight:700;text-transform:uppercase;font-size:1rem;line-height:1.2;letter-spacing:.005em}
-  /* cuadro de áreas: datos tabulados, nunca en prosa */
-  .card-specs{display:flex;gap:1rem;font-family:var(--med);font-size:.8rem;color:var(--texto-2);margin-top:auto;padding-top:.55rem;border-top:1px solid var(--linea)}
-  .card-specs span{display:inline-flex;align-items:center;gap:.3rem}
+  /* cuadro de áreas: celdas separadas por filete, mono tabular, sin los
+     iconitos de portal — es un renglón de cuadro técnico, no un spec-row */
+  .card-specs{display:flex;font-family:var(--med);font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--texto);
+    margin-top:auto;padding-top:.55rem;border-top:1px solid var(--linea)}
+  .card-specs span{display:inline-flex;align-items:center;gap:.3rem;padding:0 .8rem;border-left:1px solid var(--linea)}
+  .card-specs span:first-child{padding-left:0;border-left:none}
+  .card-specs svg{display:none}
   .card-cta{font-family:var(--med);font-size:.76rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--cinta);display:inline-flex;align-items:center;gap:.35rem;transition:gap .2s}
   .card:hover .card-cta{gap:.6rem}
   .empty{grid-column:1/-1;text-align:center;padding:3rem;color:var(--texto-2);border:1px dashed var(--linea-2);border-radius:var(--r)}
@@ -397,20 +425,43 @@
   .c-form textarea{resize:vertical;min-height:86px}
   .c-alt{display:flex;flex-wrap:wrap;gap:.55rem}
 
-  /* ── PIE ── */
-  footer.site{border-top:1px solid var(--linea-2);padding:2.8rem 0 2rem}
-  .foot-top{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap;margin-bottom:1.8rem}
-  .foot-col h3{font-family:var(--med);font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cinta);margin-bottom:.85rem}
-  .foot-col a{display:block;color:var(--texto-2);font-size:.88rem;padding:.24rem 0;transition:color .2s}
-  .foot-col a:hover{color:var(--cinta)}
-  .foot-bot{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding-top:1.5rem;border-top:1px solid var(--linea);
-    font-family:var(--med);font-size:.76rem;color:var(--texto-3)}
+  /* ── PIE = CAJETÍN DE LÁMINA ── el artefacto que identifica todo plano ── */
+  footer.site{padding:clamp(2.4rem,5vw,3.4rem) 0 2.2rem}
+  .cajetin{border:1px solid var(--linea-2)}
+  .cajetin-top{display:grid;grid-template-columns:2fr 1fr 1fr;border-bottom:1px solid var(--linea-2)}
+  @media(max-width:760px){.cajetin-top{grid-template-columns:1fr 1fr}}
+  @media(max-width:460px){.cajetin-top{grid-template-columns:1fr}}
+  /* cada celda del cajetín: rótulo arriba en mono, valor abajo */
+  .cj{padding:1rem 1.15rem;border-right:1px solid var(--linea-2);border-bottom:1px solid var(--linea-2)}
+  .cj:last-child{border-right:none}
+  .cj-lab{font-family:var(--med);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--texto-3);display:block;margin-bottom:.4rem}
+  .cj-val{font-family:var(--rot);font-variation-settings:'wdth' 104;font-weight:700;text-transform:uppercase;font-size:.95rem;letter-spacing:.02em;line-height:1.15}
+  .cj-val.num{font-family:var(--med);font-variant-numeric:tabular-nums;font-weight:600}
+  .cj-proj{grid-row:span 2;display:flex;flex-direction:column;gap:.55rem;justify-content:center}
+  .cj-proj .brand{margin:0}
+  .cj-proj p{font-family:var(--med);font-size:.8rem;color:var(--texto-2);line-height:1.5;max-width:34ch}
+  /* el sello de goma: el elemento obligatorio, ahora el mejor vestido */
+  .cj-sello{grid-column:2/-1;display:flex;align-items:center;justify-content:center;padding:1rem;border-bottom:1px solid var(--linea-2)}
+  @media(max-width:460px){.cj-sello{grid-column:1/-1}}
+  .sello{border:2px solid var(--cinta);color:var(--cinta);padding:.5rem 1.1rem;transform:rotate(-4deg);text-align:center;opacity:.92}
+  .sello b{display:block;font-family:var(--rot);font-variation-settings:'wdth' 112;font-weight:700;text-transform:uppercase;font-size:1rem;letter-spacing:.08em;line-height:1.05}
+  .sello span{font-family:var(--med);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cinta)}
+  /* tabla de revisiones: la marginalia real de un plano */
+  .cajetin-rev{display:grid;grid-template-columns:auto auto 1fr auto;gap:0;font-family:var(--med);font-variant-numeric:tabular-nums;font-size:.74rem}
+  .cajetin-rev>div{padding:.55rem 1.15rem;border-right:1px solid var(--linea);border-bottom:1px solid var(--linea);color:var(--texto-2)}
+  .cajetin-rev .rh{color:var(--texto-3);letter-spacing:.1em;text-transform:uppercase;font-size:.66rem;background:rgba(255,255,255,.02)}
+  .cajetin-rev>div:nth-child(4n){border-right:none}
+  .cajetin-nav{display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;padding:1rem 1.15rem;border-bottom:1px solid var(--linea-2)}
+  .cajetin-nav a{font-family:var(--med);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;color:var(--texto-2);transition:color .2s}
+  .cajetin-nav a:hover{color:var(--cinta)}
+  .foot-bot{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding:1rem 1.15rem;
+    font-family:var(--med);font-size:.74rem;color:var(--texto-3)}
   .foot-bot a{color:var(--cinta)}
 
-  .ribbon-clip{position:fixed;inset:0;z-index:90;overflow:hidden;pointer-events:none}
-  .demo-ribbon{position:absolute;right:-42px;top:26px;transform:rotate(45deg);background:var(--cinta);color:#1a0700;
-    font-family:var(--rot);font-size:.72rem;font-weight:700;letter-spacing:.14em;padding:.35rem 3.2rem;box-shadow:0 6px 20px rgba(0,0,0,.5);pointer-events:none}
-  @media(max-width:940px){.demo-ribbon{right:-46px;top:16px;font-size:.7rem;padding:.28rem 3rem}}
+  /* señal de demo discreta en el nav: rótulo de campo, no cinta genérica de esquina */
+  .demo-tag{font-family:var(--med);font-size:.66rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--cinta);
+    border:1px solid var(--cinta);padding:.18rem .5rem;white-space:nowrap}
+  @media(max-width:520px){.demo-tag{display:none}}
   .wa{position:fixed;z-index:110;right:20px;bottom:20px;width:54px;height:54px;border-radius:var(--r);background:#146c43;display:grid;place-items:center;box-shadow:var(--elev);transition:transform .25s var(--ease),background .2s}
   .wa:hover{transform:translateY(-2px);background:#1a7f4f}
   .wa svg{width:28px;height:28px;fill:#fff}
@@ -502,7 +553,6 @@
 </style>
 </head>
 <body>
-<div class="ribbon-clip" aria-hidden="true"><div class="demo-ribbon">DEMO</div></div>
 
 <header class="nav" id="nav">
   <div class="wrap nav-inner">
@@ -518,6 +568,7 @@
       <a href="#contacto">Contacto</a>
     </nav>
     <div style="display:flex;align-items:center;gap:.8rem">
+      <span class="demo-tag" title="Sitio demostrativo de DAK Agency">Demo</span>
       <a href="#contacto" class="btn btn-ghost nav-cta-btn">Agenda una visita</a>
       <button class="burger" id="burger" aria-label="Menú"><span></span><span></span><span></span></button>
     </div>
@@ -528,6 +579,7 @@
   <div class="hero-bgs" id="heroBgs" aria-hidden="true"></div>
   <div class="hero-scrim2" aria-hidden="true"></div>
   <div class="hero-grain" aria-hidden="true"></div>
+  <div class="hero-coord" aria-hidden="true">EST-01 · CHICLAYO<br><b>06°46′S</b> · <b>79°50′O</b><br>29 m s.n.m.</div>
 
   <div class="hero-inner">
     <div class="hero-top">
@@ -787,18 +839,37 @@
 
 <footer class="site">
   <div class="wrap">
-    <div class="foot-top">
-      <div style="max-width:280px">
-        <a href="#top" class="brand" style="margin-bottom:.8rem"><svg class="mark" viewBox="0 0 32 32"><path d="M16 5 27 24H5z" fill="none" stroke="#FF5A1F" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="19" r="2.6" fill="#FF5A1F"/></svg><span><b>Norvia</b><small>Chiclayo · Lambayeque</small></span></a>
-        <p style="color:var(--texto-2);font-size:.88rem">Vivienda con propósito en Chiclayo y Lambayeque. Explora, recorre en 360° y decide con confianza.</p>
+    <div class="cajetin">
+      <div class="cajetin-top">
+        <div class="cj cj-proj">
+          <a href="#top" class="brand"><svg class="mark" viewBox="0 0 32 32"><path d="M16 5 27 24H5z" fill="none" stroke="#FF5A1F" stroke-width="2.4" stroke-linejoin="round"/><circle cx="16" cy="19" r="2.6" fill="#FF5A1F"/></svg><span><b>Norvia</b><small>Chiclayo · Lambayeque</small></span></a>
+          <p>Vivienda con propósito en Chiclayo y Lambayeque. Explora, recorre en 360° y decide con confianza.</p>
+        </div>
+        <div class="cj"><span class="cj-lab">Lámina</span><span class="cj-val num">NRV-01 / 01</span></div>
+        <div class="cj"><span class="cj-lab">Escala</span><span class="cj-val num">1 : 1</span></div>
+        <div class="cj cj-sello">
+          <div class="sello"><b>Demostrativo</b><span>No válido para venta</span></div>
+        </div>
+        <div class="cj"><span class="cj-lab">Levantó</span><span class="cj-val">DAK Agency</span></div>
+        <div class="cj"><span class="cj-lab">Revisó</span><span class="cj-val">Dirección Norvia</span></div>
       </div>
-      <div class="foot-col"><h3>Propiedades</h3><a href="#propiedades">Casas</a><a href="#propiedades">Departamentos</a><a href="#propiedades">Lotes</a><a href="#recorrido">Recorridos 360°</a></div>
-      <div class="foot-col"><h3>Norvia</h3><a href="#servicios">Nosotros</a><a href="#servicios">Financiamiento</a><a href="#contacto">Contacto</a><a href="#contacto">Agenda una visita</a></div>
-      <div class="foot-col"><h3>Síguenos</h3><a href="#">Instagram</a><a href="#">Facebook</a><a href="#">TikTok</a></div>
-    </div>
-    <div class="foot-bot">
-      <span>© <span id="yr"></span> Norvia Inmobiliaria — proyecto demostrativo. Fotos: Unsplash/Pexels · Panorámicas: Poly Haven (CC0).</span>
-      <span>Sitio web desarrollado por <a href="https://dakagency.net" target="_blank" rel="noopener">DAK Agency</a></span>
+      <div class="cajetin-rev" role="table" aria-label="Revisiones">
+        <div class="rh" role="columnheader">Rev</div><div class="rh" role="columnheader">Fecha</div><div class="rh" role="columnheader">Descripción</div><div class="rh" role="columnheader">Por</div>
+        <div>A</div><div>2026-07-08</div><div>Emisión inicial del mostrador</div><div>DAK</div>
+        <div>B</div><div>2026-07-24</div><div>Dirección «Levantamiento»</div><div>DAK</div>
+      </div>
+      <nav class="cajetin-nav" aria-label="Índice">
+        <a href="#propiedades">E-02 Catálogo</a>
+        <a href="#recorrido">E-03 Estación 360°</a>
+        <a href="#simulador">E-04 Cómputo</a>
+        <a href="#servicios">E-05 Instrumental</a>
+        <a href="#proceso">E-06 Bitácora</a>
+        <a href="#contacto">E-08 Contacto</a>
+      </nav>
+      <div class="foot-bot">
+        <span>© <span id="yr"></span> Norvia Inmobiliaria — proyecto demostrativo. Fotos: Unsplash/Pexels · Panorámicas: Poly Haven (CC0).</span>
+        <span>Levantamiento y desarrollo web: <a href="https://dakagency.net" target="_blank" rel="noopener">DAK Agency</a></span>
+      </div>
     </div>
   </div>
 </footer>
