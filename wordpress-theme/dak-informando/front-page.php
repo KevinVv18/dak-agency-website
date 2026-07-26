@@ -14,13 +14,21 @@ $sidebar_left  = array_slice( $hero_posts, 1, 2 );
 $sidebar_right = array_slice( $hero_posts, 3, 2 );
 
 // ── Páginas pilar (servicios) ──
+// Cada servicio lleva un pictograma de trazo (4º campo): da vida a la franja
+// sin romper el registro de manual. Trazo fino y mismo grosor en todos.
 $servicios = array(
-  array( 'Agencia de SEO',          'Posiciona en Google',          home_url( '/agencia-seo-chiclayo/' ) ),
-  array( 'Diseño Web',              'Webs que venden',              home_url( '/diseno-web-chiclayo/' ) ),
-  array( 'Publicidad / Meta Ads',   'Clientes desde redes',         home_url( '/agencia-de-publicidad-en-redes-chiclayo/' ) ),
-  array( 'Redes Sociales',          'Contenido que conecta',        home_url( '/agencia-de-redes-sociales-chiclayo/' ) ),
-  array( 'Automatización',          'Vende 24/7',                   home_url( '/automatizacion-para-negocios-chiclayo/' ) ),
-  array( 'Branding',                'Marca que enamora',            home_url( '/agencia-de-branding-chiclayo/' ) ),
+  array( 'Agencia de SEO',          'Posiciona en Google',          home_url( '/agencia-seo-chiclayo/' ),
+    '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/><path d="M10.5 7.5v6M7.5 10.5h6"/>' ),
+  array( 'Diseño Web',              'Webs que venden',              home_url( '/diseno-web-chiclayo/' ),
+    '<rect x="3" y="4" width="18" height="14" rx="1"/><path d="M3 8h18"/><path d="M6 6h.01M8.5 6h.01"/><path d="M9 21h6"/>' ),
+  array( 'Publicidad / Meta Ads',   'Clientes desde redes',         home_url( '/agencia-de-publicidad-en-redes-chiclayo/' ),
+    '<path d="M4 9v6h3l6 4V5L7 9z"/><path d="M17 9.5a4 4 0 0 1 0 5"/><path d="M19.5 7a7.5 7.5 0 0 1 0 10"/>' ),
+  array( 'Redes Sociales',          'Contenido que conecta',        home_url( '/agencia-de-redes-sociales-chiclayo/' ),
+    '<circle cx="17" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="17" cy="18.5" r="2.5"/><path d="M8.3 10.8l6.4-3.7M8.3 13.2l6.4 3.7"/>' ),
+  array( 'Automatización',          'Vende 24/7',                   home_url( '/automatizacion-para-negocios-chiclayo/' ),
+    '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/>' ),
+  array( 'Branding',                'Marca que enamora',            home_url( '/agencia-de-branding-chiclayo/' ),
+    '<path d="M12 3.5 14.6 9l6 .9-4.3 4.2 1 6-5.3-2.8L6.7 20l1-6L3.4 9.9l6-.9z"/>' ),
 );
 
 // ── Secciones por categoría (orden) ──
@@ -81,6 +89,11 @@ $popular_post  = $popular_query->have_posts() ? $popular_query->posts[0] : ( iss
       <div class="servicios-grid">
         <?php foreach ( $servicios as $s ) : ?>
           <a class="servicio-card" href="<?php echo esc_url( $s[2] ); ?>">
+            <?php if ( ! empty( $s[3] ) ) : ?>
+              <span class="servicio-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><?php echo $s[3]; // SVG fijo del tema, no entrada de usuario ?></svg>
+              </span>
+            <?php endif; ?>
             <span class="servicio-card-name"><?php echo esc_html( $s[0] ); ?></span>
             <span class="servicio-card-desc"><?php echo esc_html( $s[1] ); ?></span>
             <span class="servicio-card-arrow" aria-hidden="true">→</span>

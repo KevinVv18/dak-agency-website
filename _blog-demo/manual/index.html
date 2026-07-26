@@ -76,10 +76,8 @@ h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-backg
 
 <link rel="https://api.w.org/" href="https://dakagency.net/blog/wp-json/"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://dakagency.net/blog/xmlrpc.php?rsd">
 <meta name="generator" content="WordPress 7.0.2">
-<script async="" id="google_gtagjs" src="https://www.googletagmanager.com/gtag/js?id=G-RB441W7QBY"></script>
-<script id="google_gtagjs-inline">
-window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-RB441W7QBY', {} );
-</script>
+
+
 <script src="https://dakagency.net/blog/wp-includes/js/wp-emoji-release.min.js?ver=7.0.2" defer=""></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400..900;1,400..700&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400..600&amp;display=swap"><style>/*
 Theme Name: DAK INFORMANDO
 Theme URI: https://dakagency.net/blog
@@ -3230,6 +3228,138 @@ body { overflow-x: visible; }
   padding-left: 0;
   padding-right: 0;
 }
+
+/* ═══ ARREGLOS DE ACABADO (reportados sobre el demo) ═══ */
+
+/* ── 1. «VER MÁS» se montaba sobre el título de sección en móvil ──
+   El enlace es position:absolute a la derecha. En escritorio cabe porque el
+   título va centrado y estrecho; en móvil el título ocupa todo el ancho y el
+   enlace le caía encima (medido: se solapaban). Bajo 720px pasa a flujo
+   normal, debajo del título. Heredado del tema anterior, no del rediseño. */
+@media (max-width: 720px) {
+  .section-header {
+    padding-top: 0.5rem;
+  }
+  .section-link {
+    position: static;
+    margin-top: 0.7rem;
+    align-self: center;
+  }
+}
+
+/* ── 2. Las etiquetas de categoría se estiraban a todo el ancho ──
+   Al darles borde en la capa del mundo se hizo visible que son display:block:
+   el recuadro medía 553px en vez de ceñirse al texto. Ahora se ajusta. */
+.category-tag {
+  display: inline-block;
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* En la ficha del artículo el rótulo va suelto, sin recuadro (ya definido
+   antes); aquí solo se garantiza que no se estire. */
+.article-single-header .category-tag { width: auto; }
+
+/* ── 3. «LEER MÁS» era una caja vacía a todo el ancho ──
+   Venía así del tema anterior. En este mundo es una referencia del manual:
+   se ciñe al texto, con filete inferior de tinta spot en vez de marco. */
+.opinion-read-more,
+.interview-read-more {
+  display: inline-block;
+  width: -moz-fit-content;
+  width: fit-content;
+  border: none;
+  border-bottom: 2px solid var(--spot);
+  padding: 0.15rem 0 0.2rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+  background: none;
+  text-align: left;
+  transition: color .2s, border-color .2s;
+}
+
+.opinion-read-more:hover,
+.interview-read-more:hover {
+  color: var(--spot-texto);
+  border-bottom-color: var(--text-primary);
+}
+
+/* ── 4. El número de sección tocaba el título ──
+   La caja del número mide ~48px y el sangrado era de 49.6px: 1.8px de
+   holgura, así que se leía pegado. Se separa de verdad y el número se
+   achica un punto para que no compita con el titular. */
+.article-single-body h2,
+.page-content h2 {
+  padding-left: 4.15rem;
+}
+
+.article-single-body h2::before,
+.page-content h2::before {
+  font-size: 0.62em;
+  padding: 0.16em 0.44em;
+  top: 1.75rem;
+}
+
+@media (max-width: 620px) {
+  .article-single-body h2,
+  .page-content h2 {
+    padding-left: 3.3rem;
+  }
+  .article-single-body h2::before,
+  .page-content h2::before {
+    top: 1.6rem;
+  }
+}
+
+/* ── 5. Iconos de servicio ──
+   Un pictograma de trazo por servicio: da vida sin romper la seriedad del
+   manual. Trazo fino, mismo grosor en todos, en tinta spot, alineado con el
+   nombre (no un azulejo encima del título, que es el patrón de tarjeta de IA). */
+.servicio-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    'icono nombre flecha'
+    'icono desc   flecha';
+  align-items: center;
+  column-gap: 0.85rem;
+}
+
+.servicio-card-icon {
+  grid-area: icono;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  color: var(--spot);
+}
+
+.servicio-card-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.servicio-card-name { grid-area: nombre; }
+.servicio-card-desc { grid-area: desc; }
+.servicio-card-arrow {
+  grid-area: flecha;
+  color: var(--text-muted);
+  transition: transform .2s, color .2s;
+}
+
+.servicio-card:hover .servicio-card-arrow {
+  color: var(--spot);
+  transform: translateX(3px);
+}
 </style><style>
     #dak-demobar{position:fixed;left:0;right:0;bottom:0;z-index:2147483647;display:flex;align-items:center;
       gap:1rem;justify-content:space-between;padding:.6rem 1rem;background:#141416;color:#fff;
@@ -3278,7 +3408,7 @@ body { overflow-x: visible; }
         <button class="hamburger" id="hamburger" aria-label="Menú">
           <span></span><span></span><span></span>
         </button>
-        <span class="date-text">Hoy: Julio 25, 2026</span>
+        <span class="date-text">Hoy: Julio 26, 2026</span>
       </div>
       <div class="utility-right">
         <div class="header-social">
@@ -3425,32 +3555,32 @@ body { overflow-x: visible; }
         <a href="https://dakagency.net/#services" class="section-link" target="_blank">CONTÁCTANOS »</a>
       </div>
       <div class="servicios-grid">
-                  <a class="servicio-card" href="https://dakagency.net/blog/agencia-seo-chiclayo/" target="_blank">
+                  <a class="servicio-card" href="https://dakagency.net/blog/agencia-seo-chiclayo/" target="_blank"><span class="servicio-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 21 21"></path><path d="M10.5 7.5v6M7.5 10.5h6"></path></svg></span>
             <span class="servicio-card-name">Agencia de SEO</span>
             <span class="servicio-card-desc">Posiciona en Google</span>
             <span class="servicio-card-arrow" aria-hidden="true">→</span>
           </a>
-                  <a class="servicio-card" href="https://dakagency.net/blog/diseno-web-chiclayo/" target="_blank">
+                  <a class="servicio-card" href="https://dakagency.net/blog/diseno-web-chiclayo/" target="_blank"><span class="servicio-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="1"></rect><path d="M3 8h18"></path><path d="M6 6h.01M8.5 6h.01"></path><path d="M9 21h6"></path></svg></span>
             <span class="servicio-card-name">Diseño Web</span>
             <span class="servicio-card-desc">Webs que venden</span>
             <span class="servicio-card-arrow" aria-hidden="true">→</span>
           </a>
-                  <a class="servicio-card" href="https://dakagency.net/blog/agencia-de-publicidad-en-redes-chiclayo/" target="_blank">
+                  <a class="servicio-card" href="https://dakagency.net/blog/agencia-de-publicidad-en-redes-chiclayo/" target="_blank"><span class="servicio-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9v6h3l6 4V5L7 9z"></path><path d="M17 9.5a4 4 0 0 1 0 5"></path><path d="M19.5 7a7.5 7.5 0 0 1 0 10"></path></svg></span>
             <span class="servicio-card-name">Publicidad / Meta Ads</span>
             <span class="servicio-card-desc">Clientes desde redes</span>
             <span class="servicio-card-arrow" aria-hidden="true">→</span>
           </a>
-                  <a class="servicio-card" href="https://dakagency.net/blog/agencia-de-redes-sociales-chiclayo/" target="_blank">
+                  <a class="servicio-card" href="https://dakagency.net/blog/agencia-de-redes-sociales-chiclayo/" target="_blank"><span class="servicio-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="17" cy="5.5" r="2.5"></circle><circle cx="6" cy="12" r="2.5"></circle><circle cx="17" cy="18.5" r="2.5"></circle><path d="M8.3 10.8l6.4-3.7M8.3 13.2l6.4 3.7"></path></svg></span>
             <span class="servicio-card-name">Redes Sociales</span>
             <span class="servicio-card-desc">Contenido que conecta</span>
             <span class="servicio-card-arrow" aria-hidden="true">→</span>
           </a>
-                  <a class="servicio-card" href="https://dakagency.net/blog/automatizacion-para-negocios-chiclayo/" target="_blank">
+                  <a class="servicio-card" href="https://dakagency.net/blog/automatizacion-para-negocios-chiclayo/" target="_blank"><span class="servicio-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"></path></svg></span>
             <span class="servicio-card-name">Automatización</span>
             <span class="servicio-card-desc">Vende 24/7</span>
             <span class="servicio-card-arrow" aria-hidden="true">→</span>
           </a>
-                  <a class="servicio-card" href="https://dakagency.net/blog/agencia-de-branding-chiclayo/" target="_blank">
+                  <a class="servicio-card" href="https://dakagency.net/blog/agencia-de-branding-chiclayo/" target="_blank"><span class="servicio-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.5 14.6 9l6 .9-4.3 4.2 1 6-5.3-2.8L6.7 20l1-6L3.4 9.9l6-.9z"></path></svg></span>
             <span class="servicio-card-name">Branding</span>
             <span class="servicio-card-desc">Marca que enamora</span>
             <span class="servicio-card-arrow" aria-hidden="true">→</span>
