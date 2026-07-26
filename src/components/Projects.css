@@ -933,32 +933,50 @@
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  row-gap: 4rem;
+  grid-template-areas:
+    'tl tr'
+    'center center'
+    'bl br';
+  row-gap: 3rem;
   column-gap: 0;
   padding-top: 1.5rem;
 }
 
-.demo-axis {
-  position: absolute;
+.demo-cell--tl { grid-area: tl; }
+.demo-cell--tr { grid-area: tr; }
+.demo-cell--center { grid-area: center; }
+.demo-cell--bl { grid-area: bl; }
+.demo-cell--br { grid-area: br; }
+
+/* Ejes verticales: uno por fila de esquinas, colocados por el propio grid. Se
+   hacen con pseudo-elementos y `justify-self:center` sobre las dos columnas, de
+   modo que caen exactamente en la divisoria sin depender de porcentajes — y no
+   pueden invadir la fila central, que es lo que ocurría con un eje absoluto
+   recortado a mano: la banda era fija en px y las filas son fluidas. */
+.demo-stage::before,
+.demo-stage::after {
+  content: '';
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: 1px;
   background: rgba(255, 255, 255, 0.13);
+  /* mismo respiro en los extremos que tenía el eje original */
+  margin-block: 6%;
   pointer-events: none;
 }
 
-.demo-axis--v {
-  left: 50%;
-  top: 2%;
-  bottom: 2%;
-  width: 1px;
-}
+.demo-stage::before { grid-row: 1; }
+.demo-stage::after { grid-row: 3; }
 
-.demo-axis--h {
-  top: 50%;
-  left: 4%;
-  right: 4%;
-  height: 1px;
-  /* pequeño respiro donde cruza la vertical, como en el diseño */
-  -webkit-mask-image: linear-gradient(90deg, #000 calc(50% - 28px), transparent calc(50% - 27px), transparent calc(50% + 27px), #000 calc(50% + 28px));
-  mask-image: linear-gradient(90deg, #000 calc(50% - 28px), transparent calc(50% - 27px), transparent calc(50% + 27px), #000 calc(50% + 28px));
+/* La celda central hace de separador horizontal con sus propios bordes: mismo
+   color que los ejes, sin líneas absolutas encima del contenido. */
+.demo-cell--center {
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+  padding: 2rem 1rem;
+  max-width: 620px;
+  margin-inline: auto;
+  width: 100%;
 }
 
 .demo-cell {
@@ -1012,6 +1030,9 @@
   gap: 1.6rem;
   height: 280px;
 }
+
+/* la central es más baja: comparte fila con nada y no debe estirar el escenario */
+.demo-cell--center .demo-visual { height: 200px; }
 
 /* chips mirando hacia la cruz central */
 .demo-cell--tr .demo-visual,
@@ -1124,6 +1145,7 @@
 /* ── Responsive del escenario ── */
 @media (max-width: 1100px) {
   .demo-visual { height: 240px; }
+  .demo-cell--center .demo-visual { height: 180px; }
   .demo-cell--tl,
   .demo-cell--bl { padding-right: 3.5rem; }
   .demo-cell--tr,
@@ -1138,12 +1160,22 @@
     gap: 3.5rem;
   }
 
-  .demo-axis { display: none; }
+  /* Al pasar a flex, los pseudo-ejes serían dos rayas de 1px en la columna. */
+  .demo-stage::before,
+  .demo-stage::after { display: none; }
 
   .demo-cell--tl,
   .demo-cell--bl { padding-right: 1rem; }
   .demo-cell--tr,
   .demo-cell--br { padding-left: 1rem; }
+
+  /* Al apilar en flex los grid-area quedan inertes y los bordes de la celda
+     central se quedarían huérfanos en medio de la columna. */
+  .demo-cell--center {
+    border: 0;
+    padding: 0.5rem 1rem;
+    max-width: none;
+  }
 
   /* texto siempre arriba y chips al mismo lado al apilar */
   .demo-cell--bl .demo-head,

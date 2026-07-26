@@ -5,6 +5,7 @@ import imgCartera from '../assets/demos/cartera.webp'
 import imgPeriodico from '../assets/demos/periodico.webp'
 import imgRobot from '../assets/demos/robot.webp'
 import imgInmobiliaria from '../assets/demos/inmobiliaria.webp'
+import imgAgro from '../assets/demos/agro.svg'
 import './Projects.css'
 
 /* Proyectos destacados: un cliente por estilo de preview.
@@ -48,6 +49,21 @@ const DEMOS = [
     liveUrl: 'https://dakagency.net/blog/',
     liveLabel: 'Ver el blog',
     wa: 'Hola DAK, quiero posicionar mi negocio en Google como lo hacen ustedes',
+  },
+  {
+    /* Va al centro de la cruz, y en la posición 2 del array a propósito: el
+       delay de entrada es index * 0.1, así que si fuera la última entraría
+       después de las esquinas y el centro se leería como un añadido. */
+    id: 'agro',
+    pos: 'center',
+    label: 'Agroindustria',
+    sub: 'Agroinsumos · Programa por cultivo',
+    color: '#5AA02C',
+    img: imgAgro,
+    alt: 'Bidón de bioestimulante del demo de agroinsumos de DAK',
+    liveUrl: 'https://agro.dakagency.net/',
+    liveLabel: 'Ver el demo',
+    wa: 'Hola DAK, vi su demo de web para agroinsumos y quiero una así para mi empresa',
   },
   {
     id: 'bot',
@@ -106,7 +122,7 @@ const DemoChips = () => (
 )
 
 const DemoCell = ({ d, index, inView, onLive }) => {
-  const isTop = d.pos === 'tl' || d.pos === 'tr'
+  const isTop = d.pos === 'tl' || d.pos === 'tr' || d.pos === 'center'
 
   const head = (
     <header className="demo-head">
@@ -170,8 +186,9 @@ const LiveDemos = () => {
       </motion.p>
 
       <div className="demo-stage">
-        <span className="demo-axis demo-axis--v" aria-hidden="true" />
-        <span className="demo-axis demo-axis--h" aria-hidden="true" />
+        {/* Los separadores en cruz ya no son elementos: los ejes verticales son
+            pseudo-elementos colocados por el grid y el horizontal lo hacen los
+            bordes de la celda central. Se alinean solos a cualquier ancho. */}
 
         {DEMOS.map((d, i) => (
           <DemoCell

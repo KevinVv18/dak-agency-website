@@ -1,0 +1,5 @@
+# agro.dakagency.net — demo de nicho de DAK Agency.
+# Todo el host está fuera de índice: es material de demostración, no un sitio
+# real, y aquí conviven versiones privadas skin-eadas para reuniones de venta.
+User-agent: *
+Disallow: /

@@ -1,0 +1,73 @@
+name: Deploy demo agroinsumos (ARENAL)
+
+# Publica el sitio-demo estático de _agro-demo/ en el docroot del subdominio
+# agro.dakagency.net
+# (/home/u567580447/domains/dakagency.net/public_html/agro).
+#
+# OJO: el rsync de la SPA en deploy.yml usa --delete sobre public_html/, así que
+# 'agro/' DEBE estar en su lista de --exclude o ese deploy borra este demo.
+# (Es la trampa que ya se llevó por delante el demo inmobiliario una vez.)
+#
+# Dispara:
+#  - manualmente (workflow_dispatch)
+#  - push a main que toque _agro-demo/**
+#  - push en CUALQUIER rama cuyo commit incluya [deploy-agro]
+#
+# A diferencia de deploy-inmobiliaria.yml, aquí NO se filtra por `branches:`:
+# ese filtro se evalúa ANTES del `if:` del job, así que un push a una rama nunca
+# dispararía el workflow y el marcador [deploy-agro] sería código muerto.
+# Sin `branches:`, el `if:` de abajo es quien decide — y así se puede
+# previsualizar el demo en el subdominio real antes de mergear a main.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '_agro-demo/**'
+      - '.github/workflows/deploy-agro.yml'
+
+permissions:
+  contents: read
+
+# Dos pushes seguidos no deben solapar dos `rsync --delete` sobre el mismo
+# docroot: se serializan.
+concurrency:
+  group: deploy-agro
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy-agro]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Guarda de confidencialidad. La versión pública del demo usa una marca
+      # ficticia (ARENAL); los datos reales de un prospecto viven solo en su
+      # carpeta privada. Si un nombre de prospecto aparece en los archivos
+      # públicos, el deploy se detiene aquí.
+      - name: Verificar que la versión pública no filtra datos de prospectos
+        run: |
+          set -e
+          PATRON='ExcelAg|Evergreen|Saeta|Nemakill|Aramite|Slam Org|Jaque Mate|Hermer|Gavidia'
+          if grep -inE "$PATRON" \
+              _agro-demo/index.html \
+              _agro-demo/data.public.js \
+              _agro-demo/core.js \
+              _agro-demo/core.css; then
+            echo "::error::Datos de un prospecto encontrados en la versión pública del demo. Muévelos a su carpeta privada."
+            exit 1
+          fi
+          echo "OK: la versión pública está limpia."
+
+      - name: Subir demo al docroot del subdominio (rsync en Docker)
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: _agro-demo/
+          remote_path: /home/u567580447/domains/dakagency.net/public_html/agro/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}

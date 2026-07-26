@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ARENAL Agrociencia · Agroinsumos — Demo por DAK Agency</title>
+<meta name="description" content="Programa de nutrición y protección por cultivo y por etapa fenológica, catálogo técnico con fichas y calculadora de dosis. Demo de web para empresas de agroinsumos, desarrollado por DAK Agency." />
+<meta name="robots" content="noindex, nofollow" />
+<meta property="og:title" content="ARENAL Agrociencia — Demo de web para agroinsumos por DAK Agency" />
+<meta property="og:description" content="Programa por cultivo y etapa, catálogo técnico y calculadora de dosis. Demo desarrollado por DAK Agency." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 22h28' stroke='%2317603A' stroke-width='2.6' stroke-linecap='square'/%3E%3Cpath d='M6 17h9M11 12h10M17 27h11' stroke='%2317603A' stroke-width='2.2' stroke-linecap='square' opacity='.55'/%3E%3C/svg%3E" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"ARENAL Agrociencia (demo)","description":"Marca ficticia de demostración creada por DAK Agency para el nicho de agroinsumos. No es una empresa real.","areaServed":"Lambayeque, La Libertad, Piura, Perú","url":"https://agro.dakagency.net/","parentOrganization":{"@type":"Organization","name":"DAK Agency","url":"https://dakagency.net"}}
+</script>
+
+<!-- Tokens de marca. Es la ÚNICA parte del CSS que cambia al skin-ear el demo:
+     core.css no contiene ni un color. Los roles están separados a propósito —
+     el acento es de marca y acción, el ámbar es SOLO de medición. -->
+<style>
+  :root {
+    --papel: #F4F2ED;
+    --papel-2: #FBFAF8;
+    --papel-3: #E9E5DC;
+    --tinta: #14171A;
+    --tinta-2: #474E54;
+    --tinta-3: #666E76;
+    --linea: #DDD8CD;
+    --linea-2: #C3BCAD;
+    --acento: #17603A;
+    --acento-hi: #0F4B2C;
+    --acento-tenue: #E5EFE8;
+    --ambar: #A05A00;
+    --ambar-tenue: #F7E9D2;
+    --alerta: #A32B1C;
+    --alerta-tenue: #FAE7E3;
+    --ui: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+</style>
+<link rel="stylesheet" href="core.css" />
+<!-- Marca que el JS está vivo. El estado oculto de las secciones cuelga de esta
+     clase, así que si el script no corre la página se ve completa. -->
+<script>document.documentElement.className += ' js';</script>
+</head>
+<body>
+
+<div class="cinta-demo">
+  <span><b>Demo</b> — marca ficticia creada por DAK Agency para mostrar el producto</span>
+  <a href="https://dakagency.net" target="_blank" rel="noopener">dakagency.net</a>
+</div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="Inicio">
+      <span class="mark" id="brandMark" aria-hidden="true"></span>
+      <span class="brand-txt">
+        <b data-brand="nombre">ARENAL</b>
+        <small data-brand="bajada">Agrociencia</small>
+      </span>
+    </a>
+    <nav class="nav-links" id="navLinks" aria-label="Secciones">
+      <a href="#programa">Programa por cultivo</a>
+      <a href="#catalogo">Catálogo</a>
+      <a href="#diagnostico">Diagnóstico</a>
+      <a href="#calculadora">Calculadora</a>
+      <a href="#cobertura">Cobertura</a>
+    </nav>
+    <a class="btn btn-solid btn-sm nav-cta" data-wa="Hola DAK, vi el demo de web para agroinsumos y quiero una así para mi empresa." target="_blank" rel="noopener" href="#">Hablar con un asesor</a>
+    <button class="nav-burger" id="navBurger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">☰</button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ── HERO ─────────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="rotulo"><b>Norte del Perú</b> · Campaña 2026</span>
+        <h1 data-brand="claim">Ciencia de suelo y planta para el desierto irrigado del norte.</h1>
+        <p class="lead" data-brand="intro"></p>
+        <div class="hero-ctas">
+          <a class="btn btn-solid" href="#programa">Ver programa por cultivo</a>
+          <a class="btn btn-line" href="#catalogo">Catálogo técnico</a>
+        </div>
+      </div>
+
+      <aside class="hero-ficha" aria-label="Datos de la empresa">
+        <div class="hero-ficha-h"><span>Ficha de identidad</span><span>Demo</span></div>
+        <dl>
+          <dt>Sede</dt><dd data-brand="ciudad">Chiclayo, Lambayeque</dd>
+          <dt>Catálogo</dt><dd><span id="statProd">—</span> productos</dd>
+          <dt>Programas</dt><dd><span id="statCult">—</span> cultivos</dd>
+          <dt>Producción</dt><dd>Formulación local</dd>
+          <dt>Admisibilidad</dt><dd>Línea orgánica y convencional</dd>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ── PROGRAMA FENOLÓGICO ──────────────────────────────────────────────── -->
+  <section id="programa" class="reveal">
+    <div class="wrap">
+      <div class="sec-h">
+        <span class="rotulo">01 · Programa</span>
+        <h2>El programa completo, etapa por etapa</h2>
+        <p class="lead">Elige el cultivo y recorre su ciclo. En cada etapa fenológica: qué se aplica,
+          en qué dosis, con qué frecuencia y por qué vía. No es una lista de productos, es un programa.</p>
+      </div>
+
+      <div class="prog-cultivos" id="progCultivos" role="group" aria-label="Elegir cultivo"></div>
+      <div class="etapa-riel" id="etapaRiel" role="tablist" aria-label="Etapas del cultivo"></div>
+      <div class="etapa-panel" id="etapaPanel" role="tabpanel" tabindex="0"></div>
+    </div>
+  </section>
+
+  <!-- ── CATÁLOGO ─────────────────────────────────────────────────────────── -->
+  <section id="catalogo" class="reveal">
+    <div class="wrap">
+      <div class="sec-h">
+        <span class="rotulo">02 · Catálogo</span>
+        <h2>Catálogo técnico con filtros reales</h2>
+        <p class="lead">Filtra por cultivo, por línea o por admisibilidad orgánica. Cada producto abre su
+          ficha con composición declarada, dosis, vía de aplicación y periodo de carencia.</p>
+      </div>
+
+      <div class="filtros">
+        <div class="campo">
+          <label for="fCultivo">Cultivo</label>
+          <select id="fCultivo"></select>
+        </div>
+        <div class="campo">
+          <label for="fCat">Línea</label>
+          <select id="fCat"></select>
+        </div>
+        <div class="campo">
+          <label for="fOrg">Admisibilidad</label>
+          <select id="fOrg">
+            <option value="">Toda</option>
+            <option value="si">Orgánica</option>
+            <option value="no">Convencional</option>
+          </select>
+        </div>
+        <div class="filtros-info">
+          <span class="cuenta" id="catCuenta" role="status" aria-live="polite">—</span>
+          <button class="btn btn-line btn-sm" type="button" id="fLimpiar">Limpiar</button>
+        </div>
+      </div>
+
+      <div class="cat-grid" id="catGrid"></div>
+    </div>
+  </section>
+
+  <!-- ── DIAGNÓSTICO ──────────────────────────────────────────────────────── -->
+  <section id="diagnostico" class="reveal">
+    <div class="wrap">
+      <div class="sec-h">
+        <span class="rotulo">03 · Diagnóstico</span>
+        <h2>Qué estoy viendo en campo</h2>
+        <p class="lead">El agricultor no busca un producto, busca resolver lo que ve. Se elige el síntoma
+          y el sitio explica qué es, por qué pasa y qué del catálogo aplica.</p>
+      </div>
+
+      <div class="sint-grid" id="sintGrid" role="group" aria-label="Elegir síntoma"></div>
+      <div class="sint-detalle" id="sintDetalle" role="status" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ── CALCULADORA ──────────────────────────────────────────────────────── -->
+  <section id="calculadora" class="reveal">
+    <div class="wrap">
+      <div class="sec-h">
+        <span class="rotulo">04 · Calculadora</span>
+        <h2>Cuánto necesito y cuánto cuesta</h2>
+        <p class="lead">La herramienta que hace que un agrónomo vuelva a la web: mueve las hectáreas y la
+          dosis, y sale el volumen y el costo de la aplicación.</p>
+      </div>
+
+      <div class="calc">
+        <div class="calc-panel">
+          <h3>Parámetros</h3>
+          <div class="calc-fila">
+            <label for="cProd">Producto</label>
+            <select id="cProd" style="width:100%;border:1px solid var(--linea-2);background:var(--papel);padding:.6rem .7rem;font-size:.9rem"></select>
+          </div>
+          <div class="calc-fila">
+            <label for="cHa">Superficie <output id="cHaOut" for="cHa">—</output></label>
+            <input type="range" id="cHa" min="1" max="200" step="1" value="20" />
+          </div>
+          <div class="calc-fila">
+            <label for="cDos">Dosis <output id="cDosOut" for="cDos">—</output></label>
+            <input type="range" id="cDos" min="0" max="10" step="0.1" value="2" />
+          </div>
+          <p class="calc-aviso">El rango de la dosis se ajusta al del producto elegido: no deja
+            configurar una dosis fuera de etiqueta.</p>
+        </div>
+
+        <div class="calc-panel">
+          <h3>Resultado</h3>
+          <dl class="calc-res">
+            <div><dt>Producto a comprar</dt><dd id="cUnid">—</dd></div>
+            <div><dt>Presentación</dt><dd id="cPres">—</dd></div>
+            <div><dt>Costo por hectárea</dt><dd id="cCostoHa">—</dd></div>
+            <div class="total"><dt>Costo de la aplicación</dt><dd id="cCostoTotal">—</dd></div>
+          </dl>
+          <p class="calc-aviso">Precios referenciales de demostración, sin IGV ni flete. Un sitio real
+            toma la lista de precios vigente y la zona del cliente.</p>
+          <p style="margin-top:1rem">
+            <a class="btn btn-solid btn-sm" data-wa="Hola DAK, probé la calculadora de dosis del demo de agroinsumos. Quiero una herramienta así en mi web." target="_blank" rel="noopener" href="#">Quiero esta herramienta</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COBERTURA ────────────────────────────────────────────────────────── -->
+  <section id="cobertura" class="reveal">
+    <div class="wrap">
+      <div class="sec-h">
+        <span class="rotulo">05 · Cobertura</span>
+        <h2>Cada zona, con su responsable</h2>
+        <p class="lead">El visitante elige su zona y la consulta llega al representante correcto. En un
+          sitio real esto se conecta al CRM y queda registrado con su origen.</p>
+      </div>
+      <div class="zonas" id="zonasGrid"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pie">
+  <div class="wrap">
+    <div class="pie-grid">
+      <div class="brand">
+        <span class="mark" style="color:var(--acento)" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M2 22h28" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/><path d="M6 17h9M11 12h10M17 27h11" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" opacity=".55"/></svg>
+        </span>
+        <span class="brand-txt">
+          <b data-brand="nombre">ARENAL</b>
+          <small data-brand="bajada">Agrociencia</small>
+        </span>
+      </div>
+      <a class="btn btn-solid" data-wa="Hola DAK, vi el demo de web para agroinsumos y quiero una así para mi empresa." target="_blank" rel="noopener" href="#">Quiero una web así</a>
+    </div>
+
+    <p class="pie-legal">
+      <strong>Esto es una demostración.</strong> ARENAL Agrociencia es una marca ficticia creada por
+      <a href="https://dakagency.net" target="_blank" rel="noopener">DAK Agency</a> para mostrar cómo
+      funciona un sitio web de agroinsumos. La empresa no existe y los productos no se comercializan.
+      Los nombres comerciales, composiciones, dosis y precios son inventados y de uso demostrativo; los
+      números de registro son ficticios (<span style="font-family:var(--mono)">DEMO-0000-SENASA</span>) y
+      los sellos de admisibilidad orgánica son propios de esta demostración, sin relación con ninguna
+      entidad certificadora. Las etapas fenológicas y las descripciones de síntomas sí corresponden al
+      conocimiento agronómico habitual, pero no constituyen una recomendación técnica: un programa real
+      se define con análisis de suelo, agua y foliar, y con un ingeniero agrónomo en campo.
+    </p>
+  </div>
+</footer>
+
+<!-- Modal de ficha técnica -->
+<div class="ov" id="fichaOv" role="dialog" aria-modal="true" aria-labelledby="fichaTitulo" aria-hidden="true">
+  <div class="ficha" id="fichaCaja"></div>
+</div>
+
+<script>window.AGRO_BASE = '';</script>
+<script src="data.public.js"></script>
+<script src="core.js"></script>
+</body>
+</html>

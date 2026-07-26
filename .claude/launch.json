@@ -12,6 +12,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "5174", "--directory", "C:/Users/kevin/OneDrive/Desktop/american vault"],
       "port": 5174
+    },
+    {
+      "name": "agro-demo",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5177", "--directory", "C:/Users/kevin/OneDrive/Desktop/paginas/DAK_WP/_agro-demo"],
+      "port": 5177
     }
   ]
 }
