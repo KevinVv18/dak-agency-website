@@ -18,6 +18,7 @@
 
   var D = window.AGRO;
   if (!D) { return }
+  var M = D.marca;
   var BASE = window.AGRO_BASE || '';
   var API = 'https://admin.dakagency.net';
 
@@ -37,7 +38,7 @@
   }
   function catLbl(c) { return D.categorias[c] || c }
   function waLink(msg) {
-    return 'https://wa.me/' + D.brand.wa + '?text=' + encodeURIComponent(msg);
+    return 'https://wa.me/' + M.wa + '?text=' + encodeURIComponent(msg);
   }
   /* Lee un rango de dosis por hectárea. Devuelve null para dosis que no son
      por hectárea (coadyuvantes por 100 L de caldo), que quedan fuera de la
@@ -153,7 +154,7 @@
       + '<div class="etapa-pie">'
       + '<span class="nota">' + esc(c.nota) + ' Las dosis son demostrativas: un programa real se ajusta con análisis de suelo, agua y foliar.</span>'
       + '<a class="btn btn-line btn-sm" target="_blank" rel="noopener" href="'
-      + esc(waLink('Hola, vi el programa de ' + c.n + ' (' + e.n + ') en el demo de ' + D.brand.nombre + ' y quiero una web así para mi empresa.'))
+      + esc(waLink('Hola, vi el programa de ' + c.n + ' (' + e.n + ') en el demo de ' + M.nombre + ' y quiero una web así para mi empresa.'))
       + '">Quiero un programa así</a>'
       + '</div>';
   }
@@ -309,7 +310,7 @@
       + '<div class="ficha-ctas">'
       + '<button type="button" class="btn btn-solid" id="fichaLead">Solicitar ficha técnica</button>'
       + '<a class="btn btn-line" target="_blank" rel="noopener" href="'
-      + esc(waLink('Hola, estoy viendo la ficha de "' + p.n + '" en el demo de ' + D.brand.nombre + '. Quiero una web así para mi empresa de agroinsumos.'))
+      + esc(waLink('Hola, estoy viendo la ficha de "' + p.n + '" en el demo de ' + M.nombre + '. Quiero una web así para mi empresa de agroinsumos.'))
       + '">Consultar por WhatsApp</a>'
       + '</div>'
       + '<div id="fichaForm"></div>'
@@ -359,7 +360,7 @@
       var payload = {
         name: nombre, phone: tel, email: '',
         service: 'Demo agroinsumos',
-        message: 'Solicitó la ficha técnica de "' + p.n + '" en el demo ' + D.brand.nombre + '.',
+        message: 'Solicitó la ficha técnica de "' + p.n + '" en el demo ' + M.nombre + '.',
         source: 'agro-demo-ficha'
       };
       fetch(API + '/api/lead', {
@@ -446,37 +447,57 @@
   function initSintomas() {
     var grid = $('sintGrid'), det = $('sintDetalle');
     if (!grid || !det) { return }
-    var sel = D.sintomas[0].id;
+    var sel = D.problemas[0].id;
+
+    function tipoLbl(t) {
+      return (D.tiposProblema[t] && D.tiposProblema[t].n) || t;
+    }
 
     function pintar() {
-      grid.innerHTML = D.sintomas.map(function (s) {
+      grid.innerHTML = D.problemas.map(function (s) {
         return '<button type="button" class="sint-btn" data-s="' + esc(s.id) + '"'
           + ' aria-pressed="' + (s.id === sel ? 'true' : 'false') + '">'
+          + '<span class="sint-tipo">' + esc(tipoLbl(s.tipo)) + '</span>'
           + '<b>' + esc(s.n) + '</b><i>' + esc(s.cien) + '</i></button>';
       }).join('');
 
-      var s = D.sintomas.filter(function (x) { return x.id === sel })[0];
+      var s = D.problemas.filter(function (x) { return x.id === sel })[0];
       if (!s) { return }
-      // Solo se parte en dos columnas si este síntoma tiene lámina; si no, el
+      // Solo se parte en dos columnas si este problema tiene lámina; si no, el
       // texto ocupa el ancho completo en vez de dejar un hueco.
       det.className = 'sint-detalle' + (s.img ? ' sint-detalle--foto' : '');
       var foto = s.img
         ? lamina({ src: s.img, n: 'Referencia', alt: s.imgAlt, pie: s.imgPie }, 'alta')
         : '';
+
+      /* Las señales van como lista, no como párrafo: en campo se leen
+         comparando una por una contra lo que se tiene delante. */
+      var senales = Array.isArray(s.senal)
+        ? '<ul class="lista-senal">' + s.senal.map(function (x) { return '<li>' + esc(x) + '</li>' }).join('') + '</ul>'
+        : '<p>' + esc(s.senal) + '</p>';
+
       det.innerHTML = (foto ? '<div>' : '')
         + '<h3>' + esc(s.n) + '</h3>'
-        + '<p class="cien">' + esc(s.cien) + '</p>'
+        + '<p class="cien">' + esc(s.cien) + ' · ' + esc(tipoLbl(s.tipo)) + '</p>'
+        + (s.resumen ? '<p class="sint-resumen">' + esc(s.resumen) + '</p>' : '')
         + '<dl>'
-        + '<div><dt>Qué se ve en campo</dt><dd>' + esc(s.senal) + '</dd></div>'
-        + '<div><dt>Por qué pasa</dt><dd>' + esc(s.causa) + '</dd></div>'
+        + '<div><dt>Cómo se reconoce en campo</dt><dd>' + senales + '</dd></div>'
+        + '<div><dt>Por qué ocurre</dt><dd>' + esc(s.causa) + '</dd></div>'
+        // El campo que casi nadie escribe y el que más ayuda a un agrónomo:
+        // con qué se confunde y cómo distinguirlo.
+        + (s.confusion ? '<div class="sint-confusion"><dt>Con qué se confunde</dt><dd>' + esc(s.confusion) + '</dd></div>' : '')
+        + (s.cuando ? '<div><dt>Cuándo aparece</dt><dd>' + esc(s.cuando) + '</dd></div>' : '')
         + '</dl>'
-        + '<dt style="font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-3);margin-bottom:.6rem">Del catálogo, para este caso</dt>'
-        + '<div class="sint-prods">' + s.prods.map(function (id) {
-          var p = prod(id);
+        + '<p class="sint-rot">Del catálogo, para este caso</p>'
+        + '<ul class="sint-prods">' + s.prods.map(function (r) {
+          var p = prod(r.p);
           if (!p) { return '' }
-          return '<button type="button" class="btn btn-line btn-sm" data-ficha="' + esc(p.id) + '">'
-            + esc(p.n) + '</button>';
-        }).join('') + '</div>'
+          return '<li class="sint-prod">'
+            + '<button type="button" class="btn btn-line btn-sm" data-ficha="' + esc(p.id) + '">'
+            + esc(p.n) + '</button>'
+            + (r.momento ? '<span class="sint-momento">' + esc(r.momento) + '</span>' : '')
+            + '</li>';
+        }).join('') + '</ul>'
         + (foto ? '</div>' + foto : '');
     }
 
@@ -494,13 +515,13 @@
   function initZonas() {
     var cont = $('zonasGrid');
     if (!cont) { return }
-    cont.innerHTML = D.reps.map(function (r) {
+    cont.innerHTML = M.reps.map(function (r) {
       return '<div class="zona">'
         + '<div class="z-n">' + esc(r.zona) + '</div>'
         + '<h3>' + esc(r.n) + '</h3>'
         + '<p>' + esc(r.detalle) + '</p>'
         + '<a class="btn btn-line btn-sm" target="_blank" rel="noopener" href="'
-        + esc(waLink('Hola, escribo desde ' + r.zona + '. Vi el demo de ' + D.brand.nombre + ' y quiero una web así para mi empresa.'))
+        + esc(waLink('Hola, escribo desde ' + r.zona + '. Vi el demo de ' + M.nombre + ' y quiero una web así para mi empresa.'))
         + '">Escribir</a>'
         + '</div>';
     }).join('');
@@ -510,32 +531,25 @@
      7. Cascarón: marca, nav y entrada de secciones
      ═══════════════════════════════════════════════════════════════════════════ */
   function initCascaron() {
-    /* Marca gráfica y textos que vienen de los datos, para que el skin no
-       tenga que tocar el HTML más de lo necesario. */
-    var mark = $('brandMark');
-    if (mark) { mark.innerHTML = D.brand.marca }
-    document.querySelectorAll('[data-brand="nombre"]').forEach(function (el) { el.textContent = D.brand.nombre });
-    document.querySelectorAll('[data-brand="bajada"]').forEach(function (el) { el.textContent = D.brand.bajada });
-    document.querySelectorAll('[data-brand="claim"]').forEach(function (el) { el.textContent = D.brand.claim });
-    document.querySelectorAll('[data-brand="intro"]').forEach(function (el) { el.textContent = D.brand.intro });
-    document.querySelectorAll('[data-brand="ciudad"]').forEach(function (el) { el.textContent = D.brand.ciudad });
+    /* Los textos de marca y las láminas ya vienen escritos en el HTML por el
+       generador — es contenido, y el contenido debe estar en el documento aunque
+       el JS no corra. Aquí solo queda lo que de verdad necesita ejecución. */
     document.querySelectorAll('[data-wa]').forEach(function (el) {
-      el.href = waLink(el.dataset.wa || ('Hola, vi el demo de ' + D.brand.nombre + ' y quiero una web así para mi empresa.'));
-    });
-    /* Láminas de sección: el HTML solo declara el contenedor y qué lámina va
-       en él, así el cascarón no repite marcado por cada foto. */
-    var L = (D.brand && D.brand.laminas) || {};
-    document.querySelectorAll('[data-lamina]').forEach(function (el) {
-      var l = L[el.dataset.lamina];
-      if (!l) { el.remove(); return }   // sin foto no queda un hueco vacío
-      el.innerHTML = lamina(l, el.dataset.forma || 'ancha', el.dataset.clase || '');
+      el.href = waLink(el.dataset.wa || ('Hola, vi el demo de ' + M.nombre + ' y quiero una web así para mi empresa.'));
     });
 
-    var nProd = $('statProd'), nCult = $('statCult');
-    if (nProd) { nProd.textContent = D.productos.length }
-    if (nCult) {
-      nCult.textContent = D.cultivos.filter(function (c) { return c.listo }).length + ' de ' + D.cultivos.length;
-    }
+    /* Tarjetas de capacidad: llevan al catálogo con su línea ya filtrada, en vez
+       de dejar al visitante buscándola entre catorce productos. */
+    document.querySelectorAll('[data-filtrar]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var sel = $('fCat'), destino = $('catalogo');
+        if (sel) {
+          sel.value = el.dataset.filtrar;
+          sel.dispatchEvent(new Event('change'));
+        }
+        if (destino) { destino.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+      });
+    });
 
     var burger = $('navBurger'), links = $('navLinks');
     if (burger && links) {

@@ -149,6 +149,9 @@ p { max-width: 68ch }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto }
   .js .reveal, .js .reveal.in { opacity: 1; transform: none; transition: none }
+  /* La deriva del hero se apaga por completo, no se acelera: dejarla en 1 ms
+     produce un salto de escala, que es justo lo que molesta a quien la desactiva. */
+  .js .hero-foto img { animation: none !important; transform: none !important }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important }
 }
 
@@ -189,15 +192,129 @@ header.nav {
 .nav-cta { flex: 0 0 auto; white-space: nowrap }
 .nav-burger { display: none; background: none; border: 1px solid var(--linea-2); padding: .5rem .7rem; cursor: pointer }
 
-/* ── Hero ───────────────────────────────────────────────────────────────── */
-.hero { padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(2.5rem, 5vw, 4rem); border-bottom: 1px solid var(--linea-2) }
-.hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(2rem, 5vw, 4rem); align-items: start }
+/* ── Iconos ─────────────────────────────────────────────────────────────────
+   El trazo NO se escala con el tamaño: `vector-effect` lo mantiene en 1.6 px
+   reales aunque el icono se dibuje a 40 px. Es lo que hace que el set se lea
+   como plano técnico y no como ilustración engordada.
+   ───────────────────────────────────────────────────────────────────────── */
+.ico { width: 1.25em; height: 1.25em; flex: 0 0 auto; display: block }
+.ico path { vector-effect: non-scaling-stroke }
+
+/* ── Hero ───────────────────────────────────────────────────────────────────
+   La foto no se centra ni ocupa el ancho: se desplaza del eje, se le corta una
+   esquina y un marco desfasado la acompaña. Tres planos en vez de un
+   rectángulo. La esquina cortada es convención de dibujo técnico, así que la
+   asimetría viene del mismo lenguaje que el resto del sitio y no de un capricho
+   decorativo.
+   ───────────────────────────────────────────────────────────────────────── */
+.hero { padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(3rem, 6vw, 4.5rem); border-bottom: 1px solid var(--linea-2) }
+.hero-grid { display: grid; grid-template-columns: 1.02fr .98fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center }
 .hero h1 { margin: 1.1rem 0 1.2rem }
 .hero .lead { margin-bottom: 1.9rem }
 .hero-ctas { display: flex; gap: .8rem; flex-wrap: wrap }
+.hero-ctas .ico { width: 1.05em; height: 1.05em }
 
-/* Columna derecha del hero: lámina arriba, datos duros abajo. */
-.hero-col { display: flex; flex-direction: column; gap: 1.1rem }
+/* El desfase del marco vive en una sola variable: cambiarla mueve los dos
+   planos a la vez y no pueden desalinearse. */
+.hero-media { --desfase: 26px; position: relative; padding: var(--desfase) var(--desfase) 3.5rem 0 }
+
+/* Marco: la MISMA caja que la foto, corrida arriba y a la derecha. Al compartir
+   tamaño y recorte, los dos planos se leen como uno desplazado y el marco no
+   cuelga por debajo cruzando la tarjeta. */
+.hero-marco {
+  position: absolute; z-index: 0;
+  top: 0; right: 0; width: calc(100% - var(--desfase));
+  aspect-ratio: 16 / 10;
+  border: 1px solid var(--linea-2);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 56px 100%, 0 calc(100% - 56px));
+}
+
+.hero-foto {
+  position: relative; z-index: 1; margin: 0;
+  overflow: hidden; background: var(--papel-3);
+  aspect-ratio: 16 / 10;
+  /* misma esquina cortada que el marco, para que se lean como un sistema */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 56px 100%, 0 calc(100% - 56px));
+}
+.hero-foto img { width: 100%; height: 100%; object-fit: cover; display: block; transform-origin: 60% 40% }
+.hero-foto .lamina-n { position: absolute; top: 0; left: 0 }
+
+/* Deriva lentísima: da vida sin llamar la atención sobre sí misma. Se apaga
+   entera con prefers-reduced-motion, más abajo. */
+@keyframes deriva { from { transform: scale(1) } to { transform: scale(1.07) } }
+.js .hero-foto img { animation: deriva 26s ease-in-out infinite alternate }
+
+/* Tarjeta de datos montada sobre la esquina inferior de la foto. */
+.hero-tarjeta {
+  position: relative; z-index: 2;
+  width: min(320px, 82%);
+  margin: -3.25rem 0 0 -2.5rem;
+  background: var(--papel-2); border: 1px solid var(--tinta);
+  box-shadow: var(--lift);
+}
+.hero-tarjeta-h {
+  display: flex; justify-content: space-between; gap: .8rem;
+  padding: .6rem .85rem; border-bottom: 1px solid var(--linea-2);
+  font-family: var(--mono); font-size: var(--fs-min);
+  letter-spacing: .12em; text-transform: uppercase; color: var(--tinta-3);
+}
+.hero-tarjeta dl { display: grid; grid-template-columns: auto 1fr }
+.hero-tarjeta dt, .hero-tarjeta dd { padding: .55rem .85rem; border-bottom: 1px solid var(--linea); font-size: .84rem }
+.hero-tarjeta dt {
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .06em;
+  text-transform: uppercase; color: var(--tinta-3); border-right: 1px solid var(--linea);
+}
+.hero-tarjeta dd { font-weight: 600; text-align: right }
+.hero-tarjeta dl > :nth-last-child(-n+2) { border-bottom: 0 }
+
+/* ── Métricas ───────────────────────────────────────────────────────────────
+   Las cifras salen de los datos del propio sitio, no de la imaginación. */
+.metricas-sec { padding: 0; border-bottom: 1px solid var(--linea-2) }
+.metricas {
+  list-style: none; display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--linea-2);
+  border-left: 1px solid var(--linea-2); border-right: 1px solid var(--linea-2);
+}
+.metrica {
+  background: var(--papel); padding: clamp(1.2rem, 3vw, 1.9rem) 1.2rem;
+  display: flex; flex-direction: column; gap: .45rem;
+}
+.metrica-ico { color: var(--acento) }
+.metrica-ico .ico { width: 26px; height: 26px }
+.metrica-n {
+  font-family: var(--mono); font-size: clamp(1.7rem, 3.6vw, 2.5rem);
+  font-weight: 700; line-height: 1; letter-spacing: -.02em;
+}
+.metrica-t { font-size: var(--fs-min); font-family: var(--mono); letter-spacing: .09em; text-transform: uppercase; color: var(--tinta-3) }
+
+/* ── Capacidades ────────────────────────────────────────────────────────────
+   Vuelve navegable y concreta una capacidad que de otro modo es una palabra
+   abstracta en un párrafo. Cada tarjeta lleva al catálogo ya filtrado. */
+.cap-grid {
+  list-style: none; display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2);
+}
+.cap {
+  background: var(--papel-2); padding: clamp(1.2rem, 2.6vw, 1.7rem);
+  display: flex; flex-direction: column; gap: .7rem; transition: background .2s;
+}
+.cap:hover { background: var(--papel) }
+.cap-ico {
+  width: 46px; height: 46px; display: grid; place-items: center;
+  border: 1px solid var(--acento); background: var(--acento-tenue); color: var(--acento);
+}
+.cap-ico .ico { width: 24px; height: 24px }
+.cap h3 { font-size: 1.06rem }
+.cap p { font-size: .89rem; color: var(--tinta-2); flex: 1 1 auto }
+.cap-link {
+  background: none; border: 0; padding: 0; cursor: pointer; align-self: flex-start;
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .09em;
+  text-transform: uppercase; color: var(--acento);
+  border-bottom: 1px solid transparent; transition: border-color .2s;
+}
+.cap-link:hover { border-bottom-color: var(--acento) }
+.cap-link .ico { width: 14px; height: 14px }
 
 /* Ficha de identidad: el bloque de datos duros que ancla el mundo. */
 .hero-ficha { border: 1px solid var(--linea-2); background: var(--papel-2) }
@@ -473,6 +590,33 @@ table.aplic .ver:hover { color: var(--acento); border-color: var(--acento) }
 .sint-btn b { font-size: .96rem; font-weight: 650 }
 .sint-btn i { font-family: var(--mono); font-style: italic; font-size: var(--fs-min); color: var(--tinta-3) }
 .sint-btn[aria-pressed="true"] i { color: var(--acento-tenue) }
+.sint-tipo {
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .1em;
+  text-transform: uppercase; color: var(--tinta-3);
+}
+.sint-btn[aria-pressed="true"] .sint-tipo { color: var(--acento-tenue) }
+
+.sint-resumen { font-size: .95rem; color: var(--tinta-2); margin-bottom: 1.3rem; max-width: 70ch }
+.lista-senal { list-style: none; display: grid; gap: .4rem }
+/* Viñeta de guion: en una ficha técnica el punto redondo desentona. */
+.lista-senal li { position: relative; padding-left: 1.1rem }
+.lista-senal li::before {
+  content: ''; position: absolute; left: 0; top: .72em;
+  width: 7px; height: 1px; background: var(--acento);
+}
+/* El bloque de confusión se destaca: es el que más ayuda a no equivocarse. */
+.sint-confusion {
+  border-left: 3px solid var(--ambar); padding-left: .9rem; background: var(--ambar-tenue);
+  padding-top: .7rem; padding-bottom: .7rem; padding-right: .8rem;
+}
+.sint-rot {
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .1em;
+  text-transform: uppercase; color: var(--tinta-3); margin-bottom: .7rem;
+}
+.sint-prods { list-style: none; display: grid; gap: .6rem }
+.sint-prod { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap }
+.sint-prod .btn { flex: 0 0 auto }
+.sint-momento { font-size: .85rem; color: var(--tinta-2); flex: 1 1 14rem; min-width: 0 }
 .sint-detalle { border: 1px solid var(--linea-2); border-top: 0; background: var(--papel-2); padding: clamp(1.2rem, 3vw, 1.8rem) }
 .sint-detalle h3 { margin-bottom: .3rem }
 .sint-detalle .cien { font-family: var(--mono); font-style: italic; font-size: .84rem; color: var(--tinta-3); margin-bottom: 1rem }
@@ -500,12 +644,18 @@ footer.pie { padding: clamp(2.5rem, 5vw, 3.5rem) 0 2rem; background: var(--papel
 .pie-legal a { color: var(--acento); text-decoration: underline; text-underline-offset: 2px }
 
 /* ═══ RESPONSIVO ══════════════════════════════════════════════════════════ */
+@media (max-width: 1080px) {
+  .cap-grid { grid-template-columns: repeat(2, 1fr) }
+}
+
 @media (max-width: 980px) {
   .hero-grid { grid-template-columns: 1fr; gap: 2.2rem }
+  .hero-media { max-width: 560px }
   .calc { grid-template-columns: 1fr }
   .sec-h--foto { grid-template-columns: 1fr }
   .sint-detalle--foto { grid-template-columns: 1fr }
   .sint-detalle--foto .lamina { position: static }
+  .metricas { grid-template-columns: repeat(2, 1fr) }
   /* la lámina del hero no debe dominar la columna al apilarse */
   .hero-lamina { max-width: 520px }
   /* El riel de etapas pasa a scroll horizontal: 5 etapas no caben en tablet. */
@@ -516,6 +666,13 @@ footer.pie { padding: clamp(2.5rem, 5vw, 3.5rem) 0 2rem; background: var(--papel
 }
 
 @media (max-width: 720px) {
+  .cap-grid { grid-template-columns: 1fr }
+  /* En pantalla estrecha la esquina cortada y el desfase se comen espacio útil:
+     la composición se simplifica a foto y tarjeta, sin marco fantasma. */
+  .hero-media { --desfase: 0px; padding: 0 0 3rem }
+  .hero-marco { display: none }
+  .hero-foto { clip-path: polygon(0 0, 100% 0, 100% 100%, 40px 100%, 0 calc(100% - 40px)) }
+  .hero-tarjeta { width: min(300px, 92%); margin: -2.5rem 0 0 0 }
   .nav-links { display: none }
   .nav-links.abierto {
     display: flex; position: absolute; inset: 68px 0 auto 0; flex-direction: column;

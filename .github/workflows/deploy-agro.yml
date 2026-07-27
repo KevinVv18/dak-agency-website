@@ -43,29 +43,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # El sitio se construye aquí, no en la máquina de nadie. Así no existe el
+      # modo de fallo "¿generaste antes de desplegar?" y lo que se sube es
+      # siempre lo que está en la rama.
+      - name: Generar el sitio
+        run: node _agro-demo/generar.js
+
       # Guarda de confidencialidad. La versión pública del demo usa una marca
       # ficticia (ARENAL); los datos reales de un prospecto viven solo en su
-      # carpeta privada. Si un nombre de prospecto aparece en los archivos
-      # públicos, el deploy se detiene aquí.
-      - name: Verificar que la versión pública no filtra datos de prospectos
+      # carpeta privada. Se revisa la SALIDA generada, que es lo que de verdad
+      # se publica, y no los fuentes.
+      - name: Verificar que lo generado no filtra datos de prospectos
         run: |
           set -e
           PATRON='ExcelAg|Evergreen|Saeta|Nemakill|Aramite|Slam Org|Jaque Mate|Hermer|Gavidia'
-          if grep -inE "$PATRON" \
-              _agro-demo/index.html \
-              _agro-demo/data.public.js \
-              _agro-demo/core.js \
-              _agro-demo/core.css; then
-            echo "::error::Datos de un prospecto encontrados en la versión pública del demo. Muévelos a su carpeta privada."
+          if grep -rinE "$PATRON" _agro-demo/dist --include='*.html' --include='*.js' --include='*.css' --include='*.xml'; then
+            echo "::error::Datos de un prospecto encontrados en la salida publicable. Muévelos a su carpeta privada."
             exit 1
           fi
-          echo "OK: la versión pública está limpia."
+          echo "OK: la salida generada está limpia."
 
       - name: Subir demo al docroot del subdominio (rsync en Docker)
         uses: burnett01/rsync-deployments@7.0.1
         with:
           switches: -avz --delete
-          path: _agro-demo/
+          path: _agro-demo/dist/
           remote_path: /home/u567580447/domains/dakagency.net/public_html/agro/
           remote_host: 89.116.115.11
           remote_port: 65002

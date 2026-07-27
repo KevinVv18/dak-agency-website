@@ -4,19 +4,34 @@
     {
       "name": "dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000
     },
     {
       "name": "american-vault",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "5174", "--directory", "C:/Users/kevin/OneDrive/Desktop/american vault"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5174",
+        "--directory",
+        "C:/Users/kevin/OneDrive/Desktop/american vault"
+      ],
       "port": 5174
     },
     {
       "name": "agro-demo",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "5177", "--directory", "C:/Users/kevin/OneDrive/Desktop/paginas/DAK_WP/_agro-demo"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5177",
+        "--directory",
+        "C:/Users/kevin/OneDrive/Desktop/paginas/DAK_WP/_agro-demo/dist"
+      ],
       "port": 5177
     }
   ]

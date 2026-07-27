@@ -45,3 +45,6 @@ _archive/
 !.impeccable/config.json
 .claude/skills/impeccable/
 .claude/settings.local.json
+
+# Salida del generador del demo agro: la construye CI antes del rsync.
+_agro-demo/dist/
