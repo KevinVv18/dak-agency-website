@@ -26,16 +26,17 @@ function render(D, s) {
   const M = D.marca;
   const tipo = tipoLbl(D, s.tipo);
 
-  /* Productos recomendados. Cada uno abre su ficha en el modal, que core.js
-     resuelve con el delegado global de [data-ficha] en cualquier página. */
+  /* Productos recomendados. Ahora que cada producto tiene página propia, el
+     enlace va ahí en vez de abrir un modal: es contenido indexable, se puede
+     compartir y el visitante no queda atrapado en una ventana. */
   const acciones = s.prods.map(r => {
     const p = D.productos.find(x => x.id === r.p);
     if (!p) { return '' }
     return `<li class="accion">
         <div class="accion-cab">
-          <button type="button" class="accion-n" data-ficha="${esc(p.id)}">
+          <a class="accion-n" href="${B}productos/${esc(p.slug)}/">
             ${esc(p.n)} ${icono('ficha')}
-          </button>
+          </a>
           <span class="accion-dosis">${esc(p.dosis)}</span>
         </div>
         ${r.momento ? `<p class="accion-momento">${esc(r.momento)}</p>` : ''}
@@ -123,10 +124,10 @@ function render(D, s) {
           <ul class="chips">
             ${s.cultivos.map(id => {
               const c = D.cultivos.find(x => x.id === id);
-              /* Solo enlaza a los cultivos cuyo programa existe; los demás van
-                 como etiqueta, sin prometer una página que no está escrita. */
-              return c && c.listo
-                ? `<li><a class="chip chip--link" href="${B}#programa">${esc(c.n)} ${icono('flecha')}</a></li>`
+              /* Todos los cultivos tienen página ya; la de programa pendiente
+                 lo dice ahí mismo en vez de mandar al visitante a la nada. */
+              return c
+                ? `<li><a class="chip chip--link" href="${B}cultivos/${esc(c.slug)}/">${esc(c.n)} ${icono('flecha')}</a></li>`
                 : `<li><span class="chip">${esc(cultivoN(D, id))}</span></li>`;
             }).join('\n            ')}
           </ul>

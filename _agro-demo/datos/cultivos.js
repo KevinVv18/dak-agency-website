@@ -74,24 +74,36 @@ export default [
       }
     ]
   },
+  /* Los cultivos sin programa publicado llevan igual su propio resumen. Repetir
+     "en preparación" en los tres dejaría tres páginas con la misma descripción
+     —que es un problema de posicionamiento real— y además no le diría nada al
+     visitante que produce ese cultivo. */
   {
     id: 'palto', slug: 'palto', n: 'Palto', listo: false,
     cientifico: 'Persea americana',
-    resumen: 'Columna de la agroexportación peruana. Programa en preparación con el equipo agronómico.',
+    resumen:
+      'La columna de la agroexportación peruana, y el cultivo donde el calcio y el boro ' +
+      'deciden cuánta fruta llega firme a destino. El programa se juega entre floración y ' +
+      'llenado de aceite.',
     nota: 'Programa en preparación con el equipo agronómico.',
     etapas: []
   },
   {
     id: 'uva', slug: 'uva-de-mesa', n: 'Uva de mesa', listo: false,
     cientifico: 'Vitis vinifera',
-    resumen: 'Programa en preparación con el equipo agronómico.',
+    resumen:
+      'Ventana temprana de exportación con exigencia de calibre, color y condición de ' +
+      'llegada. Aquí el manejo de racimo pesa tanto como la nutrición, y el residuo cero ' +
+      'no es opcional.',
     nota: 'Programa en preparación con el equipo agronómico.',
     etapas: []
   },
   {
     id: 'esparrago', slug: 'esparrago', n: 'Espárrago', listo: false,
     cientifico: 'Asparagus officinalis',
-    resumen: 'Programa en preparación con el equipo agronómico.',
+    resumen:
+      'Perenne con cosechas sucesivas: lo que se aplica después del chapodo define el ' +
+      'brote siguiente. Todo el programa gira alrededor de la reserva acumulada en la corona.',
     nota: 'Programa en preparación con el equipo agronómico.',
     etapas: []
   }

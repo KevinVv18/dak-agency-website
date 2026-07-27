@@ -25,9 +25,9 @@ function esc(s) {
    un dominio o dentro de una subcarpeta, que es lo que hace falta para las
    versiones skin-eadas por cliente. */
 const MENU = [
-  { rel: '#programa', t: 'Programa por cultivo' },
+  { rel: 'cultivos/', t: 'Cultivos' },
   { rel: 'problemas/', t: 'Problemas' },
-  { rel: '#catalogo', t: 'Catálogo' },
+  { rel: 'productos/', t: 'Catálogo' },
   { rel: '#calculadora', t: 'Calculadora' },
   { rel: '#cobertura', t: 'Cobertura' }
 ];

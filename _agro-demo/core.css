@@ -888,6 +888,111 @@ table.aplic .ver:hover { color: var(--acento); border-color: var(--acento) }
 
 .sint-mas { margin-top: 1.3rem }
 
+/* ═══ PÁGINA DE CULTIVO ═══════════════════════════════════════════════════ */
+
+/* Anclas de etapa. Reemplazan a las pestañas de la portada: se recorre igual de
+   rápido y no se esconde el 80% del contenido detrás de un clic. */
+.etapa-anclas {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  border: 1px solid var(--linea-2); background: var(--papel-2);
+  position: sticky; top: 68px; z-index: 10; margin-bottom: 1.6rem;
+}
+.etapa-anclas a { padding: .7rem .8rem; border-right: 1px solid var(--linea); transition: background .2s }
+.etapa-anclas a:last-child { border-right: 0 }
+.etapa-anclas a:hover { background: var(--papel-3) }
+.etapa-anclas i { display: block; font-family: var(--mono); font-style: normal; font-size: var(--fs-min); letter-spacing: .09em; color: var(--tinta-3) }
+.etapa-anclas b { display: block; font-size: .86rem; font-weight: 600; line-height: 1.25; margin-top: .18rem }
+
+.etapa-bloque { border: 1px solid var(--linea-2); background: var(--papel-2); margin-bottom: 1.4rem }
+/* `scroll-margin-top` evita que el ancla deje el título debajo de la barra
+   pegajosa, que es el defecto clásico de las anclas con nav fijo. */
+.etapa-bloque { scroll-margin-top: 150px }
+.etapa-bloque-h { padding: clamp(1rem, 2.4vw, 1.5rem); border-bottom: 1px solid var(--linea-2) }
+.etapa-bloque-n {
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .11em;
+  text-transform: uppercase; color: var(--tinta-3);
+}
+.etapa-bloque-h h3 { font-size: clamp(1.15rem, 2.3vw, 1.45rem); margin: .35rem 0 .3rem }
+.etapa-bloque-h h3 span { font-weight: 400; color: var(--tinta-2) }
+.etapa-bloque-h .dur {
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .07em;
+  text-transform: uppercase; color: var(--ambar); font-weight: 600;
+}
+.etapa-objetivo {
+  padding: 1rem clamp(1rem, 2.4vw, 1.5rem); margin: 0;
+  font-size: .95rem; color: var(--tinta-2); background: var(--papel);
+  border-bottom: 1px solid var(--linea);
+}
+
+/* Producto dentro de una tabla: enlace, no botón de modal. */
+.tabla-prod { display: block; border-bottom: 1px solid transparent; transition: border-color .2s }
+.tabla-prod:hover { border-bottom-color: var(--acento) }
+.tabla-prod:hover .prod-n { color: var(--acento) }
+
+/* Lista compacta de los productos de un programa. */
+.prod-mini { list-style: none; display: grid; gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
+.prod-mini-item {
+  display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: baseline;
+  background: var(--papel-2); padding: .8rem 1rem; transition: background .2s;
+}
+.prod-mini-item:hover { background: var(--papel) }
+.prod-mini-item b { font-size: .96rem }
+.prod-mini-item span { font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .07em; text-transform: uppercase; color: var(--tinta-3) }
+.prod-mini-item em { font-family: var(--mono); font-style: normal; font-size: .84rem; font-weight: 600; color: var(--ambar); white-space: nowrap }
+
+/* ═══ ÍNDICE DE CULTIVOS ══════════════════════════════════════════════════ */
+.cult-grid { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
+.cult-card {
+  display: flex; flex-direction: column; gap: .8rem; height: 100%;
+  background: var(--papel-2); padding: clamp(1.1rem, 2.4vw, 1.5rem); transition: background .2s;
+}
+.cult-card:hover { background: var(--papel) }
+.cult-card-h { display: flex; align-items: flex-start; gap: .8rem }
+.cult-ico {
+  width: 42px; height: 42px; flex: 0 0 auto; display: grid; place-items: center;
+  border: 1px solid var(--acento); background: var(--acento-tenue); color: var(--acento);
+}
+.cult-ico .ico { width: 22px; height: 22px }
+.cult-card-h b { display: block; font-size: 1.15rem; line-height: 1.2 }
+.cult-card-h i { font-family: var(--mono); font-style: italic; font-size: .82rem; color: var(--tinta-3) }
+.cult-card p { font-size: .9rem; color: var(--tinta-2); flex: 1 1 auto }
+.cult-datos { list-style: none; display: flex; gap: 1px; background: var(--linea); border: 1px solid var(--linea) }
+.cult-datos li { background: var(--papel); padding: .55rem .75rem; flex: 1 1 0 }
+.cult-datos b { display: block; font-family: var(--mono); font-size: 1.15rem; font-weight: 700; line-height: 1 }
+.cult-datos span { font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .07em; text-transform: uppercase; color: var(--tinta-3) }
+/* El cultivo sin programa se distingue sin esconderse: el visitante que produce
+   palto necesita saber que está en el mapa. */
+.cult-card--pendiente .cult-ico { border-color: var(--linea-2); background: var(--papel-3); color: var(--tinta-3) }
+
+/* ═══ PÁGINA DE PRODUCTO ══════════════════════════════════════════════════ */
+.prod-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem }
+.prod-cab .ficha-sellos { margin-top: 1.1rem }
+.prod-ico {
+  flex: 0 0 auto; width: 84px; height: 84px; display: grid; place-items: center;
+  border: 1px solid var(--acento); background: var(--acento-tenue); color: var(--acento);
+}
+.prod-ico .ico { width: 44px; height: 44px }
+
+/* Tabla de composición: la columna de valores va tabular y a la derecha, que es
+   como se compara una composición. */
+table.comp { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums }
+table.comp th, table.comp td { padding: .7rem .9rem; border-bottom: 1px solid var(--linea); font-size: .9rem; text-align: left }
+table.comp tr:first-child th, table.comp tr:first-child td { border-top: 1px solid var(--linea-2) }
+table.comp th { font-weight: 500; color: var(--tinta-2) }
+table.comp td { font-family: var(--mono); font-weight: 600; text-align: right; white-space: nowrap }
+table.comp tr:nth-child(even) { background: var(--papel-2) }
+
+.mono-sm { font-family: var(--mono); font-size: var(--fs-min) !important; letter-spacing: .04em }
+.prob-ficha dd.med { font-family: var(--mono); color: var(--ambar) }
+
+/* Tarjeta de catálogo como enlace (página /productos/). */
+.prod-card--link { display: flex; flex-direction: column; gap: .7rem; height: 100% }
+.prod-card h2 { font-size: 1.02rem; line-height: 1.25 }
+.prod-card-desc { font-size: .88rem; color: var(--tinta-2); flex: 1 1 auto }
+.prod-card .abrir .ico { width: 13px; height: 13px; transition: transform .25s var(--ease) }
+.prod-card--link:hover .abrir .ico { transform: translateX(3px) }
+.cat-grid > li[hidden] { display: none }
+
 /* ═══ ZONAS / REPRESENTANTES ══════════════════════════════════════════════ */
 .zonas { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
 .zona { background: var(--papel-2); padding: 1.2rem }
@@ -914,6 +1019,12 @@ footer.pie { padding: clamp(2.5rem, 5vw, 3.5rem) 0 2rem; background: var(--papel
      teléfono lo útil es el resumen y el contacto, no scrollear hasta el final. */
   .prob-grid { grid-template-columns: 1fr }
   .prob-aside { position: static; order: -1 }
+  .prod-cab { flex-direction: column-reverse; align-items: flex-start; gap: 1.2rem }
+  /* Cinco etapas no caben en una fila de tablet: el riel pasa a columna. */
+  .etapa-anclas { grid-auto-flow: row; grid-auto-columns: auto; position: static }
+  .etapa-anclas a { border-right: 0; border-bottom: 1px solid var(--linea) }
+  .etapa-anclas a:last-child { border-bottom: 0 }
+  .etapa-bloque { scroll-margin-top: 88px }
   .asesoria { grid-template-columns: auto 1fr; row-gap: .9rem }
   .asesoria .btn { grid-column: 1 / -1; justify-self: start }
   .calc { grid-template-columns: 1fr }
@@ -936,6 +1047,8 @@ footer.pie { padding: clamp(2.5rem, 5vw, 3.5rem) 0 2rem; background: var(--papel
      texto necesita el ancho completo. */
   .prob-item { grid-template-columns: 1fr }
   .prob-item-ir { display: none }
+  /* En teléfono la línea y la dosis se apilan bajo el nombre. */
+  .prod-mini-item { grid-template-columns: 1fr; gap: .3rem }
   /* En pantalla estrecha la esquina cortada y el desfase se comen espacio útil:
      la composición se simplifica a foto y tarjeta, sin marco fantasma. */
   .hero-media { --desfase: 0px; padding: 0 0 3rem }

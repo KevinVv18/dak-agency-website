@@ -22,6 +22,10 @@ import D from './datos/index.js';
 import * as home from './plantillas/home.js';
 import * as problemasIndice from './plantillas/problemas-indice.js';
 import * as problema from './plantillas/problema.js';
+import * as cultivosIndice from './plantillas/cultivos-indice.js';
+import * as cultivo from './plantillas/cultivo.js';
+import * as productosIndice from './plantillas/productos-indice.js';
+import * as producto from './plantillas/producto.js';
 
 /* `import.meta.dirname` existe desde Node 20.11; se deriva de la URL para no
    depender de la versión exacta que traiga el runner de CI. */
@@ -41,6 +45,18 @@ const PAGINAS = [
   ...D.problemas.map(p => ({
     ruta: '/problemas/' + p.slug + '/',
     plantilla: problema,
+    dato: p
+  })),
+  { ruta: '/cultivos/', plantilla: cultivosIndice },
+  ...D.cultivos.map(c => ({
+    ruta: '/cultivos/' + c.slug + '/',
+    plantilla: cultivo,
+    dato: c
+  })),
+  { ruta: '/productos/', plantilla: productosIndice },
+  ...D.productos.map(p => ({
+    ruta: '/productos/' + p.slug + '/',
+    plantilla: producto,
     dato: p
   }))
 ];

@@ -111,9 +111,9 @@ function render(D) {
           <span class="cap-ico">${icono(c.icono)}</span>
           <h3>${esc(c.n)}</h3>
           <p>${esc(c.d)}</p>
-          <button type="button" class="cap-link" data-filtrar="${esc(c.cat)}">
+          <a class="cap-link" href="productos/#l-${esc(c.cat)}">
             Ver productos ${icono('flecha')}
-          </button>
+          </a>
         </li>`).join('\n        ')}
       </ul>
     </div>
@@ -132,6 +132,7 @@ function render(D) {
           <h2>El programa completo, etapa por etapa</h2>
           <p class="lead">Elige el cultivo y recorre su ciclo. En cada etapa fenológica: qué se aplica,
             en qué dosis, con qué frecuencia y por qué vía. No es una lista de productos, es un programa.</p>
+          <p><a class="btn btn-line btn-sm" href="cultivos/">Ver los programas completos ${icono('flecha')}</a></p>
         </div>
         ${lamina(M.laminas.programa, 'alta')}
       </div>
@@ -164,6 +165,7 @@ function render(D) {
         <h2>Catálogo técnico con filtros reales</h2>
         <p class="lead">Filtra por cultivo, por línea o por admisibilidad orgánica. Cada producto abre su
           ficha con composición declarada, dosis, vía de aplicación y periodo de carencia.</p>
+        <p><a class="btn btn-line btn-sm" href="productos/">Ver el catálogo completo de ${D.stats.nProductos} productos ${icono('flecha')}</a></p>
       </div>
       <div class="filtros">
         <div class="campo"><label for="fCultivo">Cultivo</label><select id="fCultivo"></select></div>

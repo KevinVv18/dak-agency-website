@@ -270,6 +270,74 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
+     2b. CATÁLOGO ESTÁTICO (página /productos/)
+     Aquí las tarjetas YA están en el HTML: el filtro solo oculta y muestra. Es
+     al revés que en la portada, donde el JS las genera. La diferencia importa —
+     un catálogo que solo existe si corre JavaScript no lo lee un buscador ni un
+     lector de pantalla.
+     ═══════════════════════════════════════════════════════════════════════════ */
+  function initCatalogoEstatico() {
+    var lista = $('catLista');
+    if (!lista) { return }
+
+    var items = Array.prototype.slice.call(lista.children);
+    var selCultivo = $('fCultivo'), selCat = $('fCat'), selOrg = $('fOrg');
+    var cuenta = $('catCuenta'), vacio = $('catVacio');
+
+    if (selCultivo) {
+      selCultivo.innerHTML = '<option value="">Todos</option>' + D.cultivos.map(function (c) {
+        return '<option value="' + esc(c.id) + '">' + esc(c.n) + '</option>';
+      }).join('');
+    }
+    if (selCat) {
+      selCat.innerHTML = '<option value="">Todas</option>' + Object.keys(D.categorias).map(function (k) {
+        return '<option value="' + esc(k) + '">' + esc(D.categorias[k]) + '</option>';
+      }).join('');
+    }
+
+    function aplicar() {
+      var fc = selCultivo ? selCultivo.value : '';
+      var fk = selCat ? selCat.value : '';
+      var fo = selOrg ? selOrg.value : '';
+      var n = 0;
+      items.forEach(function (li) {
+        var ok = (!fk || li.dataset.cat === fk)
+          && (!fo || li.dataset.org === fo)
+          && (!fc || (' ' + li.dataset.cultivos + ' ').indexOf(' ' + fc + ' ') !== -1);
+        li.hidden = !ok;
+        if (ok) { n++ }
+      });
+      if (cuenta) { cuenta.textContent = n + (n === 1 ? ' producto' : ' productos') }
+      if (vacio) { vacio.hidden = n > 0 }
+    }
+
+    [selCultivo, selCat, selOrg].forEach(function (s) {
+      if (s) { s.addEventListener('change', aplicar) }
+    });
+    var limpiar = $('fLimpiar');
+    if (limpiar) {
+      limpiar.addEventListener('click', function () {
+        [selCultivo, selCat, selOrg].forEach(function (s) { if (s) { s.value = '' } });
+        aplicar();
+      });
+    }
+
+    /* Preselección por hash: `#l-biologico` llega desde las tarjetas de
+       capacidad de la portada y deja el catálogo ya filtrado. Es una URL
+       compartible y no necesita nada del servidor. */
+    function desdeHash() {
+      var m = (location.hash || '').match(/^#l-([a-z]+)$/);
+      if (m && selCat && D.categorias[m[1]]) {
+        selCat.value = m[1];
+        aplicar();
+      }
+    }
+    window.addEventListener('hashchange', desdeHash);
+    desdeHash();
+    aplicar();
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
      3. FICHA (modal) + captura de lead
      ═══════════════════════════════════════════════════════════════════════════ */
   var ov = $('fichaOv'), caja = $('fichaCaja'), ultimoFoco = null;
@@ -599,6 +667,7 @@
     initCascaron();
     initPrograma();
     initCatalogo();
+    initCatalogoEstatico();
     initFicha();
     initCalc();
     initSintomas();

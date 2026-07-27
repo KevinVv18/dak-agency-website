@@ -51,9 +51,13 @@ export function wa(M, msg) {
  * sitios se leería como relleno.
  */
 export function bloqueAsesoria(M, o) {
+  /* El nivel del título es configurable porque el bloque aparece en páginas con
+     jerarquías distintas: donde ya hubo un h2 va como h3, y donde es el primer
+     subtítulo después del h1 tiene que ser h2 o el documento salta un nivel. */
+  const h = o.nivel || 3;
   return '<aside class="asesoria">'
     + '<span class="asesoria-ico">' + icono(o.icono || 'zona') + '</span>'
-    + '<div><h3>' + esc(o.titulo) + '</h3><p>' + esc(o.texto) + '</p></div>'
+    + '<div><h' + h + '>' + esc(o.titulo) + '</h' + h + '><p>' + esc(o.texto) + '</p></div>'
     + '<a class="btn btn-solid" target="_blank" rel="noopener" href="' + esc(wa(M, o.msg)) + '">'
     + esc(o.cta) + '</a>'
     + '</aside>';
@@ -69,4 +73,64 @@ export function tipoLbl(D, t, plural) {
 export function cultivoN(D, id) {
   const c = D.cultivos.find(x => x.id === id);
   return c ? c.n : id;
+}
+
+/** Registro de cultivo por id (para sacar su slug y saber si tiene programa). */
+export function cultivo(D, id) {
+  return D.cultivos.find(x => x.id === id) || null;
+}
+
+/** Registro de producto por id. */
+export function producto(D, id) {
+  return D.productos.find(x => x.id === id) || null;
+}
+
+/* ── Cruces inversos ────────────────────────────────────────────────────────
+   Los datos se escriben en una sola dirección (el programa dice qué productos
+   usa, el problema dice a qué cultivos afecta) y aquí se recorren al revés. Es
+   lo que teje la red de enlaces internos sin que nadie tenga que mantener las
+   dos puntas a mano — que es exactamente donde esas listas se desincronizan.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/** Problemas que afectan a un cultivo. */
+export function problemasDeCultivo(D, cultivoId) {
+  return D.problemas.filter(p => p.cultivos.includes(cultivoId));
+}
+
+/** Productos que aparecen en el programa de un cultivo, sin repetir. */
+export function productosDeCultivo(D, c) {
+  const vistos = new Set();
+  const out = [];
+  for (const e of (c.etapas || [])) {
+    for (const a of e.apps) {
+      if (vistos.has(a.p)) { continue }
+      vistos.add(a.p);
+      const p = producto(D, a.p);
+      if (p) { out.push(p) }
+    }
+  }
+  return out;
+}
+
+/** Dónde se usa un producto: cultivo, etapa, dosis y frecuencia. */
+export function usosDeProducto(D, prodId) {
+  const out = [];
+  for (const c of D.cultivos) {
+    for (const e of (c.etapas || [])) {
+      for (const a of e.apps) {
+        if (a.p === prodId) { out.push({ cultivo: c, etapa: e, d: a.d, f: a.f }) }
+      }
+    }
+  }
+  return out;
+}
+
+/** Problemas para los que se recomienda un producto. */
+export function problemasDeProducto(D, prodId) {
+  return D.problemas.filter(p => p.prods.some(r => r.p === prodId));
+}
+
+/** Otros productos de la misma línea. */
+export function hermanosDeProducto(D, p) {
+  return D.productos.filter(x => x.cat === p.cat && x.id !== p.id);
 }
