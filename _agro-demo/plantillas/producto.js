@@ -31,7 +31,7 @@ function iconoDeLinea(M, cat) {
   return c ? c.icono : 'producto';
 }
 
-function render(D, p) {
+function render(D, p, V) {
   const M = D.marca;
   const linea = D.categorias[p.cat] || p.cat;
   const usos = usosDeProducto(D, p.id);
@@ -169,7 +169,7 @@ function render(D, p) {
   const desc = p.desc.slice(0, 155);
 
   return pagina({
-    D, base: B, ruta, titulo, desc,
+    D, V, base: B, ruta, titulo, desc,
     jsonld: [
       {
         '@context': 'https://schema.org',

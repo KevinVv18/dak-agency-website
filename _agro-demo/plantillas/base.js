@@ -46,6 +46,14 @@ const MENU = [
 function pagina(o) {
   const M = o.D.marca;
   const b = o.base || '';
+
+  /* Firma de caché. El .htaccess cachea CSS y JS un mes, y sin esto el HTML se
+     revalida en cada visita pero el CSS no: quien ya entró antes vería el
+     maquetado viejo sobre el contenido nuevo. Con el hash del contenido en la
+     URL, un cambio obliga a refetch y la caché larga pasa a ser correcta.
+     `V` puede faltar si una plantilla se renderiza fuera del build. */
+  const V = o.V || {};
+  const v = k => (V[k] ? '?v=' + V[k] : '');
   const tokens = Object.entries(M.tokens)
     .map(([k, v]) => '    ' + k + ': ' + v + ';').join('\n');
 
@@ -80,7 +88,7 @@ ${ld}
 ${tokens}
   }
 </style>
-<link rel="stylesheet" href="${b}core.css" />
+<link rel="stylesheet" href="${b}core.css${v('css')}" />
 <!-- El estado oculto de las secciones cuelga de esta clase, así que si el JS no
      corre la página se ve completa en vez de quedar en blanco. -->
 <script>document.documentElement.className = document.documentElement.className.replace('no-js','') + ' js';</script>
@@ -135,8 +143,8 @@ ${o.contenido}
 </div>
 
 <script>window.AGRO_BASE = '${b}';</script>
-<script src="${b}datos.js"></script>
-<script src="${b}core.js"></script>
+<script src="${b}datos.js${v('datos')}"></script>
+<script src="${b}core.js${v('js')}"></script>
 </body>
 </html>
 `;

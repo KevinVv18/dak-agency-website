@@ -22,7 +22,7 @@ function lamina(l, forma, clase) {
     + '</figure>';
 }
 
-function render(D) {
+function render(D, _dato, V) {
   const M = D.marca;
   const S = D.stats;
   const hero = M.laminas.hero;
@@ -253,7 +253,7 @@ function render(D) {
   ].join('\n');
 
   return pagina({
-    D,
+    D, V,
     base: '',
     ruta: '/',
     titulo: `${M.nombreCompleto} · Agroinsumos para el norte del Perú — Demo por DAK Agency`,

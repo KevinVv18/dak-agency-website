@@ -16,6 +16,7 @@
    ───────────────────────────────────────────────────────────────────────── */
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 import D from './datos/index.js';
@@ -90,6 +91,20 @@ function archivoDe(ruta) {
   return path.join(DIST, limpia, 'index.html');
 }
 
+/* ── Firma de assets contra la caché ───────────────────────────────────────
+   El .htaccess cachea CSS y JS un mes. Sin invalidación eso es una trampa: el
+   HTML se revalida cada visita pero el CSS no, así que quien ya entró antes ve
+   el maquetado viejo sobre el contenido nuevo — media página sin estilo, y
+   encima solo le pasa a él, que es lo que hace el fallo difícil de creer.
+
+   Se resuelve firmando la URL con el hash del contenido: si el archivo cambia,
+   cambia la URL y el navegador está obligado a pedirlo. Y la caché larga pasa a
+   ser correcta en vez de dañina, porque cada URL sirve contenido inmutable.
+   ───────────────────────────────────────────────────────────────────────── */
+function firma(contenido) {
+  return crypto.createHash('sha256').update(contenido).digest('hex').slice(0, 10);
+}
+
 /* ── Verificación de enlaces internos ──────────────────────────────────────
    Un enlace roto en un sitio generado no se nota hasta que alguien lo pulsa
    delante del cliente. Se comprueba en el build y se falla ahí. */
@@ -152,20 +167,27 @@ function construir() {
     + 'window.AGRO = ' + JSON.stringify(D) + ';\n';
   fs.writeFileSync(path.join(DIST, 'datos.js'), datosJs);
 
-  // 3. páginas
+  // 3. versiones de los assets que cambian en cada iteración
+  const V = {
+    css: firma(fs.readFileSync(path.join(DIST, 'core.css'))),
+    js: firma(fs.readFileSync(path.join(DIST, 'core.js'))),
+    datos: firma(datosJs)
+  };
+
+  // 4. páginas
   const htmlPorRuta = {};
   for (const p of PAGINAS) {
-    const html = p.plantilla.render(D, p.dato);
+    const html = p.plantilla.render(D, p.dato, V);
     const destino = archivoDe(p.ruta);
     fs.mkdirSync(path.dirname(destino), { recursive: true });
     fs.writeFileSync(destino, html);
     htmlPorRuta[p.ruta] = html;
   }
 
-  // 4. sitemap
+  // 5. sitemap
   fs.writeFileSync(path.join(DIST, 'sitemap.xml'), sitemap(PAGINAS));
 
-  // 5. verificación
+  // 6. verificación
   const rotos = verificarEnlaces(PAGINAS, htmlPorRuta);
   if (rotos.length) {
     console.error('\n✗ Enlaces internos rotos:');

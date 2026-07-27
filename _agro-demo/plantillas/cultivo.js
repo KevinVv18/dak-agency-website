@@ -21,7 +21,7 @@ import {
 
 const B = '../../';   // profundidad de /cultivos/<slug>/
 
-function render(D, c) {
+function render(D, c, V) {
   const M = D.marca;
   const problemas = problemasDeCultivo(D, c.id);
   const productos = productosDeCultivo(D, c);
@@ -208,7 +208,8 @@ function render(D, c) {
     });
   }
 
-  return pagina({ D, base: B, ruta, titulo, desc, jsonld, contenido });
+  return pagina({
+    D, V, base: B, ruta, titulo, desc, jsonld, contenido });
 }
 
 export { render };

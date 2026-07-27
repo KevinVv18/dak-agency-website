@@ -82,7 +82,64 @@ body::before {
 }
 body > * { position: relative; z-index: 1 }
 
+/* ── Enlaces ────────────────────────────────────────────────────────────────
+   El reset apaga color y subrayado porque la mayoría de los enlaces del sitio
+   son componentes (tarjetas, chips, botones, filas de tabla) donde un subrayado
+   sobra. Pero eso deja invisible al enlace de texto corrido, que es el caso
+   donde el subrayado es justamente la señal. Se reponen los dos por separado:
+   el de prosa abajo, y la afordancia de los componentes en el bloque siguiente.
+   ───────────────────────────────────────────────────────────────────────── */
 a { color: inherit; text-decoration: none }
+
+/* Enlace dentro de texto: acento y subrayado siempre, no solo al pasar el
+   cursor — quien navega con teclado o lee sin mover el mouse tiene que poder
+   distinguirlo igual. `a:not([class])` acierta porque en este sitio todo enlace
+   que es componente lleva clase; el de prosa nunca. */
+.lead a:not([class]),
+.prob-sec p a:not([class]),
+.prob-sec dd a:not([class]),
+.etapa-objetivo a:not([class]),
+.asesoria p a:not([class]),
+figcaption a:not([class]),
+.pie-legal a:not([class]) {
+  color: var(--acento);
+  text-decoration: underline;
+  text-underline-offset: .18em;
+  text-decoration-thickness: 1px;
+  transition: background .18s, color .18s;
+}
+.lead a:not([class]):hover,
+.prob-sec p a:not([class]):hover,
+.prob-sec dd a:not([class]):hover,
+.etapa-objetivo a:not([class]):hover,
+.asesoria p a:not([class]):hover,
+figcaption a:not([class]):hover,
+.pie-legal a:not([class]):hover {
+  background: var(--acento-tenue);
+  text-decoration-thickness: 2px;
+}
+
+/* ── Afordancia de los componentes clicables ────────────────────────────────
+   Una sola gramática para todo lo que lleva a otra página, para que el visitante
+   la aprenda una vez: al pasar el cursor aparece una barra de acento en el
+   borde izquierdo, el título toma el color de acento y la flecha avanza.
+
+   La barra va como `box-shadow: inset` y no como `border-left`: un borde
+   empujaría el contenido tres píxeles al entrar el cursor, y ese salto es más
+   molesto que la falta de señal que venía a resolver.
+   ───────────────────────────────────────────────────────────────────────── */
+.cult-card, .rel-card, .prob-item, .prod-card--link, .prod-mini-item, .tabla-prod {
+  transition: background .2s, box-shadow .2s, color .2s;
+}
+.cult-card:hover, .rel-card:hover, .prob-item:hover, .prod-card--link:hover, .prod-mini-item:hover {
+  box-shadow: inset 3px 0 0 var(--acento);
+}
+/* El título del bloque toma el acento: es la señal que se lee sin buscarla. */
+.cult-card:hover .cult-card-h b,
+.rel-card:hover b,
+.prob-item:hover .prob-item-txt b,
+.prod-card--link:hover h2,
+.prod-mini-item:hover b { color: var(--acento) }
 img, svg { max-width: 100%; display: block }
 button, input, select { font-family: inherit; font-size: inherit; color: inherit }
 ::selection { background: var(--acento); color: var(--papel-2) }
@@ -841,8 +898,7 @@ table.aplic .ver:hover { color: var(--acento); border-color: var(--acento) }
 .rel-grid { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
 .rel-card {
   display: flex; flex-direction: column; gap: .3rem; height: 100%;
-  background: var(--papel-2); padding: 1.15rem; transition: background .2s;
-}
+  background: var(--papel-2); padding: 1.15rem; }
 .rel-card:hover { background: var(--papel) }
 .rel-tipo { font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3) }
 .rel-card b { font-size: 1.05rem }
@@ -874,8 +930,7 @@ table.aplic .ver:hover { color: var(--acento); border-color: var(--acento) }
 .prob-lista { list-style: none; display: grid; gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
 .prob-item {
   display: grid; grid-template-columns: 1fr auto; gap: 1.2rem; align-items: center;
-  background: var(--papel-2); padding: 1.15rem 1.2rem; transition: background .2s;
-}
+  background: var(--papel-2); padding: 1.15rem 1.2rem; }
 .prob-item:hover { background: var(--papel) }
 .prob-item-txt { min-width: 0 }
 .prob-item-txt b { display: block; font-size: 1.08rem; margin-bottom: .12rem }
@@ -933,8 +988,7 @@ table.aplic .ver:hover { color: var(--acento); border-color: var(--acento) }
 .prod-mini { list-style: none; display: grid; gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
 .prod-mini-item {
   display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: baseline;
-  background: var(--papel-2); padding: .8rem 1rem; transition: background .2s;
-}
+  background: var(--papel-2); padding: .8rem 1rem; }
 .prod-mini-item:hover { background: var(--papel) }
 .prod-mini-item b { font-size: .96rem }
 .prod-mini-item span { font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .07em; text-transform: uppercase; color: var(--tinta-3) }
@@ -944,10 +998,43 @@ table.aplic .ver:hover { color: var(--acento); border-color: var(--acento) }
 .cult-grid { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
 .cult-card {
   display: flex; flex-direction: column; gap: .8rem; height: 100%;
-  background: var(--papel-2); padding: clamp(1.1rem, 2.4vw, 1.5rem); transition: background .2s;
-}
+  background: var(--papel-2); padding: clamp(1.1rem, 2.4vw, 1.5rem); }
 .cult-card:hover { background: var(--papel) }
 .cult-card-h { display: flex; align-items: flex-start; gap: .8rem }
+.cult-card-h > div { flex: 1 1 auto; min-width: 0 }
+.cult-badge {
+  flex: 0 0 auto; align-self: flex-start;
+  font-family: var(--mono); font-size: var(--fs-min); font-weight: 600;
+  letter-spacing: .07em; text-transform: uppercase;
+  border: 1px solid var(--acento); background: var(--acento-tenue); color: var(--acento);
+  padding: .22rem .45rem;
+}
+.cult-card--pendiente .cult-badge { border-color: var(--linea-2); background: var(--papel-3); color: var(--tinta-3) }
+
+/* Las etapas por nombre y numeradas: el visitante reconoce su calendario. */
+.cult-etapas { list-style: none; display: grid; gap: .3rem; border-top: 1px solid var(--linea); padding-top: .8rem }
+.cult-etapas li {
+  display: flex; align-items: baseline; gap: .55rem;
+  font-size: .88rem; color: var(--tinta-2);
+}
+.cult-etapas li span {
+  flex: 0 0 auto; width: 18px; height: 18px; display: grid; place-items: center;
+  font-family: var(--mono); font-size: var(--fs-min); font-weight: 600;
+  border: 1px solid var(--linea-2); color: var(--tinta-3);
+}
+.cult-estado {
+  border-top: 1px solid var(--linea); padding-top: .8rem;
+  font-size: .88rem !important; color: var(--tinta-3) !important;
+}
+.cult-pie {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  margin-top: auto; padding-top: .9rem; border-top: 1px solid var(--linea);
+}
+.cult-fichas {
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .07em;
+  text-transform: uppercase; color: var(--tinta-3);
+}
+.cult-pie .rel-ir { margin-top: 0; padding-top: 0 }
 .cult-ico {
   width: 42px; height: 42px; flex: 0 0 auto; display: grid; place-items: center;
   border: 1px solid var(--acento); background: var(--acento-tenue); color: var(--acento);
@@ -956,10 +1043,6 @@ table.aplic .ver:hover { color: var(--acento); border-color: var(--acento) }
 .cult-card-h b { display: block; font-size: 1.15rem; line-height: 1.2 }
 .cult-card-h i { font-family: var(--mono); font-style: italic; font-size: .82rem; color: var(--tinta-3) }
 .cult-card p { font-size: .9rem; color: var(--tinta-2); flex: 1 1 auto }
-.cult-datos { list-style: none; display: flex; gap: 1px; background: var(--linea); border: 1px solid var(--linea) }
-.cult-datos li { background: var(--papel); padding: .55rem .75rem; flex: 1 1 0 }
-.cult-datos b { display: block; font-family: var(--mono); font-size: 1.15rem; font-weight: 700; line-height: 1 }
-.cult-datos span { font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .07em; text-transform: uppercase; color: var(--tinta-3) }
 /* El cultivo sin programa se distingue sin esconderse: el visitante que produce
    palto necesita saber que está en el mapa. */
 .cult-card--pendiente .cult-ico { border-color: var(--linea-2); background: var(--papel-3); color: var(--tinta-3) }

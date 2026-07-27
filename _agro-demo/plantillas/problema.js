@@ -22,7 +22,7 @@ import { lamina, migas, bloqueAsesoria, wa, tipoLbl, cultivoN } from './comun.js
 
 const B = '../../';   // profundidad de /problemas/<slug>/
 
-function render(D, s) {
+function render(D, s, V) {
   const M = D.marca;
   const tipo = tipoLbl(D, s.tipo);
 
@@ -171,7 +171,7 @@ function render(D, s) {
   const desc = s.resumen.slice(0, 155);
 
   return pagina({
-    D, base: B, ruta, titulo, desc,
+    D, V, base: B, ruta, titulo, desc,
     preloadImg: s.img || null,
     jsonld: [
       {

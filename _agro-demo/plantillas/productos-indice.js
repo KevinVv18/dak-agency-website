@@ -18,7 +18,7 @@ import { migas, bloqueAsesoria, selloOrg } from './comun.js';
 
 const B = '../';
 
-function render(D) {
+function render(D, _dato, V) {
   const M = D.marca;
 
   /* Orden por línea, siguiendo el de las capacidades de la portada, para que el
@@ -94,7 +94,7 @@ function render(D) {
   </div>`;
 
   return pagina({
-    D, base: B, ruta: '/productos/',
+    D, V, base: B, ruta: '/productos/',
     titulo: `Catálogo de agroinsumos: nutrición, bioestimulantes y control · ${M.nombre}`,
     desc: `${D.stats.nProductos} productos formulados para la agroexportación del norte del Perú: nutrición, bioestimulación, inducción de defensas, control biológico y corrección de suelo y agua.`,
     jsonld: [

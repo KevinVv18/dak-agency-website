@@ -27,7 +27,7 @@ const ICONO_TIPO = {
 /* Orden por frecuencia real en la costa norte peruana. */
 const ORDEN = ['carencia', 'enfermedad', 'plaga', 'abiotico'];
 
-function render(D) {
+function render(D, _dato, V) {
   const M = D.marca;
 
   const grupos = ORDEN
@@ -84,7 +84,7 @@ function render(D) {
   </div>`;
 
   return pagina({
-    D, base: B, ruta: '/problemas/',
+    D, V, base: B, ruta: '/problemas/',
     titulo: `Plagas, enfermedades y carencias en cultivos del norte · ${M.nombre}`,
     desc: 'Fichas de campo para reconocer plagas, enfermedades y carencias nutricionales en arándano, palto, uva y espárrago: qué se ve, por qué ocurre y qué aplicar.',
     jsonld: [

@@ -14,11 +14,22 @@ import { migas, bloqueAsesoria, problemasDeCultivo } from './comun.js';
 
 const B = '../';
 
-function render(D) {
+function render(D, _dato, V) {
   const M = D.marca;
 
   const tarjeta = c => {
     const nProb = problemasDeCultivo(D, c.id).length;
+
+    /* Un cultivo con programa muestra sus etapas por nombre: dice mucho más que
+       el número, porque el visitante reconoce su propio calendario. Uno sin
+       programa lo declara y punto — un "—" en la casilla de etapas no informa
+       nada y se lee como un dato faltante en vez de un estado. */
+    const detalle = c.listo
+      ? `<ol class="cult-etapas">
+            ${c.etapas.map((e, i) => `<li><span>${i + 1}</span>${esc(e.n)}</li>`).join('\n            ')}
+          </ol>`
+      : '<p class="cult-estado">Programa en preparación con el equipo agronómico</p>';
+
     return `<li>
         <a class="cult-card${c.listo ? '' : ' cult-card--pendiente'}" href="${B}cultivos/${esc(c.slug)}/">
           <div class="cult-card-h">
@@ -27,13 +38,14 @@ function render(D) {
               <b>${esc(c.n)}</b>
               <i>${esc(c.cientifico)}</i>
             </div>
+            <span class="cult-badge">${c.listo ? `${c.etapas.length} etapas` : 'En preparación'}</span>
           </div>
           <p>${esc(c.resumen)}</p>
-          <ul class="cult-datos">
-            <li><b>${c.listo ? c.etapas.length : '—'}</b><span>Etapas</span></li>
-            <li><b>${nProb}</b><span>Fichas de campo</span></li>
-          </ul>
-          <span class="rel-ir">${c.listo ? 'Ver el programa' : 'Ver estado'} ${icono('flecha')}</span>
+          ${detalle}
+          <span class="cult-pie">
+            <span class="cult-fichas">${nProb} ficha${nProb === 1 ? '' : 's'} de campo</span>
+            <span class="rel-ir">${c.listo ? 'Ver el programa' : 'Ver estado'} ${icono('flecha')}</span>
+          </span>
         </a>
       </li>`;
   };
@@ -68,7 +80,7 @@ function render(D) {
   </div>`;
 
   return pagina({
-    D, base: B, ruta: '/cultivos/',
+    D, V, base: B, ruta: '/cultivos/',
     titulo: `Programas de nutrición y protección por cultivo · ${M.nombre}`,
     desc: 'Programas por etapa fenológica para arándano, palto, uva de mesa y espárrago en la costa norte del Perú: qué aplicar, en qué dosis y en qué momento.',
     jsonld: [
