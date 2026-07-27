@@ -9,9 +9,11 @@
 <meta property="og:title" content="ARENAL Agrociencia — Demo de web para agroinsumos por DAK Agency" />
 <meta property="og:description" content="Programa por cultivo y etapa, catálogo técnico y calculadora de dosis. Demo desarrollado por DAK Agency." />
 <meta property="og:type" content="website" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+<!-- Fuentes self-hosteadas: cero peticiones a terceros. Se precargan porque el
+     CSS las descubre tarde y son texto visible desde el primer scroll. -->
+<link rel="preload" href="assets/fonts/archivo-var-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/jetbrainsmono-var-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" as="image" href="assets/img/campo-hileras.webp" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 22h28' stroke='%2317603A' stroke-width='2.6' stroke-linecap='square'/%3E%3Cpath d='M6 17h9M11 12h10M17 27h11' stroke='%2317603A' stroke-width='2.2' stroke-linecap='square' opacity='.55'/%3E%3C/svg%3E" />
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"ARENAL Agrociencia (demo)","description":"Marca ficticia de demostración creada por DAK Agency para el nicho de agroinsumos. No es una empresa real.","areaServed":"Lambayeque, La Libertad, Piura, Perú","url":"https://agro.dakagency.net/","parentOrganization":{"@type":"Organization","name":"DAK Agency","url":"https://dakagency.net"}}
@@ -89,7 +91,9 @@
         </div>
       </div>
 
-      <aside class="hero-ficha" aria-label="Datos de la empresa">
+      <aside class="hero-col" aria-label="Datos de la empresa">
+      <div data-lamina="hero" data-forma="ancha" data-clase="hero-lamina"></div>
+      <div class="hero-ficha">
         <div class="hero-ficha-h"><span>Ficha de identidad</span><span>Demo</span></div>
         <dl>
           <dt>Sede</dt><dd data-brand="ciudad">Chiclayo, Lambayeque</dd>
@@ -98,6 +102,7 @@
           <dt>Producción</dt><dd>Formulación local</dd>
           <dt>Admisibilidad</dt><dd>Línea orgánica y convencional</dd>
         </dl>
+      </div>
       </aside>
     </div>
   </section>
@@ -105,11 +110,14 @@
   <!-- ── PROGRAMA FENOLÓGICO ──────────────────────────────────────────────── -->
   <section id="programa" class="reveal">
     <div class="wrap">
-      <div class="sec-h">
-        <span class="rotulo">01 · Programa</span>
-        <h2>El programa completo, etapa por etapa</h2>
-        <p class="lead">Elige el cultivo y recorre su ciclo. En cada etapa fenológica: qué se aplica,
-          en qué dosis, con qué frecuencia y por qué vía. No es una lista de productos, es un programa.</p>
+      <div class="sec-h sec-h--foto">
+        <div>
+          <span class="rotulo">01 · Programa</span>
+          <h2>El programa completo, etapa por etapa</h2>
+          <p class="lead">Elige el cultivo y recorre su ciclo. En cada etapa fenológica: qué se aplica,
+            en qué dosis, con qué frecuencia y por qué vía. No es una lista de productos, es un programa.</p>
+        </div>
+        <div data-lamina="programa" data-forma="alta"></div>
       </div>
 
       <div class="prog-cultivos" id="progCultivos" role="group" aria-label="Elegir cultivo"></div>
@@ -220,11 +228,14 @@
   <!-- ── COBERTURA ────────────────────────────────────────────────────────── -->
   <section id="cobertura" class="reveal">
     <div class="wrap">
-      <div class="sec-h">
-        <span class="rotulo">05 · Cobertura</span>
-        <h2>Cada zona, con su responsable</h2>
-        <p class="lead">El visitante elige su zona y la consulta llega al representante correcto. En un
-          sitio real esto se conecta al CRM y queda registrado con su origen.</p>
+      <div class="sec-h sec-h--foto">
+        <div>
+          <span class="rotulo">05 · Cobertura</span>
+          <h2>Cada zona, con su responsable</h2>
+          <p class="lead">El visitante elige su zona y la consulta llega al representante correcto. En un
+            sitio real esto se conecta al CRM y queda registrado con su origen.</p>
+        </div>
+        <div data-lamina="cobertura" data-forma="ancha"></div>
       </div>
       <div class="zonas" id="zonasGrid"></div>
     </div>

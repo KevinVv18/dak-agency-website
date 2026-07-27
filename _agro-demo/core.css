@@ -27,6 +27,29 @@
        numérico se produce por animación: los números viven en el DOM.
    ═════════════════════════════════════════════════════════════════════════════ */
 
+/* ── Tipografía self-hosteada ───────────────────────────────────────────────
+   Dos archivos variables (~66 KB en total) que cubren todos los pesos. Sin
+   Google Fonts: cero peticiones a terceros, que es una cosa menos que pueda
+   fallar en el wifi de una sala de reuniones. Subset latin, suficiente para
+   español (ñ, tildes, ¿, ¡).
+   ───────────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('assets/fonts/archivo-var-latin.woff2') format('woff2-variations'),
+       url('assets/fonts/archivo-var-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('assets/fonts/jetbrainsmono-var-latin.woff2') format('woff2-variations'),
+       url('assets/fonts/jetbrainsmono-var-latin.woff2') format('woff2');
+}
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box }
 
 :root {
@@ -173,6 +196,9 @@ header.nav {
 .hero .lead { margin-bottom: 1.9rem }
 .hero-ctas { display: flex; gap: .8rem; flex-wrap: wrap }
 
+/* Columna derecha del hero: lámina arriba, datos duros abajo. */
+.hero-col { display: flex; flex-direction: column; gap: 1.1rem }
+
 /* Ficha de identidad: el bloque de datos duros que ancla el mundo. */
 .hero-ficha { border: 1px solid var(--linea-2); background: var(--papel-2) }
 .hero-ficha-h {
@@ -205,10 +231,44 @@ header.nav {
 .sello--conv { border-color: var(--linea-2); color: var(--tinta-3); background: var(--papel-3) }
 .sello--alerta { border-color: var(--alerta); color: var(--alerta); background: var(--alerta-tenue) }
 
+/* ── Lámina ─────────────────────────────────────────────────────────────────
+   La fotografía de este mundo va PLATEADA: acotada, numerada y con pie, como
+   en una guía de campo. No hay fondos a sangre — una foto suelta a pantalla
+   completa pertenece a otro tipo de sitio, y además obligaría a estirar
+   originales de 1024px. Aquí la foto es un dato con su rótulo, no decoración.
+   ───────────────────────────────────────────────────────────────────────── */
+.lamina { border: 1px solid var(--linea-2); background: var(--papel-2); margin: 0 }
+.lamina-img { position: relative; overflow: hidden; background: var(--papel-3) }
+.lamina-img img { width: 100%; height: 100%; object-fit: cover; display: block }
+.lamina-n {
+  position: absolute; top: 0; left: 0;
+  font-family: var(--mono); font-size: var(--fs-min); font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  background: var(--tinta); color: var(--papel); padding: .3rem .55rem;
+}
+.lamina figcaption {
+  padding: .7rem .85rem; border-top: 1px solid var(--linea-2);
+  font-size: var(--fs-min); color: var(--tinta-2); line-height: 1.55;
+}
+.lamina figcaption b { color: var(--tinta); font-weight: 650 }
+.lamina figcaption i { font-style: italic; color: var(--tinta-3) }
+/* relaciones de aspecto por uso, para que el recorte sea intencional */
+.lamina--ancha .lamina-img { aspect-ratio: 16 / 9 }
+.lamina--alta  .lamina-img { aspect-ratio: 4 / 3 }
+
 /* ── Secciones ──────────────────────────────────────────────────────────── */
 section { padding: clamp(3rem, 6.5vw, 5rem) 0; border-bottom: 1px solid var(--linea-2) }
 .sec-h { margin-bottom: clamp(1.8rem, 3.5vw, 2.6rem); max-width: 74ch }
 .sec-h h2 { margin: .9rem 0 .7rem }
+
+/* Cabecera de sección con lámina al costado: da peso visual sin empujar la
+   interacción hacia abajo. */
+.sec-h--foto {
+  max-width: none;
+  display: grid; grid-template-columns: 1.35fr .65fr;
+  gap: clamp(1.5rem, 4vw, 3rem); align-items: start;
+}
+.sec-h--foto > div { max-width: 74ch }
 
 /* ═══ PROGRAMA FENOLÓGICO — la interacción principal ═══════════════════════ */
 .prog-cultivos { display: flex; gap: .55rem; flex-wrap: wrap; margin-bottom: 1.8rem }
@@ -420,6 +480,10 @@ table.aplic .ver:hover { color: var(--acento); border-color: var(--acento) }
 .sint-detalle dt { font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3); margin-bottom: .25rem }
 .sint-detalle dd { font-size: .93rem; color: var(--tinta-2); max-width: 70ch }
 .sint-prods { display: flex; gap: .55rem; flex-wrap: wrap }
+/* Cuando el síntoma tiene lámina, el detalle se parte en dos: texto y foto de
+   referencia. Sin lámina, el texto ocupa todo — no hay hueco vacío. */
+.sint-detalle--foto { display: grid; grid-template-columns: 1fr .8fr; gap: clamp(1.2rem, 3vw, 2.2rem); align-items: start }
+.sint-detalle--foto .lamina { position: sticky; top: 88px }
 
 /* ═══ ZONAS / REPRESENTANTES ══════════════════════════════════════════════ */
 .zonas { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
@@ -439,6 +503,11 @@ footer.pie { padding: clamp(2.5rem, 5vw, 3.5rem) 0 2rem; background: var(--papel
 @media (max-width: 980px) {
   .hero-grid { grid-template-columns: 1fr; gap: 2.2rem }
   .calc { grid-template-columns: 1fr }
+  .sec-h--foto { grid-template-columns: 1fr }
+  .sint-detalle--foto { grid-template-columns: 1fr }
+  .sint-detalle--foto .lamina { position: static }
+  /* la lámina del hero no debe dominar la columna al apilarse */
+  .hero-lamina { max-width: 520px }
   /* El riel de etapas pasa a scroll horizontal: 5 etapas no caben en tablet. */
   .etapa-riel { grid-auto-flow: row; grid-auto-columns: auto }
   .etapa-btn { border-right: 0; border-bottom: 1px solid var(--linea) }

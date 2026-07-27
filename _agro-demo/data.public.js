@@ -40,6 +40,26 @@ window.AGRO = (function () {
     wa: '51906765040',
     waNombre: 'DAK Agency',
     anio: '2026',
+    // Láminas fotográficas por sección. Todas en dominio público (USDA y
+    // Wikimedia Commons); ver CREDITS.md. Se reemplazan al skin-ear por
+    // fotografía propia del cliente, que siempre gana a una foto de banco.
+    laminas: {
+      hero: {
+        src: 'campo-hileras.webp', n: 'Lámina 01',
+        alt: 'Hileras de cultivo a contraluz al atardecer, con equipo de riego al fondo',
+        pie: '<b>Campaña en curso.</b> Hileras establecidas con riego presurizado. El programa que sigue está construido sobre esta realidad: suelo, agua y etapa.'
+      },
+      programa: {
+        src: 'arandano-fruto.webp', n: 'Lámina 02',
+        alt: 'Arbusto de arándano cargado de fruta madura',
+        pie: '<b>Arándano en cosecha.</b> <i>Vaccinium corymbosum.</i> Lo que se ve aquí se decidió meses antes, en floración y cuajado.'
+      },
+      cobertura: {
+        src: 'campo-surcos.webp', n: 'Lámina 03',
+        alt: 'Surcos de un campo recién establecido, con plantas jóvenes en línea',
+        pie: '<b>Campo recién establecido.</b> El acompañamiento técnico arranca aquí, no cuando aparece el problema.'
+      }
+    },
     // Marca gráfica: tres surcos sobre una línea de horizonte. Se reemplaza
     // entera al skin-ear.
     marca:
@@ -260,7 +280,12 @@ window.AGRO = (function () {
       id: 'clorosis', n: 'Clorosis férrica', cien: 'Deficiencia de Fe inducida',
       senal: 'Hojas jóvenes amarillas con las nervaduras todavía verdes. Aparece primero en el brote nuevo, no en la hoja vieja.',
       causa: 'Típica de suelo calcáreo o riego con agua dura: el hierro está en el suelo pero la planta no lo puede tomar.',
-      prods: ['micromix', 'zerosal', 'suelomejora']
+      prods: ['micromix', 'zerosal', 'suelomejora'],
+      // Foto de referencia real del síntoma. Aquí la imagen no decora: es el
+      // dato con el que el agrónomo compara lo que tiene en campo.
+      img: 'sintoma-clorosis.webp',
+      imgAlt: 'Brote de arándano con hojas amarillas y nervaduras verdes, patrón típico de clorosis férrica',
+      imgPie: 'Brote joven de arándano con clorosis intervenal. El amarillo avanza en la lámina mientras la nervadura sigue verde: ese contraste es el que distingue una carencia de hierro de una de nitrógeno, que amarillea la hoja entera y empieza por las viejas.'
     },
     {
       id: 'nematodo', n: 'Nematodo agallador', cien: 'Meloidogyne spp.',

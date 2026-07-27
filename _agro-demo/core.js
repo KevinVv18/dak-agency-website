@@ -49,6 +49,20 @@
   }
   var esDemoTexto = 'Valores demostrativos';
 
+  /* Lámina: fotografía acotada, numerada y con pie. El pie admite <b> e <i>
+     porque viene de los datos, no de entrada de usuario.
+     `forma` = 'ancha' (16:9) | 'alta' (4:3). */
+  function lamina(l, forma, clase) {
+    if (!l || !l.src) { return '' }
+    return '<figure class="lamina lamina--' + (forma || 'ancha') + (clase ? ' ' + clase : '') + '">'
+      + '<div class="lamina-img">'
+      + (l.n ? '<span class="lamina-n">' + esc(l.n) + '</span>' : '')
+      + '<img src="' + BASE + 'assets/img/' + esc(l.src) + '" alt="' + esc(l.alt || '') + '" loading="lazy" decoding="async" />'
+      + '</div>'
+      + (l.pie ? '<figcaption>' + l.pie + '</figcaption>' : '')
+      + '</figure>';
+  }
+
   /* Sello de admisibilidad orgánica / convencional. Mismo acento de marca,
      diferenciado por tratamiento — no hay un tercer color en el sistema. */
   function selloOrg(p) {
@@ -443,8 +457,14 @@
 
       var s = D.sintomas.filter(function (x) { return x.id === sel })[0];
       if (!s) { return }
-      det.innerHTML =
-        '<h3>' + esc(s.n) + '</h3>'
+      // Solo se parte en dos columnas si este síntoma tiene lámina; si no, el
+      // texto ocupa el ancho completo en vez de dejar un hueco.
+      det.className = 'sint-detalle' + (s.img ? ' sint-detalle--foto' : '');
+      var foto = s.img
+        ? lamina({ src: s.img, n: 'Referencia', alt: s.imgAlt, pie: s.imgPie }, 'alta')
+        : '';
+      det.innerHTML = (foto ? '<div>' : '')
+        + '<h3>' + esc(s.n) + '</h3>'
         + '<p class="cien">' + esc(s.cien) + '</p>'
         + '<dl>'
         + '<div><dt>Qué se ve en campo</dt><dd>' + esc(s.senal) + '</dd></div>'
@@ -456,7 +476,8 @@
           if (!p) { return '' }
           return '<button type="button" class="btn btn-line btn-sm" data-ficha="' + esc(p.id) + '">'
             + esc(p.n) + '</button>';
-        }).join('') + '</div>';
+        }).join('') + '</div>'
+        + (foto ? '</div>' + foto : '');
     }
 
     grid.addEventListener('click', function (ev) {
@@ -501,6 +522,15 @@
     document.querySelectorAll('[data-wa]').forEach(function (el) {
       el.href = waLink(el.dataset.wa || ('Hola, vi el demo de ' + D.brand.nombre + ' y quiero una web así para mi empresa.'));
     });
+    /* Láminas de sección: el HTML solo declara el contenedor y qué lámina va
+       en él, así el cascarón no repite marcado por cada foto. */
+    var L = (D.brand && D.brand.laminas) || {};
+    document.querySelectorAll('[data-lamina]').forEach(function (el) {
+      var l = L[el.dataset.lamina];
+      if (!l) { el.remove(); return }   // sin foto no queda un hueco vacío
+      el.innerHTML = lamina(l, el.dataset.forma || 'ancha', el.dataset.clase || '');
+    });
+
     var nProd = $('statProd'), nCult = $('statCult');
     if (nProd) { nProd.textContent = D.productos.length }
     if (nCult) {
