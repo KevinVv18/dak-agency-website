@@ -20,13 +20,16 @@ function esc(s) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-/** Enlaces del menú. `href` se resuelve contra el prefijo de la página. */
+/* Enlaces del menú. Todos son RELATIVOS y se resuelven contra el prefijo de la
+   página, no absolutos: así el sitio entero funciona igual servido en la raíz de
+   un dominio o dentro de una subcarpeta, que es lo que hace falta para las
+   versiones skin-eadas por cliente. */
 const MENU = [
-  { href: '#programa', t: 'Programa por cultivo' },
-  { href: '#diagnostico', t: 'Diagnóstico' },
-  { href: '#catalogo', t: 'Catálogo' },
-  { href: '#calculadora', t: 'Calculadora' },
-  { href: '#cobertura', t: 'Cobertura' }
+  { rel: '#programa', t: 'Programa por cultivo' },
+  { rel: 'problemas/', t: 'Problemas' },
+  { rel: '#catalogo', t: 'Catálogo' },
+  { rel: '#calculadora', t: 'Calculadora' },
+  { rel: '#cobertura', t: 'Cobertura' }
 ];
 
 /**
@@ -96,7 +99,14 @@ ${tokens}
       <span class="brand-txt"><b>${esc(M.nombre)}</b><small>${esc(M.bajada)}</small></span>
     </a>
     <nav class="nav-links" id="navLinks" aria-label="Secciones">
-      ${MENU.map(m => `<a href="${m.href.startsWith('#') && b ? b + m.href : m.href}">${esc(m.t)}</a>`).join('\n      ')}
+      ${MENU.map(m => {
+        /* `aria-current="page"` solo en la página exacta, que es lo que dice la
+           especificación. Estar dentro de la sección se marca con una clase
+           visual: útil para orientarse, pero no es "la página actual". */
+        const exacta = o.ruta === '/' + m.rel;
+        const enSeccion = !m.rel.startsWith('#') && !exacta && o.ruta.startsWith('/' + m.rel);
+        return `<a href="${b + m.rel}"${exacta ? ' aria-current="page"' : ''}${enSeccion ? ' class="actual"' : ''}>${esc(m.t)}</a>`;
+      }).join('\n      ')}
     </nav>
     <a class="btn btn-solid btn-sm nav-cta" data-wa="Hola DAK, vi el demo de web para agroinsumos y quiero una así para mi empresa." target="_blank" rel="noopener" href="#">Hablar con un asesor</a>
     <button class="nav-burger" id="navBurger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">${icono('flecha')}</button>

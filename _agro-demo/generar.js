@@ -20,6 +20,8 @@ import { fileURLToPath } from 'node:url';
 
 import D from './datos/index.js';
 import * as home from './plantillas/home.js';
+import * as problemasIndice from './plantillas/problemas-indice.js';
+import * as problema from './plantillas/problema.js';
 
 /* `import.meta.dirname` existe desde Node 20.11; se deriva de la URL para no
    depender de la versión exacta que traiga el runner de CI. */
@@ -30,10 +32,17 @@ const DIST = path.join(RAIZ, 'dist');
 const ESTATICOS = ['core.css', 'core.js', '.htaccess', 'robots.txt', 'CREDITS.md'];
 const CARPETAS = ['assets'];
 
-/* Páginas a generar. Cada entrada declara su ruta y quién la renderiza; añadir
-   un tipo de página nuevo es añadir una entrada aquí. */
+/* Páginas a generar. Cada entrada declara su ruta y quién la renderiza; `dato`
+   es el registro que recibe la plantilla en las páginas de detalle. Añadir un
+   tipo de página nuevo es añadir entradas aquí — el resto del build no cambia. */
 const PAGINAS = [
-  { ruta: '/', plantilla: home }
+  { ruta: '/', plantilla: home },
+  { ruta: '/problemas/', plantilla: problemasIndice },
+  ...D.problemas.map(p => ({
+    ruta: '/problemas/' + p.slug + '/',
+    plantilla: problema,
+    dato: p
+  }))
 ];
 
 /* ── utilidades ──────────────────────────────────────────────────────────── */
@@ -130,7 +139,7 @@ function construir() {
   // 3. páginas
   const htmlPorRuta = {};
   for (const p of PAGINAS) {
-    const html = p.plantilla.render(D);
+    const html = p.plantilla.render(D, p.dato);
     const destino = archivoDe(p.ruta);
     fs.mkdirSync(path.dirname(destino), { recursive: true });
     fs.writeFileSync(destino, html);

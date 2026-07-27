@@ -498,6 +498,13 @@
             + (r.momento ? '<span class="sint-momento">' + esc(r.momento) + '</span>' : '')
             + '</li>';
         }).join('') + '</ul>'
+        /* El resumen de aquí es una vista previa: la ficha completa —señales una
+           por una, con qué se confunde, cuándo aparece— vive en su propia
+           página, que es la que posiciona. */
+        + (s.slug
+          ? '<p class="sint-mas"><a class="btn btn-solid btn-sm" href="' + BASE + 'problemas/' + esc(s.slug) + '/">'
+            + 'Ver la ficha completa de ' + esc(s.n) + '</a></p>'
+          : '')
         + (foto ? '</div>' + foto : '');
     }
 

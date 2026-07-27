@@ -204,6 +204,11 @@ header.nav {
 }
 .nav-links a:hover { color: var(--tinta) }
 .nav-links a:hover::after { transform: scaleX(1) }
+/* Página actual y sección actual: el subrayado queda fijo para que se sepa
+   dónde estás sin tener que leer la miga de pan. */
+.nav-links a[aria-current="page"], .nav-links a.actual { color: var(--tinta) }
+.nav-links a[aria-current="page"]::after, .nav-links a.actual::after { transform: scaleX(1) }
+.nav-links a.actual::after { opacity: .45 }
 .nav-cta { flex: 0 0 auto; white-space: nowrap }
 .nav-burger { display: none; background: none; border: 1px solid var(--linea-2); padding: .5rem .7rem; cursor: pointer }
 
@@ -719,6 +724,170 @@ table.aplic .ver:hover { color: var(--acento); border-color: var(--acento) }
 .sint-detalle--foto { display: grid; grid-template-columns: 1fr .8fr; gap: clamp(1.2rem, 3vw, 2.2rem); align-items: start }
 .sint-detalle--foto .lamina { position: sticky; top: 88px }
 
+/* ═══ MIGAS DE PAN ════════════════════════════════════════════════════════ */
+.migas { padding: 1.1rem 0 0 }
+.migas ol { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem }
+.migas li {
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .06em;
+  text-transform: uppercase; color: var(--tinta-3);
+}
+/* Separador dibujado, no un carácter suelto: así no lo lee un lector de pantalla. */
+.migas li + li::before { content: ''; display: inline-block; width: 12px; height: 1px; background: var(--linea-2); vertical-align: middle; margin-right: .5rem }
+.migas a { color: var(--tinta-2); border-bottom: 1px solid transparent; transition: border-color .2s, color .2s }
+.migas a:hover { color: var(--acento); border-bottom-color: var(--acento) }
+.migas [aria-current="page"] { color: var(--tinta) }
+
+/* ═══ PÁGINA DE PROBLEMA ══════════════════════════════════════════════════ */
+.prob-cab { padding: clamp(1.6rem, 4vw, 2.6rem) 0 clamp(1.8rem, 4vw, 2.8rem); border-bottom: 1px solid var(--linea-2) }
+.prob-cab h1 { margin: .9rem 0 .4rem; font-size: clamp(1.9rem, 4.6vw, 3.1rem) }
+.prob-cien {
+  font-family: var(--mono); font-style: italic; font-size: .95rem;
+  color: var(--tinta-3); margin-bottom: 1.1rem;
+}
+
+/* Dos columnas: el cuerpo se lee de corrido y el aside acompaña sin estorbar. */
+.prob-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) 300px;
+  gap: clamp(2rem, 5vw, 4rem); align-items: start;
+  padding: clamp(2rem, 4.5vw, 3.2rem) clamp(1.1rem, 4vw, 2.4rem);
+}
+.prob-cuerpo { min-width: 0 }
+
+.prob-sec { padding-bottom: clamp(1.8rem, 3.5vw, 2.6rem); margin-bottom: clamp(1.8rem, 3.5vw, 2.6rem); border-bottom: 1px solid var(--linea) }
+.prob-sec:last-child { border-bottom: 0; margin-bottom: 0 }
+.prob-sec h2 {
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem); margin-bottom: .9rem;
+  display: flex; align-items: center; gap: .55rem;
+}
+.prob-sec h2 .ico { width: 1.05em; height: 1.05em; color: var(--ambar) }
+.prob-sec p { font-size: .97rem; color: var(--tinta-2) }
+.prob-sec .lamina { margin-top: 1.4rem }
+.prob-nota { font-size: var(--fs-min) !important; color: var(--tinta-3) !important; margin-bottom: 1.2rem }
+
+/* El bloque de confusión se distingue del resto: es el que evita el error de
+   diagnóstico, y quien hojea la página tiene que tropezarse con él. */
+.prob-sec--confusion {
+  background: var(--ambar-tenue); border: 1px solid var(--ambar);
+  border-bottom-width: 1px; padding: clamp(1.1rem, 2.6vw, 1.6rem);
+}
+.prob-sec--confusion h2 { color: var(--tinta) }
+.prob-sec--confusion p { color: var(--tinta) }
+
+/* Acciones: producto, dosis y momento. Es una tabla en espíritu, pero como lista
+   sobrevive al ancho de un teléfono sin scroll horizontal. */
+.acciones { list-style: none; display: grid; gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
+.accion { background: var(--papel-2); padding: 1rem 1.1rem }
+.accion-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap }
+.accion-n {
+  background: none; border: 0; padding: 0; cursor: pointer; text-align: left;
+  display: inline-flex; align-items: center; gap: .45rem;
+  font-family: inherit; font-size: 1rem; font-weight: 650; color: var(--tinta);
+  border-bottom: 1px solid var(--linea-2); transition: color .2s, border-color .2s;
+}
+.accion-n:hover { color: var(--acento); border-bottom-color: var(--acento) }
+.accion-n .ico { width: 15px; height: 15px; color: var(--tinta-3) }
+.accion-dosis { font-family: var(--mono); font-weight: 600; color: var(--ambar); white-space: nowrap }
+.accion-momento { font-size: .9rem; color: var(--tinta-2); margin-top: .45rem }
+.accion-via {
+  display: flex; gap: 1.1rem; flex-wrap: wrap; margin-top: .5rem;
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .05em;
+  text-transform: uppercase; color: var(--tinta-3);
+}
+
+/* Chips de cultivo */
+.chips { list-style: none; display: flex; gap: .5rem; flex-wrap: wrap }
+.chip {
+  display: inline-flex; align-items: center; gap: .4rem;
+  border: 1px solid var(--linea-2); background: var(--papel-2);
+  padding: .5rem .8rem; font-size: .88rem; font-weight: 550; color: var(--tinta-2);
+}
+.chip .ico { width: 13px; height: 13px }
+.chip--link { color: var(--acento); border-color: var(--acento); background: var(--acento-tenue); transition: background .2s }
+.chip--link:hover { background: var(--acento); color: var(--papel-2) }
+
+/* Aside: ficha de datos duros + llamada, pegada al scroll en pantalla ancha. */
+.prob-aside { position: sticky; top: 88px; display: flex; flex-direction: column; gap: .8rem }
+.prob-ficha { border: 1px solid var(--linea-2); background: var(--papel-2) }
+.prob-ficha-h {
+  display: flex; justify-content: space-between; gap: .8rem;
+  padding: .6rem .85rem; border-bottom: 1px solid var(--linea-2);
+  font-family: var(--mono); font-size: var(--fs-min);
+  letter-spacing: .11em; text-transform: uppercase; color: var(--tinta-3);
+}
+.prob-ficha dl { display: grid }
+.prob-ficha dt {
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .06em;
+  text-transform: uppercase; color: var(--tinta-3); padding: .7rem .85rem .15rem;
+}
+.prob-ficha dd { padding: 0 .85rem .7rem; font-size: .88rem; font-weight: 600; border-bottom: 1px solid var(--linea) }
+.prob-ficha dd:last-child { border-bottom: 0 }
+.prob-aside-cta { width: 100% }
+.prob-aside-nota { font-size: var(--fs-min); color: var(--tinta-3); text-align: center }
+
+/* ═══ BLOQUE DE ASESORÍA ══════════════════════════════════════════════════ */
+.asesoria {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 1.1rem; align-items: center;
+  border: 1px solid var(--acento); background: var(--acento-tenue);
+  padding: clamp(1.1rem, 2.6vw, 1.5rem); margin: clamp(1.8rem, 3.5vw, 2.6rem) 0;
+}
+.asesoria-ico { color: var(--acento) }
+.asesoria-ico .ico { width: 30px; height: 30px }
+.asesoria h3 { font-size: 1.05rem; margin-bottom: .3rem }
+.asesoria p { font-size: .9rem; color: var(--tinta-2); max-width: 60ch }
+.asesoria .btn { white-space: nowrap }
+
+/* ═══ RELACIONADOS ════════════════════════════════════════════════════════ */
+.prob-rel { border-top: 1px solid var(--linea-2); padding: clamp(2.5rem, 5vw, 3.5rem) 0 }
+.rel-grid { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
+.rel-card {
+  display: flex; flex-direction: column; gap: .3rem; height: 100%;
+  background: var(--papel-2); padding: 1.15rem; transition: background .2s;
+}
+.rel-card:hover { background: var(--papel) }
+.rel-tipo { font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-3) }
+.rel-card b { font-size: 1.05rem }
+.rel-card i { font-family: var(--mono); font-style: italic; font-size: .82rem; color: var(--tinta-3) }
+.rel-ir {
+  margin-top: auto; padding-top: .8rem;
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .09em;
+  text-transform: uppercase; color: var(--acento);
+}
+.rel-ir .ico { width: 14px; height: 14px; transition: transform .25s var(--ease) }
+.rel-card:hover .rel-ir .ico { transform: translateX(3px) }
+
+/* ═══ ÍNDICE DE PROBLEMAS ═════════════════════════════════════════════════ */
+.indice-cab { padding: clamp(1.6rem, 4vw, 2.6rem) 0 clamp(1.8rem, 4vw, 2.8rem); border-bottom: 1px solid var(--linea-2) }
+.indice-cab h1 { margin: .9rem 0 .8rem; font-size: clamp(1.9rem, 4.6vw, 3.1rem) }
+.indice-cuerpo { padding: clamp(2rem, 4.5vw, 3.2rem) clamp(1.1rem, 4vw, 2.4rem) }
+
+.grupo { margin-bottom: clamp(2.2rem, 4.5vw, 3.2rem) }
+.grupo-h { display: flex; align-items: center; gap: .8rem; padding-bottom: .8rem; border-bottom: 2px solid var(--tinta); margin-bottom: 1.2rem }
+.grupo-ico { color: var(--acento) }
+.grupo-ico .ico { width: 24px; height: 24px }
+.grupo-h h2 { font-size: clamp(1.2rem, 2.4vw, 1.6rem); flex: 1 1 auto }
+.grupo-n {
+  font-family: var(--mono); font-size: var(--fs-min); font-weight: 600;
+  border: 1px solid var(--linea-2); padding: .22rem .5rem; color: var(--tinta-2);
+}
+
+.prob-lista { list-style: none; display: grid; gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
+.prob-item {
+  display: grid; grid-template-columns: 1fr auto; gap: 1.2rem; align-items: center;
+  background: var(--papel-2); padding: 1.15rem 1.2rem; transition: background .2s;
+}
+.prob-item:hover { background: var(--papel) }
+.prob-item-txt { min-width: 0 }
+.prob-item-txt b { display: block; font-size: 1.08rem; margin-bottom: .12rem }
+.prob-item-txt i { font-family: var(--mono); font-style: italic; font-size: .82rem; color: var(--tinta-3) }
+.prob-item-txt p { font-size: .9rem; color: var(--tinta-2); margin: .5rem 0 .5rem; max-width: 76ch }
+.prob-item-cultivos { font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-3) }
+.prob-item-ir { color: var(--acento) }
+.prob-item-ir .ico { width: 20px; height: 20px; transition: transform .25s var(--ease) }
+.prob-item:hover .prob-item-ir .ico { transform: translateX(4px) }
+
+.sint-mas { margin-top: 1.3rem }
+
 /* ═══ ZONAS / REPRESENTANTES ══════════════════════════════════════════════ */
 .zonas { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
 .zona { background: var(--papel-2); padding: 1.2rem }
@@ -741,6 +910,12 @@ footer.pie { padding: clamp(2.5rem, 5vw, 3.5rem) 0 2rem; background: var(--papel
 @media (max-width: 980px) {
   .hero-grid { grid-template-columns: 1fr; gap: 2.2rem }
   .hero-media { max-width: 560px }
+  /* El aside deja de acompañar y pasa a ser la primera cosa que se ve: en un
+     teléfono lo útil es el resumen y el contacto, no scrollear hasta el final. */
+  .prob-grid { grid-template-columns: 1fr }
+  .prob-aside { position: static; order: -1 }
+  .asesoria { grid-template-columns: auto 1fr; row-gap: .9rem }
+  .asesoria .btn { grid-column: 1 / -1; justify-self: start }
   .calc { grid-template-columns: 1fr }
   .sec-h--foto { grid-template-columns: 1fr }
   .sint-detalle--foto { grid-template-columns: 1fr }
@@ -757,6 +932,10 @@ footer.pie { padding: clamp(2.5rem, 5vw, 3.5rem) 0 2rem; background: var(--papel
 
 @media (max-width: 720px) {
   .cap-grid { grid-template-columns: 1fr }
+  /* La flecha del listado se va: en táctil no hay hover que la justifique y el
+     texto necesita el ancho completo. */
+  .prob-item { grid-template-columns: 1fr }
+  .prob-item-ir { display: none }
   /* En pantalla estrecha la esquina cortada y el desfase se comen espacio útil:
      la composición se simplifica a foto y tarjeta, sin marco fantasma. */
   .hero-media { --desfase: 0px; padding: 0 0 3rem }

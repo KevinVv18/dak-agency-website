@@ -149,6 +149,7 @@ function render(D) {
         <h2>Qué estoy viendo en campo</h2>
         <p class="lead">El agricultor no busca un producto, busca resolver lo que ve. Elige el problema
           y el sitio explica qué es, con qué se confunde, por qué ocurre y qué del catálogo aplica.</p>
+        <p><a class="btn btn-line btn-sm" href="problemas/">Ver las ${D.stats.nProblemas} fichas de diagnóstico ${icono('flecha')}</a></p>
       </div>
       <div class="sint-grid" id="sintGrid" role="group" aria-label="Elegir problema"></div>
       <div class="sint-detalle" id="sintDetalle" role="status" aria-live="polite"></div>
