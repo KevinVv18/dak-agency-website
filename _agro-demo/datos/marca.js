@@ -106,6 +106,10 @@ export default {
     hero: {
       src: 'campo-hileras.webp', n: 'Lámina 01',
       alt: 'Hileras de cultivo a contraluz al atardecer, con equipo de riego al fondo',
+      /* Segunda toma que alterna con la primera en un fundido muy lento. Las dos
+         son campo abierto con suelo trabajado a propósito: así se lee como el
+         mismo lugar en otro momento y no como un carrusel cambiando de tema. */
+      src2: 'campo-surcos.webp',
       pie: '<b>Campaña en curso.</b> Hileras establecidas con riego presurizado. El programa que sigue está construido sobre esta realidad: suelo, agua y etapa.'
     },
     programa: {

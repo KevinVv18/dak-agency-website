@@ -50,7 +50,12 @@ function render(D) {
       <div class="hero-media">
         <div class="hero-marco" aria-hidden="true"></div>
         <figure class="hero-foto">
-          <img src="assets/img/${esc(hero.src)}" alt="${esc(hero.alt)}" fetchpriority="high" decoding="async" />
+          <img class="hero-img" src="assets/img/${esc(hero.src)}" alt="${esc(hero.alt)}" fetchpriority="high" decoding="async" />${
+          hero.src2 ? `
+          <!-- Segunda toma del fundido. Va con alt vacío y aria-hidden: es la
+               misma información visual que la primera, y anunciarla dos veces a
+               un lector de pantalla sería ruido. -->
+          <img class="hero-img hero-img--b" src="assets/img/${esc(hero.src2)}" alt="" aria-hidden="true" loading="lazy" decoding="async" />` : ''}
           <span class="lamina-n">${esc(hero.n)}</span>
         </figure>
         <aside class="hero-tarjeta">
@@ -74,11 +79,14 @@ function render(D) {
   <section class="metricas-sec reveal" aria-label="La empresa en cifras">
     <div class="wrap">
       <ul class="metricas">
-        ${M.metricas.map(m => {
+        ${M.metricas.map((m, i) => {
           const v = m.clave ? S[m.clave] : m.valor;
-          return `<li class="metrica">
+          /* --i escalona la entrada. La cifra va envuelta en un <span> porque
+             se anima subiendo tras una máscara: el número siempre está en el
+             DOM, lo que se mueve es su envoltorio. */
+          return `<li class="metrica" style="--i:${i}">
           <span class="metrica-ico">${icono(m.icono)}</span>
-          <b class="metrica-n">${esc(String(v))}${esc(m.sufijo || '')}</b>
+          <b class="metrica-n"><span>${esc(String(v))}${esc(m.sufijo || '')}</span></b>
           <span class="metrica-t">${esc(m.etiqueta)}</span>
         </li>`;
         }).join('\n        ')}

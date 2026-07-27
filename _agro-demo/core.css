@@ -149,9 +149,24 @@ p { max-width: 68ch }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto }
   .js .reveal, .js .reveal.in { opacity: 1; transform: none; transition: none }
-  /* La deriva del hero se apaga por completo, no se acelera: dejarla en 1 ms
-     produce un salto de escala, que es justo lo que molesta a quien la desactiva. */
-  .js .hero-foto img { animation: none !important; transform: none !important }
+
+  /* Todo lo animado se apaga y se deja en su estado FINAL, no se acelera a 1 ms:
+     una animación comprimida sigue siendo un salto, y el salto es justo lo que
+     molesta a quien la desactivó. Cada declaración de abajo devuelve un
+     elemento a como debe verse cuando ya terminó. */
+  .js .hero-foto .hero-img { animation: none !important; transform: none !important }
+  .js .hero-foto .hero-img--b { opacity: 0 !important }
+  .js .metricas-sec .metrica-n span { transform: none !important; animation: none !important }
+  .js .metricas-sec .metrica-t::before { width: 26px !important; animation: none !important }
+  /* Mismo :not() que la animación: los trazos con guionado decorativo nunca se
+     animaron, y limpiarles el dasharray aquí les borraría el guion. */
+  .js .metricas-sec .metrica-ico .ico path:not([stroke-dasharray]) {
+    stroke-dasharray: none !important; stroke-dashoffset: 0 !important; animation: none !important;
+  }
+  .js .etapa-panel .etapa-cab,
+  .js .etapa-panel table.aplic tbody tr { animation: none !important; opacity: 1 !important; transform: none !important }
+  .cap:hover .cap-link .ico { transform: none !important }
+
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important }
 }
 
@@ -236,13 +251,27 @@ header.nav {
   /* misma esquina cortada que el marco, para que se lean como un sistema */
   clip-path: polygon(0 0, 100% 0, 100% 100%, 56px 100%, 0 calc(100% - 56px));
 }
-.hero-foto img { width: 100%; height: 100%; object-fit: cover; display: block; transform-origin: 60% 40% }
-.hero-foto .lamina-n { position: absolute; top: 0; left: 0 }
+.hero-foto .hero-img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transform-origin: 60% 40%;
+}
+/* La segunda toma se apila sobre la primera y aparece con el fundido. */
+.hero-foto .hero-img--b { position: absolute; inset: 0; opacity: 0 }
+.hero-foto .lamina-n { position: absolute; top: 0; left: 0; z-index: 2 }
 
-/* Deriva lentísima: da vida sin llamar la atención sobre sí misma. Se apaga
-   entera con prefers-reduced-motion, más abajo. */
+/* Deriva lentísima: da vida sin llamar la atención sobre sí misma. */
 @keyframes deriva { from { transform: scale(1) } to { transform: scale(1.07) } }
-.js .hero-foto img { animation: deriva 26s ease-in-out infinite alternate }
+
+/* Fundido entre las dos tomas. Los tramos de espera son largos y la transición
+   corta en proporción: se busca que el visitante note el cambio de reojo, no
+   que mire un carrusel. Ciclo de 22 s, con unos 9 s de permanencia por toma. */
+@keyframes alternarFoto {
+  0%, 40% { opacity: 0 }
+  50%, 90% { opacity: 1 }
+  100% { opacity: 0 }
+}
+.js .hero-foto .hero-img { animation: deriva 26s ease-in-out infinite alternate }
+.js .hero-foto .hero-img--b { animation: deriva 26s ease-in-out infinite alternate, alternarFoto 22s ease-in-out infinite }
 
 /* Tarjeta de datos montada sobre la esquina inferior de la foto. */
 .hero-tarjeta {
@@ -284,8 +313,51 @@ header.nav {
 .metrica-n {
   font-family: var(--mono); font-size: clamp(1.7rem, 3.6vw, 2.5rem);
   font-weight: 700; line-height: 1; letter-spacing: -.02em;
+  display: block; overflow: hidden;      /* la máscara tras la que sube la cifra */
 }
+.metrica-n span { display: block }
 .metrica-t { font-size: var(--fs-min); font-family: var(--mono); letter-spacing: .09em; text-transform: uppercase; color: var(--tinta-3) }
+/* Filete que se extiende bajo la cifra, como la línea de cota de un plano. */
+.metrica-t::before {
+  content: ''; display: block; width: 26px; height: 2px;
+  background: var(--acento); margin-bottom: .55rem;
+}
+
+/* ── Entrada de las métricas ────────────────────────────────────────────────
+   En vez del contador que sube a toda prisa —que es el recurso de siempre y
+   además obliga a fabricar el número por animación— aquí se dibuja: el icono
+   se traza solo como si lo hiciera un plóter, la cifra sube tras una máscara y
+   la línea de cota se extiende debajo. El número está SIEMPRE en el DOM; lo
+   que se mueve es su envoltorio, así que quien desactiva las animaciones lo lee
+   completo y quieto desde el primer instante.
+
+   Los tres gestos comparten el mismo retardo escalonado por --i, así que cada
+   columna entra como una unidad y no como tres cosas sueltas.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes trazarIcono { to { stroke-dashoffset: 0 } }
+@keyframes subirCifra { from { transform: translateY(105%) } to { transform: none } }
+@keyframes extenderCota { from { width: 0 } to { width: 26px } }
+
+.js .metricas-sec .metrica-n span { transform: translateY(105%) }
+.js .metricas-sec .metrica-t::before { width: 0 }
+/* Solo los trazos continuos se dibujan. Los que ya llevan línea discontinua son
+   detalle secundario del icono: animarlos les borraría el guionado. */
+.js .metricas-sec .metrica-ico .ico path:not([stroke-dasharray]) {
+  stroke-dasharray: 400; stroke-dashoffset: 400;
+}
+
+.js .metricas-sec.in .metrica-n span {
+  animation: subirCifra .62s var(--ease) forwards;
+  animation-delay: calc(var(--i, 0) * 110ms + 120ms);
+}
+.js .metricas-sec.in .metrica-t::before {
+  animation: extenderCota .5s var(--ease) forwards;
+  animation-delay: calc(var(--i, 0) * 110ms + 420ms);
+}
+.js .metricas-sec.in .metrica-ico .ico path:not([stroke-dasharray]) {
+  animation: trazarIcono 1s ease forwards;
+  animation-delay: calc(var(--i, 0) * 110ms);
+}
 
 /* ── Capacidades ────────────────────────────────────────────────────────────
    Vuelve navegable y concreta una capacidad que de otro modo es una palabra
@@ -302,7 +374,11 @@ header.nav {
 .cap-ico {
   width: 46px; height: 46px; display: grid; place-items: center;
   border: 1px solid var(--acento); background: var(--acento-tenue); color: var(--acento);
+  transition: background .25s, color .25s;
 }
+/* Al pasar el cursor la tarjeta entera responde en bloque: el icono se invierte
+   y la flecha avanza. Un solo gesto, no tres animaciones compitiendo. */
+.cap:hover .cap-ico { background: var(--acento); color: var(--papel-2) }
 .cap-ico .ico { width: 24px; height: 24px }
 .cap h3 { font-size: 1.06rem }
 .cap p { font-size: .89rem; color: var(--tinta-2); flex: 1 1 auto }
@@ -313,8 +389,9 @@ header.nav {
   text-transform: uppercase; color: var(--acento);
   border-bottom: 1px solid transparent; transition: border-color .2s;
 }
-.cap-link:hover { border-bottom-color: var(--acento) }
-.cap-link .ico { width: 14px; height: 14px }
+.cap-link:hover, .cap:hover .cap-link { border-bottom-color: var(--acento) }
+.cap-link .ico { width: 14px; height: 14px; transition: transform .25s var(--ease) }
+.cap:hover .cap-link .ico { transform: translateX(3px) }
 
 /* Ficha de identidad: el bloque de datos duros que ancla el mundo. */
 .hero-ficha { border: 1px solid var(--linea-2); background: var(--papel-2) }
@@ -466,6 +543,19 @@ table.aplic .ver {
   transition: color .2s, border-color .2s;
 }
 table.aplic .ver:hover { color: var(--acento); border-color: var(--acento) }
+
+/* Al cambiar de etapa el panel se reescribe entero, así que los elementos
+   nuevos entran con un escalonado corto. Da la sensación de que la tabla se
+   rellena sola en vez de parpadear de golpe. Solo se anima la opacidad y el
+   desplazamiento: los valores ya están escritos. */
+@keyframes filaEntra { from { opacity: 0; transform: translateY(5px) } to { opacity: 1; transform: none } }
+.js .etapa-panel .etapa-cab,
+.js .etapa-panel table.aplic tbody tr { animation: filaEntra .34s var(--ease) backwards }
+.js .etapa-panel table.aplic tbody tr:nth-child(1) { animation-delay: .05s }
+.js .etapa-panel table.aplic tbody tr:nth-child(2) { animation-delay: .10s }
+.js .etapa-panel table.aplic tbody tr:nth-child(3) { animation-delay: .15s }
+.js .etapa-panel table.aplic tbody tr:nth-child(4) { animation-delay: .20s }
+.js .etapa-panel table.aplic tbody tr:nth-child(n+5) { animation-delay: .25s }
 
 .etapa-pie {
   padding: .95rem clamp(1.2rem, 3vw, 1.9rem); border-top: 1px solid var(--linea-2);
