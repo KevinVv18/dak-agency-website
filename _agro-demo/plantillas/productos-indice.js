@@ -29,9 +29,13 @@ function render(D, _dato, V) {
     return d !== 0 ? d : a.n.localeCompare(b.n, 'es');
   });
 
+  /* Color por línea, tomado de las capacidades para no mantener un segundo
+     mapeo que se desincronice del de la portada. */
+  const colorDe = cat => (M.capacidades.find(c => c.cat === cat) || {}).color;
+
   const tarjetas = productos.map(p => `<li class="prod-li"
         data-cat="${esc(p.cat)}" data-org="${p.org ? 'si' : 'no'}"
-        data-cultivos="${esc(p.cultivos.join(' '))}">
+        data-cultivos="${esc(p.cultivos.join(' '))}"${colorDe(p.cat) ? ` style="--linea-color:${colorDe(p.cat)}"` : ''}>
         <a class="prod-card prod-card--link" href="${B}productos/${esc(p.slug)}/">
           <div class="cab">
             <div>

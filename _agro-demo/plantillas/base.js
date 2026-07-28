@@ -20,15 +20,30 @@ function esc(s) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+/* Marca gráfica. Un cliente real trae su logotipo como imagen, no como el SVG
+   inline de la marca ficticia: se soportan las dos formas para que skin-ear no
+   obligue a vectorizar nada antes de la reunión. Con logotipo propio no se
+   repite el nombre en texto al lado — ya está dentro de la imagen, y duplicarlo
+   se lo lee dos veces un lector de pantalla. */
+function marcaGrafica(M, b) {
+  if (M.logoImg && M.logoImg.src) {
+    return `<img class="brand-logo" src="${b}assets/img/${esc(M.logoImg.src)}"`
+      + ` alt="${esc(M.logoImg.alt || M.nombreCompleto)}"`
+      + ` width="${M.logoImg.w}" height="${M.logoImg.h}" />`;
+  }
+  return `<span class="mark" aria-hidden="true">${M.marcaSvg}</span>`
+    + `<span class="brand-txt"><b>${esc(M.nombre)}</b><small>${esc(M.bajada)}</small></span>`;
+}
+
 /* Enlaces del menú. Todos son RELATIVOS y se resuelven contra el prefijo de la
    página, no absolutos: así el sitio entero funciona igual servido en la raíz de
    un dominio o dentro de una subcarpeta, que es lo que hace falta para las
    versiones skin-eadas por cliente. */
 const MENU = [
-  { rel: 'cultivos/', t: 'Cultivos' },
-  { rel: 'problemas/', t: 'Problemas' },
-  { rel: 'productos/', t: 'Catálogo' },
-  { rel: 'blog/', t: 'Notas de campo' },
+  { rel: 'cultivos/', t: 'Cultivos', sec: 'cultivos' },
+  { rel: 'problemas/', t: 'Problemas', sec: 'problemas' },
+  { rel: 'productos/', t: 'Catálogo', sec: 'productos' },
+  { rel: 'blog/', t: 'Notas de campo', sec: 'blog' },
   { rel: '#calculadora', t: 'Calculadora' }
 ];
 
@@ -76,8 +91,8 @@ function pagina(o) {
 <meta property="og:url" content="${esc(M.dominio + o.ruta)}" />
 <!-- Fuentes self-hosteadas: cero peticiones a terceros, que es una cosa menos
      que pueda fallar en el wifi de una sala de reuniones. -->
-<link rel="preload" href="${b}assets/fonts/archivo-var-latin.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="preload" href="${b}assets/fonts/jetbrainsmono-var-latin.woff2" as="font" type="font/woff2" crossorigin />${
+${(M.fuentes || ['archivo-var-latin.woff2', 'jetbrainsmono-var-latin.woff2'])
+  .map(f => `<link rel="preload" href="${b}assets/fonts/${esc(f)}" as="font" type="font/woff2" crossorigin />`).join('\n')}${
   o.preloadImg ? `\n<link rel="preload" as="image" href="${b}assets/img/${esc(o.preloadImg)}" />` : ''}
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M2 22h28' stroke='%2317603A' stroke-width='2.6' stroke-linecap='square'/%3E%3Cpath d='M6 17h9M11 12h10M17 27h11' stroke='%2317603A' stroke-width='2.2' stroke-linecap='square' opacity='.55'/%3E%3C/svg%3E" />
 ${ld}
@@ -103,11 +118,10 @@ ${tokens}
 <header class="nav">
   <div class="wrap nav-inner">
     <a class="brand" href="${b || './'}" aria-label="Inicio">
-      <span class="mark" aria-hidden="true">${M.marcaSvg}</span>
-      <span class="brand-txt"><b>${esc(M.nombre)}</b><small>${esc(M.bajada)}</small></span>
+      ${marcaGrafica(M, b)}
     </a>
     <nav class="nav-links" id="navLinks" aria-label="Secciones">
-      ${MENU.map(m => {
+      ${MENU.filter(m => !m.sec || !o.D.secciones || o.D.secciones.includes(m.sec)).map(m => {
         /* `aria-current="page"` solo en la página exacta, que es lo que dice la
            especificación. Estar dentro de la sección se marca con una clase
            visual: útil para orientarse, pero no es "la página actual". */

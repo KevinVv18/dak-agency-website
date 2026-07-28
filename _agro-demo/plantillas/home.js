@@ -43,7 +43,9 @@ function render(D, _dato, V) {
         <p class="lead">${esc(M.intro)}</p>
         <div class="hero-ctas">
           <a class="btn btn-solid" href="#programa">Ver programa por cultivo ${icono('flecha')}</a>
-          <a class="btn btn-line" href="#diagnostico">Tengo un problema en campo</a>
+          ${D.problemas.length
+            ? '<a class="btn btn-line" href="#diagnostico">Tengo un problema en campo</a>'
+            : '<a class="btn btn-line" href="#catalogo">Ver el catálogo</a>'}
         </div>
       </div>
 
@@ -107,7 +109,7 @@ function render(D, _dato, V) {
           cultivo y se cruza con las demás en el calendario de la campaña.</p>
       </div>
       <ul class="cap-grid">
-        ${M.capacidades.map(c => `<li class="cap">
+        ${M.capacidades.map(c => `<li class="cap"${c.color ? ` style="--linea-color:${c.color}"` : ''}>
           <span class="cap-ico">${icono(c.icono)}</span>
           <h3>${esc(c.n)}</h3>
           <p>${esc(c.d)}</p>
@@ -142,7 +144,10 @@ function render(D, _dato, V) {
     </div>
   </section>`;
 
-  const diagnosticoHtml = `
+  /* El diagnóstico solo aparece si el sitio tiene fichas. Una maqueta de
+     cliente que excluye esa sección no puede mostrar el selector vacío ni
+     enlazar a un índice que no se generó. */
+  const diagnosticoHtml = !D.problemas.length ? '' : `
   <section id="diagnostico" class="reveal">
     <div class="wrap">
       <div class="sec-h">
@@ -249,7 +254,7 @@ function render(D, _dato, V) {
 
   /* Últimas notas. Va al final a propósito: el blog no es lo que trae al
      visitante a la portada, pero sí lo que lo hace volver. */
-  const blogHtml = D.blog.length ? `
+  const blogHtml = (D.blog.length && (!D.secciones || D.secciones.includes('blog'))) ? `
   <section id="notas" class="reveal">
     <div class="wrap">
       <div class="sec-h">

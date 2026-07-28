@@ -54,19 +54,39 @@ jobs:
       - name: Generar el sitio
         run: node _agro-demo/generar.js
 
-      # Guarda de confidencialidad. La versión pública del demo usa una marca
-      # ficticia (ARENAL); los datos reales de un prospecto viven solo en su
-      # carpeta privada. Se revisa la SALIDA generada, que es lo que de verdad
-      # se publica, y no los fuentes.
-      - name: Verificar que lo generado no filtra datos de prospectos
+      # Guarda de confidencialidad. El sitio PÚBLICO usa una marca ficticia
+      # (ARENAL). Las maquetas con la marca real de un prospecto viven en
+      # carpetas `p-*` con noindex y sin enlaces entrantes, donde esos nombres
+      # sí corresponden. Aquí se comprueba que no se hayan colado fuera de ahí.
+      #
+      # Se revisa la SALIDA generada y no los fuentes, porque es la salida lo
+      # que se publica.
+      - name: Verificar que el sitio público no filtra datos de prospectos
         run: |
           set -e
-          PATRON='ExcelAg|Evergreen|Saeta|Nemakill|Aramite|Slam Org|Jaque Mate|Hermer|Gavidia'
-          if grep -rinE "$PATRON" _agro-demo/dist --include='*.html' --include='*.js' --include='*.css' --include='*.xml'; then
-            echo "::error::Datos de un prospecto encontrados en la salida publicable. Muévelos a su carpeta privada."
+          PATRON='ExcelAg|Evergreen|Saeta|Nemakill|Best-K|Fender|Aramite|Slam Org|Jaque Mate|Hermer|Gavidia'
+          if grep -rinE "$PATRON" _agro-demo/dist \
+               --include='*.html' --include='*.js' --include='*.css' --include='*.xml' \
+               --exclude-dir='p-*'; then
+            echo "::error::Datos de un prospecto en el sitio público. Su sitio va en una carpeta p-*."
             exit 1
           fi
-          echo "OK: la salida generada está limpia."
+          echo "OK: el sitio público está limpio."
+
+      # Las maquetas privadas no deben ser alcanzables desde el sitio público:
+      # ni enlazadas, ni listadas en el sitemap.
+      - name: Verificar que las maquetas privadas no están enlazadas
+        run: |
+          set -e
+          if grep -rn 'p-2026' _agro-demo/dist/index.html _agro-demo/dist/sitemap.xml 2>/dev/null; then
+            echo "::error::Una maqueta privada quedó enlazada o listada en el sitemap."
+            exit 1
+          fi
+          for f in _agro-demo/dist/p-*/index.html; do
+            [ -e "$f" ] || continue
+            grep -q 'noindex' "$f" || { echo "::error::$f sin noindex"; exit 1; }
+          done
+          echo "OK: maquetas privadas aisladas y con noindex."
 
       - name: Subir demo al docroot del subdominio (rsync en Docker)
         uses: burnett01/rsync-deployments@7.0.1

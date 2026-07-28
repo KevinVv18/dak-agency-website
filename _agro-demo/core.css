@@ -41,6 +41,17 @@
   src: url('assets/fonts/archivo-var-latin.woff2') format('woff2-variations'),
        url('assets/fonts/archivo-var-latin.woff2') format('woff2');
 }
+/* Montserrat la usa el skin de cliente cuyo manual de marca la especifica. Está
+   declarada aquí y no en su hoja aparte porque core.css es compartido: el
+   navegador solo descarga la familia que el `--ui` del sitio realmente pide. */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('assets/fonts/montserrat-var-latin.woff2') format('woff2-variations'),
+       url('assets/fonts/montserrat-var-latin.woff2') format('woff2');
+}
 @font-face {
   font-family: 'JetBrains Mono';
   font-style: normal;
@@ -442,14 +453,25 @@ header.nav {
   display: flex; flex-direction: column; gap: .7rem; transition: background .2s;
 }
 .cap:hover { background: var(--papel) }
+/* ── Color por línea de producto ────────────────────────────────────────────
+   Idea tomada del propio sitio del cliente, donde cada categoría lleva su color.
+   En un catálogo de seis líneas es funcional: el color identifica la familia
+   antes de leer el nombre.
+
+   Va SUBORDINADO al acento de marca, no compitiendo con él: aparece en el
+   icono y en un filete lateral, nunca en texto corrido ni en botones. Si el
+   dato no trae color, `--linea-color` cae al acento y nada se rompe. */
+.cap, .prod-li { --linea-color: var(--acento) }
+
 .cap-ico {
   width: 46px; height: 46px; display: grid; place-items: center;
-  border: 1px solid var(--acento); background: var(--acento-tenue); color: var(--acento);
+  border: 1px solid var(--linea-color); color: var(--linea-color);
+  background: var(--papel-3);
   transition: background .25s, color .25s;
 }
 /* Al pasar el cursor la tarjeta entera responde en bloque: el icono se invierte
    y la flecha avanza. Un solo gesto, no tres animaciones compitiendo. */
-.cap:hover .cap-ico { background: var(--acento); color: var(--papel-2) }
+.cap:hover .cap-ico { background: var(--linea-color); color: var(--papel-2) }
 .cap-ico .ico { width: 24px; height: 24px }
 .cap h3 { font-size: 1.06rem }
 .cap p { font-size: .89rem; color: var(--tinta-2); flex: 1 1 auto }
@@ -457,10 +479,10 @@ header.nav {
   background: none; border: 0; padding: 0; cursor: pointer; align-self: flex-start;
   display: inline-flex; align-items: center; gap: .4rem;
   font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .09em;
-  text-transform: uppercase; color: var(--acento);
+  text-transform: uppercase; color: var(--linea-color);
   border-bottom: 1px solid transparent; transition: border-color .2s;
 }
-.cap-link:hover, .cap:hover .cap-link { border-bottom-color: var(--acento) }
+.cap-link:hover, .cap:hover .cap-link { border-bottom-color: var(--linea-color) }
 .cap-link .ico { width: 14px; height: 14px; transition: transform .25s var(--ease) }
 .cap:hover .cap-link .ico { transform: translateX(3px) }
 
@@ -1236,3 +1258,14 @@ footer.pie { padding: clamp(2.5rem, 5vw, 3.5rem) 0 2rem; background: var(--papel
   .hero-ficha dt { border-right: 0; border-bottom: 0; padding-bottom: 0 }
   .hero-ficha dl > :nth-last-child(2) { border-bottom: 0 }
 }
+
+/* Filete lateral de la tarjeta de catálogo con el color de su línea: identifica
+   la familia de un vistazo en una grilla de catorce productos. */
+.prod-li .prod-card--link { box-shadow: inset 3px 0 0 var(--linea-color) }
+.prod-li .prod-card--link:hover { box-shadow: inset 5px 0 0 var(--linea-color) }
+.prod-li .cat-lbl { color: var(--linea-color); font-weight: 600 }
+
+/* Logotipo de cliente. Alto fijo y ancho automático: un logo apaisado y uno
+   cuadrado tienen que ocupar la misma altura de barra sin deformarse. */
+.brand-logo { height: 34px; width: auto; display: block }
+@media (max-width: 720px) { .brand-logo { height: 28px } }

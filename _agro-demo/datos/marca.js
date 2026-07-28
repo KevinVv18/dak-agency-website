@@ -73,27 +73,27 @@ export default {
      Cada una enlaza al catálogo filtrado por su línea. */
   capacidades: [
     {
-      cat: 'nutricion', icono: 'nutricion', n: 'Nutrición',
+      cat: 'nutricion', icono: 'nutricion', color: '#17603A', n: 'Nutrición',
       d: 'Macro y micronutrientes formulados para que la planta los tome cuando los pide, no cuando conviene aplicarlos.'
     },
     {
-      cat: 'bioestimulante', icono: 'bioestimulante', n: 'Bioestimulación',
+      cat: 'bioestimulante', icono: 'bioestimulante', color: '#1D6B6B', n: 'Bioestimulación',
       d: 'Algas y aminoácidos para arranque de raíz y para levantar la planta después de un golpe de calor o de viento.'
     },
     {
-      cat: 'defensa', icono: 'defensas', n: 'Inducción de defensas',
+      cat: 'defensa', icono: 'defensas', color: '#1E5288', n: 'Inducción de defensas',
       d: 'Fosfitos y silicatos que activan la resistencia de la propia planta antes de que la presión de enfermedad suba.'
     },
     {
-      cat: 'biologico', icono: 'biologico', n: 'Control biológico',
+      cat: 'biologico', icono: 'biologico', color: '#6A3D7A', n: 'Control biológico',
       d: 'Bacterias y hongos antagonistas para floración y suelo, sin periodo de carencia ni residuo que declarar.'
     },
     {
-      cat: 'control', icono: 'control', n: 'Control de plagas',
+      cat: 'control', icono: 'control', color: '#A6431E', n: 'Control de plagas',
       d: 'Botánicos y cobre admisibles en producción orgánica, pensados para programas de residuo cero en exportación.'
     },
     {
-      cat: 'suelo', icono: 'suelo', n: 'Suelo y agua',
+      cat: 'suelo', icono: 'suelo', color: '#7A5A22', n: 'Suelo y agua',
       d: 'Húmicos, fúlvicos y acidificantes: corregir el agua y la estructura antes de que el problema llegue a la raíz.'
     }
   ],
