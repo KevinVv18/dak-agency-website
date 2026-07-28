@@ -89,6 +89,16 @@ function pagina(o) {
 <meta property="og:description" content="${esc(o.desc)}" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${esc(M.dominio + o.ruta)}" />
+<meta property="og:locale" content="es_PE" />
+<meta property="og:site_name" content="${esc(M.nombreCompleto)}" />
+<!-- Imagen de vista previa. Va en JPEG y con URL absoluta a propósito: WhatsApp
+     y varios previsualizadores todavía fallan con WebP y con rutas relativas, y
+     WhatsApp es exactamente por donde se va a compartir este enlace. -->
+<meta property="og:image" content="${esc(M.dominio + '/assets/img/' + (M.ogImg || 'og.jpg'))}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="${esc(M.ogAlt || 'Hileras de cultivo al atardecer con equipo de riego')}" />
+<meta name="twitter:card" content="summary_large_image" />
 <!-- Fuentes self-hosteadas: cero peticiones a terceros, que es una cosa menos
      que pueda fallar en el wifi de una sala de reuniones. -->
 ${(M.fuentes || ['archivo-var-latin.woff2', 'jetbrainsmono-var-latin.woff2'])
