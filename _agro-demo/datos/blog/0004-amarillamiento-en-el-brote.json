@@ -1,0 +1,49 @@
+{
+  "title": "Amarillamiento en el brote: cómo saber si es hierro, nitrógeno o raíz",
+  "slug": "amarillamiento-en-el-brote",
+  "fecha": "2026-07-24",
+  "categoria": "diagnostico",
+  "excerpt": "Tres causas distintas producen hojas amarillas y se tratan al revés una de otra. La pista está en dónde empieza el amarillo y qué pasa con la nervadura.",
+  "tags": ["clorosis", "diagnóstico", "nitrógeno", "hierro", "raíz", "arándano"],
+  "content": "<p>«Está amarilla» es el motivo de consulta más frecuente y el menos específico. Tres causas completamente distintas dan hojas amarillas, y el tratamiento de una empeora activamente a las otras. Aplicar nitrógeno a una planta con la raíz podrida, por ejemplo, es empujar crecimiento que la raíz no puede sostener.</p><p>La buena noticia es que se distinguen a simple vista, sin análisis, si se sabe qué mirar. Son dos preguntas.</p><h2>Pregunta 1: ¿dónde empezó el amarillo?</h2><p>Los nutrientes se dividen en móviles e inmóviles según si la planta puede sacarlos de una hoja vieja y mandarlos al brote nuevo.</p><p>El <strong>nitrógeno es móvil</strong>. Cuando falta, la planta lo retira de las hojas viejas para alimentar el crecimiento nuevo. Por eso el amarillo empieza <em>abajo</em>, en las hojas maduras, y el brote se ve relativamente bien.</p><p>El <strong>hierro es inmóvil</strong>. Lo que ya está en una hoja vieja se queda ahí. Por eso, cuando falta, el brote nuevo sale amarillo mientras la hoja vieja sigue verde: el daño se ve <em>arriba</em>.</p><p>Con eso solo ya separaste las dos carencias más comunes.</p><h2>Pregunta 2: ¿la nervadura sigue verde?</h2><p>Esta confirma el hierro. En una <a href=\"/problemas/clorosis-ferrica/\">clorosis férrica</a> la lámina de la hoja amarillea pero las nervaduras se mantienen verdes, dibujando una retícula muy característica. En una carencia de nitrógeno la hoja amarillea entera, nervadura incluida.</p><p>Si ves retícula verde sobre amarillo en el brote nuevo, es hierro, y casi con seguridad es hierro bloqueado por el pH del suelo o por el bicarbonato del agua de riego, no hierro ausente.</p><h2>El tercer sospechoso: no es carencia, es la raíz</h2><p>Aquí está el error caro. Una planta con la raíz comprometida amarillea también, porque no absorbe. Y a diferencia de las carencias, no responde a la fertilización — que es justo la señal.</p><p>Dos causas frecuentes en la costa norte, y se distinguen entre sí:</p><ul><li><a href=\"/problemas/nematodo-agallador/\">Nematodo agallador</a>: deja agallas o nudos en la raíz y la raíz conserva su color. Las plantas afectadas aparecen en manchones dentro del lote, no repartidas al azar.</li><li><a href=\"/problemas/pudricion-de-raiz/\">Pudrición de raíz</a>: la raíz se ve oscura y quebradiza, sin raicillas blancas activas, y el daño se concentra en las partes bajas del lote donde se encharca.</li></ul><p>Las dos comparten una señal que las delata desde arriba: la planta decae a media mañana aunque el riego esté correcto. Una raíz sana abastece la demanda del mediodía; una comprometida no.</p><p>Si sospechas de raíz, hay que desenterrar. No hay atajo, y una planta sacrificada a tiempo cuesta mucho menos que media hectárea replantada.</p><h2>Un cuarto caso que se confunde con carencia</h2><p>El <a href=\"/problemas/estres-por-sales/\">estrés por sales</a> también detiene la planta y decolora, pero su marca es distinta: quema el <em>borde</em> de la hoja, avanzando de afuera hacia adentro, y la planta deja de responder a más fertilizante. Si además hay costra blanquecina alrededor del gotero, no busques más lejos.</p><h2>El orden que conviene seguir</h2><p>Antes de aplicar nada: mirar dónde está el amarillo, mirar la nervadura, desenterrar una planta del manchón y revisar el borde de la hoja. Son cuatro minutos y evitan una campaña de aplicaciones que no van a funcionar.</p><p>Y si la conclusión es hierro, el paso siguiente no es más quelato: es el <a href=\"/blog/leer-analisis-de-agua-de-riego/\">análisis de agua</a>, porque el bloqueo casi siempre viene de ahí.</p>",
+  "rank_math": {
+    "focus_keyword": "hojas amarillas en el cultivo",
+    "title": "Hojas amarillas: cómo distinguir hierro, nitrógeno o raíz",
+    "description": "Tres causas dan hojas amarillas y se tratan al revés una de otra. Dónde empieza el amarillo y qué pasa con la nervadura te dicen cuál es, sin análisis."
+  },
+  "faq_jsonld": {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "¿Cómo distingo una carencia de hierro de una de nitrógeno?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Por dónde empieza el amarillo. El nitrógeno es móvil: la planta lo retira de las hojas viejas, así que el amarillo empieza abajo y afecta la hoja entera. El hierro es inmóvil: el brote nuevo sale amarillo con las nervaduras todavía verdes, mientras la hoja vieja sigue sana."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cómo sé si el amarillamiento viene de un problema de raíz?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "La señal más clara es que no responde a la fertilización y que la planta decae a media mañana aunque el riego esté bien. Aparece en manchones dentro del lote, no repartida. Para confirmarlo hay que desenterrar una planta y revisar la raíz."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cómo diferencio nematodo de pudrición de raíz?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El nematodo deja agallas o nudos y la raíz conserva su color. La pudrición por Phytophthora deja la raíz oscura y quebradiza, sin raicillas blancas, y se concentra en las partes bajas del lote donde se encharca."
+        }
+      }
+    ]
+  },
+  "relacionados": {
+    "problemas": ["clorosis", "nematodo", "phytophthora", "salinidad"],
+    "cultivos": ["arandano"],
+    "productos": ["micromix", "zerosal", "nematb"]
+  }
+}

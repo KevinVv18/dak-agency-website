@@ -247,9 +247,33 @@ function render(D, _dato, V) {
     </div>
   </section>`;
 
+  /* Últimas notas. Va al final a propósito: el blog no es lo que trae al
+     visitante a la portada, pero sí lo que lo hace volver. */
+  const blogHtml = D.blog.length ? `
+  <section id="notas" class="reveal">
+    <div class="wrap">
+      <div class="sec-h">
+        <span class="rotulo">06 · Notas de campo</span>
+        <h2>Lo que se aprende revisando lotes</h2>
+        <p class="lead">Artículos técnicos escritos para el que decide en campo, no para posicionar
+          palabras sueltas. Cada uno enlaza con las fichas y los programas que le corresponden.</p>
+        <p><a class="btn btn-line btn-sm" href="blog/">Ver las ${D.stats.nPosts} notas ${icono('flecha')}</a></p>
+      </div>
+      <ul class="rel-grid">
+        ${D.blog.slice(0, 3).map(p => `<li><a class="rel-card" href="blog/${esc(p.slug)}/">
+          <span class="rel-tipo">${esc(D.categoriasBlog[p.categoria] || p.categoria)}</span>
+          <b>${esc(p.title)}</b>
+          <i>${esc(p.excerpt.slice(0, 90))}…</i>
+          <span class="rel-ir">Leer ${icono('flecha')}</span>
+        </a></li>`).join('\n        ')}
+      </ul>
+    </div>
+  </section>` : '';
+
   const contenido = [
     heroHtml, metricasHtml, capacidadesHtml,
-    programaHtml, diagnosticoHtml, catalogoHtml, calculadoraHtml, coberturaHtml
+    programaHtml, diagnosticoHtml, catalogoHtml, calculadoraHtml, coberturaHtml,
+    blogHtml
   ].join('\n');
 
   return pagina({
@@ -259,15 +283,30 @@ function render(D, _dato, V) {
     titulo: `${M.nombreCompleto} · Agroinsumos para el norte del Perú — Demo por DAK Agency`,
     desc: M.descripcionCorta + ' Demo de web para empresas de agroinsumos, desarrollado por DAK Agency.',
     preloadImg: hero.src,
-    jsonld: [{
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: M.nombreCompleto + ' (demo)',
-      description: 'Marca ficticia de demostración creada por DAK Agency para el nicho de agroinsumos. No es una empresa real.',
-      areaServed: 'Lambayeque, La Libertad, Piura, Perú',
-      url: M.dominio + '/',
-      parentOrganization: { '@type': 'Organization', name: 'DAK Agency', url: 'https://dakagency.net' }
-    }],
+    jsonld: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: M.nombreCompleto + ' (demo)',
+        description: 'Marca ficticia de demostración creada por DAK Agency para el nicho de agroinsumos. No es una empresa real.',
+        areaServed: 'Lambayeque, La Libertad, Piura, Perú',
+        url: M.dominio + '/',
+        parentOrganization: { '@type': 'Organization', name: 'DAK Agency', url: 'https://dakagency.net' }
+      },
+      /* La portada es la única página sin BreadcrumbList —es la raíz, no tiene
+         de dónde venir—, así que declara el sitio en su lugar. Sin esto queda
+         como la única URL con un solo bloque de datos estructurados. */
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: M.nombreCompleto + ' (demo)',
+        alternateName: M.nombre,
+        description: M.descripcionCorta,
+        inLanguage: 'es',
+        url: M.dominio + '/',
+        publisher: { '@type': 'Organization', name: 'DAK Agency', url: 'https://dakagency.net' }
+      }
+    ],
     contenido
   });
 }

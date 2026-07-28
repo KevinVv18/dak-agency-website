@@ -28,8 +28,8 @@ const MENU = [
   { rel: 'cultivos/', t: 'Cultivos' },
   { rel: 'problemas/', t: 'Problemas' },
   { rel: 'productos/', t: 'Catálogo' },
-  { rel: '#calculadora', t: 'Calculadora' },
-  { rel: '#cobertura', t: 'Cobertura' }
+  { rel: 'blog/', t: 'Notas de campo' },
+  { rel: '#calculadora', t: 'Calculadora' }
 ];
 
 /**

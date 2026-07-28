@@ -27,6 +27,8 @@ import * as cultivosIndice from './plantillas/cultivos-indice.js';
 import * as cultivo from './plantillas/cultivo.js';
 import * as productosIndice from './plantillas/productos-indice.js';
 import * as producto from './plantillas/producto.js';
+import * as blogIndice from './plantillas/blog-indice.js';
+import * as post from './plantillas/post.js';
 
 /* `import.meta.dirname` existe desde Node 20.11; se deriva de la URL para no
    depender de la versión exacta que traiga el runner de CI. */
@@ -59,6 +61,12 @@ const PAGINAS = [
     ruta: '/productos/' + p.slug + '/',
     plantilla: producto,
     dato: p
+  })),
+  { ruta: '/blog/', plantilla: blogIndice },
+  ...D.blog.map(b => ({
+    ruta: '/blog/' + b.slug + '/',
+    plantilla: post,
+    dato: b
   }))
 ];
 
@@ -203,7 +211,8 @@ function construir() {
   console.log('    estáticos : ' + nEstaticos + ' archivos');
   console.log('    contenido : ' + D.stats.nProductos + ' productos · '
     + D.stats.nProblemas + ' problemas · ' + D.stats.nCultivos + '/'
-    + D.stats.nCultivosTotal + ' cultivos con programa');
+    + D.stats.nCultivosTotal + ' cultivos con programa · '
+    + D.stats.nPosts + ' notas');
 }
 
 construir();

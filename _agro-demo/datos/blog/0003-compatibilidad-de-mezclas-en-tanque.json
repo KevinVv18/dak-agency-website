@@ -1,0 +1,49 @@
+{
+  "title": "Qué no va con qué en el tanque: compatibilidad de mezclas",
+  "slug": "compatibilidad-de-mezclas-en-tanque",
+  "fecha": "2026-07-10",
+  "categoria": "aplicacion",
+  "excerpt": "Juntar dos productos para ahorrar una pasada puede costar las dos aplicaciones. Las incompatibilidades que más se repiten y la prueba de jarra que las evita.",
+  "tags": ["compatibilidad", "mezclas en tanque", "aplicación foliar", "control biológico", "pH de caldo"],
+  "content": "<p>Ahorrar una pasada de tractor es una decisión razonable: cuesta combustible, horas de operario y una ventana de aplicación que a veces es de un solo día. El problema es cuando el ahorro sale caro, y el caldo que se aplicó no sirvió para nada.</p><p>Las incompatibilidades no siempre se ven. Algunas precipitan a la vista y se detectan en el tanque; otras no cambian el aspecto del caldo y solo se notan tres semanas después, cuando el resultado esperado no aparece.</p><h2>Lo vivo muere con lo que mata</h2><p>Es la regla que más se rompe. Un control biológico es un organismo vivo: <a href=\"/productos/arenal-bacillus-sub/\">ARENAL Bacillus SUB</a> y <a href=\"/productos/arenal-tricho-5/\">ARENAL Tricho-5</a> son una bacteria y un hongo. El cobre y los fungicidas de amplio espectro los inactivan.</p><p>Si el día de la aplicación toca cobre, ese día no van biológicos. Y no es cuestión de dejar unas horas: conviene separar las aplicaciones varios días y aplicar el biológico después, no antes.</p><p>Hay un tercer factor que se pasa por alto: la temperatura del agua del caldo. Por encima de 30 °C —y en verano en el norte, un tanque al sol la pasa fácil— la viabilidad cae. Llenar temprano y aplicar temprano no es solo por el viento.</p><h2>El ácido y el alcalino se anulan</h2><p>Es química básica y en campo se repite todo el tiempo. <a href=\"/productos/arenal-silika-25/\">ARENAL Silika 25</a> es un silicato de potasio con pH 11,2 en solución. Un acidificante o un fertilizante ácido en el mismo tanque los precipita a los dos, y lo que queda es un caldo con grumos que además tapa las boquillas.</p><p>El silicato va solo, o con compatibles alcalinos. No es una recomendación conservadora: es que la mezcla no funciona.</p><h2>El coadyuvante entra al final</h2><p>El esparcidor-penetrante cambia la tensión superficial del caldo. Si entra primero, el resto de los productos se dispersa mal y algunos hacen espuma que desborda el tanque.</p><p>El orden que menos problemas da es: llenar la mitad del tanque con agua, corregir el pH si hace falta, incorporar los sólidos con agitación, después los líquidos, y el coadyuvante al final, con el tanque casi lleno.</p><h2>La prueba de jarra, que toma diez minutos</h2><p>Antes de cargar mil litros, se hace en un litro. En una jarra transparente, con la misma agua de la aplicación y las mismas proporciones, se incorporan los productos en el mismo orden que se usará en el tanque. Se agita y se deja reposar quince minutos.</p><p>Si aparecen grumos, capas separadas, un precipitado en el fondo o el caldo se calienta, la mezcla no va. Si se ve homogéneo, es una buena señal — con el matiz importante de que la prueba de jarra detecta la incompatibilidad <em>física</em>, no la biológica. Un cobre y un Bacillus pueden dar un caldo perfectamente homogéneo mientras el cobre está matando a la bacteria.</p><h2>Lo que conviene anotar</h2><p>Cada aplicación que se hace es información: qué se mezcló, con qué agua, a qué temperatura y qué pasó. En campos de Motupe y de Chepén he visto cuadernos de campo que valen más que cualquier ficha técnica, justamente porque registran las mezclas que no funcionaron.</p><p>Si estás armando el calendario y quieres ver dónde caen las aplicaciones biológicas respecto de las de cobre, el <a href=\"/cultivos/arandano/\">programa de arándano</a> las tiene separadas por etapa.</p>",
+  "rank_math": {
+    "focus_keyword": "compatibilidad de mezclas en tanque",
+    "title": "Compatibilidad de mezclas en tanque: qué no va con qué",
+    "description": "Las incompatibilidades que más se repiten al mezclar agroquímicos en el tanque, el orden correcto de incorporación y cómo hacer la prueba de jarra."
+  },
+  "faq_jsonld": {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "¿Puedo mezclar cobre con un control biológico?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. El cobre y los fungicidas de amplio espectro inactivan a las bacterias y hongos antagonistas. Conviene separar las aplicaciones varios días y aplicar el biológico después del cobre, no antes."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿En qué orden se incorporan los productos al tanque?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Llenar la mitad del tanque con agua, corregir el pH si hace falta, incorporar los sólidos con agitación, luego los líquidos y el coadyuvante al final con el tanque casi lleno. El coadyuvante primero hace que el resto se disperse mal y genera espuma."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿La prueba de jarra detecta todas las incompatibilidades?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Detecta la incompatibilidad física: grumos, capas, precipitado o calentamiento. No detecta la biológica. Un cobre y un Bacillus pueden dar un caldo homogéneo mientras el cobre está matando a la bacteria."
+        }
+      }
+    ]
+  },
+  "relacionados": {
+    "problemas": ["botrytis", "oidio"],
+    "cultivos": ["arandano"],
+    "productos": ["bacsub", "tricho5", "silika", "adherplus", "cobreorg"]
+  }
+}

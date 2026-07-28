@@ -150,7 +150,16 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 }
 
 .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 clamp(1.1rem, 4vw, 2.4rem) }
-.sr { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0 }
+/* Texto solo para lectores de pantalla.
+   `clip-path` además de `clip` (que está obsoleto pero se mantiene por
+   navegadores viejos), y `margin:-1px` para que ese píxel no participe del
+   flujo. El `white-space: nowrap` es necesario para que el texto no se envuelva
+   y quede leído como una letra por línea. */
+.sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap; border: 0;
+}
 
 /* ── Tipografía ─────────────────────────────────────────────────────────────
    Todas las cifras van tabulares: es una ficha técnica, las columnas se leen
@@ -575,7 +584,12 @@ section { padding: clamp(3rem, 6.5vw, 5rem) 0; border-bottom: 1px solid var(--li
 .etapa-cab p { margin-top: .8rem; color: var(--tinta-2); font-size: .95rem }
 
 /* Tabla de aplicaciones: el corazón de la ficha. */
-.tabla-wrap { overflow-x: auto }
+/* `position: relative` no es decorativo: sin él, un descendiente absoluto —como
+   el texto de lector de pantalla de la cabecera— toma como referencia el bloque
+   contenedor inicial, se escapa del scroll y estira el ancho del documento
+   entero. El síntoma es una portada que se desplaza de lado en el teléfono sin
+   que se vea qué la empuja. */
+.tabla-wrap { overflow-x: auto; position: relative }
 table.aplic { width: 100%; border-collapse: collapse; min-width: 640px }
 table.aplic caption {
   text-align: left; padding: .9rem clamp(1.2rem, 3vw, 1.9rem);
@@ -1075,6 +1089,74 @@ table.comp tr:nth-child(even) { background: var(--papel-2) }
 .prod-card .abrir .ico { width: 13px; height: 13px; transition: transform .25s var(--ease) }
 .prod-card--link:hover .abrir .ico { transform: translateX(3px) }
 .cat-grid > li[hidden] { display: none }
+
+/* ═══ BLOG ════════════════════════════════════════════════════════════════ */
+.post-cab { max-width: 74ch }
+.post-meta {
+  display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1.1rem;
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .07em;
+  text-transform: uppercase; color: var(--tinta-3);
+}
+
+/* Cuerpo del artículo: medida de lectura corta y ritmo vertical propio. Es el
+   único sitio del sitio con texto largo de corrido, y pide tratamiento distinto
+   al de una ficha técnica. */
+.post-cuerpo { max-width: 68ch }
+.post-cuerpo > p { font-size: 1.02rem; line-height: 1.72; color: var(--tinta-2); margin-bottom: 1.15rem; max-width: none }
+.post-cuerpo > h2 {
+  font-size: clamp(1.2rem, 2.4vw, 1.55rem);
+  margin: 2.3rem 0 .9rem; padding-top: 1.4rem;
+  border-top: 1px solid var(--linea);
+}
+.post-cuerpo > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0 }
+.post-cuerpo > ul { list-style: none; display: grid; gap: .7rem; margin: 0 0 1.3rem }
+.post-cuerpo > ul > li { position: relative; padding-left: 1.15rem; font-size: 1.02rem; line-height: 1.7; color: var(--tinta-2) }
+.post-cuerpo > ul > li::before {
+  content: ''; position: absolute; left: 0; top: .78em;
+  width: 7px; height: 1px; background: var(--acento);
+}
+.post-cuerpo strong { color: var(--tinta); font-weight: 650 }
+.post-cuerpo em { font-style: italic }
+/* Enlace dentro del artículo: la señal va siempre visible, no solo en hover. */
+.post-cuerpo a {
+  color: var(--acento); text-decoration: underline;
+  text-underline-offset: .18em; text-decoration-thickness: 1px;
+  transition: background .18s, text-decoration-thickness .18s;
+}
+.post-cuerpo a:hover { background: var(--acento-tenue); text-decoration-thickness: 2px }
+
+.post-tags {
+  list-style: none; display: flex; gap: .45rem; flex-wrap: wrap;
+  margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid var(--linea);
+}
+.post-tags li {
+  font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .06em;
+  border: 1px solid var(--linea-2); padding: .24rem .5rem; color: var(--tinta-3);
+}
+
+/* Lista del aside: relacionados por tipo. */
+.aside-lista { list-style: none; display: grid }
+.aside-lista li { border-bottom: 1px solid var(--linea) }
+.aside-lista li:last-child { border-bottom: 0 }
+.aside-lista a { display: block; padding: .62rem .85rem; transition: background .2s, box-shadow .2s }
+.aside-lista a:hover { background: var(--papel); box-shadow: inset 3px 0 0 var(--acento) }
+.aside-lista b { display: block; font-size: .88rem; font-weight: 620; line-height: 1.3 }
+.aside-lista a:hover b { color: var(--acento) }
+.aside-lista span { font-family: var(--mono); font-size: var(--fs-min); letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-3) }
+
+/* Artículo destacado del índice. */
+.post-destacado {
+  display: block; border: 1px solid var(--tinta); background: var(--papel-2);
+  padding: clamp(1.4rem, 3.5vw, 2.4rem); margin-bottom: 1.6rem;
+  transition: background .2s, box-shadow .2s;
+}
+.post-destacado:hover { background: var(--papel); box-shadow: inset 4px 0 0 var(--acento) }
+.post-destacado h2 { font-size: clamp(1.4rem, 3.2vw, 2.1rem); margin: .5rem 0 .7rem; max-width: 26ch }
+.post-destacado:hover h2 { color: var(--acento) }
+.post-destacado p { font-size: 1rem; color: var(--tinta-2); max-width: 68ch; margin-bottom: 1.1rem }
+.post-destacado .rel-ir { margin-top: 0; padding-top: 0 }
+
+.post-lista { list-style: none; display: grid; gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }
 
 /* ═══ ZONAS / REPRESENTANTES ══════════════════════════════════════════════ */
 .zonas { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 1px; background: var(--linea-2); border: 1px solid var(--linea-2) }

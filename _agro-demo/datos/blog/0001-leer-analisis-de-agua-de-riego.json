@@ -1,0 +1,49 @@
+{
+  "title": "Cómo leer un análisis de agua de riego antes de armar el programa",
+  "slug": "leer-analisis-de-agua-de-riego",
+  "fecha": "2026-06-12",
+  "categoria": "manejo",
+  "excerpt": "La CE, el pH y el bicarbonato deciden si tu fertilizante llega o se queda en el camino. Cómo leer las tres cifras que importan y qué hacer con cada una.",
+  "tags": ["análisis de agua", "salinidad", "fertirriego", "costa norte", "bicarbonatos"],
+  "content": "<p>Hay una escena que se repite en los valles de Olmos y de Virú: el productor sube la dosis de fertilizante porque la planta no responde, y la planta responde todavía peor. No es el fertilizante. Es el agua con la que lo está aplicando.</p><p>Un análisis de agua de riego cuesta poco y llega en una semana. El problema no es conseguirlo: es que llega con veinte filas de datos y casi nadie sabe cuáles tres deciden el programa.</p><h2>1. La conductividad eléctrica: cuánta sal estás aplicando</h2><p>La CE mide las sales disueltas. Es el número que más rápido explica por qué un lote deja de responder.</p><p>Por debajo de 0,7 dS/m el agua es cómoda para casi todo. Entre 0,7 y 3,0 hay que manejarla con lámina de lavado. Por encima de 3,0 el cultivo sensible ya está condicionado, y el arándano lo es más que la mayoría.</p><p>El error clásico es reaccionar al síntoma regando más seguido pero más corto. Eso aporta más sal sin lavar nada, y el borde de la hoja se sigue quemando. Si eso es lo que estás viendo, la ficha de <a href=\"/problemas/estres-por-sales/\">estrés por sales</a> explica cómo distinguirlo de un déficit hídrico, que a simple vista se le parece mucho.</p><h2>2. El pH: no es el villano que todos creen</h2><p>El pH del agua importa menos de lo que se dice, porque lo que de verdad manda es la capacidad tampón, que viene del bicarbonato. Un agua de pH 8 con poco bicarbonato se corrige con muy poco ácido. Un agua de pH 7,5 cargada de bicarbonato es mucho más difícil.</p><p>Donde el pH sí pesa de inmediato es en el caldo de aplicación foliar. Un producto alcalino y uno ácido en el mismo tanque se precipitan mutuamente y la aplicación se pierde entera.</p><h2>3. El bicarbonato: el que bloquea el hierro</h2><p>Esta es la cifra que casi nadie mira y la que más explica los amarillamientos de la costa. Por encima de 3 meq/L, el bicarbonato mantiene el pH alto en la zona de raíz y precipita el hierro. El análisis de suelo puede mostrar hierro suficiente y la planta seguir clorótica, porque no hay hierro <em>disponible</em>.</p><p>Por eso la <a href=\"/problemas/clorosis-ferrica/\">clorosis férrica</a> se resuelve tan mal a puro quelato: si no corriges el agua, estás reponiendo hierro que se vuelve a bloquear. Y por eso el quelato importa más que el porcentaje — un hierro EDTA en suelo calcáreo no aguanta.</p><h2>Qué hacer con las tres cifras</h2><p>Con la CE alta, lo primero es lámina de lavado, no menos fertilizante. Con bicarbonato alto, acidificar el agua de riego de forma sostenida: para eso está <a href=\"/productos/arenal-zero-sal/\">ARENAL Zero-Sal</a>, cuya dosis sale del análisis y no de la etiqueta. Y en los dos casos conviene acompañar con materia orgánica que sostenga la estructura del suelo, sobre todo en los suelos arenosos del norte, donde el margen de error es mínimo.</p><p>Una advertencia que vale por todo lo anterior: el análisis de agua se repite. La misma fuente cambia de composición entre el inicio y el final de campaña, y en pozos la variación puede ser grande. Un análisis de hace dos años no es un análisis.</p><p>Si quieres ver cómo se cruza esto con el resto del ciclo, el <a href=\"/cultivos/arandano/\">programa de arándano</a> ubica cada corrección en su etapa.</p>",
+  "rank_math": {
+    "focus_keyword": "análisis de agua de riego",
+    "title": "Cómo leer un análisis de agua de riego | Guía práctica",
+    "description": "CE, pH y bicarbonato: las tres cifras del análisis de agua de riego que deciden tu programa de fertirriego, y qué hacer con cada una en la costa norte."
+  },
+  "faq_jsonld": {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "¿Cada cuánto debo hacer un análisis de agua de riego?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Al menos al inicio de cada campaña, y una segunda vez a mitad si riegas de pozo. La composición de una misma fuente cambia a lo largo del año, así que un análisis de hace dos años no sirve para decidir dosis."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Qué conductividad eléctrica es aceptable para arándano?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El arándano es más sensible que la mayoría de los cultivos. Por debajo de 0,7 dS/m el agua es cómoda; entre 0,7 y 3,0 hay que trabajar con lámina de lavado; por encima de 3,0 el cultivo ya está condicionado y conviene corregir antes de subir dosis de fertilizante."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Por qué mi planta sigue clorótica si el análisis de suelo muestra hierro suficiente?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Porque el hierro está presente pero no disponible. Con bicarbonato alto el pH de la zona de raíz se mantiene elevado y el hierro precipita. La corrección pasa por acidificar el agua de riego, no solo por aplicar más quelato."
+        }
+      }
+    ]
+  },
+  "relacionados": {
+    "problemas": ["salinidad", "clorosis"],
+    "cultivos": ["arandano"],
+    "productos": ["zerosal", "suelomejora", "micromix"]
+  }
+}

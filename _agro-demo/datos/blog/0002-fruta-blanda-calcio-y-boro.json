@@ -1,0 +1,49 @@
+{
+  "title": "La fruta llegó blanda a destino: por qué el problema empezó cuatro meses antes",
+  "slug": "fruta-blanda-calcio-y-boro",
+  "fecha": "2026-06-26",
+  "categoria": "poscosecha",
+  "excerpt": "El reclamo llega del importador y la conversación se va a la cadena de frío. Pero si la fruta salió blanda del campo, la ventana para corregirlo se cerró en cuajado.",
+  "tags": ["calcio", "boro", "poscosecha", "firmeza de fruta", "arándano", "agroexportación"],
+  "content": "<p>El reclamo llega por correo desde el importador, con fotos: fruta blanda, cáliz abierto, pudriciones secundarias en un lote que salió del packing con la condición correcta. La primera reacción, siempre, es revisar la cadena de frío.</p><p>A veces es la cadena de frío. Pero cuando no hay daño mecánico y la fruta salió blanda desde el inicio, el problema no ocurrió en el viaje: ocurrió en el campo, meses antes, y no se puede arreglar con nada de lo que se haga después.</p><h2>El calcio no se mueve hacia atrás</h2><p>El calcio entra a la fruta durante la división celular, en las primeras semanas después del cuajado. Después de esa ventana, la fruta sigue creciendo por expansión de células que ya existen, y el calcio que no entró no entra más.</p><p>Eso lo distingue de casi cualquier otra carencia. Un nitrógeno bajo se corrige aplicando nitrógeno. Un calcio bajo en fruta se corrige la campaña siguiente. Por eso la <a href=\"/problemas/deficiencia-de-calcio/\">deficiencia de calcio</a> es la carencia que aparece cuando ya no hay nada que hacer, y la que menos se diagnostica en campo: la hoja vieja se ve perfectamente sana, así que nadie sospecha.</p><h2>Sin boro, el calcio no llega</h2><p>Aquí está la parte que se salta con más frecuencia. El calcio se mueve por el xilema, arrastrado por la transpiración, y la fruta transpira poco. El boro es el que participa en que ese calcio se fije en la pared celular una vez que llega.</p><p>Aplicar calcio sin boro es llenar un balde agujereado. Por eso <a href=\"/productos/arenal-calfort-18/\">ARENAL Calfort 18</a> lleva boro en la formulación, y no como un extra de marketing: sin él, buena parte del calcio aplicado no se aprovecha.</p><h2>Lo que compite con la absorción</h2><p>Dos prácticas habituales trabajan en contra sin que se note:</p><ul><li><strong>Exceso de potasio en la misma ventana.</strong> En llenado la tentación es cargar potasio para calibre. El potasio y el calcio compiten por la absorción, así que un programa muy cargado de K en cuajado le quita entrada al Ca justo cuando más importa.</li><li><strong>Riego excesivo.</strong> El calcio llega con el flujo transpiratorio. Con suelo saturado, la planta transpira menos y el calcio se mueve peor, aunque haya de sobra en la solución.</li></ul><h2>Y algo tan simple como mojar bien la hoja</h2><p>El calcio foliar es de contacto y absorción lenta. La hoja del arándano y la del palto son cerosas: sin coadyuvante, una parte importante del caldo escurre al suelo y la aplicación cuenta a medias. Un esparcidor-penetrante como <a href=\"/productos/arenal-adher-plus/\">ARENAL Adher-Plus</a> cambia más el resultado que subir la dosis del calcio.</p><h2>Dónde ubicar cada aplicación</h2><p>En el <a href=\"/cultivos/arandano/\">programa de arándano</a>, la ventana crítica está entre floración y las primeras semanas de llenado: dos aplicaciones foliares en floración y luego cada diez días durante el llenado. Después de eso, lo que se aplique será para la planta, no para esa fruta.</p><p>Vale la pena decirlo sin rodeos porque es la parte incómoda: si la fruta de esta campaña ya salió blanda, el programa de calcio no la va a recuperar. Lo que corresponde es documentar el caso y ajustar el calendario para la siguiente.</p>",
+  "rank_math": {
+    "focus_keyword": "firmeza de fruta calcio",
+    "title": "Fruta blanda en poscosecha: calcio, boro y la ventana crítica",
+    "description": "Por qué la fruta llega blanda a destino aunque la cadena de frío esté bien: la ventana del calcio se cierra en cuajado y el boro decide si ese calcio se aprovecha."
+  },
+  "faq_jsonld": {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "¿Se puede corregir la falta de calcio cuando la fruta ya está creciendo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No de forma útil para esa fruta. El calcio entra durante la división celular, en las primeras semanas tras el cuajado. Pasada esa ventana, la fruta crece por expansión de células ya formadas y el calcio que no entró no entra más."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Por qué el calcio foliar necesita boro?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El calcio se mueve por el xilema arrastrado por la transpiración, y la fruta transpira poco. El boro participa en que ese calcio se fije en la pared celular. Aplicar calcio sin boro deja buena parte del aporte sin aprovechar."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿El exceso de potasio afecta la absorción de calcio?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sí. Compiten por la absorción. Un programa muy cargado de potasio durante el cuajado, buscando calibre, le quita entrada al calcio justo en la ventana en que ese calcio define la firmeza de la fruta."
+        }
+      }
+    ]
+  },
+  "relacionados": {
+    "problemas": ["calcio", "botrytis"],
+    "cultivos": ["arandano", "palto"],
+    "productos": ["calfort", "adherplus", "nutrik"]
+  }
+}
