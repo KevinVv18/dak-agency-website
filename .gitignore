@@ -45,3 +45,8 @@ _archive/
 !.impeccable/config.json
 .claude/skills/impeccable/
 .claude/settings.local.json
+
+# scroll-world: skill vendorizada por `npx skills add oso95/scroll-world`.
+# Se reinstala con ese mismo comando; no hace falta versionarla.
+.agents/
+.claude/skills/scroll-world
