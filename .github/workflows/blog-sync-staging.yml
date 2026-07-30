@@ -7,9 +7,20 @@ name: Blog Sync Staging (DAK)
 #
 # Contexto: el cron publica desde el staging, y el staging solo se actualiza
 # por rsync desde Actions. Si se encola contenido y nadie sincroniza, el cron
-# se queda "sin nada nuevo" indefinidamente (pasó del 03-jul al 13-jul-2026).
+# se queda "sin nada nuevo" indefinidamente (pasó del 03-jul al 13-jul-2026,
+# y otra vez del 25-jul al 30-jul-2026).
+#
+# Por eso ahora se dispara SOLO cuando cambia _blog-content/ en main: encolar
+# un post y mergear ya deja el staging listo para el próximo cron, sin que
+# nadie tenga que acordarse de correr el workflow a mano. Sigue disponible el
+# disparo manual. Este workflow NO publica: solo espeja el contenido.
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - '_blog-content/**'
   workflow_dispatch:
 
 permissions:

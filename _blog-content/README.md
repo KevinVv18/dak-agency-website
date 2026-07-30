@@ -20,13 +20,23 @@ queue/*.json   ──(publish.sh)──>  SSH ──> wp eval-file lib/wp-create
   schema FAQ. Publica **uno por corrida** (drip).
 - Es **idempotente**: si el slug ya existe en el blog, no lo recrea (lo salta y
   mueve el archivo a `published/`).
-- El **cron real corre en el servidor** (hPanel, Lun/Mié/Vie 09:00 Perú) sobre el
-  staging `~/dak-autopost` y **no hace commit-back**: la cola del repo puede quedar
-  desfasada del estado real del blog (verificar con la REST pública o el sitemap).
-- ⚠️ El staging **solo se actualiza por rsync desde Actions**. Tras encolar posts
-  nuevos, dispara **"Blog Sync Staging"** (`blog-sync-staging.yml`, solo rsync) o el
-  cron nunca los verá. `blog-autopublish.yml` (dispatch manual) también sincroniza,
-  pero además publica 1 post al instante.
+- El **cron real corre en el servidor** (hPanel, Lun/Mié/Vie **09:00 UTC = 04:00
+  Perú**) sobre el staging `~/dak-autopost` y **no hace commit-back**: la cola del
+  repo puede quedar desfasada del estado real del blog (verificar con la REST
+  pública o el sitemap).
+- El staging se actualiza por rsync desde Actions. Desde el 30-jul-2026,
+  **"Blog Sync Staging"** (`blog-sync-staging.yml`) se dispara **automáticamente en
+  cada push a `main` que toque `_blog-content/**`**: basta encolar el post y
+  mergear para que el cron lo vea. Sigue el disparo manual por si acaso.
+  `blog-autopublish.yml` (dispatch manual) sincroniza **y** publica 1 post al
+  instante — úsalo cuando no quieras esperar al cron.
+- ⚠️ Si publicas corriendo `publish.sh` **desde tu PC**, el post queda vivo pero el
+  repo no se entera solo: mueve el JSON a `published/` y commitea el `.result.txt`,
+  o el registro queda incompleto (pasó con 0044-0047 en jul-2026).
+- ⚠️ **Numeración:** el prefijo `NNNN` debe ser único en el repo. Con varias
+  sesiones trabajando en paralelo es fácil que dos usen el mismo número (pasó con
+  `0043`): antes de crear un post, revisa el mayor en `published/` **de
+  `origin/main` actualizado**, no solo el local.
 
 ## Formato de un post en cola (`queue/NNNN-slug.json`)
 
