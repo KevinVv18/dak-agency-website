@@ -1,0 +1,7 @@
+# Los posts pendientes de publicar van aquí como NNNN-slug.json
+# (y su imagen destacada opcional en ../assets/NNNN-slug.webp).
+#
+# Este archivo existe para que la carpeta viaje al staging del servidor
+# aunque la cola esté vacía: el rsync --delete de "Blog Sync Staging"
+# borraría el directorio, porque git no versiona carpetas vacías.
+# El cron tolera que no exista, pero es más claro que siempre esté.
