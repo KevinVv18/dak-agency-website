@@ -47,7 +47,8 @@ jobs:
       - name: Subir contenido al servidor
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avz --delete
+          # cron.log = bitácora del cron del servidor: no la borres al espejar.
+          switches: -avz --delete --exclude=cron.log
           path: _blog-content/
           remote_path: /home/u567580447/dak-autopost/
           remote_host: 89.116.115.11

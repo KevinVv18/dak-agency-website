@@ -40,7 +40,10 @@ jobs:
       - name: Subir contenido al servidor (solo rsync, no publica)
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avz --delete
+          # cron.log es la bitácora que escribe el cron del servidor; sin
+          # excluirla, cada sync la borraba y nos quedábamos sin saber si el
+          # cron corrió.
+          switches: -avz --delete --exclude=cron.log
           path: _blog-content/
           remote_path: /home/u567580447/dak-autopost/
           remote_host: 89.116.115.11
