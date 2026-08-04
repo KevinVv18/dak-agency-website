@@ -49,12 +49,15 @@ function dak_informando_assets() {
         filemtime( get_template_directory() . '/style.css' )
     );
 
-    // JavaScript del header (cursor grid, hamburger, mini-nav)
+    // JavaScript del header (cursor grid, hamburger, mini-nav, nav por sección)
+    // La versión sale de filemtime, igual que el CSS: con la versión fija del
+    // tema ("1.0.0") el navegador se quedaba con el JS viejo para siempre y
+    // los cambios no llegaban al visitante hasta vaciar caché a mano.
     wp_enqueue_script(
         'dak-informando-header',
         get_template_directory_uri() . '/assets/js/header.js',
         array(),
-        wp_get_theme()->get( 'Version' ),
+        filemtime( get_template_directory() . '/assets/js/header.js' ),
         true // Load in footer
     );
 }
