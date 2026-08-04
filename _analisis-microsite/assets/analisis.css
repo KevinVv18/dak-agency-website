@@ -63,8 +63,22 @@ h3{font-family:var(--serif);font-weight:700;font-size:1.15rem;line-height:1.3}
 .hero h1{font-family:var(--serif);font-weight:700;letter-spacing:-.025em;line-height:1.03;
   font-size:clamp(2.5rem,8vw,5rem)}
 .hero .sub{font-family:var(--serif);font-size:clamp(1.4rem,4vw,2.4rem);color:var(--purpl);margin-top:.2rem;line-height:1.15}
-.pill{display:inline-block;margin-top:1.8rem;padding:.5rem 1.1rem;border:1px solid var(--purp);border-radius:999px;
-  background:rgba(176,36,255,.14);font-size:.83rem;font-weight:600}
+/* La cápsula de portada es el sello de "esto está verificado". Antes era un
+   borde plano sobre un relleno lavado y se leía apagada. Ahora tiene punto
+   latiente, degradado y halo: dice "vivo" sin gritar. */
+.pill{display:inline-flex;align-items:center;gap:.6rem;margin-top:1.8rem;
+  padding:.58rem 1.2rem .58rem 1rem;border-radius:999px;font-size:.84rem;font-weight:600;
+  color:#fff;letter-spacing:.005em;
+  background:linear-gradient(135deg,rgba(176,36,255,.32),rgba(176,36,255,.08));
+  border:1px solid rgba(200,110,255,.55);
+  box-shadow:0 10px 30px -12px rgba(176,36,255,.85),inset 0 1px 0 rgba(255,255,255,.14)}
+.pill::before{content:"";width:7px;height:7px;flex:none;border-radius:50%;background:#E4B5FF;
+  box-shadow:0 0 0 0 rgba(228,181,255,.55);animation:latido 2.8s cubic-bezier(.19,1,.22,1) infinite}
+@keyframes latido{
+  0%{box-shadow:0 0 0 0 rgba(228,181,255,.5)}
+  70%{box-shadow:0 0 0 8px rgba(228,181,255,0)}
+  100%{box-shadow:0 0 0 0 rgba(228,181,255,0)}}
+@media (prefers-reduced-motion:reduce){.pill::before{animation:none}}
 .hero .meta{margin-top:1.7rem;color:var(--mutedd);font-size:.98rem;max-width:52ch}
 .hero .date{margin-top:2.4rem;font-size:.82rem;color:var(--dim)}
 .cue{position:absolute;left:50%;bottom:1.6rem;transform:translateX(-50%);color:var(--dim);font-size:.72rem;
@@ -135,10 +149,23 @@ h3{font-family:var(--serif);font-weight:700;font-size:1.15rem;line-height:1.3}
 /* barras */
 .bars{display:grid;gap:.95rem;margin-top:1.8rem}
 .brow{display:grid;grid-template-columns:minmax(6.5rem,10rem) 1fr auto;gap:.75rem;align-items:center;font-size:.9rem}
-.btrack{background:rgba(120,100,150,.16);border-radius:6px;overflow:hidden;height:26px}
-.dark .btrack{background:rgba(255,255,255,.09)}
-.bfill{height:100%;background:var(--purp);border-radius:6px;width:0;transition:width 1.1s cubic-bezier(.19,1,.22,1)}
-.bfill.zero{background:var(--red);min-width:3px}
+/* OJO: `.bfill` es un <i>, que por defecto es inline — y a un elemento inline el
+   ancho NO se le aplica. Sin `display:block` la barra se calcula, se le asigna
+   el width y aun así se pinta con 0 px: solo se ve la pista vacía. */
+.btrack{position:relative;background:rgba(120,100,150,.14);border-radius:8px;overflow:hidden;height:30px;
+  box-shadow:inset 0 0 0 1px rgba(20,20,22,.06)}
+.dark .btrack{background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.bfill{display:block;height:100%;width:0;border-radius:8px;position:relative;
+  background:linear-gradient(90deg,#7A1FB8 0%,var(--purp) 62%,#D486FF 100%);
+  box-shadow:0 0 20px -4px rgba(176,36,255,.6);
+  transition:width 1.15s cubic-bezier(.19,1,.22,1)}
+/* Cresta luminosa en el extremo: marca dónde llega la barra sin añadir ruido */
+.bfill::after{content:"";position:absolute;right:0;top:0;bottom:0;width:3px;border-radius:8px;
+  background:#F0D4FF;box-shadow:0 0 12px 2px rgba(240,212,255,.75);opacity:.9}
+.bfill.zero{background:linear-gradient(90deg,#9E0E31,var(--red));min-width:4px;
+  box-shadow:0 0 16px -4px rgba(212,18,63,.7)}
+.bfill.zero::after{background:#FFB3C4;box-shadow:0 0 10px 2px rgba(255,179,196,.6)}
+@media (prefers-reduced-motion:reduce){.bfill::after{display:none}}
 .bval{font-variant-numeric:tabular-nums;font-weight:700}
 @media(max-width:520px){.brow{grid-template-columns:1fr auto;grid-template-areas:"n v" "t t"}
   .brow>:nth-child(1){grid-area:n}.brow>:nth-child(2){grid-area:t}.brow>:nth-child(3){grid-area:v}}
@@ -273,9 +300,25 @@ tr.me td b,tr.me td strong,.dark tr.me td b{color:#fff}
 .idx button::before{content:counter(ix,decimal-leading-zero);font-family:var(--sans);
   font-size:.75rem;font-weight:700;color:var(--purp);padding-top:.3rem;flex:none}
 .idx button:hover{color:var(--purpl)}
-.bar .menu{all:unset;cursor:pointer;flex:none;padding:.42rem .7rem;border-radius:999px;
-  border:1px solid rgba(176,36,255,.4);color:#fff;font:600 .78rem/1 var(--sans)}
-.bar .menu:hover{border-color:var(--purp);background:rgba(176,36,255,.16)}
+/* Botón de índice: tres trazos dibujados en CSS, sin iconos ni dependencias.
+   Al abrirse se convierten en aspa, así el mismo botón cierra. */
+.bar .menu{all:unset;cursor:pointer;flex:none;display:inline-flex;align-items:center;gap:.5rem;
+  padding:.42rem .85rem .42rem .72rem;border-radius:999px;color:#EDE6F6;
+  font:600 .78rem/1 var(--sans);border:1px solid rgba(176,36,255,.35);
+  background:linear-gradient(135deg,rgba(176,36,255,.16),rgba(176,36,255,.04));
+  transition:border-color .18s ease,background .18s ease,color .18s ease}
+.bar .menu .bars3{position:relative;width:13px;height:9px;flex:none}
+.bar .menu .bars3 i{position:absolute;left:0;height:1.6px;width:100%;border-radius:2px;
+  background:currentColor;transition:transform .24s cubic-bezier(.19,1,.22,1),opacity .18s ease,width .24s ease}
+.bar .menu .bars3 i:nth-child(1){top:0}
+.bar .menu .bars3 i:nth-child(2){top:50%;margin-top:-.8px;width:72%}
+.bar .menu .bars3 i:nth-child(3){bottom:0}
+.bar .menu:hover{color:#fff;border-color:var(--purp);background:rgba(176,36,255,.24)}
+.bar .menu:hover .bars3 i:nth-child(2){width:100%}
+.bar .menu[aria-expanded="true"]{color:#fff;border-color:var(--purp);background:rgba(176,36,255,.3)}
+.bar .menu[aria-expanded="true"] .bars3 i:nth-child(1){transform:translateY(3.7px) rotate(45deg)}
+.bar .menu[aria-expanded="true"] .bars3 i:nth-child(2){opacity:0}
+.bar .menu[aria-expanded="true"] .bars3 i:nth-child(3){transform:translateY(-3.7px) rotate(-45deg)}
 
 /* --- 2. Numeración de capítulos ------------------------------------------ */
 /* El púrpura numerando: da sensación de expediente y de avance. */

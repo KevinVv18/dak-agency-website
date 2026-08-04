@@ -84,7 +84,7 @@
       btnMenu = document.createElement('button');
       btnMenu.type = 'button';
       btnMenu.className = 'menu';
-      btnMenu.textContent = 'Índice';
+      btnMenu.innerHTML = '<span class="bars3"><i></i><i></i><i></i></span><span>Índice</span>';
       btnMenu.setAttribute('aria-expanded', 'false');
       btnMenu.addEventListener('click', function () {
         idx.classList.contains('open') ? cerrarIndice() : abrirIndice();
