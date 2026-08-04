@@ -17,6 +17,16 @@ DirectoryIndex index.html
     Header set Pragma "no-cache"
     Header unset Expires
   </FilesMatch>
+
+  # La hoja y el script son compartidos por TODOS los informes: si se quedan
+  # cacheados, un cambio de diseño no llega a ninguno. Pesan 22 KB entre los dos
+  # y van comprimidos — no vale la pena cachearlos a cambio de servir una
+  # versión vieja en plena reunión. `no-cache` no significa "no guardar": el
+  # navegador revalida y recibe un 304 cuando no ha cambiado nada.
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+    Header unset Expires
+  </FilesMatch>
 </IfModule>
 
 <IfModule mod_expires.c>

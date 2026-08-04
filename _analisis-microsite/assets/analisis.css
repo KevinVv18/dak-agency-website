@@ -206,3 +206,124 @@ tr.me td{background:var(--ink);color:#fff;font-weight:600;border-top-color:#2a17
   .tw{overflow:visible!important;border:none!important}
   table{min-width:0!important;font-size:.72rem}
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MEJORAS DE PRESENTACIÓN — v2, 2026-08-04
+   Estos informes se proyectan en reunión y se releen después en el celular.
+   Son dos usos distintos y el diseño tiene que servir a los dos.
+
+   Tres decisiones, y solo tres, para no convertir un dictamen en un carrusel:
+     1. NAVEGACIÓN. Un riel de capítulos y control por teclado: cuando el
+        cliente pregunta "¿y los números?", se salta ahí sin scrollear a ciegas.
+     2. MOTION CON CRITERIO. Entrada escalonada, conteo de cifras y elevación al
+        pasar el cursor. Nada de fondos que laten ni elementos flotando: esto es
+        un peritaje, no una landing.
+     3. IDENTIDAD ESTRUCTURAL. El púrpura deja de ser adorno y pasa a marcar la
+        estructura — numera capítulos, señala dónde estás y firma las fuentes.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* --- 1. Riel de capítulos (escritorio) ------------------------------------ */
+/* El riel mide lo que mide un guion, no lo que mide el título más largo: la
+   etiqueta va absoluta, así que aparece al pasar el cursor sin empujar nada ni
+   robarle sitio al contenido. */
+.rail{position:fixed;left:clamp(.9rem,calc((100vw - var(--maxw))/2 - 2.6rem),3.4rem);top:50%;
+  transform:translateY(-50%);z-index:40;display:none;flex-direction:column;gap:.6rem;width:30px}
+.rail button{all:unset;cursor:pointer;position:relative;display:block;padding:.28rem 0}
+.rail .tick{display:block;width:14px;height:2px;border-radius:2px;background:#B8AECB;
+  transition:width .22s cubic-bezier(.19,1,.22,1),background .22s ease}
+.rail .lbl{position:absolute;left:calc(100% + .55rem);top:50%;transform:translateY(-50%) translateX(-4px);
+  font:600 .68rem/1.2 var(--sans);letter-spacing:.02em;white-space:nowrap;color:#fff;
+  max-width:15rem;overflow:hidden;text-overflow:ellipsis;
+  background:var(--ink);padding:.34rem .6rem;border-radius:6px;pointer-events:none;
+  opacity:0;transition:opacity .16s ease,transform .16s ease;
+  box-shadow:0 6px 18px rgba(26,11,46,.28)}
+.rail button:hover .tick,.rail button:focus-visible .tick{width:26px;background:var(--purp)}
+.rail button:hover .lbl,.rail button:focus-visible .lbl{opacity:1;transform:translateY(-50%) translateX(0)}
+.rail button[aria-current="true"] .tick{width:30px;background:var(--purp)}
+.dark-view .rail .tick{background:#4A3B63}
+.dark-view .rail .lbl{background:#fff;color:var(--ink);box-shadow:0 6px 18px rgba(0,0,0,.5)}
+@media(min-width:1240px){.rail{display:flex}}
+
+/* Índice desplegable, que en el celular es donde de verdad hace falta */
+.idx{position:fixed;inset:0;z-index:70;background:rgba(3,1,6,.96);backdrop-filter:blur(6px);
+  padding:5rem var(--pad) 2rem;overflow-y:auto;display:none}
+.idx.open{display:block}
+.idx h4{font:700 .72rem/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--purp);margin-bottom:1.4rem}
+.idx ol{list-style:none;counter-reset:ix}
+.idx li{counter-increment:ix;border-bottom:1px solid rgba(255,255,255,.08)}
+.idx button{all:unset;cursor:pointer;display:flex;gap:1rem;width:100%;padding:.85rem 0;
+  font-family:var(--serif);font-size:1.05rem;color:#fff}
+.idx button::before{content:counter(ix,decimal-leading-zero);font-family:var(--sans);
+  font-size:.75rem;font-weight:700;color:var(--purp);padding-top:.3rem;flex:none}
+.idx button:hover{color:var(--purpl)}
+.bar .menu{all:unset;cursor:pointer;flex:none;padding:.42rem .7rem;border-radius:999px;
+  border:1px solid rgba(176,36,255,.4);color:#fff;font:600 .78rem/1 var(--sans)}
+.bar .menu:hover{border-color:var(--purp);background:rgba(176,36,255,.16)}
+
+/* --- 2. Numeración de capítulos ------------------------------------------ */
+/* El púrpura numerando: da sensación de expediente y de avance. */
+body{counter-reset:cap}
+section:not(.hero){counter-increment:cap}
+section:not(.hero) .kick{display:flex;align-items:center;gap:.7rem}
+section:not(.hero) .kick::before{content:counter(cap,decimal-leading-zero);
+  font-family:var(--serif);font-size:1.5rem;font-weight:700;letter-spacing:-.02em;
+  line-height:1;opacity:.9}
+.close .kick::before{content:none}
+
+/* --- 3. Entrada escalonada ----------------------------------------------- */
+/* Los hijos de una rejilla entran uno tras otro, en orden de lectura. */
+.js .rv{transition-delay:0ms}
+.js .grid.in>.rv:nth-child(1),.js .tiers.in>.rv:nth-child(1),.js .steps.in>.rv:nth-child(1){transition-delay:0ms}
+.js .grid.in>.rv:nth-child(2),.js .tiers.in>.rv:nth-child(2),.js .steps.in>.rv:nth-child(2){transition-delay:90ms}
+.js .grid.in>.rv:nth-child(3),.js .tiers.in>.rv:nth-child(3),.js .steps.in>.rv:nth-child(3){transition-delay:180ms}
+.js .grid.in>.rv:nth-child(4){transition-delay:270ms}
+.js .grid.in>.rv:nth-child(5){transition-delay:360ms}
+.js .grid.in>.rv:nth-child(6){transition-delay:450ms}
+.js .vs.in>.rv:nth-child(2){transition-delay:140ms}
+
+/* --- 4. Elevación al pasar el cursor ------------------------------------- */
+/* En reunión hay ratón: el hover confirma qué se está mirando. */
+@media(hover:hover){
+  .card,.tier,.step,.vs .col{transition:transform .22s cubic-bezier(.19,1,.22,1),
+    box-shadow .22s ease,border-color .22s ease}
+  .card:hover,.tier:hover,.step:hover,.vs .col:hover{transform:translateY(-3px);
+    box-shadow:0 14px 34px rgba(26,11,46,.13);border-color:#D3C2ED}
+  .dark .card:hover{box-shadow:0 14px 34px rgba(0,0,0,.5);border-color:rgba(176,36,255,.42)}
+  tbody tr{transition:background .16s ease}
+  tbody tr:not(.me):hover td{background:#EFE7FB}
+}
+
+/* --- 5. Cifras: leerse desde el fondo de la sala -------------------------- */
+.stat{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.tier .amt{font-variant-numeric:tabular-nums}
+.bval{font-variant-numeric:tabular-nums}
+@media(min-width:900px){.stat{font-size:clamp(3rem,5.2vw,4.6rem)}}
+
+/* --- 6. Las fuentes, firmadas ------------------------------------------- */
+/* Cada afirmación lleva su origen: que se note que es una regla, no un adorno. */
+.src{position:relative;padding-left:1.6rem;font-style:normal;color:#8A8299;
+  border-top:1px solid var(--line);padding-top:1rem;margin-top:2.8rem}
+.src::before{content:"";position:absolute;left:0;top:1.35rem;width:.65rem;height:.65rem;
+  border:2px solid var(--purpd);border-radius:50%;opacity:.55}
+.dark .src{border-top-color:rgba(255,255,255,.1);color:var(--dim)}
+.dark .src::before{border-color:var(--purp)}
+
+/* --- 7. Cabecera de tabla fija dentro de su contenedor ------------------- */
+.tw{max-height:min(78vh,640px)}
+thead th{position:sticky;top:0;z-index:2}
+
+/* --- 8. Que los saltos no queden bajo la barra fija ---------------------- */
+section{scroll-margin-top:3.6rem}
+
+/* --- 9. Marca de agua en la sección de cierre ---------------------------- */
+.close{position:relative;overflow:hidden}
+.close .wrap{position:relative;z-index:1}
+
+@media print{
+  .rail,.idx,.bar .menu{display:none!important}
+  section:not(.hero) .kick::before{opacity:1}
+  .src{border-top:1px solid #ccc}
+  .tw{max-height:none}
+  thead th{position:static}
+}
