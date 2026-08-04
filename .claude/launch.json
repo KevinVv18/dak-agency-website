@@ -12,6 +12,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "5174", "--directory", "C:/Users/kevin/OneDrive/Desktop/american vault"],
       "port": 5174
+    },
+    {
+      "name": "analisis",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["_analisis-microsite/server.cjs"],
+      "port": 4320
     }
   ]
 }
