@@ -80,6 +80,31 @@ El púrpura **no decora, estructura**: numera los capítulos (contador CSS sobre
 marca dónde estás en el riel y firma cada bloque de fuentes. Si un color solo aparece en
 los botones, no es identidad, es adorno.
 
+### Contraste: la regla dura
+
+**Todo componente de fondo claro declara su propio color de texto.** Si no lo hace, dentro
+de una `section.dark` hereda el blanco de `.dark` y queda **blanco sobre blanco**. Pasó
+con las tablas de los capítulos de riesgo —que son justamente secciones oscuras con una
+tabla clara dentro— en tres de los cuatro informes a la vez.
+
+No se arregla caso por caso. Está resuelto por construcción en la hoja:
+
+- `.tw`, `td`, `td b` fijan `color:var(--tx)`; `tr.me td` fija `#fff`.
+- `.dark .tier`, `.dark .step`, `.dark .vs .col` fijan su color por si un informe futuro
+  mueve esos bloques a una sección oscura.
+- **Los colores semánticos se redefinen dentro de `.dark`** (`--red`, `--green`, `--amber`,
+  `--purpd`). Así los `style="color:var(--red)"` que ya hay repartidos por los informes se
+  corrigen solos, sin tocar HTML — ni ahora ni en los que vengan. Dentro de `.tw` se
+  restauran los originales, porque la tabla es una isla clara.
+
+Verificar **antes de publicar** con `auditar-contraste.js`: se pega en la consola con la
+página abierta y devuelve los fallos. **Cero fallos es el criterio de publicación.**
+Aplica el umbral correcto por tamaño (3:1 para texto grande, 4,5:1 para el resto), así que
+no hay que perseguir falsos positivos en los titulares.
+
+La primera pasada encontró 8 fallos que nadie había visto a ojo, incluidos los pies de
+fuente a 3,33:1 — que son justamente lo que sostiene la credibilidad del informe.
+
 ### Legibilidad de sala
 
 `.stat` sube a `clamp(3rem,5.2vw,4.6rem)` en ≥ 900 px y todas las cifras usan
