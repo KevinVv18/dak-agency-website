@@ -2838,20 +2838,36 @@ ul {
   color: #fff !important;
 }
 
-/* La marquesina infinita contradice el sistema: un manual no desfila.
-   Se queda el mismo contenido, quieto y legible. */
+/* La marquesina vuelve a desfilar, como la del sitio principal.
+   Antes se había congelado (animation:none + flex-wrap:wrap), y por eso se
+   veía como tres renglones repetidos y quietos apilados sobre el footer.
+   Son tres copias idénticas en una sola fila: al desplazar un tercio del
+   riel, la copia 2 cae exactamente donde estaba la 1 y el bucle no salta. */
 .marquee-track {
-  animation: none !important;
-  white-space: normal;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0 1.4rem;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  justify-content: flex-start;
+  gap: 0;
+  animation: marqueeScroll 32s linear infinite;
+  will-change: transform;
 }
 .marquee-content {
   color: rgba(255, 255, 255, 0.55) !important;
-  padding-right: 0;
+  padding-right: 1.5rem;
 }
-.marquee-content:nth-child(n+4) { display: none; }
+
+/* Quien pide menos movimiento no ve el desfile. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    white-space: normal;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 1.4rem;
+  }
+  .marquee-content { padding-right: 0; }
+  .marquee-content:nth-child(n+4) { display: none; }
+}
 
 /* Sin pestaña lateral: en este mundo el acento es un filete superior */
 
@@ -3204,6 +3220,11 @@ body { overflow-x: visible; }
 
 .opinion-read-more:hover,
 .interview-read-more:hover {
+  /* El rediseño convirtió este botón en un enlace subrayado, pero quedó viva
+     la regla vieja `.opinion-read-more:hover { background: var(--text-primary) }`.
+     Al pasar el mouse pintaba un fondo casi negro debajo de un texto morado
+     oscuro: ilegible. Se anula el fondo aquí. */
+  background: transparent;
   color: var(--spot-texto);
   border-bottom-color: var(--text-primary);
 }
