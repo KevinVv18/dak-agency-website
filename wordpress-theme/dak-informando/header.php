@@ -15,6 +15,26 @@ $dak_nav_cats = array(
   'por-rubro'      => 'Marketing',
   'guias-precios'  => 'Guías',
 );
+
+// ── Estado activo del nav ──────────────────────────────────────────────
+// Antes la clase "active" estaba fija en TODOS, así que al entrar a una
+// categoría el menú seguía marcando TODOS. Ahora se calcula una sola vez y
+// la usan los dos menús (el fijo y el mini-nav de scroll).
+//   - En un archivo de categoría: se marca esa categoría.
+//   - En un post: se marca la categoría principal del post.
+//   - En la portada: se marca TODOS.
+$dak_active_cat = 0;
+if ( is_category() ) {
+	$dak_active_cat = (int) get_queried_object_id();
+} elseif ( is_singular( 'post' ) && function_exists( 'dak_get_primary_category' ) ) {
+	// dak_get_primary_category devuelve un objeto de respaldo sin term_id
+	// cuando el post no tiene categoría real: por eso el isset().
+	$dak_primary = dak_get_primary_category( get_queried_object_id() );
+	if ( $dak_primary && isset( $dak_primary->term_id ) ) {
+		$dak_active_cat = (int) $dak_primary->term_id;
+	}
+}
+$dak_home_active = ( 0 === $dak_active_cat && ( is_front_page() || is_home() ) );
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -41,10 +61,10 @@ $dak_nav_cats = array(
       <img src="<?php echo get_template_directory_uri(); ?>/assets/img/logo.svg" alt="DAK" class="mini-nav-logo-img">
     </a>
     <ul class="mini-nav-links">
-      <li><a href="<?php echo home_url( '/' ); ?>" class="mini-nav-link active">TODOS</a></li>
+      <li><a href="<?php echo home_url( '/' ); ?>" class="mini-nav-link<?php echo $dak_home_active ? ' active' : ''; ?>">TODOS</a></li>
       <?php foreach ( $dak_nav_cats as $cslug => $clabel ) :
         $c = get_category_by_slug( $cslug ); if ( ! $c ) { continue; } ?>
-        <li><a href="<?php echo esc_url( get_category_link( $c->term_id ) ); ?>" class="mini-nav-link"><?php echo esc_html( dak_upper( $clabel ) ); ?></a></li>
+        <li><a href="<?php echo esc_url( get_category_link( $c->term_id ) ); ?>" class="mini-nav-link<?php echo ( (int) $c->term_id === $dak_active_cat ) ? ' active' : ''; ?>"><?php echo esc_html( dak_upper( $clabel ) ); ?></a></li>
       <?php endforeach; ?>
     </ul>
     <a href="#newsletter" class="mini-nav-subscribe">SUSCRÍBETE</a>
@@ -109,10 +129,12 @@ $dak_nav_cats = array(
   <nav class="nav-bar">
     <div class="nav-inner">
       <ul class="nav-menu" id="navMenu">
-        <li><a href="<?php echo home_url( '/' ); ?>" class="nav-link active">TODOS</a></li>
+        <li><a href="<?php echo home_url( '/' ); ?>" class="nav-link<?php echo $dak_home_active ? ' active' : ''; ?>" <?php echo $dak_home_active ? 'aria-current="page"' : ''; ?>>TODOS</a></li>
         <?php foreach ( $dak_nav_cats as $cslug => $clabel ) :
-          $c = get_category_by_slug( $cslug ); if ( ! $c ) { continue; } ?>
-          <li><a href="<?php echo esc_url( get_category_link( $c->term_id ) ); ?>" class="nav-link"><?php echo esc_html( dak_upper( $clabel ) ); ?></a></li>
+          $c = get_category_by_slug( $cslug );
+          if ( ! $c ) { continue; }
+          $c_active = ( (int) $c->term_id === $dak_active_cat ) ? ' active' : ''; ?>
+          <li><a href="<?php echo esc_url( get_category_link( $c->term_id ) ); ?>" class="nav-link<?php echo $c_active; ?>" <?php echo $c_active ? 'aria-current="page"' : ''; ?>><?php echo esc_html( dak_upper( $clabel ) ); ?></a></li>
         <?php endforeach; ?>
       </ul>
     </div>
