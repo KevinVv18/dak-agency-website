@@ -1,0 +1,46 @@
+name: Deploy microsite de análisis de marca
+
+# Publica _analisis-microsite/ en el docroot del subdominio analisis.dakagency.net
+# (/home/u567580447/domains/dakagency.net/public_html/analisis).
+#
+# Cada carpeta de adentro es un entregable de un cliente distinto (ej. /ayb/).
+# El .htaccess de la carpeta fuerza noindex: son datos reales de prospectos.
+#
+# ⚠️ 'analisis/' DEBE seguir en la lista de --exclude de deploy.yml o ese deploy
+#    borra todos los entregables. Ya pasó con el demo inmobiliario.
+#
+# Dispara:
+#  - manualmente (workflow_dispatch)
+#  - push a main que toque _analisis-microsite/**
+#  - cualquier push cuyo commit incluya [deploy-analisis]
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '_analisis-microsite/**'
+      - '.github/workflows/deploy-analisis.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy-analisis]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Subir microsite al docroot del subdominio (rsync en Docker)
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          # server.cjs y README.md son herramientas locales, no se publican.
+          switches: -avz --delete --exclude='server.cjs' --exclude='README.md'
+          path: _analisis-microsite/
+          remote_path: /home/u567580447/domains/dakagency.net/public_html/analisis/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}

@@ -1,0 +1,418 @@
+/* Hoja compartida de los entregables de análisis de marca.
+   La usan todas las páginas de analisis.dakagency.net/<marca>/.
+   Cambiar algo aquí cambia todos los informes a la vez. */
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#030106; --panel:#120B1E; --cardd:#1B1130;
+  --purp:#B024FF; --purpd:#7A1FB8; --purpl:#EBD8FF;
+  --paper:#F6F3FA; --card:#FFFFFF; --line:#E4DCF2;
+  /* --dim es el gris más apagado sobre negro (fecha de portada, pie de firma).
+     Estaba en #6E6285 = 3,71:1, por debajo del mínimo para texto pequeño. */
+  --tx:#141416; --muted:#6B6478; --mutedd:#A99BC2; --dim:#8E82A8;
+  /* Verde y ámbar oscurecidos respecto al original: los anteriores daban 3,4:1
+     sobre las tarjetas blancas y no llegaban al mínimo para texto pequeño. */
+  --red:#D4123F; --green:#0A7A55; --amber:#8F5A00;
+  --sans:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --pad:clamp(1.25rem,5vw,4.5rem);
+  --maxw:1180px;
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{font-family:var(--sans);background:var(--paper);color:var(--tx);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img,svg{max-width:100%;display:block}
+
+/* ---------- barra fija ---------- */
+.bar{position:fixed;inset:0 0 auto 0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;padding:.7rem var(--pad);background:rgba(3,1,6,.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(176,36,255,.22)}
+.bar .lg{height:20px;width:auto;flex:none}
+.bar .who{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mutedd);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .pdf{flex:none;font-family:inherit;font-size:.78rem;font-weight:600;color:#fff;background:var(--purp);
+  padding:.42rem .85rem;border-radius:999px;text-decoration:none;white-space:nowrap;border:0;cursor:pointer}
+.bar .pdf:hover{background:#c44dff}
+button.btn{font-family:inherit;border:0;cursor:pointer}
+button.btn.s{border:1px solid rgba(255,255,255,.3);background:none}
+.prog{position:fixed;top:0;left:0;height:2px;width:0;background:var(--purp);z-index:60;transition:width .1s linear}
+@media(max-width:640px){.bar .who{display:none}}
+
+/* ---------- secciones ---------- */
+section{padding:clamp(3.5rem,9vw,7rem) var(--pad)}
+.wrap{max-width:var(--maxw);margin:0 auto}
+.dark{background:var(--ink);color:#fff}
+.dark h2,.dark h3{color:#fff}
+.kick{font-size:.74rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--purpd);margin-bottom:.9rem}
+.dark .kick{color:var(--purp)}
+h2{font-family:var(--serif);font-weight:700;line-height:1.15;font-size:clamp(1.75rem,4.4vw,2.9rem);letter-spacing:-.015em}
+h3{font-family:var(--serif);font-weight:700;font-size:1.15rem;line-height:1.3}
+.lede{margin-top:.9rem;font-size:clamp(1rem,1.6vw,1.12rem);color:var(--muted);max-width:62ch}
+.dark .lede{color:var(--mutedd)}
+.src{margin-top:2.6rem;font-size:.8rem;font-style:italic;color:#9A93A8;max-width:80ch}
+.dark .src{color:var(--mutedd)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;min-height:100svh;display:flex;align-items:center;
+  padding-top:calc(4.5rem + var(--pad))}
+.hero::after{content:"";position:absolute;width:min(70vw,620px);aspect-ratio:1;border-radius:50%;
+  right:-14vw;top:-18vh;background:radial-gradient(circle,rgba(176,36,255,.34),transparent 68%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+.hero .logo{height:clamp(34px,5vw,50px);width:auto;margin-bottom:clamp(2rem,6vw,3.5rem)}
+.hero h1{font-family:var(--serif);font-weight:700;letter-spacing:-.025em;line-height:1.03;
+  font-size:clamp(2.5rem,8vw,5rem)}
+.hero .sub{font-family:var(--serif);font-size:clamp(1.4rem,4vw,2.4rem);color:var(--purpl);margin-top:.2rem;line-height:1.15}
+/* La cápsula de portada es el sello de "esto está verificado". Antes era un
+   borde plano sobre un relleno lavado y se leía apagada. Ahora tiene punto
+   latiente, degradado y halo: dice "vivo" sin gritar. */
+.pill{display:inline-flex;align-items:center;gap:.6rem;margin-top:1.8rem;
+  padding:.58rem 1.2rem .58rem 1rem;border-radius:999px;font-size:.84rem;font-weight:600;
+  color:#fff;letter-spacing:.005em;
+  background:linear-gradient(135deg,rgba(176,36,255,.32),rgba(176,36,255,.08));
+  border:1px solid rgba(200,110,255,.55);
+  box-shadow:0 10px 30px -12px rgba(176,36,255,.85),inset 0 1px 0 rgba(255,255,255,.14)}
+.pill::before{content:"";width:7px;height:7px;flex:none;border-radius:50%;background:#E4B5FF;
+  box-shadow:0 0 0 0 rgba(228,181,255,.55);animation:latido 2.8s cubic-bezier(.19,1,.22,1) infinite}
+@keyframes latido{
+  0%{box-shadow:0 0 0 0 rgba(228,181,255,.5)}
+  70%{box-shadow:0 0 0 8px rgba(228,181,255,0)}
+  100%{box-shadow:0 0 0 0 rgba(228,181,255,0)}}
+@media (prefers-reduced-motion:reduce){.pill::before{animation:none}}
+.hero .meta{margin-top:1.7rem;color:var(--mutedd);font-size:.98rem;max-width:52ch}
+.hero .date{margin-top:2.4rem;font-size:.82rem;color:var(--dim)}
+.cue{position:absolute;left:50%;bottom:1.6rem;transform:translateX(-50%);color:var(--dim);font-size:.72rem;
+  letter-spacing:.16em;text-transform:uppercase;z-index:1;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,7px)}}
+
+/* ---------- tesis ---------- */
+.thesis{font-family:var(--serif);font-size:clamp(1.35rem,3.3vw,2.15rem);line-height:1.42;font-weight:400;max-width:22ch;
+  max-width:34ch}
+.thesis b{color:var(--purpl);font-weight:700}
+.thesis em{color:var(--purp);font-style:normal;font-weight:700}
+
+/* ---------- rejillas y tarjetas ---------- */
+.grid{display:grid;gap:1.1rem;margin-top:2.4rem}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.5rem}
+.dark .card{background:var(--cardd);border-color:rgba(176,36,255,.18)}
+.card h3{margin-bottom:.5rem}
+.card p{font-size:.95rem;color:var(--muted)}
+.dark .card p{color:var(--mutedd)}
+.lab{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--purpd);margin-bottom:.45rem}
+.dark .lab{color:var(--purp)}
+
+/* stat */
+.stat{font-family:var(--serif);font-weight:700;line-height:1;letter-spacing:-.03em;
+  font-size:clamp(2.6rem,7vw,4rem);color:var(--purpd)}
+.dark .stat{color:var(--purp)}
+.stat.bad{color:var(--red)}
+.stat-l{margin-top:.6rem;font-size:.9rem;color:var(--muted)}
+.dark .stat-l{color:var(--mutedd)}
+
+/* dot list */
+.dl{list-style:none;display:grid;gap:1.05rem;margin-top:1.3rem}
+.dl li{display:grid;grid-template-columns:auto 1fr;gap:.75rem;align-items:start}
+.dot{width:10px;height:10px;border-radius:50%;margin-top:.5rem;background:var(--purp);flex:none}
+.dot.g{background:var(--green)}.dot.r{background:var(--red)}.dot.a{background:var(--amber)}
+.dl b{display:block;font-size:1rem}
+.dl span{font-size:.92rem;color:var(--muted)}
+.dark .dl span{color:var(--mutedd)}
+
+/* cuadro comparativo a favor / en contra */
+.vs{display:grid;gap:1.1rem;margin-top:2.4rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.vs .col{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.5rem 1.6rem}
+.vs .col h3{font-size:1.35rem;padding-bottom:.75rem;margin-bottom:.35rem;border-bottom:1px solid var(--line)}
+.vs .pro h3{color:var(--green)}
+.vs .con h3{color:var(--red)}
+.vs ul{list-style:none}
+.vs li{position:relative;padding:.7rem 0 .7rem 1.7rem;font-size:.95rem;color:var(--muted);
+  border-bottom:1px solid rgba(228,220,242,.6)}
+.vs li:last-child{border-bottom:0;padding-bottom:0}
+.vs li b{color:var(--tx);font-weight:600}
+.vs li::before{position:absolute;left:0;top:.72rem;font-weight:700;font-size:1rem;line-height:1.35}
+.vs .pro li::before{content:"+";color:var(--green)}
+.vs .con li::before{content:"−";color:var(--red)}
+
+/* escenarios de inversión */
+.tiers{display:grid;gap:1.1rem;margin-top:2.2rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.tier{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.5rem;display:flex;flex-direction:column}
+.tier.reco{border-color:var(--purp);box-shadow:0 0 0 1px var(--purp)}
+.tier .badge{align-self:flex-start;font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:#fff;background:var(--purp);padding:.2rem .6rem;border-radius:999px;margin-bottom:.7rem}
+.tier h3{font-size:1.1rem}
+.tier .amt{font-family:var(--serif);font-weight:700;font-size:1.9rem;color:var(--purpd);margin:.5rem 0 .2rem;line-height:1.1}
+.tier .per{font-size:.78rem;color:var(--muted);margin-bottom:.8rem}
+.tier p{font-size:.9rem;color:var(--muted)}
+
+/* barras */
+.bars{display:grid;gap:.95rem;margin-top:1.8rem}
+.brow{display:grid;grid-template-columns:minmax(6.5rem,10rem) 1fr auto;gap:.75rem;align-items:center;font-size:.9rem}
+/* OJO: `.bfill` es un <i>, que por defecto es inline — y a un elemento inline el
+   ancho NO se le aplica. Sin `display:block` la barra se calcula, se le asigna
+   el width y aun así se pinta con 0 px: solo se ve la pista vacía. */
+.btrack{position:relative;background:rgba(120,100,150,.14);border-radius:8px;overflow:hidden;height:30px;
+  box-shadow:inset 0 0 0 1px rgba(20,20,22,.06)}
+.dark .btrack{background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.bfill{display:block;height:100%;width:0;border-radius:8px;position:relative;
+  background:linear-gradient(90deg,#7A1FB8 0%,var(--purp) 62%,#D486FF 100%);
+  box-shadow:0 0 20px -4px rgba(176,36,255,.6);
+  transition:width 1.15s cubic-bezier(.19,1,.22,1)}
+/* Cresta luminosa en el extremo: marca dónde llega la barra sin añadir ruido */
+.bfill::after{content:"";position:absolute;right:0;top:0;bottom:0;width:3px;border-radius:8px;
+  background:#F0D4FF;box-shadow:0 0 12px 2px rgba(240,212,255,.75);opacity:.9}
+.bfill.zero{background:linear-gradient(90deg,#9E0E31,var(--red));min-width:4px;
+  box-shadow:0 0 16px -4px rgba(212,18,63,.7)}
+.bfill.zero::after{background:#FFB3C4;box-shadow:0 0 10px 2px rgba(255,179,196,.6)}
+@media (prefers-reduced-motion:reduce){.bfill::after{display:none}}
+.bval{font-variant-numeric:tabular-nums;font-weight:700}
+@media(max-width:520px){.brow{grid-template-columns:1fr auto;grid-template-areas:"n v" "t t"}
+  .brow>:nth-child(1){grid-area:n}.brow>:nth-child(2){grid-area:t}.brow>:nth-child(3){grid-area:v}}
+
+/* quote */
+.quote{font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,3.4vw,2.05rem);line-height:1.42;max-width:26ch;
+  max-width:40ch}
+.attrib{margin-top:1.2rem;font-size:.85rem;color:var(--purp);font-style:normal}
+
+/* tabla */
+/* REGLA DURA: todo componente de fondo claro declara SU PROPIO color de texto.
+   Si no lo hace, dentro de una `section.dark` hereda el blanco y queda blanco
+   sobre blanco. Pasó con las tablas de los capítulos de riesgo, que son
+   justamente secciones oscuras con una tabla clara dentro. No se arregla caso
+   por caso: se arregla aquí, para que ninguna combinación futura pueda fallar. */
+.tw{margin-top:2.2rem;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--tx)}
+.dark .tw{color:var(--tx)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.9rem}
+th{background:var(--purpd);color:#fff;text-align:left;padding:.75rem .9rem;font-weight:600;white-space:nowrap}
+td{padding:.7rem .9rem;border-top:1px solid var(--line);vertical-align:top;color:var(--tx)}
+.dark td{color:var(--tx)}
+tr:nth-child(even) td{background:#FAF7FE}
+tr.me td,.dark tr.me td{background:var(--ink);color:#fff;font-weight:600;border-top-color:#2a1740}
+/* Los énfasis en línea de las celdas también viven sobre fondo claro */
+td b,td strong{color:var(--tx)}
+tr.me td b,tr.me td strong,.dark tr.me td b{color:#fff}
+/* La nota bajo la tabla sí está sobre el fondo de la sección: cambia con ella */
+.tnote{font-size:.78rem;color:var(--muted);margin-top:.7rem}
+.dark .tnote{color:var(--mutedd)}
+
+/* pasos */
+.steps{display:grid;gap:1.1rem;margin-top:2.4rem}
+.step{display:grid;grid-template-columns:auto 1fr;gap:1.2rem;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:1.4rem 1.5rem}
+.step .n{font-family:var(--serif);font-weight:700;font-size:2.1rem;color:var(--purpd);line-height:1}
+.step h3{margin-bottom:.15rem}
+.step .when{font-size:.82rem;color:var(--purpd);font-style:italic;margin-bottom:.55rem}
+.step p{font-size:.95rem;color:var(--muted)}
+
+/* cierre */
+.close h2{font-size:clamp(2rem,6vw,3.4rem);line-height:1.12}
+.cta{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2.6rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.5rem;border-radius:999px;
+  font-weight:600;font-size:.98rem;text-decoration:none;transition:transform .15s,background .15s}
+.btn.p{background:var(--purp);color:#fff}
+.btn.p:hover{background:#c44dff;transform:translateY(-1px)}
+.btn.s{border:1px solid rgba(255,255,255,.3);color:#fff}
+.btn.s:hover{border-color:var(--purp)}
+/* Pie de firma. El link del informe también llega a manos de clientes, así que las
+   redes de DAK van visibles pero discretas: enlaces de texto al final del recorrido,
+   nunca botones ni iconos compitiendo con el contenido del análisis. */
+.foot{margin-top:3.4rem;padding-top:1.6rem;border-top:1px solid rgba(255,255,255,.1);
+  display:flex;flex-wrap:wrap;gap:1.4rem 2rem;align-items:flex-end;justify-content:space-between}
+.foot img{height:26px;margin-bottom:.5rem}
+.foot small{display:block;color:var(--dim);font-size:.82rem;line-height:1.7}
+.foot .soc{display:flex;flex-wrap:wrap;gap:.35rem 1.15rem;margin-top:.55rem}
+.foot .soc a{font-size:.82rem;color:var(--mutedd);text-decoration:none;
+  border-bottom:1px solid transparent;transition:color .15s,border-color .15s}
+.foot .soc a:hover{color:var(--purp);border-bottom-color:var(--purp)}
+@media(max-width:560px){.foot{gap:1rem}.foot .fcol{width:100%}}
+
+/* Aparición al hacer scroll.
+   Se oculta SOLO si el script de arriba confirmó que hay JS (html.js). Sin JS —o si el
+   script falla— el contenido se ve completo: este documento va a un cliente, no puede
+   quedar en blanco por una animación. */
+.js .rv{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s cubic-bezier(.19,1,.22,1)}
+.js .rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.js .rv{opacity:1;transform:none}}
+
+/* impresión */
+@media print{
+  .bar,.prog,.cue,.cta{display:none!important}
+  body{background:#fff}
+  section{padding:1.4cm 1cm;break-inside:avoid}
+  .dark{background:#fff!important;color:#000!important}
+  .dark h2,.dark h3,.dark .thesis,.dark .quote{color:#000!important}
+  .dark .card{background:#f3eefb!important;border-color:#ddd!important}
+  .dark .lede,.dark .card p,.dark .dl span,.dark .stat-l{color:#444!important}
+  .hero{min-height:auto}
+  .js .rv{opacity:1!important;transform:none!important}
+  .tw{overflow:visible!important;border:none!important}
+  table{min-width:0!important;font-size:.72rem}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MEJORAS DE PRESENTACIÓN — v2, 2026-08-04
+   Estos informes se proyectan en reunión y se releen después en el celular.
+   Son dos usos distintos y el diseño tiene que servir a los dos.
+
+   Tres decisiones, y solo tres, para no convertir un dictamen en un carrusel:
+     1. NAVEGACIÓN. Un riel de capítulos y control por teclado: cuando el
+        cliente pregunta "¿y los números?", se salta ahí sin scrollear a ciegas.
+     2. MOTION CON CRITERIO. Entrada escalonada, conteo de cifras y elevación al
+        pasar el cursor. Nada de fondos que laten ni elementos flotando: esto es
+        un peritaje, no una landing.
+     3. IDENTIDAD ESTRUCTURAL. El púrpura deja de ser adorno y pasa a marcar la
+        estructura — numera capítulos, señala dónde estás y firma las fuentes.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* --- 1. Riel de capítulos (escritorio) ------------------------------------ */
+/* El riel mide lo que mide un guion, no lo que mide el título más largo: la
+   etiqueta va absoluta, así que aparece al pasar el cursor sin empujar nada ni
+   robarle sitio al contenido. */
+.rail{position:fixed;left:clamp(.9rem,calc((100vw - var(--maxw))/2 - 2.6rem),3.4rem);top:50%;
+  transform:translateY(-50%);z-index:40;display:none;flex-direction:column;gap:.6rem;width:30px}
+.rail button{all:unset;cursor:pointer;position:relative;display:block;padding:.28rem 0}
+.rail .tick{display:block;width:14px;height:2px;border-radius:2px;background:#B8AECB;
+  transition:width .22s cubic-bezier(.19,1,.22,1),background .22s ease}
+.rail .lbl{position:absolute;left:calc(100% + .55rem);top:50%;transform:translateY(-50%) translateX(-4px);
+  font:600 .68rem/1.2 var(--sans);letter-spacing:.02em;white-space:nowrap;color:#fff;
+  max-width:15rem;overflow:hidden;text-overflow:ellipsis;
+  background:var(--ink);padding:.34rem .6rem;border-radius:6px;pointer-events:none;
+  opacity:0;transition:opacity .16s ease,transform .16s ease;
+  box-shadow:0 6px 18px rgba(26,11,46,.28)}
+.rail button:hover .tick,.rail button:focus-visible .tick{width:26px;background:var(--purp)}
+.rail button:hover .lbl,.rail button:focus-visible .lbl{opacity:1;transform:translateY(-50%) translateX(0)}
+.rail button[aria-current="true"] .tick{width:30px;background:var(--purp)}
+.dark-view .rail .tick{background:#4A3B63}
+.dark-view .rail .lbl{background:#fff;color:var(--ink);box-shadow:0 6px 18px rgba(0,0,0,.5)}
+@media(min-width:1240px){.rail{display:flex}}
+
+/* Índice desplegable, que en el celular es donde de verdad hace falta */
+.idx{position:fixed;inset:0;z-index:70;background:rgba(3,1,6,.96);backdrop-filter:blur(6px);
+  padding:5rem var(--pad) 2rem;overflow-y:auto;display:none}
+.idx.open{display:block}
+.idx h4{font:700 .72rem/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--purp);margin-bottom:1.4rem}
+.idx ol{list-style:none;counter-reset:ix}
+.idx li{counter-increment:ix;border-bottom:1px solid rgba(255,255,255,.08)}
+.idx button{all:unset;cursor:pointer;display:flex;gap:1rem;width:100%;padding:.85rem 0;
+  font-family:var(--serif);font-size:1.05rem;color:#fff}
+.idx button::before{content:counter(ix,decimal-leading-zero);font-family:var(--sans);
+  font-size:.75rem;font-weight:700;color:var(--purp);padding-top:.3rem;flex:none}
+.idx button:hover{color:var(--purpl)}
+/* Botón de índice: tres trazos dibujados en CSS, sin iconos ni dependencias.
+   Al abrirse se convierten en aspa, así el mismo botón cierra. */
+.bar .menu{all:unset;cursor:pointer;flex:none;display:inline-flex;align-items:center;gap:.5rem;
+  padding:.42rem .85rem .42rem .72rem;border-radius:999px;color:#EDE6F6;
+  font:600 .78rem/1 var(--sans);border:1px solid rgba(176,36,255,.35);
+  background:linear-gradient(135deg,rgba(176,36,255,.16),rgba(176,36,255,.04));
+  transition:border-color .18s ease,background .18s ease,color .18s ease}
+.bar .menu .bars3{position:relative;width:13px;height:9px;flex:none}
+.bar .menu .bars3 i{position:absolute;left:0;height:1.6px;width:100%;border-radius:2px;
+  background:currentColor;transition:transform .24s cubic-bezier(.19,1,.22,1),opacity .18s ease,width .24s ease}
+.bar .menu .bars3 i:nth-child(1){top:0}
+.bar .menu .bars3 i:nth-child(2){top:50%;margin-top:-.8px;width:72%}
+.bar .menu .bars3 i:nth-child(3){bottom:0}
+.bar .menu:hover{color:#fff;border-color:var(--purp);background:rgba(176,36,255,.24)}
+.bar .menu:hover .bars3 i:nth-child(2){width:100%}
+.bar .menu[aria-expanded="true"]{color:#fff;border-color:var(--purp);background:rgba(176,36,255,.3)}
+.bar .menu[aria-expanded="true"] .bars3 i:nth-child(1){transform:translateY(3.7px) rotate(45deg)}
+.bar .menu[aria-expanded="true"] .bars3 i:nth-child(2){opacity:0}
+.bar .menu[aria-expanded="true"] .bars3 i:nth-child(3){transform:translateY(-3.7px) rotate(-45deg)}
+
+/* --- 2. Numeración de capítulos ------------------------------------------ */
+/* El púrpura numerando: da sensación de expediente y de avance. */
+body{counter-reset:cap}
+section:not(.hero){counter-increment:cap}
+section:not(.hero) .kick{display:flex;align-items:center;gap:.7rem}
+section:not(.hero) .kick::before{content:counter(cap,decimal-leading-zero);
+  font-family:var(--serif);font-size:1.5rem;font-weight:700;letter-spacing:-.02em;
+  line-height:1;opacity:.9}
+.close .kick::before{content:none}
+
+/* --- 3. Entrada escalonada ----------------------------------------------- */
+/* Los hijos de una rejilla entran uno tras otro, en orden de lectura. */
+.js .rv{transition-delay:0ms}
+.js .grid.in>.rv:nth-child(1),.js .tiers.in>.rv:nth-child(1),.js .steps.in>.rv:nth-child(1){transition-delay:0ms}
+.js .grid.in>.rv:nth-child(2),.js .tiers.in>.rv:nth-child(2),.js .steps.in>.rv:nth-child(2){transition-delay:90ms}
+.js .grid.in>.rv:nth-child(3),.js .tiers.in>.rv:nth-child(3),.js .steps.in>.rv:nth-child(3){transition-delay:180ms}
+.js .grid.in>.rv:nth-child(4){transition-delay:270ms}
+.js .grid.in>.rv:nth-child(5){transition-delay:360ms}
+.js .grid.in>.rv:nth-child(6){transition-delay:450ms}
+.js .vs.in>.rv:nth-child(2){transition-delay:140ms}
+
+/* --- 4. Elevación al pasar el cursor ------------------------------------- */
+/* En reunión hay ratón: el hover confirma qué se está mirando. */
+@media(hover:hover){
+  .card,.tier,.step,.vs .col{transition:transform .22s cubic-bezier(.19,1,.22,1),
+    box-shadow .22s ease,border-color .22s ease}
+  .card:hover,.tier:hover,.step:hover,.vs .col:hover{transform:translateY(-3px);
+    box-shadow:0 14px 34px rgba(26,11,46,.13);border-color:#D3C2ED}
+  .dark .card:hover{box-shadow:0 14px 34px rgba(0,0,0,.5);border-color:rgba(176,36,255,.42)}
+  tbody tr{transition:background .16s ease}
+  tbody tr:not(.me):hover td{background:#EFE7FB}
+}
+
+/* --- 5. Cifras: leerse desde el fondo de la sala -------------------------- */
+.stat{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.tier .amt{font-variant-numeric:tabular-nums}
+.bval{font-variant-numeric:tabular-nums}
+@media(min-width:900px){.stat{font-size:clamp(3rem,5.2vw,4.6rem)}}
+
+/* --- 6. Las fuentes, firmadas ------------------------------------------- */
+/* Cada afirmación lleva su origen: que se note que es una regla, no un adorno. */
+/* Las fuentes son lo que sostiene todo el informe: tienen que leerse. El gris
+   anterior daba 3,33:1 sobre el papel, por debajo del mínimo AA para texto
+   pequeño (4,5:1). */
+.src{position:relative;padding-left:1.6rem;font-style:normal;color:var(--muted);
+  border-top:1px solid var(--line);padding-top:1rem;margin-top:2.8rem}
+.src::before{content:"";position:absolute;left:0;top:1.35rem;width:.65rem;height:.65rem;
+  border:2px solid var(--purpd);border-radius:50%;opacity:.55}
+.dark .src{border-top-color:rgba(255,255,255,.1);color:var(--mutedd)}
+.dark .src::before{border-color:var(--purp)}
+
+/* --- 7. Cabecera de tabla fija dentro de su contenedor ------------------- */
+.tw{max-height:min(78vh,640px)}
+thead th{position:sticky;top:0;z-index:2}
+
+/* --- 8. Que los saltos no queden bajo la barra fija ---------------------- */
+section{scroll-margin-top:3.6rem}
+
+/* --- 9. Marca de agua en la sección de cierre ---------------------------- */
+.close{position:relative;overflow:hidden}
+.close .wrap{position:relative;z-index:1}
+
+/* --- 10. Blindaje de contraste ------------------------------------------- */
+/* Los colores semánticos se redefinen DENTRO de la sección oscura. Así, los
+   estilos en línea que ya existen en los informes (`style="color:var(--red)"`,
+   repartidos por decenas) se corrigen solos, sin tocar una sola línea de HTML
+   ni ahora ni en los informes futuros.
+   Sobre negro, el rojo y el verde de marca se quedan en 3,9:1; estas versiones
+   aclaradas superan el 4,5:1 que necesita el texto pequeño. */
+.dark{--red:#FF6B85;--green:#3FD49B;--amber:#FFC15E;--purpd:#D08BFF}
+/* …salvo dentro de la tabla, que es una isla clara y necesita los originales */
+.dark .tw{--red:#D4123F;--green:#0A7A55;--amber:#8F5A00;--purpd:#7A1FB8}
+.attrib{color:var(--purpl)}
+/* El kicker es minúsculo (0,74rem): el púrpura de marca se queda en 4,49:1
+   sobre negro, a una centésima del mínimo. Sobre oscuro va una versión clara. */
+.dark .kick{color:#C97DFF}
+
+/* Los componentes de fondo claro tienen que ser legibles caigan donde caigan.
+   `.card` se salva porque `.dark .card` le da fondo oscuro, pero `.tier`,
+   `.step` y las columnas del cuadro comparativo se quedan blancos aunque la
+   sección sea oscura: si no declaran su color, heredan el blanco de `.dark`.
+   Con esto, mover una sección de clara a oscura ya no puede romper nada. */
+.dark .tier,.dark .step,.dark .vs .col{color:var(--tx)}
+.dark .tier h3,.dark .step h3,.dark .vs .col h3{color:var(--tx)}
+.dark .vs .pro h3{color:var(--green)}
+.dark .vs .con h3{color:var(--red)}
+.dark .tier p,.dark .step p,.dark .vs li{color:var(--muted)}
+.dark .vs li b,.dark .step b,.dark .tier b{color:var(--tx)}
+
+@media print{
+  .rail,.idx,.bar .menu{display:none!important}
+  section:not(.hero) .kick::before{opacity:1}
+  .src{border-top:1px solid #ccc}
+  .tw{max-height:none}
+  thead th{position:static}
+}
