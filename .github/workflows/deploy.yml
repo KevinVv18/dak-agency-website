@@ -38,6 +38,13 @@ jobs:
       # TODO subdominio que viva como carpeta ahí (blog/, inmobiliaria/) debe ir
       # en --exclude o este deploy lo borra. (Esto borró el demo inmobiliario
       # original; por eso inmobiliaria/ está excluido.)
+      #
+      # analisis/ se sumó el 04-ago-2026 después de que este deploy borrara el
+      # microsite de análisis de marca: su exclude vivía solo en la rama
+      # claude/brand-analysis-research-circuit-24734f, que nunca se mergeó, así
+      # que main seguía borrando la carpeta en cada push. Regla: cuando se cree
+      # una carpeta-subdominio nueva, el exclude va a main de inmediato, no en
+      # la rama donde se construye.
 
       - name: Deploy SPA via SSH (rsync)
         uses: burnett01/rsync-deployments@7.0.1
