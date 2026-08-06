@@ -43,15 +43,16 @@
        Solo se declara lo que la pagina muestra de verdad: los precios salen de
        la seccion de servicios y el horario del bloque de contacto.
 
-       NO lleva "geo": el unico dato de coordenadas del sitio es el pin del mapa
-       del footer, que apunta a 8°06'43.2"S 79°02'40.8"W — unos 147 km al sur de
-       Chiclayo, en La Libertad. Hasta que se corrija el pin con la direccion
-       real, publicar esas coordenadas en el schema empeoraria el SEO local en
-       vez de mejorarlo.
+       Las coordenadas de "geo" corresponden al Condominio Los Parques de San
+       Gabriel y estan verificadas contra OpenStreetMap: tres consultas
+       independientes (el condominio, su salon de usos multiples y la Av. Victor
+       Andres Belaunde) caen dentro de 250 m. Se usan 4 decimales (~11 m) porque
+       mas seria precision fingida para el centroide de un condominio. Deben
+       coincidir con el iframe del mapa en Footer.jsx.
 
-       Tampoco lleva "aggregateRating": los tres testimonios de la home son
-       citas de clientes, no un sistema de resenas verificables. Declararlos
-       como valoracion agregada expone a una accion manual de Google. -->
+       NO lleva "aggregateRating": los tres testimonios de la home son citas de
+       clientes, no un sistema de resenas verificables. Declararlos como
+       valoracion agregada expone a una accion manual de Google. -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -69,10 +70,18 @@
           "currenciesAccepted": "PEN",
           "address": {
             "@type": "PostalAddress",
-            "addressLocality": "La Victoria, Chiclayo",
+            "streetAddress": "Av. Víctor Andrés Belaunde 101, Condominio Los Parques de San Gabriel",
+            "addressLocality": "Chiclayo",
             "addressRegion": "Lambayeque",
+            "postalCode": "14011",
             "addressCountry": "PE"
           },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": -6.7744,
+            "longitude": -79.8747
+          },
+          "hasMap": "https://maps.google.com/maps?q=-6.7744,-79.8747",
           "openingHoursSpecification": [
             {
               "@type": "OpeningHoursSpecification",

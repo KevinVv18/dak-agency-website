@@ -172,13 +172,22 @@ const Footer = () => {
               Ubicación
             </h2>
             <div className="footer-map-wrapper">
+              {/* Hasta el 06-ago-2026 este pin apuntaba a 8°06'43.2"S 79°02'40.8"W,
+                  a unos 147 km al sur: en La Libertad, no en Lambayeque. Todo el
+                  sitio se posiciona en Chiclayo, asi que la unica coordenada que
+                  publicaba contradecia al resto.
+                  Coordenadas actuales verificadas contra OpenStreetMap para
+                  "Condominio Los Parques de San Gabriel, Chiclayo". Se usan 4
+                  decimales (~11 m): mas seria precision fingida para el centroide
+                  de un condominio. Deben coincidir con el geo del JSON-LD de
+                  index.html. */}
               <iframe
                 className="footer-map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3901.964!2d-79.044!3d-8.112!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOMKwMDYnNDMuMiJTIDc5wrAwMic0MC44Ilc!5e0!3m2!1ses!2spe!4v1700000000000!5m2!1ses!2spe"
+                src="https://maps.google.com/maps?q=-6.7744,-79.8747&hl=es&z=16&output=embed"
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="DAK Agency Location"
+                title="Ubicación de DAK Agency en Chiclayo"
               />
               <div className="map-overlay" />
             </div>

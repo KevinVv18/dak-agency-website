@@ -80,7 +80,7 @@ jobs:
           # LC_ALL=C en los tres sort: comm exige el mismo criterio de orden en
           # sus entradas y la locale del runner no es de fiar.
           REMOTE=/home/u567580447/domains/dakagency.net/public_html
-          ssh -i ~/.ssh/deploy_key -p 65002 -o BatchMode=yes \
+          ssh -i ~/.ssh/deploy_key -p 65002 -o BatchMode=yes -o StrictHostKeyChecking=accept-new \
             u567580447@89.116.115.11 "ls -A '$REMOTE'" | tr -d '\r' | LC_ALL=C sort > /tmp/en-servidor.txt
           ls -A dist/ | tr -d '\r' | LC_ALL=C sort > /tmp/en-build.txt
           grep -vE '^\s*(#|$)' deploy-protect.txt | tr -d '\r' | sed 's#/*$##' | LC_ALL=C sort > /tmp/protegidas.txt
