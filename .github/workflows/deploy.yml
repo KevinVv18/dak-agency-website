@@ -101,11 +101,23 @@ jobs:
 
           REMOTE=/home/u567580447/domains/dakagency.net/public_html
           echo "--- listando public_html/ en el servidor ---"
-          if ! ssh -i ~/.ssh/deploy_key -p 65002 \
+          # Tres intentos: el 06-ago-2026 un fallo puntual de SSH tumbo un
+          # deploy que no tenia nada malo. La garantia no se debilita —si los
+          # tres fallan sigue abortando sin desplegar—, solo se deja de castigar
+          # un corte de red pasajero.
+          ok=0
+          for intento in 1 2 3; do
+            if ssh -i ~/.ssh/deploy_key -p 65002 \
                  -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 \
                  u567580447@89.116.115.11 "ls -A '$REMOTE'" > /tmp/servidor.raw 2> /tmp/ssh.err; then
-            echo "::error::No se pudo listar public_html/ por SSH. Se aborta sin desplegar."
-            echo "salida de ssh:"; sed 's/^/  /' /tmp/ssh.err
+              ok=1; break
+            fi
+            echo "intento $intento fallido:"; sed 's/^/    /' /tmp/ssh.err
+            sleep $((intento * 5))
+          done
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::No se pudo listar public_html/ por SSH tras 3 intentos. Se aborta sin desplegar."
+            sed 's/^/  /' /tmp/ssh.err
             exit 1
           fi
 
