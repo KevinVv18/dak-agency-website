@@ -34,22 +34,78 @@ jobs:
       # El build ya NO ejecuta deploy.sh (era no-op en el runner y el
       # `|| true` ocultaba fallos reales de vite build).
       #
-      # IMPORTANTE: el rsync de la SPA usa --delete sobre public_html/, así que
-      # TODO subdominio que viva como carpeta ahí (blog/, inmobiliaria/) debe ir
-      # en --exclude o este deploy lo borra. (Esto borró el demo inmobiliario
-      # original; por eso inmobiliaria/ está excluido.)
+      # El rsync de la SPA usa --delete sobre public_html/: todo lo que viva ahí
+      # y no salga de `npm run build` desaparece en el siguiente push. Ya se
+      # llevó el demo inmobiliario y el microsite de análisis.
       #
-      # analisis/ se sumó el 04-ago-2026 después de que este deploy borrara el
-      # microsite de análisis de marca: su exclude vivía solo en la rama
-      # claude/brand-analysis-research-circuit-24734f, que nunca se mergeó, así
-      # que main seguía borrando la carpeta en cada push. Regla: cuando se cree
-      # una carpeta-subdominio nueva, el exclude va a main de inmediato, no en
-      # la rama donde se construye.
+      # Antes esto se defendía con una lista de --exclude escrita a mano en este
+      # archivo, y la regla "añádelo a main de inmediato" vivía en un comentario.
+      # No funcionó: cada rama acabó con una lista distinta e incompleta, y el
+      # 06-ago-2026 main volvía a estar a un push de borrar agro/.
+      #
+      # Ahora la lista vive en deploy-protect.txt, los --exclude se generan de
+      # ahí, y el paso de guarda compara contra el servidor real. Una carpeta sin
+      # proteger detiene el deploy en vez de desaparecer.
+
+      - name: Construir excludes desde deploy-protect.txt
+        id: protect
+        run: |
+          set -euo pipefail
+          if [ ! -s deploy-protect.txt ]; then
+            echo "::error::deploy-protect.txt no existe o está vacío. Sin él no se puede desplegar con --delete."
+            exit 1
+          fi
+          DIRS=$(grep -vE '^\s*(#|$)' deploy-protect.txt | tr -d '\r' | sed 's#/*$#/#')
+          SW="-avz --delete"
+          for d in $DIRS; do SW="$SW --exclude='$d'"; done
+          echo "switches=$SW" >> "$GITHUB_OUTPUT"
+          echo "dirs<<EOF" >> "$GITHUB_OUTPUT"; echo "$DIRS" >> "$GITHUB_OUTPUT"; echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "Protegidas: $(echo $DIRS | tr '\n' ' ')"
+          echo "switches: $SW"
+
+      # Guarda: si en el servidor hay algo que ni produce el build ni está
+      # protegido, --delete lo borraría. Se para el deploy y se avisa con nombre
+      # y apellido. Falla cerrado a propósito: si esta comprobación no se puede
+      # hacer, no se despliega.
+      - name: Guarda anti-borrado (comparar servidor vs protegidas)
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p 65002 -H 89.116.115.11 >> ~/.ssh/known_hosts 2>/dev/null
+
+          # LC_ALL=C en los tres sort: comm exige el mismo criterio de orden en
+          # sus entradas y la locale del runner no es de fiar.
+          REMOTE=/home/u567580447/domains/dakagency.net/public_html
+          ssh -i ~/.ssh/deploy_key -p 65002 -o BatchMode=yes \
+            u567580447@89.116.115.11 "ls -A '$REMOTE'" | tr -d '\r' | LC_ALL=C sort > /tmp/en-servidor.txt
+          ls -A dist/ | tr -d '\r' | LC_ALL=C sort > /tmp/en-build.txt
+          grep -vE '^\s*(#|$)' deploy-protect.txt | tr -d '\r' | sed 's#/*$##' | LC_ALL=C sort > /tmp/protegidas.txt
+
+          if [ ! -s /tmp/en-servidor.txt ]; then
+            echo "::error::No se pudo listar public_html/ en el servidor. Se aborta sin desplegar."
+            exit 1
+          fi
+
+          # Lo que sobrevive a ambas restas es lo que --delete se llevaría.
+          comm -23 /tmp/en-servidor.txt /tmp/en-build.txt > /tmp/no-en-build.txt
+          comm -23 /tmp/no-en-build.txt /tmp/protegidas.txt > /tmp/en-peligro.txt
+
+          if [ -s /tmp/en-peligro.txt ]; then
+            echo "::error::El deploy borraría estas entradas de public_html/ porque no las produce el build ni están en deploy-protect.txt:"
+            sed 's/^/  - /' /tmp/en-peligro.txt
+            echo "Si son subdominios o contenido que debe vivir, añádelos a deploy-protect.txt y vuelve a lanzar."
+            exit 1
+          fi
+          echo "OK: nada sin proteger. El servidor tiene $(wc -l < /tmp/en-servidor.txt) entradas y ninguna corre peligro."
 
       - name: Deploy SPA via SSH (rsync)
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avz --delete --exclude='blog/' --exclude='.builds/' --exclude='inmobiliaria/' --exclude='guias/' --exclude='blog-demo/' --exclude='analisis/'
+          switches: ${{ steps.protect.outputs.switches }}
           path: dist/
           remote_path: /home/u567580447/domains/dakagency.net/public_html/
           remote_host: 89.116.115.11
