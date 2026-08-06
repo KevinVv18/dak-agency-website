@@ -11,9 +11,28 @@ const cld = (url, w) => {
   return url.replace('/upload/', `/upload/f_auto,q_auto,c_limit,w_${w}/`)
 }
 
+// Fotograma de portada del propio video, generado por Cloudinary con so_0
+// (second offset 0). Pesa ~36 KB frente a los 1,7 MB del video: sin el, el
+// hueco se queda en negro hasta que el video decodifica los primeros frames.
+// No hay que subir ni mantener nada: sale del mismo asset.
+const cldPoster = (url, w) => {
+  if (!url || !url.includes('/upload/')) return undefined
+  return url
+    .replace('/upload/', `/upload/f_auto,q_auto,c_limit,w_${w},so_0/`)
+    .replace(/\.(mp4|webm|mov)(\?.*)?$/i, '.jpg')
+}
+
 const Services = () => {
   const [activeIndex, setActiveIndex] = useState(0)
-  const [isMobile, setIsMobile] = useState(false)
+  // Se mide el ancho YA en el primer render, no en un efecto posterior.
+  //
+  // Arrancando en false, el primer render era siempre el arbol de escritorio:
+  // siete miniaturas <video> y el precargador a w_1600. El navegador lanzaba
+  // esas peticiones de inmediato y el efecto llegaba tarde a evitarlas — en un
+  // movil se pedian diez videos para acabar mostrando uno.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth <= 768,
+  )
   const [viewedServices, setViewedServices] = useState(new Set([0]))
   const [swipeHintVisible, setSwipeHintVisible] = useState(true)
 
@@ -269,13 +288,25 @@ const Services = () => {
   }
 
   // Preload next video/image (según orientación del dispositivo)
+  //
+  // En movil NO se precarga. Este elemento esta oculto y con preload="auto", asi
+  // que se descarga el siguiente video entero sin que nadie lo vea: el de
+  // Fotografia pesa 4,2 MB. En un 4G de Chiclayo eso es la diferencia entre una
+  // demo que impresiona y una pestana que se cierra. El carrusel sigue
+  // funcionando igual, solo tarda un instante mas en el primer cambio.
+  //
+  // En escritorio se conserva: es una decision de UX deliberada y ahi el ancho
+  // de banda no es el cuello de botella.
   useEffect(() => {
+    if (!preloadRef.current) return
+    if (isMobile) {
+      preloadRef.current.removeAttribute('src')
+      return
+    }
     const nextIndex = (activeIndex + 1) % services.length
-    if (services[nextIndex] && preloadRef.current) {
-      const nextVideo = getServiceVideo(services[nextIndex])
-      if (nextVideo) {
-        preloadRef.current.src = cld(nextVideo, isMobile ? 900 : 1600)
-      }
+    const nextVideo = services[nextIndex] && getServiceVideo(services[nextIndex])
+    if (nextVideo) {
+      preloadRef.current.src = cld(nextVideo, 1600)
     }
   }, [activeIndex, services, isMobile])
 
@@ -332,6 +363,7 @@ const Services = () => {
                       ref={videoRef}
                       key={activeVideoSrc}
                       src={activeVideoSrc}
+                      poster={cldPoster(activeVideo, isMobile ? 900 : 1600)}
                       autoPlay
                       muted
                       loop
@@ -525,7 +557,12 @@ const Services = () => {
               />
             </div>
 
-            {/* Panel de miniaturas - Desktop only */}
+            {/* Panel de miniaturas - Desktop only.
+                El CSS ya lo ocultaba en movil con display:none, pero seguia en
+                el DOM: siete <video preload="metadata"> que el navegador iba a
+                pedir igualmente para algo que nadie ve. Ocultar no es no
+                descargar; hay que no renderizarlo. */}
+            {!isMobile && (
             <div className="thumbnails-panel">
               <div className="thumbnails-header">
                 <span className="thumbnails-count">
@@ -557,6 +594,7 @@ const Services = () => {
                         {(service.videoDesktop || service.videoSrc) ? (
                           <video
                             src={cld(service.videoDesktop || service.videoSrc, 400)}
+                            poster={cldPoster(service.videoDesktop || service.videoSrc, 400)}
                             muted
                             playsInline
                             loop
@@ -614,6 +652,7 @@ const Services = () => {
                 })}
               </div>
             </div>
+            )}
           </div>
         </div>
       </section>
