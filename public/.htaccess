@@ -5,6 +5,13 @@
     RewriteEngine On
     RewriteBase /
 
+    # ── 301: www → apex. Va PRIMERO para que todo lo demas (incluido /blog/)
+    #    resuelva ya sobre el host canonico y no se encadenen dos redirecciones.
+    #    Antes ambos hosts devolvian 200 con el mismo ETag: contenido duplicado
+    #    que la etiqueta canonical mitigaba pero no resolvia. ──
+    RewriteCond %{HTTP_HOST} ^www\.dakagency\.net$ [NC]
+    RewriteRule ^(.*)$ https://dakagency.net/$1 [R=301,L]
+
     # ── 301: URL huerfana del SEO anterior (sin /blog/) → post real en WordPress ──
     RewriteRule ^blog-seo-sem-chiclayo-impulsa-tu-negocio-al-exito-digital/?$ https://dakagency.net/blog/seo-sem-chiclayo-impulsa-tu-negocio-al-exito-digital/ [R=301,L]
 

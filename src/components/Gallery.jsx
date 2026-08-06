@@ -69,6 +69,9 @@ const MasonryGrid = () => {
 
   return (
     <div className="masonry-section" ref={ref}>
+      {/* Esta seccion solo tiene barra de filtros: sin encabezado, sus tarjetas
+          colgaban directamente del h1 y dejaban un salto h1 -> h3. */}
+      <h2 className="sr-only">Proyectos por categoría</h2>
       {/* Filter bar */}
       <motion.div
         className="filter-bar"
@@ -104,7 +107,7 @@ const MasonryGrid = () => {
               <img src={item.src} alt={item.alt} loading="lazy" />
               <div className="masonry-overlay">
                 <span className="masonry-type" style={{ borderColor: item.color }}>{item.type}</span>
-                <h4>{item.alt}</h4>
+                <h3>{item.alt}</h3>
                 <p>{item.client}</p>
               </div>
             </motion.div>
@@ -170,7 +173,7 @@ const BannerShowcase = () => {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6 }}
       >
-        <h3 className="banner-title">Portadas que <span className="title-accent">Impactan</span></h3>
+        <h2 className="banner-title">Portadas que <span className="title-accent">Impactan</span></h2>
         <div className="banner-nav">
           <button className="banner-arrow" onClick={() => scroll(-1)} aria-label="Anterior">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
@@ -193,7 +196,7 @@ const BannerShowcase = () => {
             <img src={b.src} alt={b.alt} loading="lazy" />
             <div className="banner-card-overlay">
               <span>{b.client}</span>
-              <h4>{b.alt}</h4>
+              <h3>{b.alt}</h3>
             </div>
           </motion.div>
         ))}
@@ -219,7 +222,7 @@ const PhotoParallax = () => {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6 }}
       >
-        <h3 className="photo-parallax-title">Detrás del <span className="title-accent">Lente</span></h3>
+        <h2 className="photo-parallax-title">Detrás del <span className="title-accent">Lente</span></h2>
         <p className="photo-parallax-sub">Sesiones profesionales que capturan la esencia de cada marca</p>
       </motion.div>
 
@@ -248,7 +251,7 @@ const ParallaxCard = ({ photo, index, scrollProgress, isInView }) => {
         <img src={photo.src} alt={photo.title} loading="lazy" />
         <div className="parallax-overlay">
           <span className="parallax-cat">{photo.category}</span>
-          <h4>{photo.title}</h4>
+          <h3>{photo.title}</h3>
         </div>
       </div>
     </motion.div>
@@ -276,7 +279,7 @@ const ScrollRevealShowcase = () => {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6 }}
       >
-        <h3 className="reveal-title">Lo que nos <span className="title-accent">Define</span></h3>
+        <h2 className="reveal-title">Lo que nos <span className="title-accent">Define</span></h2>
       </motion.div>
 
       {featuredItems.map((item, i) => (
@@ -310,7 +313,7 @@ const RevealRow = ({ item, index, reverse }) => {
       <div className="reveal-info">
         <span className="reveal-number">{String(index + 1).padStart(2, '0')}</span>
         <span className="reveal-type" style={{ color: item.color }}>{item.type}</span>
-        <h4>{item.alt}</h4>
+        <h3>{item.alt}</h3>
         <p className="reveal-client">{item.client}</p>
         <p className="reveal-desc">{item.description}</p>
       </div>
@@ -369,7 +372,7 @@ const GalleryCTA = () => {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        <h3>Tu marca merece <span className="title-accent">verse así</span></h3>
+        <h2>Tu marca merece <span className="title-accent">verse así</span></h2>
         <p>Cuéntanos tu idea y la convertimos en algo que nadie pueda ignorar.</p>
         <a href="/#contact" className="gallery-cta-btn" onClick={handleCTA}>
           <span>Conversemos</span>

@@ -113,9 +113,12 @@ const Hero = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.5, ease: [0.19, 1, 0.22, 1] }}
           >
+            {/* Recurso grafico, no estructura del documento: son dos lineas de
+                un lema, no la cabecera de una seccion. Como encabezados dejaban
+                el documento abriendo en h3 y sin h1. El CSS no cambia. */}
             <div className="cta-text-group">
-              <h3 className="cta-small-text">- RUIDO</h3>
-              <h2 className="cta-large-text">+ IMPACTO</h2>
+              <p className="cta-small-text">- RUIDO</p>
+              <p className="cta-large-text">+ IMPACTO</p>
             </div>
             <motion.div
               className="cta-accent-line"

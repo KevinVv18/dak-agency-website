@@ -1,5 +1,4 @@
 # https://www.robotstxt.org/robotstxt.html
-# Deploy test 2 — 2026-03-19
 
 # Allow all legitimate crawlers
 User-agent: *
@@ -11,13 +10,27 @@ Disallow: /blog/wp-admin/
 Disallow: /blog/wp-login.php
 Disallow: /blog/wp-includes/
 
-# Block common scraping bots
-User-agent: AhrefsBot
-Disallow: /
+# Rastreadores de IA: se dejan pasar a proposito. Son los que alimentan las
+# respuestas de ChatGPT, Claude, Perplexity y los resumenes de Google, y una
+# agencia que vende posicionamiento no puede permitirse ser invisible ahi.
+# Nota: la mayoria no ejecuta JavaScript, asi que esto solo sirve de verdad
+# con el HTML prerenderizado.
+User-agent: GPTBot
+Allow: /
 
-User-agent: SemrushBot
-Disallow: /
+User-agent: OAI-SearchBot
+Allow: /
 
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Bots de scraping masivo sin contrapartida
 User-agent: MJ12bot
 Disallow: /
 
@@ -26,6 +39,10 @@ Disallow: /
 
 User-agent: BLEXBot
 Disallow: /
+
+# AhrefsBot y SemrushBot estaban bloqueados aqui hasta el 06-ago-2026. El
+# bloqueo tambien cegaba a DAK: sin ellos, esas herramientas no pueden auditar
+# el propio sitio ni ver sus backlinks. Se dejan pasar.
 
 # Sitemaps
 Sitemap: https://dakagency.net/sitemap.xml
