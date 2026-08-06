@@ -85,22 +85,42 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          set -euo pipefail
+          # Sin `set -e` a proposito: cada fallo se comprueba y se explica. Con
+          # -e y pipefail, un ssh caido mataba el paso antes de imprimir ningun
+          # mensaje, y el log quedaba en blanco.
+          set -uo pipefail
+
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p 65002 -H 89.116.115.11 >> ~/.ssh/known_hosts 2>/dev/null
+
+          echo "--- ssh-keyscan ---"
+          if ! ssh-keyscan -p 65002 89.116.115.11 >> ~/.ssh/known_hosts; then
+            echo "aviso: ssh-keyscan fallo; se continua con accept-new"
+          fi
+
+          REMOTE=/home/u567580447/domains/dakagency.net/public_html
+          echo "--- listando public_html/ en el servidor ---"
+          if ! ssh -i ~/.ssh/deploy_key -p 65002 \
+                 -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 \
+                 u567580447@89.116.115.11 "ls -A '$REMOTE'" > /tmp/servidor.raw 2> /tmp/ssh.err; then
+            echo "::error::No se pudo listar public_html/ por SSH. Se aborta sin desplegar."
+            echo "salida de ssh:"; sed 's/^/  /' /tmp/ssh.err
+            exit 1
+          fi
 
           # LC_ALL=C en los tres sort: comm exige el mismo criterio de orden en
           # sus entradas y la locale del runner no es de fiar.
-          REMOTE=/home/u567580447/domains/dakagency.net/public_html
-          ssh -i ~/.ssh/deploy_key -p 65002 -o BatchMode=yes -o StrictHostKeyChecking=accept-new \
-            u567580447@89.116.115.11 "ls -A '$REMOTE'" | tr -d '\r' | LC_ALL=C sort > /tmp/en-servidor.txt
+          tr -d '\r' < /tmp/servidor.raw | LC_ALL=C sort > /tmp/en-servidor.txt
           ls -A dist/ | tr -d '\r' | LC_ALL=C sort > /tmp/en-build.txt
           grep -vE '^\s*(#|$)' deploy-protect.txt | tr -d '\r' | sed 's#/*$##' | LC_ALL=C sort > /tmp/protegidas.txt
 
+          echo "--- en el servidor ($(wc -l < /tmp/en-servidor.txt)) ---"; sed 's/^/  /' /tmp/en-servidor.txt
+          echo "--- lo produce el build ($(wc -l < /tmp/en-build.txt)) ---"; sed 's/^/  /' /tmp/en-build.txt
+          echo "--- protegidas ($(wc -l < /tmp/protegidas.txt)) ---"; sed 's/^/  /' /tmp/protegidas.txt
+
           if [ ! -s /tmp/en-servidor.txt ]; then
-            echo "::error::No se pudo listar public_html/ en el servidor. Se aborta sin desplegar."
+            echo "::error::El listado del servidor vino vacio. Se aborta sin desplegar."
             exit 1
           fi
 
