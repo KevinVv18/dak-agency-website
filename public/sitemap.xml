@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Rutas reales de la SPA, definidas en src/App.jsx. Si se anade una <Route>,
+  se anade aqui. El blog de WordPress tiene su propio sitemap, declarado
+  aparte en robots.txt (/blog/sitemap_index.xml).
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://dakagency.net/</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://dakagency.net/gallery</loc>
-    <lastmod>2026-06-12</lastmod>
+    <lastmod>2026-08-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dakagency.net/privacidad</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://dakagency.net/terminos</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://dakagency.net/eliminacion-de-datos</loc>
+    <lastmod>2026-08-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>

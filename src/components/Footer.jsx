@@ -23,10 +23,15 @@ const Footer = () => {
     { name: 'Agendar Reunión', href: 'https://plan.dakagency.net/agendar.html', external: true }
   ]
 
+  // Los perfiles reales son estos. Hasta el 06-ago-2026 convivian dos juegos de
+  // URLs distintos en la misma pagina (Hero y el JSON-LD apuntaban aqui; Footer
+  // y Navigation a /dakagency), asi que uno de los dos daba 404 y Google no
+  // podia consolidar la entidad. Si cambian, cambian TAMBIEN en Hero.jsx,
+  // Navigation.jsx y en el sameAs del JSON-LD de index.html.
   const socialLinks = [
     {
       name: 'Facebook',
-      href: 'https://www.facebook.com/dakagency',
+      href: 'https://www.facebook.com/profile.php?id=61577374078273',
       icon: (
         <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
           <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -35,7 +40,7 @@ const Footer = () => {
     },
     {
       name: 'Instagram',
-      href: 'https://www.instagram.com/dakagency',
+      href: 'https://www.instagram.com/agency_dak/',
       icon: (
         <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
           <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
@@ -117,6 +122,10 @@ const Footer = () => {
                     href={social.href}
                     className={`social-link social-${social.name.toLowerCase()}`}
                     title={social.name}
+                    /* title ya da nombre accesible, pero es el ultimo recurso del
+                       algoritmo y los lectores de pantalla lo tratan de forma
+                       desigual. aria-label lo fija, como ya hace Navigation. */
+                    aria-label={social.name}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.15, y: -5 }}
@@ -132,10 +141,10 @@ const Footer = () => {
 
           {/* Column 2: Navigation */}
           <div className="footer-links">
-            <h4 className="footer-col-title">
+            <h2 className="footer-col-title">
               <span className="title-decorator" />
               Navega
-            </h4>
+            </h2>
             <ul className="footer-nav">
               {footerLinks.map((link, index) => (
                 <motion.li
@@ -158,18 +167,27 @@ const Footer = () => {
 
           {/* Column 3: Location & Map */}
           <div className="footer-location">
-            <h4 className="footer-col-title">
+            <h2 className="footer-col-title">
               <span className="title-decorator" />
               Ubicación
-            </h4>
+            </h2>
             <div className="footer-map-wrapper">
+              {/* Hasta el 06-ago-2026 este pin apuntaba a 8°06'43.2"S 79°02'40.8"W,
+                  a unos 147 km al sur: en La Libertad, no en Lambayeque. Todo el
+                  sitio se posiciona en Chiclayo, asi que la unica coordenada que
+                  publicaba contradecia al resto.
+                  Coordenadas actuales verificadas contra OpenStreetMap para
+                  "Condominio Los Parques de San Gabriel, Chiclayo". Se usan 4
+                  decimales (~11 m): mas seria precision fingida para el centroide
+                  de un condominio. Deben coincidir con el geo del JSON-LD de
+                  index.html. */}
               <iframe
                 className="footer-map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3901.964!2d-79.044!3d-8.112!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOMKwMDYnNDMuMiJTIDc5wrAwMic0MC44Ilc!5e0!3m2!1ses!2spe!4v1700000000000!5m2!1ses!2spe"
+                src="https://maps.google.com/maps?q=-6.7744,-79.8747&hl=es&z=16&output=embed"
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="DAK Agency Location"
+                title="Ubicación de DAK Agency en Chiclayo"
               />
               <div className="map-overlay" />
             </div>

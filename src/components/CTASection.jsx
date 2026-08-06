@@ -113,8 +113,10 @@ const CTASection = () => {
           <span>Listos para tu próximo proyecto</span>
         </motion.div>
 
-        {/* Interactive Heading */}
-        <motion.h2
+        {/* Interactive Heading — es el h1 del documento: el enunciado dominante
+            de la home. Antes la pagina no tenia ningun h1 y su primer encabezado
+            era el h3 "- RUIDO" del Hero. */}
+        <motion.h1
           className="cta-heading"
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -199,7 +201,7 @@ const CTASection = () => {
               </AnimatePresence>
             </span>
           </span>
-        </motion.h2>
+        </motion.h1>
 
         {/* Subtitle */}
         <motion.p

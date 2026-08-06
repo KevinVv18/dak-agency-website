@@ -228,7 +228,7 @@
   background: rgba(0, 0, 0, 0.3);
 }
 
-.masonry-overlay h4 {
+.masonry-overlay h3 {
   font-size: 0.95rem;
   font-weight: 600;
   margin-bottom: 0.15rem;
@@ -426,7 +426,7 @@
   font-weight: 600;
 }
 
-.banner-card-overlay h4 {
+.banner-card-overlay h3 {
   font-size: 1rem;
   font-weight: 600;
 }
@@ -534,7 +534,7 @@
   margin-bottom: 0.25rem;
 }
 
-.parallax-overlay h4 {
+.parallax-overlay h3 {
   font-size: 0.95rem;
   font-weight: 600;
 }
@@ -617,7 +617,7 @@
   font-weight: 600;
 }
 
-.reveal-info h4 {
+.reveal-info h3 {
   font-size: 1.5rem;
   font-weight: 700;
 }
@@ -688,7 +688,7 @@
   position: relative;
 }
 
-.gallery-cta-content h3 {
+.gallery-cta-content h2 {
   font-size: clamp(1.5rem, 3vw, 2.25rem);
   font-weight: 700;
   margin-bottom: 0.75rem;

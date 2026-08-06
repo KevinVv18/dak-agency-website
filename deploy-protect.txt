@@ -1,0 +1,25 @@
+# Carpetas de public_html/ que el deploy de la SPA NO debe tocar jamas.
+#
+# UNICA fuente de verdad: deploy.yml genera los --exclude del rsync leyendo
+# este archivo, y antes de desplegar comprueba contra el servidor que no haya
+# ninguna carpeta desprotegida. No hay una segunda lista que se pueda desincronizar.
+#
+# Por que existe: el rsync de la SPA usa --delete sobre public_html/. Todo lo
+# que viva ahi y no salga de `npm run build` desaparece en el siguiente push.
+# Ya paso tres veces: el demo inmobiliario, el microsite de analisis y —
+# detectado el 06-ago-2026 antes de que ocurriera — el demo de agroinsumos.
+#
+# Si creas una carpeta-subdominio nueva en el servidor, anadela AQUI y
+# mergea a main de inmediato. Si no lo haces, el deploy falla en vez de
+# borrarla, que es justamente el punto.
+#
+# Una entrada por linea, con barra final. Las lineas vacias y las que
+# empiezan por # se ignoran.
+
+blog/
+blog-demo/
+inmobiliaria/
+analisis/
+guias/
+agro/
+.builds/
