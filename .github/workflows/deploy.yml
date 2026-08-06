@@ -18,9 +18,23 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      # El postinstall de puppeteer se descarga Chromium (~150 MB). Cachearlo
+      # evita repetir la descarga en cada deploy. Va ANTES de `npm ci` para que
+      # el postinstall encuentre el navegador ya en su sitio.
+      - name: Cache del navegador de Puppeteer
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: puppeteer-${{ runner.os }}-
+
       - name: Install Dependencies
         run: npm ci
 
+      # `npm run build` es `vite build` seguido del prerender. Va junto a
+      # proposito: si el prerender fuese un paso aparte, cualquiera podria
+      # quitarlo del workflow y el sitio volveria a servir un <body> vacio a los
+      # rastreadores sin que nadie se enterase.
       - name: Build Project
         run: npm run build
         env:

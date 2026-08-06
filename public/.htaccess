@@ -21,6 +21,26 @@
     # ── WordPress: Let /blog/ requests pass through to WordPress ──
     RewriteRule ^blog(/.*)?$ - [L]
 
+    # ── Prerender: servir dist/<ruta>/index.html sin redirigir ──
+    #
+    # scripts/prerender.mjs genera un index.html por ruta (gallery/, terminos/…).
+    # Sin esta regla, Apache resuelve /gallery por mod_dir, que emite un 301 a
+    # /gallery/ para anadir la barra: un salto extra y una URL distinta de la
+    # que declaran el sitemap y el canonical. Aqui se sirve el archivo
+    # directamente, conservando /gallery como URL unica.
+    #
+# La lista es explicita y NO un comodin. Un `^([^/]+)/?$` generico atraparia
+    # tambien analisis/, inmobiliaria/, guias/ y blog-demo/, que son sitios
+    # estaticos independientes: si alguno enlaza sus assets con rutas relativas,
+    # servirlo sin barra final haria que el navegador los resolviera desde la
+    # raiz del dominio y se quedaria sin estilos. Aqui solo entran las rutas de
+    # la SPA, cuyos assets Vite emite con ruta absoluta.
+    #
+    # Si se anade una <Route> a src/App.jsx, va tambien a esta lista, a
+    # scripts/prerender.mjs y a public/sitemap.xml.
+    RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
+    RewriteRule ^(gallery|privacidad|terminos|eliminacion-de-datos)/?$ /$1/index.html [L]
+
     # ── SPA: React/Vite single-page app fallback ──
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d

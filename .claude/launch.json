@@ -8,6 +8,13 @@
       "port": 3000
     },
     {
+      "//": "Sirve dist/ tal cual: es la unica forma de probar el HTML prerenderizado y la hidratacion. `dev` no sirve para esto porque el servidor de desarrollo nunca ve los volcados.",
+      "name": "preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "preview", "--port", "4173", "--strictPort", "--host", "127.0.0.1"],
+      "port": 4173
+    },
+    {
       "name": "american-vault",
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "5174", "--directory", "C:/Users/kevin/OneDrive/Desktop/american vault"],
