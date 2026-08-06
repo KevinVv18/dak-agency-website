@@ -48,6 +48,30 @@ const RUTAS = [
 ]
 
 /**
+ * Quita src, poster, preload y autoplay de los <video> del volcado.
+ *
+ * El prerender corre en un viewport de escritorio, asi que congela las URLs de
+ * Cloudinary a w_1600 (el hero pesa 1,9 MB y el que precarga el carrusel, 4,2 MB;
+ * los posters, 36 KB cada uno). Ese HTML lo recibe tambien un movil, que empieza
+ * a descargarlos antes de que arranque React — y cuando arranca, React elige las
+ * variantes w_900 y los pide otra vez. Descarga doble, y la cara es la que sobra.
+ *
+ * Quitarlo no cuesta nada: main.jsx usa createRoot y descarta este DOM entero,
+ * de modo que React vuelve a poner el src y el poster correctos para el viewport
+ * real. Y a los rastreadores un src de video no les aporta nada; el texto sigue
+ * intacto.
+ */
+function quitarFuentesDeVideo(html) {
+  return html.replace(/<video\b[^>]*>/gi, (tag) =>
+    tag
+      .replace(/\ssrc="[^"]*"/gi, '')
+      .replace(/\sposter="[^"]*"/gi, '')
+      .replace(/\spreload="[^"]*"/gi, '')
+      .replace(/\sautoplay(="[^"]*")?/gi, ''),
+  )
+}
+
+/**
  * Corrige los metadatos que en una SPA son unicos para todo el sitio.
  *
  * index.html trae un solo canonical, og:url y twitter:url apuntando a la home,
@@ -233,7 +257,7 @@ async function main() {
       await new Promise((r) => setTimeout(r, 800))
 
       const invisibles = await auditarInvisibles(page)
-      const html = corregirMetadatos(await page.content(), entrada)
+      const html = quitarFuentesDeVideo(corregirMetadatos(await page.content(), entrada))
       const texto = await page.evaluate(() => document.body.innerText.trim().length)
 
       informe.push({ ruta, palabras: texto, invisibles, blogOk, erroresConsola, html })
