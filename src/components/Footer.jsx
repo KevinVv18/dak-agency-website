@@ -197,8 +197,13 @@ const Footer = () => {
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                 </svg>
                 <div>
-                  <p className="location-address">Mnz G. Lt.11 Av. Antenor Orrego</p>
-                  <p className="location-city">La Victoria, Perú</p>
+                  {/* Direccion vigente desde 07-ago-2026. La anterior
+                      (Av. Antenor Orrego, La Victoria) ya no es la sede. Si
+                      cambia, cambia TAMBIEN en src/pages/LegalPage.jsx, en el
+                      JSON-LD de index.html y en las coordenadas del iframe del
+                      mapa, unas lineas mas abajo. */}
+                  <p className="location-address">Av. Víctor Andrés Belaunde 101</p>
+                  <p className="location-city">Los Parques de San Gabriel, Chiclayo</p>
                 </div>
               </div>
               <div className="location-hours">

@@ -9,7 +9,9 @@ import './Legal.css'
 
 const EMAIL = 'marketing@dakagency.net'
 const WHATSAPP = '+51 906 765 040'
-const ADDRESS = 'Mnz. G Lt. 11, Av. Antenor Orrego, La Victoria, Chiclayo, Lambayeque, Perú'
+// Vigente desde 07-ago-2026. Debe coincidir con el pie (Footer.jsx) y con el
+// JSON-LD de index.html: en SEO local, dos direcciones distintas se penalizan.
+const ADDRESS = 'Av. Víctor Andrés Belaunde 101, Condominio Los Parques de San Gabriel, Chiclayo 14011, Lambayeque, Perú'
 const UPDATED = '20 de julio de 2026'
 
 const DOCS = {
