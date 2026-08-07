@@ -10,7 +10,8 @@
     "local-build": "vite build && node scripts/prerender.mjs",
     "prerender": "node scripts/prerender.mjs",
     "preview": "vite preview",
-    "auditar:movil": "node scripts/auditar-movil.mjs"
+    "auditar:movil": "node scripts/auditar-movil.mjs",
+    "fotos:pendientes": "node scripts/fotos-pendientes.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
