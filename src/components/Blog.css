@@ -8,10 +8,9 @@
 .blog-grid-bg {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(176, 36, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(176, 36, 255, 0.025) 1px, transparent 1px);
-  background-size: 60px 60px;
+  --luz-x: 6%;
+  --luz-y: 100%;
+  background: var(--luz-seccion);
   pointer-events: none;
   z-index: 0;
   opacity: 0.6;

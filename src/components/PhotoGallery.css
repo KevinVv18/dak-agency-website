@@ -28,10 +28,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(176, 36, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(176, 36, 255, 0.025) 1px, transparent 1px);
-  background-size: 60px 60px;
+  --luz-x: 50%;
+  --luz-y: 110%;
+  background: var(--luz-seccion-teal);
   pointer-events: none;
   z-index: 0;
   opacity: 0.6;

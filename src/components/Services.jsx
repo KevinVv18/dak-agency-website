@@ -457,7 +457,12 @@ const Services = () => {
 
                   <h3 className="featured-title">{activeService.title}</h3>
                   <p className="featured-tagline">{activeService.tagline}</p>
+                  {/* El envoltorio interno lo necesita el plegado por
+                      grid-template-rows: el contenedor pasa de 1fr a 0fr y el
+                      hijo unico recorta. Sustituye a animar max-height, que
+                      recalculaba layout en cada frame. */}
                   <div className="featured-extra">
+                  <div className="featured-extra-inner">
                   <p className="featured-description">{activeService.description}</p>
 
                   <div className="featured-stats">
@@ -525,6 +530,7 @@ const Services = () => {
                         {activeService.demoLabel || 'Probar demo en vivo'}
                       </a>
                     )}
+                  </div>
                   </div>
                   </div>
                 </motion.div>

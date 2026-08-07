@@ -37,10 +37,9 @@
 .about-grid-bg {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(176, 36, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(176, 36, 255, 0.025) 1px, transparent 1px);
-  background-size: 60px 60px;
+  --luz-x: 94%;
+  --luz-y: 18%;
+  background: var(--luz-seccion-teal);
   pointer-events: none;
   opacity: 0.6;
   mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.5) 15%, rgba(0,0,0,.5) 85%, transparent 100%);
