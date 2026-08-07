@@ -2,25 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import './Services.css'
 import { scrollToSection } from '../utils/scrollToSection'
-
-// Optimizacion Cloudinary: f_auto (mejor codec por navegador) + q_auto (calidad
-// inteligente) + c_limit,w_N (solo reduce los videos mas grandes que N, NUNCA
-// agranda). No cambia los fps ni la resolucion util que se ve en pantalla.
-const cld = (url, w) => {
-  if (!url || !url.includes('/upload/')) return url
-  return url.replace('/upload/', `/upload/f_auto,q_auto,c_limit,w_${w}/`)
-}
-
-// Fotograma de portada del propio video, generado por Cloudinary con so_0
-// (second offset 0). Pesa ~36 KB frente a los 1,7 MB del video: sin el, el
-// hueco se queda en negro hasta que el video decodifica los primeros frames.
-// No hay que subir ni mantener nada: sale del mismo asset.
-const cldPoster = (url, w) => {
-  if (!url || !url.includes('/upload/')) return undefined
-  return url
-    .replace('/upload/', `/upload/f_auto,q_auto,c_limit,w_${w},so_0/`)
-    .replace(/\.(mp4|webm|mov)(\?.*)?$/i, '.jpg')
-}
+import { cld, cldPoster } from '../utils/cloudinary'
 
 const Services = () => {
   const [activeIndex, setActiveIndex] = useState(0)
