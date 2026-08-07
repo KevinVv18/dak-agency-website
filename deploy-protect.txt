@@ -23,3 +23,9 @@ analisis/
 guias/
 agro/
 .builds/
+
+# Backups automaticos que crea el panel de Hostinger (tarballs del WordPress).
+# No los produce el build y borrarlos destruiria copias de seguridad.
+# Aparecio el 07-ago-2026 y la guarda lo detuvo antes de que el deploy se lo
+# llevara por delante.
+application_backups/
