@@ -5,6 +5,27 @@
     RewriteEngine On
     RewriteBase /
 
+    # ── Backups y volcados: nunca servibles por web. Va lo PRIMERO ──
+    #
+    # El panel de Hostinger deja tarballs del WordPress en
+    # public_html/application_backups/. El listado del directorio daba 403, pero
+    # el archivo se descargaba: comprobado el 07-ago-2026, un GET al .tar.gz
+    # devolvia 200. Dentro va wp-config.php con las credenciales de la base de
+    # datos, y el nombre sigue un patron con fecha.
+    #
+    # Se hace con mod_rewrite y no con <FilesMatch>: aqui FilesMatch no llego a
+    # bloquearlo (se probo y seguia dando 200), y <LocationMatch> directamente
+    # no es valido en .htaccess — usarlo tumbo el sitio entero con 403.
+    RewriteRule ^application_backups/ - [F,L]
+    RewriteRule \.(tar\.gz|tgz|sql|zip|bak)$ - [F,L]
+
+    # ── 301: www → apex. Va PRIMERO para que todo lo demas (incluido /blog/)
+    #    resuelva ya sobre el host canonico y no se encadenen dos redirecciones.
+    #    Antes ambos hosts devolvian 200 con el mismo ETag: contenido duplicado
+    #    que la etiqueta canonical mitigaba pero no resolvia. ──
+    RewriteCond %{HTTP_HOST} ^www\.dakagency\.net$ [NC]
+    RewriteRule ^(.*)$ https://dakagency.net/$1 [R=301,L]
+
     # ── 301: URL huerfana del SEO anterior (sin /blog/) → post real en WordPress ──
     RewriteRule ^blog-seo-sem-chiclayo-impulsa-tu-negocio-al-exito-digital/?$ https://dakagency.net/blog/seo-sem-chiclayo-impulsa-tu-negocio-al-exito-digital/ [R=301,L]
 
@@ -13,6 +34,26 @@
 
     # ── WordPress: Let /blog/ requests pass through to WordPress ──
     RewriteRule ^blog(/.*)?$ - [L]
+
+    # ── Prerender: servir dist/<ruta>/index.html sin redirigir ──
+    #
+    # scripts/prerender.mjs genera un index.html por ruta (gallery/, terminos/…).
+    # Sin esta regla, Apache resuelve /gallery por mod_dir, que emite un 301 a
+    # /gallery/ para anadir la barra: un salto extra y una URL distinta de la
+    # que declaran el sitemap y el canonical. Aqui se sirve el archivo
+    # directamente, conservando /gallery como URL unica.
+    #
+# La lista es explicita y NO un comodin. Un `^([^/]+)/?$` generico atraparia
+    # tambien analisis/, inmobiliaria/, guias/ y blog-demo/, que son sitios
+    # estaticos independientes: si alguno enlaza sus assets con rutas relativas,
+    # servirlo sin barra final haria que el navegador los resolviera desde la
+    # raiz del dominio y se quedaria sin estilos. Aqui solo entran las rutas de
+    # la SPA, cuyos assets Vite emite con ruta absoluta.
+    #
+    # Si se anade una <Route> a src/App.jsx, va tambien a esta lista, a
+    # scripts/prerender.mjs y a public/sitemap.xml.
+    RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
+    RewriteRule ^(gallery|privacidad|terminos|eliminacion-de-datos)/?$ /$1/index.html [L]
 
     # ── SPA: React/Vite single-page app fallback ──
     RewriteCond %{REQUEST_FILENAME} !-f
@@ -45,5 +86,26 @@
 <IfModule mod_headers.c>
     <FilesMatch "-[A-Za-z0-9_-]{8,}\.(js|css)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+# El HTML se revalida siempre.
+#
+# Hasta el 06-ago-2026 se servia sin Cache-Control: solo con ETag y
+# Last-Modified. Sin cabecera explicita el navegador aplica cache heuristica
+# (del orden del 10% del tiempo transcurrido desde la ultima modificacion), asi
+# que tras un deploy podia seguir sirviendo el HTML anterior — que apunta a
+# assets con hash que ya no existen. Resultado: la pagina maquetada pero con
+# todas las imagenes rotas.
+#
+# Antes esto apenas se notaba porque el <body> estaba vacio y no habia nada que
+# pintar. Desde que el HTML va prerenderizado, una copia vieja SI se ve, y se ve
+# rota.
+#
+# no-cache no significa "no guardar": guarda, pero revalida siempre. Con el ETag
+# ya presente, la revalidacion es un 304 de unos pocos bytes.
+<IfModule mod_headers.c>
+    <FilesMatch "\.html$">
+        Header set Cache-Control "no-cache, must-revalidate"
     </FilesMatch>
 </IfModule>

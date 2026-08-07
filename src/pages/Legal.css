@@ -10,10 +10,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(176, 36, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(176, 36, 255, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
+  --luz-x: 50%;
+  --luz-y: 0%;
+  background: var(--luz-seccion);
   pointer-events: none;
   opacity: 0.5;
   mask-image: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent 60%);

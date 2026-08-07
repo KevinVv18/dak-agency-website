@@ -16,10 +16,9 @@
 .footer-neon-grid {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(176, 36, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(176, 36, 255, 0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
+  --luz-x: 18%;
+  --luz-y: 100%;
+  background: var(--luz-seccion);
   animation: gridPulse 8s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
@@ -71,11 +70,10 @@
   font-weight: 800;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: rgba(176, 36, 255, 0.25);
-  background: linear-gradient(90deg, rgba(176, 36, 255, 0.3), rgba(0, 200, 200, 0.2), rgba(176, 36, 255, 0.3));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* Cinta decorativa, no contenido: se mantiene tenue a proposito. Antes lo
+     conseguia con un degradado recortado al texto; ahora con un color solido,
+     que hace lo mismo sin el tell. */
+  color: rgba(176, 36, 255, 0.28);
   user-select: none;
 }
 
@@ -165,7 +163,8 @@
   font-size: 0.8rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(176, 36, 255, 0.6);
+  /* Era rgba(176,36,255,0.6): compuesto sobre #030106 daba 2.19:1. */
+  color: var(--color-accent-texto);
   margin: 0.25rem 0 0.5rem;
   font-weight: 500;
 }
@@ -173,7 +172,7 @@
 .footer-description {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--color-texto-2);
   max-width: 380px;
   margin: 0;
 }
@@ -275,7 +274,7 @@
 }
 
 .footer-nav li a {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--color-texto-2);
   font-size: 0.95rem;
   font-weight: 500;
   transition: all 0.25s ease;
@@ -288,7 +287,7 @@
 
 .nav-arrow {
   font-size: 0.75rem;
-  color: rgba(176, 36, 255, 0.3);
+  color: var(--color-accent-texto);
   transition: all 0.25s ease;
   display: inline-block;
 }
@@ -372,7 +371,7 @@
 .location-city {
   margin: 0.1rem 0 0;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--color-texto-2);
   letter-spacing: 0.05em;
 }
 
@@ -386,7 +385,8 @@
 }
 
 .location-hours span {
-  color: rgba(255, 255, 255, 0.4);
+  /* Era alpha 0.4: 3.68:1 sobre el fondo del pie. */
+  color: var(--color-texto-2);
 }
 
 /* ---- Bottom Bar ---- */
@@ -415,7 +415,7 @@
 }
 
 .footer-copyright p {
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--color-texto-2);
   font-size: 0.8rem;
   margin: 0;
   letter-spacing: 0.02em;
@@ -463,7 +463,7 @@
 }
 
 .footer-legal a {
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--color-texto-2);
   font-size: 0.8rem;
   transition: color 0.25s ease;
   text-decoration: none;

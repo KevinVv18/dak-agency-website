@@ -1,82 +1,111 @@
-# Design — Levantamiento
+# Design — dakagency.net
 
 <!-- impeccable:design 1 -->
 
-> **Alcance:** mundo visual del demo inmobiliario (`_inmobiliaria-demo/index.html`).
-> En la raíz a propósito: esa carpeta se publica con `rsync --delete`.
-> Verdad de producto en [PRODUCT.md](PRODUCT.md).
+> **Alcance:** el sitio principal. El demo inmobiliario tiene su propio mundo en
+> [DESIGN.inmobiliaria.md](DESIGN.inmobiliaria.md).
+>
+> Este documento describe **lo construido**, no lo deseado. Donde hay deuda, se
+> dice que es deuda.
 
 ## Tesis
 
-Una ficha de propiedad es la última página de un expediente que empieza en una libreta de campo. El sitio adopta el lenguaje del oficio del prospecto —estaciones, cotas, cuadros de áreas, bitácora fechada— en lugar del hero fotográfico a sangre con buscador superpuesto y grilla de fichas que publica todo el rubro.
+Una agencia que vende posicionamiento, rendimiento y accesibilidad tiene que ser
+el primer sitio que los cumple. El argumento no se escribe: se comprueba abriendo
+el inspector.
 
-El puente que sostiene todo: **una panorámica 360° es una ocupación de estación.** El topógrafo planta el instrumento en un punto y visa en todas direcciones; el visor hace literalmente eso.
+De ahí que el mundo visual sea **oscuro, denso y de alto contraste** —el negocio
+es nocturno, de pantalla— pero medido: cada decisión tiene que pasar la auditoría
+que la propia agencia le vendería a un cliente.
 
 ## Lo que este mundo NO es
 
-No es papelería ni cuaderno artesanal. Nada de crema, papel cuadriculado nostálgico ni caligrafía. El referente es el **instrumento y la señalización de campo**: alta visibilidad, escala de señalética, medición tabular. La fotografía se conserva grande porque es la evidencia del producto y el brillo aspiracional que el pitch necesita.
+Prohibido reintroducir, porque se retiró a propósito el 07-ago-2026:
 
-Prohibido reintroducir: negro con un acento neón y bordes brillantes; filetes editoriales con serif itálica de display; crema con serif de alto contraste. Son los tres clusters en los que converge el diseño generado por AI, y el fracaso declarado del proyecto es parecer genérico.
+- **Cuadrícula de filetes tileada** como textura de sección. Estaba en nueve
+  secciones con el mismo mosaico de 60px y era la firma más reconocible de UI
+  generada. Sobrevive **solo** en `.cursor-grid-reveal`, que no es fondo sino un
+  gesto que sigue al ratón.
+- **Texto con degradado** (`background-clip: text`). El énfasis lo dan el peso y
+  el tamaño. Además, un degradado recortado al texto hace el contraste
+  inmedible.
+- **Bordes de acento laterales** por encima de 1px.
+- **Rebote elástico** en las transiciones.
+- **Animar `width`, `max-height` o `margin`.** No es solo estética: recalcula el
+  layout en cada frame.
+- **Halos de color sin desplazamiento** haciendo de sombra. La profundidad lleva
+  offset y desenfoque.
 
-## Color — paleta completa, cuatro roles
-
-El color ocupa regiones, no adorna. Cada rol tiene un trabajo y no se usa fuera de él.
+## Color
 
 | Rol | Token | Valor | Trabajo |
 |---|---|---|---|
-| Suelo | `--suelo` | `#15181C` | Fondo de plano. Grafito, nunca negro puro. |
-| Suelo elevado | `--suelo-2` | `#1D2126` | Paneles, fichas, superficies que se levantan. |
-| Acción / límite | `--cinta` | `#FF5A1F` | Naranja de cinta de señalización. CTAs, filetes de sección, el borde de lo que importa. Es el único color que invita a tocar. |
-| Medición | `--prisma` | `#FFC300` | Amarillo de prisma y trípode. Cifras: precios, áreas, cuotas, coordenadas. Nunca en texto corrido. |
-| Punto marcado | `--marca` | `#FF2D78` | Rosa fluorescente de marca de pintura. Puntos hallados: favoritos, disponibilidad de 360°, estación activa. |
-| Texto | `--texto` / `--texto-2` | `#EEF1F3` / `#A7B0B8` | Blanco de mira y su secundario. |
+| Fondo | `--color-primary` | `#030106` | Casi negro, nunca negro puro |
+| Acento | `--color-accent` | `#B024FF` | Superficies, bordes, botones |
+| Acento en texto | `--color-accent-texto` | `#B93EFF` | **Solo texto.** El morado de marca da 4.49:1 sobre el fondo y falla AA por una centésima; este es el mismo tono con 12% de blanco (5.14:1) |
+| Secundario | — | `#00C8C8` | Teal. Píldoras, filetes, la segunda luz |
+| Texto | `--color-white` / `--color-texto-2` | `#ffffff` / `rgba(255,255,255,.55)` | El secundario al 0.55 da 6.26:1; por debajo de 0.46 falla AA |
 
-Regla de contención: en una misma vista, `--cinta` y `--marca` no compiten. La cinta manda en acción; la marca solo señala hallazgos discretos.
+**Regla dura:** el alpha cuenta para el contraste. Blanco al 0.45 sobre el fondo
+da 4.43:1 y no pasa. Antes de bajar una opacidad de texto, se calcula.
+
+Los siete servicios tienen color propio. Dos se corrigieron para poder usarse
+como texto: `#B024FF → #B738FF` (Branding) y `#9B59B6 → #A163BA`
+(Automatización).
 
 ## Tipografía
 
-Sin serif. Las libretas de campo se rotulan en versales de ingeniería.
+**Poppins**, autoalojada, en 600/700/800. Sin serif, sin segunda familia de
+display.
 
-- **Rotulación** — `Archivo` con eje de ancho, expandida y pesada, en versales con tracking abierto. Títulos de sección, nombres de estación, el display del hero. Es señalética, no editorial.
-- **Interfaz y texto** — `Archivo` en ancho normal.
-- **Medida** — `Spline Sans Mono`, con numeración tabular. Coordenadas, áreas, precios, cuotas, fechas de bitácora. El monoespaciado está ganado: son mediciones reales, no disfraz técnico.
-
-Prohibidas por ser defaults de entrenamiento: Newsreader, Fraunces, Playfair, Cormorant, Lora, Crimson, Syne, Space Grotesk, Space Mono, IBM Plex, Inter como display, DM Sans/Serif, Outfit, Plus Jakarta, Instrument Sans.
+- Encabezados: `h1` `clamp(3rem, 8vw, 8rem)` peso 900; la escala baja hasta `h4`.
+- Piso de texto funcional: `--texto-minimo: 11px`. No hay excepciones.
+- Tracking negativo en display (`-0.02em` a `-0.04em`).
 
 ## Composición
 
-- **Retícula de coordenadas** en filete finísimo sobre el suelo, presente pero nunca protagonista. Es la hoja de plano.
-- **Estaciones**: cada sección se numera `E-01`…`E-08` y abre con el símbolo de punto de control (triángulo sobre punto), rotulación en versales y un filete de cinta naranja a todo el ancho.
-- **Cuadros**: los datos van en tabla alineada a la derecha con mono tabular, como un cuadro de áreas. Nunca en prosa.
-- **Fotografía a escala grande**, encuadrada por filete, con su rótulo de estación encima. La foto manda; el aparato la enmarca.
-- Ritmo: un pasaje denso de datos se gana un pasaje amplio de foto.
+- **Secciones a pantalla completa** con su propia luz de fondo.
+- **Luz de sección** (`--luz-seccion`, variante `--luz-seccion-teal`): un solo
+  degradado radial suave anclado en un punto **distinto en cada sección** vía
+  `--luz-x` / `--luz-y`. Sustituyó a la cuadrícula. Su razón de ser es que dos
+  secciones no se lean nunca igual.
+- **Divisor de sección**: filete horizontal de 1px que se desvanece por los
+  extremos, con un punto luminoso centrado. Está en `.services::before`,
+  `.photo-gallery::before` y `.about`. Es el recurso estructural del sitio.
+- Rejillas de tarjetas para servicios, demos y clientes.
 
-## Motivo
+## Motion
 
-El símbolo de punto de control —triángulo sobre punto— es la firma. Aparece en el logotipo, como viñeta del kicker y como marca junto al número de cada estación (`.sec-head::before`). La cinta de señalización es el segundo motivo: filetes naranjas que delimitan, reservados para estaciones y progreso, no para decorar todos los paneles.
+- **Entrada**: fade + desplazamiento con `framer-motion`, disparado por
+  `useInView`. Es correcto pero **repetido en todas las secciones**: no hay un
+  momento orquestado. Deuda declarada.
+- **Easing**: `--ease-out-expo` `cubic-bezier(0.19, 1, 0.22, 1)`. Único.
+- **Gesto propio**: `.cursor-grid-reveal`, una rejilla que solo existe donde pasa
+  el cursor. Es lo más cercano a una firma interactiva que tiene el sitio.
+- `prefers-reduced-motion` detiene las animaciones decorativas.
 
-## Artefactos del mundo (lo que lo separa de un portal)
+## Reglas que no se rompen
 
-- **Cajetín de lámina** en el pie: en vez de un footer de enlaces, el bloque identificador de un plano — número de lámina, escala, «levantó/revisó», tabla de revisiones fechada e índice de estaciones. Aquí viven el sello DEMOSTRATIVO (rotado, como sello de goma) y el crédito a DAK Agency.
-- **Notación de campo** sobre la foto del hero: coordenadas de estación, latitud/longitud y cota (`.hero-coord`), en mono tabular. La tesis del oficio, escrita en la esquina como en una libreta.
-- **Cuadro de áreas** en las fichas: los datos van en celdas separadas por filete y mono tabular, sin los pictogramas de portal.
-- **Azimut vivo** en el visor 360°, leído de la brújula de Pannellum.
-
-## Motion — estado real, no intención
-
-Lo construido hoy, dicho sin adornos:
-
-- **Entrada:** `.reveal` es un fade-up de 10px. Es correcto y discreto, pero **no** es la "visada" orquestada que este documento prometía en su primera versión. Se corrigió el documento, no el archivo.
-- **El único barrido real** es `.step::before`, el filete que se dibuja de izquierda a derecha al entrar la bitácora. Ahí sí encaja el mundo, y por eso el filete de cinta se reserva para eso y para las estaciones.
-- **Azimut vivo** en el visor 360°: lectura en grados que cambia al girar. Es la demostración de la tesis, no su enunciado.
-- **Hover:** hay efectos dispersos heredados del build anterior (elevaciones de tarjeta, tilt 3D del catálogo, ken burns del hero). Están fuera del criterio de "un solo momento orquestado" y son **deuda declarada**, no diseño.
-
-`prefers-reduced-motion` detiene el fade-up, el ken burns, el filete de la bitácora y la palabra rotativa.
-
-## Reglas heredadas que no se rompen
-
+- Un solo `h1` por ruta; jerarquía sin saltos.
 - Texto funcional nunca bajo 11px.
-- Sin sombras de color: elevación neutra con desplazamiento y desenfoque.
-- Jerarquía de encabezados sin saltos de nivel.
-- El JS existente (filtros, modal, 360, simulador, chat, carrusel) y sus ids/clases son intocables; el rediseño es visual.
-- Lo ficticio se ve ficticio: la señal de DEMO y el crédito a DAK Agency sobreviven.
+- Contraste AA contando el alpha.
+- Área táctil de 44×44 donde el espaciado lo permita; nunca bajo 24×24.
+- El HTML se prerenderiza y debe seguir siendo legible sin JavaScript.
+- La media pesada va a Cloudinary, no al repo.
+- `npm run auditar:movil` en verde antes de mergear.
+
+## Deuda declarada
+
+Lo que está mal y todavía no se ha corregido, dicho sin adornos:
+
+1. **Eyebrow, número de sección y monoespaciada.** Cada sección abre con
+   `[ 01 ] SERVICIOS` en mono: son tres recursos que el suelo de calidad de
+   impeccable desaconseja expresamente, y están juntos.
+2. **Demos y trabajo de clientes comparten sección** y se leen como lo mismo,
+   siendo cosas distintas.
+3. **La sección de fotografía enseña trabajo personal** (familia, recién nacido)
+   cuando la cartera real es comercial B2B.
+4. **Una sola entrada animada para todo.** Ver Motion.
+5. **`.photo-gallery::before`** lo marca el detector como acento lateral. Se
+   considera falso positivo —es un divisor horizontal, no un borde de tarjeta—
+   pero está sin resolver formalmente.

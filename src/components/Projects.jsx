@@ -578,7 +578,7 @@ const MobileHeroCard = ({ client, index }) => {
       initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }}>
       <div className="pm-hero-img">
         <AnimatePresence mode="wait">
-          <motion.img key={imgIdx} src={client.imagenes[imgIdx].src} alt={client.imagenes[imgIdx].alt}
+          <motion.img key={imgIdx} src={client.imagenes[imgIdx].src} alt={client.imagenes[imgIdx].alt} loading="lazy"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} />
         </AnimatePresence>
         <div className="pm-hero-overlay" />
@@ -635,7 +635,7 @@ const MobileSimpleCard = ({ client, index, total }) => {
       initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }}>
       <div className="pm-simple-img">
         <AnimatePresence mode="wait">
-          <motion.img key={imgIdx} src={client.imagenes[imgIdx].src} alt={client.imagenes[imgIdx].alt}
+          <motion.img key={imgIdx} src={client.imagenes[imgIdx].src} alt={client.imagenes[imgIdx].alt} loading="lazy"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} />
         </AnimatePresence>
       </div>

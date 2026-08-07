@@ -11,6 +11,15 @@
         ],
         "createdAt": "2026-07-24T15:08:46.465Z",
         "reason": "Version Editorial: el hero y su carrusel se conservan tal cual por decision del cliente (2026-07-24). Tras dividir en dos versiones, esta es la ruta del sitio oro."
+      },
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "src/index.css"
+        ],
+        "createdAt": "2026-08-07T01:12:26.776Z",
+        "reason": "Confirmado por el usuario (07-ago-2026): .cursor-grid-reveal no es textura de fondo sino un gesto que sigue al raton y solo se ve donde el cursor la descubre. Las nueve cuadriculas fijas de seccion si se retiraron."
       }
     ]
   }

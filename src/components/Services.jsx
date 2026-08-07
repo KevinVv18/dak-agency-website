@@ -2,18 +2,19 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import './Services.css'
 import { scrollToSection } from '../utils/scrollToSection'
-
-// Optimizacion Cloudinary: f_auto (mejor codec por navegador) + q_auto (calidad
-// inteligente) + c_limit,w_N (solo reduce los videos mas grandes que N, NUNCA
-// agranda). No cambia los fps ni la resolucion util que se ve en pantalla.
-const cld = (url, w) => {
-  if (!url || !url.includes('/upload/')) return url
-  return url.replace('/upload/', `/upload/f_auto,q_auto,c_limit,w_${w}/`)
-}
+import { cld, cldPoster } from '../utils/cloudinary'
 
 const Services = () => {
   const [activeIndex, setActiveIndex] = useState(0)
-  const [isMobile, setIsMobile] = useState(false)
+  // Se mide el ancho YA en el primer render, no en un efecto posterior.
+  //
+  // Arrancando en false, el primer render era siempre el arbol de escritorio:
+  // siete miniaturas <video> y el precargador a w_1600. El navegador lanzaba
+  // esas peticiones de inmediato y el efecto llegaba tarde a evitarlas — en un
+  // movil se pedian diez videos para acabar mostrando uno.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth <= 768,
+  )
   const [viewedServices, setViewedServices] = useState(new Set([0]))
   const [swipeHintVisible, setSwipeHintVisible] = useState(true)
 
@@ -50,7 +51,9 @@ const Services = () => {
       tagline: 'Tu marca, inolvidable',
       description: 'Tu identidad, imposible de ignorar. Diseñamos logo, colores y un sistema de marca completo para que destaques y conectes con tu cliente desde el primer segundo.',
       category: 'IDENTIDAD',
-      color: '#B024FF',
+      // #B024FF daba 4.34:1 como texto sobre la barra inferior; este es el
+      // mismo tono con un 9% de blanco y llega a 4.79:1.
+      color: '#B738FF',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/5_Branding_gs86zn.mp4', // HORIZONTAL (16:9)
       videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318150/v4_branding_z4upbs.mp4',  // VERTICAL (9:16)
       videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763849733/60774eb1-3b74-41e0-9238-796bc61b4c36_hd_m5uts5.mp4', // stock (fallback)
@@ -134,7 +137,8 @@ const Services = () => {
       tagline: 'Trabaja menos, logra más',
       description: 'Vende y atiende en piloto automático. CRM, correos y flujos que responden, hacen seguimiento y cierran ventas mientras tú te enfocas en crecer.',
       category: 'CRM',
-      color: '#9B59B6',
+      // #9B59B6 daba 4.29:1 como texto; +6% de blanco lo sube a 4.78:1.
+      color: '#A163BA',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318081/6_Automatizacion_vcbtoi.mp4', // HORIZONTAL (16:9)
       videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318151/v5_automatizacion_hba6se.mp4',  // VERTICAL (9:16)
       imageSrc: '/images/automation.webp', // imagen actual (fallback si no hay video)
@@ -269,13 +273,25 @@ const Services = () => {
   }
 
   // Preload next video/image (según orientación del dispositivo)
+  //
+  // En movil NO se precarga. Este elemento esta oculto y con preload="auto", asi
+  // que se descarga el siguiente video entero sin que nadie lo vea: el de
+  // Fotografia pesa 4,2 MB. En un 4G de Chiclayo eso es la diferencia entre una
+  // demo que impresiona y una pestana que se cierra. El carrusel sigue
+  // funcionando igual, solo tarda un instante mas en el primer cambio.
+  //
+  // En escritorio se conserva: es una decision de UX deliberada y ahi el ancho
+  // de banda no es el cuello de botella.
   useEffect(() => {
+    if (!preloadRef.current) return
+    if (isMobile) {
+      preloadRef.current.removeAttribute('src')
+      return
+    }
     const nextIndex = (activeIndex + 1) % services.length
-    if (services[nextIndex] && preloadRef.current) {
-      const nextVideo = getServiceVideo(services[nextIndex])
-      if (nextVideo) {
-        preloadRef.current.src = cld(nextVideo, isMobile ? 900 : 1600)
-      }
+    const nextVideo = services[nextIndex] && getServiceVideo(services[nextIndex])
+    if (nextVideo) {
+      preloadRef.current.src = cld(nextVideo, 1600)
     }
   }, [activeIndex, services, isMobile])
 
@@ -332,6 +348,7 @@ const Services = () => {
                       ref={videoRef}
                       key={activeVideoSrc}
                       src={activeVideoSrc}
+                      poster={cldPoster(activeVideo, isMobile ? 900 : 1600)}
                       autoPlay
                       muted
                       loop
@@ -422,7 +439,12 @@ const Services = () => {
 
                   <h3 className="featured-title">{activeService.title}</h3>
                   <p className="featured-tagline">{activeService.tagline}</p>
+                  {/* El envoltorio interno lo necesita el plegado por
+                      grid-template-rows: el contenedor pasa de 1fr a 0fr y el
+                      hijo unico recorta. Sustituye a animar max-height, que
+                      recalculaba layout en cada frame. */}
                   <div className="featured-extra">
+                  <div className="featured-extra-inner">
                   <p className="featured-description">{activeService.description}</p>
 
                   <div className="featured-stats">
@@ -492,6 +514,7 @@ const Services = () => {
                     )}
                   </div>
                   </div>
+                  </div>
                 </motion.div>
               </AnimatePresence>
 
@@ -525,7 +548,12 @@ const Services = () => {
               />
             </div>
 
-            {/* Panel de miniaturas - Desktop only */}
+            {/* Panel de miniaturas - Desktop only.
+                El CSS ya lo ocultaba en movil con display:none, pero seguia en
+                el DOM: siete <video preload="metadata"> que el navegador iba a
+                pedir igualmente para algo que nadie ve. Ocultar no es no
+                descargar; hay que no renderizarlo. */}
+            {!isMobile && (
             <div className="thumbnails-panel">
               <div className="thumbnails-header">
                 <span className="thumbnails-count">
@@ -557,6 +585,7 @@ const Services = () => {
                         {(service.videoDesktop || service.videoSrc) ? (
                           <video
                             src={cld(service.videoDesktop || service.videoSrc, 400)}
+                            poster={cldPoster(service.videoDesktop || service.videoSrc, 400)}
                             muted
                             playsInline
                             loop
@@ -614,6 +643,7 @@ const Services = () => {
                 })}
               </div>
             </div>
+            )}
           </div>
         </div>
       </section>

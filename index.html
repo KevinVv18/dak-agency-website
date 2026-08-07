@@ -14,9 +14,9 @@
 
   <!-- Essential Meta Tags -->
   <meta name="description"
-    content="DAK Agency - Agencia de marketing en La Victoria, Chiclayo, Lambayeque, Perú. Especialistas en posicionamiento, creación de páginas web, automatización con IA, branding, campañas de Meta Ads y fotografía comercial." />
+    content="DAK Agency - Agencia de marketing en Chiclayo, Lambayeque, Perú. Especialistas en posicionamiento, creación de páginas web, automatización con IA, branding, campañas de Meta Ads y fotografía comercial." />
   <meta name="keywords"
-    content="agencia de marketing Chiclayo, marketing digital La Victoria Lambayeque, Perú, paginas web, automatizacion, branding, campanas de meta ads, fotografia, publicidad digital, SEO local Chiclayo, posicionamiento urgente" />
+    content="agencia de marketing Chiclayo, marketing digital Lambayeque, Perú, paginas web, automatizacion, branding, campanas de meta ads, fotografia, publicidad digital, SEO local Chiclayo, posicionamiento urgente" />
   <meta name="author" content="DAK Agency" />
   <link rel="canonical" href="https://dakagency.net/" />
 
@@ -39,35 +39,129 @@
     content="Impulsa tu negocio en Lambayeque y el mundo. Páginas web, automatización, branding, Meta Ads y fotografía." />
   <meta property="twitter:image" content="https://dakagency.net/og-image.png" />
 
-  <!-- Organization Schema JSON-LD -->
+  <!-- Schema JSON-LD.
+       Solo se declara lo que la pagina muestra de verdad: los precios salen de
+       la seccion de servicios y el horario del bloque de contacto.
+
+       Las coordenadas de "geo" corresponden al Condominio Los Parques de San
+       Gabriel y estan verificadas contra OpenStreetMap: tres consultas
+       independientes (el condominio, su salon de usos multiples y la Av. Victor
+       Andres Belaunde) caen dentro de 250 m. Se usan 4 decimales (~11 m) porque
+       mas seria precision fingida para el centroide de un condominio. Deben
+       coincidir con el iframe del mapa en Footer.jsx.
+
+       NO lleva "aggregateRating": los tres testimonios de la home son citas de
+       clientes, no un sistema de resenas verificables. Declararlos como
+       valoracion agregada expone a una accion manual de Google. -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "MarketingAgency",
-      "name": "DAK Agency",
-      "url": "https://dakagency.net/",
-      "logo": "https://dakagency.net/og-image.png",
-      "description": "Agencia de marketing digital en La Victoria, Chiclayo, Lambayeque, Perú. Ofrecemos diseño de páginas web, automatización, branding, campañas de Meta Ads y fotografía comercial.",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "La Victoria, Chiclayo",
-        "addressRegion": "Lambayeque",
-        "addressCountry": "PE"
-      },
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+51-906-765-040",
-        "contactType": "customer service",
-        "email": "marketing@dakagency.net",
-        "areaServed": "PE",
-        "availableLanguage": "Spanish"
-      },
-      "sameAs": [
-        "https://www.facebook.com/profile.php?id=61577374078273",
-        "https://www.instagram.com/agency_dak/",
-        "https://www.tiktok.com/@dakagency"
-      ],
-      "knowsAbout": ["SEO", "Diseño Web", "Automatización de Marketing", "Branding", "Campañas Meta Ads", "Fotografía"]
+      "@graph": [
+        {
+          "@type": "MarketingAgency",
+          "@id": "https://dakagency.net/#organizacion",
+          "name": "DAK Agency",
+          "alternateName": "Digital Acceleration Key",
+          "url": "https://dakagency.net/",
+          "logo": "https://dakagency.net/og-image.png",
+          "image": "https://dakagency.net/og-image.png",
+          "description": "Agencia de marketing digital en Chiclayo, Lambayeque, Perú. Ofrecemos diseño de páginas web, automatización, branding, campañas de Meta Ads y fotografía comercial.",
+          "priceRange": "S/ 600 - S/ 2500",
+          "currenciesAccepted": "PEN",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Av. Víctor Andrés Belaunde 101, Condominio Los Parques de San Gabriel",
+            "addressLocality": "Chiclayo",
+            "addressRegion": "Lambayeque",
+            "postalCode": "14011",
+            "addressCountry": "PE"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": -6.7744,
+            "longitude": -79.8747
+          },
+          "hasMap": "https://maps.google.com/maps?q=-6.7744,-79.8747",
+          "openingHoursSpecification": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+              "opens": "09:00",
+              "closes": "18:00"
+            }
+          ],
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+51-906-765-040",
+            "contactType": "customer service",
+            "email": "marketing@dakagency.net",
+            "areaServed": "PE",
+            "availableLanguage": "Spanish"
+          },
+          "areaServed": [
+            { "@type": "City", "name": "Chiclayo" },
+            { "@type": "AdministrativeArea", "name": "Lambayeque" },
+            { "@type": "Country", "name": "Perú" }
+          ],
+          "sameAs": [
+            "https://www.facebook.com/profile.php?id=61577374078273",
+            "https://www.instagram.com/agency_dak/",
+            "https://www.tiktok.com/@dakagency"
+          ],
+          "knowsAbout": ["SEO", "Diseño Web", "Automatización de Marketing", "Branding", "Campañas Meta Ads", "Fotografía"],
+          "hasOfferCatalog": { "@id": "https://dakagency.net/#servicios" }
+        },
+        {
+          "@type": "OfferCatalog",
+          "@id": "https://dakagency.net/#servicios",
+          "name": "Servicios de DAK Agency",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Branding", "description": "Tu marca, inolvidable", "provider": { "@id": "https://dakagency.net/#organizacion" } },
+              "priceSpecification": { "@type": "PriceSpecification", "minPrice": 1500, "priceCurrency": "PEN" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Fotografía", "description": "Imágenes que venden por ti", "provider": { "@id": "https://dakagency.net/#organizacion" } },
+              "priceSpecification": { "@type": "PriceSpecification", "minPrice": 800, "priceCurrency": "PEN" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Video", "description": "Historias que conectan", "provider": { "@id": "https://dakagency.net/#organizacion" } },
+              "priceSpecification": { "@type": "PriceSpecification", "minPrice": 2000, "priceCurrency": "PEN" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Social Media", "description": "Convierte seguidores en clientes", "provider": { "@id": "https://dakagency.net/#organizacion" } },
+              "priceSpecification": { "@type": "UnitPriceSpecification", "minPrice": 600, "priceCurrency": "PEN", "unitCode": "MON", "unitText": "mes" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Diseño Web", "description": "Tu mejor vendedor 24/7", "provider": { "@id": "https://dakagency.net/#organizacion" } },
+              "priceSpecification": { "@type": "PriceSpecification", "minPrice": 2500, "priceCurrency": "PEN" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "SEO & Ads", "description": "Aparece primero, vende más", "provider": { "@id": "https://dakagency.net/#organizacion" } },
+              "priceSpecification": { "@type": "UnitPriceSpecification", "minPrice": 800, "priceCurrency": "PEN", "unitCode": "MON", "unitText": "mes" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Automatización", "description": "Trabaja menos, logra más", "provider": { "@id": "https://dakagency.net/#organizacion" } },
+              "priceSpecification": { "@type": "PriceSpecification", "minPrice": 1200, "priceCurrency": "PEN" }
+            }
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://dakagency.net/#sitio",
+          "url": "https://dakagency.net/",
+          "name": "DAK Agency",
+          "inLanguage": "es-PE",
+          "publisher": { "@id": "https://dakagency.net/#organizacion" }
+        }
+      ]
     }
     </script>
 </head>

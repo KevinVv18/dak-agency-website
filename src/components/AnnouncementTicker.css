@@ -97,23 +97,30 @@
 
 .ann-dots {
   display: flex;
-  gap: 0.4rem;
+  /* 0.4rem = 6.4px dejaba los puntos a 20.4px de centro a centro. WCAG 2.5.8
+     pide 24x24, y su excepcion de espaciado exige que circulos de 24px centrados
+     en cada objetivo no se toquen: con 20.4px si se tocaban. A 0.65rem quedan a
+     24.4px y el area ampliada de 24px cabe sin invadir al vecino. */
+  gap: 0.65rem;
 }
 
 .ann-step {
-  width: 14px;
+  /* Ancho fijo para todos. Antes el activo pasaba de 14 a 22px animando width,
+     que recalcula el layout de la fila en cada frame. Ademas ese ancho variable
+     movia el area tactil ampliada y la hacia solapar con el punto vecino.
+     El estado activo se distingue por color, que ya era la senal dominante. */
+  width: 20px;
   height: 3px;
   border-radius: 2px;
   border: none;
   background: rgba(255, 255, 255, 0.18);
   cursor: pointer;
   padding: 0;
-  transition: background 0.3s ease, width 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 .ann-step.on {
-  background: #B024FF;
-  width: 22px;
+  background: var(--color-accent);
 }
 
 @media (max-width: 768px) {

@@ -85,10 +85,9 @@
 }
 
 .title-accent {
-  background: linear-gradient(135deg, #B024FF, #d692ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* Solido en lugar del degradado: el contraste del acento pasa a ser
+     verificable y el enfasis sigue estando en la cursiva y el color. */
+  color: var(--color-accent-texto);
   font-style: italic;
 }
 
@@ -228,7 +227,7 @@
   background: rgba(0, 0, 0, 0.3);
 }
 
-.masonry-overlay h4 {
+.masonry-overlay h3 {
   font-size: 0.95rem;
   font-weight: 600;
   margin-bottom: 0.15rem;
@@ -426,7 +425,7 @@
   font-weight: 600;
 }
 
-.banner-card-overlay h4 {
+.banner-card-overlay h3 {
   font-size: 1rem;
   font-weight: 600;
 }
@@ -534,7 +533,7 @@
   margin-bottom: 0.25rem;
 }
 
-.parallax-overlay h4 {
+.parallax-overlay h3 {
   font-size: 0.95rem;
   font-weight: 600;
 }
@@ -617,7 +616,7 @@
   font-weight: 600;
 }
 
-.reveal-info h4 {
+.reveal-info h3 {
   font-size: 1.5rem;
   font-weight: 700;
 }
@@ -646,8 +645,9 @@
 .gallery-cta-grid-bg {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(176, 36, 255, 0.08) 1px, transparent 1px);
-  background-size: 30px 30px;
+  --luz-x: 50%;
+  --luz-y: 100%;
+  background: var(--luz-seccion);
   pointer-events: none;
 }
 
@@ -669,10 +669,7 @@
 .stat-number {
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   font-weight: 800;
-  background: linear-gradient(135deg, #B024FF, #d692ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-accent-texto);
   line-height: 1;
 }
 
@@ -688,7 +685,7 @@
   position: relative;
 }
 
-.gallery-cta-content h3 {
+.gallery-cta-content h2 {
   font-size: clamp(1.5rem, 3vw, 2.25rem);
   font-weight: 700;
   margin-bottom: 0.75rem;

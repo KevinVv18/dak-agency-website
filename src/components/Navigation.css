@@ -16,10 +16,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(176, 36, 255, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(176, 36, 255, 0.018) 1px, transparent 1px);
-  background-size: 40px 40px;
+  --luz-x: 88%;
+  --luz-y: 0%;
+  background: var(--luz-seccion);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.6s ease;
@@ -147,7 +146,8 @@
   font-size: 1rem;
   transition: all var(--transition-base);
   display: inline-block;
-  color: #B024FF;
+  /* #B024FF daba 4.49:1 sobre #030106, una centesima por debajo del minimo AA. */
+  color: var(--color-accent-texto);
 }
 
 .nav-links a:hover,

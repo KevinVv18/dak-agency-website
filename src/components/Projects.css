@@ -756,7 +756,8 @@
 }
 
 .pm-hero-content span {
-  font-size: 0.55rem;
+  /* Era 0.55rem = 8.8px. */
+  font-size: var(--texto-minimo);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -803,7 +804,10 @@
 }
 
 .pm-mosaic-cat {
-  font-size: 0.55rem;
+  /* Era 0.55rem = 8.8px, muy por debajo del piso de 11px del proyecto, y en un
+     gris azulado que sobre el fondo del mosaico daba 1.79:1. */
+  font-size: var(--texto-minimo);
+  color: var(--color-gray-300);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -890,8 +894,10 @@
   line-height: 1.2;
 }
 
+/* Este selector (0,1,1) gana a .pm-simple-counter (0,1,0), asi que era el que
+   fijaba de verdad los 8.8px de ambos. */
 .pm-simple-info span {
-  font-size: 0.55rem;
+  font-size: var(--texto-minimo);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -899,7 +905,7 @@
 
 .pm-simple-counter {
   margin-left: auto;
-  font-size: 0.7rem;
+  font-size: var(--texto-minimo);
   font-weight: 700;
 }
 
@@ -1049,7 +1055,7 @@
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  transition: transform 0.3s var(--ease-bounce);
+  transition: transform 0.3s var(--ease-out-expo);
 }
 
 .demo-chip--fill {

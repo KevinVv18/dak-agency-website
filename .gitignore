@@ -37,6 +37,11 @@ scripts/wp-config.php
 # Archive folder (dev notes, old assets)
 _archive/
 
+# Snapshots de produccion antes de un cambio grande (SENSIBLE).
+# blog-db.sql.gz lleva hashes de contrasena y las wp_options del blog:
+# nunca debe entrar al repo. Los tarballs ademas pesan megabytes.
+_backups/
+
 # impeccable (detector de diseño): skill vendorizada + caché de sesión.
 # Se reinstala con `npx impeccable install`; no hace falta versionar 2.9 MB.
 # .impeccable/config.json SÍ se versiona: es donde quedan las excepciones

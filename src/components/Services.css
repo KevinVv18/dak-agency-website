@@ -53,10 +53,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(176, 36, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(176, 36, 255, 0.025) 1px, transparent 1px);
-  background-size: 60px 60px;
+  --luz-x: 12%;
+  --luz-y: 0%;
+  background: var(--luz-seccion);
   pointer-events: none;
   z-index: 0;
   opacity: 0.6;
@@ -92,7 +91,10 @@
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.35em;
-  color: rgba(176, 36, 255, 0.55);
+  /* Era rgba(176,36,255,0.55): compuesto sobre el fondo #030106 daba 2.00:1,
+     menos de la mitad del minimo AA. El alpha era el problema, no el tono —
+     ni siquiera al 0.9 llegaba. Color solido y sin transparencia: 5.14:1. */
+  color: var(--color-accent-texto);
   margin-bottom: 0.6rem;
   text-transform: uppercase;
 }
@@ -111,11 +113,11 @@
 
 .title-bold {
   display: inline-block;
+  /* El enfasis lo dan el peso y el tamano (900 a 4.5rem), no un degradado.
+     El blanco solido ademas hace el contraste medible, cosa que con
+     background-clip: text no lo era. */
   font-weight: 900;
-  background: linear-gradient(135deg, #ffffff 30%, #B024FF 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ffffff;
 }
 
 /* ---- Title Line ---- */
@@ -130,7 +132,7 @@
 /* ---- Section Subtitle ---- */
 .section-subtitle {
   font-size: clamp(0.9rem, 1.8vw, 1.1rem);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--color-texto-2);
   max-width: 500px;
   margin: 0 auto;
   line-height: 1.7;
@@ -338,10 +340,8 @@
   z-index: 10;
 }
 
-.progress-bar {
-  height: 100%;
-  transition: width 0.3s ease;
-}
+/* .progress-bar se elimino: ningun JSX la usaba. Animaba width, que ademas
+   provoca recalculo de layout en cada frame. */
 
 /* =============================================
    THUMBNAILS PANEL - Horizontal Filmstrip
@@ -1183,13 +1183,16 @@
   transition: all 0.25s ease;
 }
 
+/* Era una franja de 3px a la izquierda de cada tarjeta: el acento lateral es el
+   tell mas reconocible de UI generada. A 1px deja de ser una pestana y pasa a
+   ser un filete, que es lo que hace el resto del sitio. */
 .drawer-service-card::before {
   content: '';
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
-  width: 3px;
+  width: 1px;
   background: var(--card-color, #B024FF);
   opacity: 0;
   transition: opacity 0.25s ease;
@@ -1605,23 +1608,32 @@
    FASE 2 — Texto auto-ocultable en reposo
    (deja titulo + categoria; oculta descripcion, stats y botones)
    ============================================= */
+/* Antes animaba max-height y margin, que fuerzan recalculo de layout en cada
+   frame. Con grid-template-rows de 1fr a 0fr se pliega igual sin tocar el
+   flujo, y de paso desaparece el max-height fijo de 360px que habria recortado
+   el contenido si algun servicio creciera. */
 .featured-extra {
+  width: 100%;
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, grid-template-rows 0.55s ease, transform 0.4s ease;
+}
+
+.featured-extra-inner {
+  /* min-height: 0 es lo que permite que la fila baje de su altura de contenido. */
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.4rem;
-  width: 100%;
-  overflow: hidden;
-  max-height: 360px;
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.4s ease, max-height 0.55s ease, transform 0.4s ease, margin 0.4s ease;
 }
 
 .featured-content.is-idle .featured-extra {
   opacity: 0;
-  max-height: 0;
-  margin: 0;
+  grid-template-rows: 0fr;
   transform: translateY(10px);
   pointer-events: none;
 }

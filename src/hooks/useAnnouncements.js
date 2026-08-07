@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { announcements as manualAnnouncements } from '../data/announcements'
+import { loadPosts } from './wordpressPosts'
 
 /**
  * useAnnouncements — fusiona los avisos manuales (demos, features, páginas)
@@ -9,11 +10,10 @@ import { announcements as manualAnnouncements } from '../data/announcements'
  * que editar announcements.js a mano. Los avisos manuales siguen mandando:
  * si un post ya está curado a mano (con título propio), no se duplica.
  *
- * El fetch se hace UNA sola vez por carga (caché a nivel de módulo) y lo
- * comparten la campanita y el ticker, así ambos muestran exactamente lo
- * mismo. Si el blog no responde, degrada al array estático.
+ * El fetch se hace UNA sola vez por carga y lo comparten la campanita, el
+ * ticker y la sección de blog: vive en wordpressPosts.js. Si el blog no
+ * responde, degrada al array estático.
  */
-const BLOG_API = 'https://dakagency.net/blog/wp-json/wp/v2/posts?per_page=6'
 const MAX_ITEMS = 10
 
 const normHref = (u = '') => u.replace(/^https?:\/\//, '').replace(/\/+$/, '').toLowerCase()
@@ -38,55 +38,33 @@ const decodeTitle = (html = '') => {
     .trim()
 }
 
-// ── caché compartida entre componentes (una sola petición por carga) ──
-let cache = null
-let inflight = null
+async function loadAnnouncements() {
+  const posts = await loadPosts()
+  if (!posts) return manualAnnouncements   // el blog no respondió: array estático
 
-function loadAnnouncements() {
-  if (cache) return Promise.resolve(cache)
-  if (inflight) return inflight
+  const manualHrefs = new Set(manualAnnouncements.map(a => normHref(a.href)))
 
-  inflight = (async () => {
-    try {
-      const res = await fetch(BLOG_API)
-      if (!res.ok) return manualAnnouncements
-      const posts = await res.json()
-      if (!Array.isArray(posts)) return manualAnnouncements
+  const blogItems = posts
+    .map(p => ({
+      id: `blog-${p.slug}`,
+      date: toISODate(p.date),
+      tag: 'Blog',
+      type: 'blog',
+      title: decodeTitle(p.title?.rendered || ''),
+      href: p.link || `https://dakagency.net/blog/${p.slug}/`,
+      external: true,
+    }))
+    .filter(it => it.title && !manualHrefs.has(normHref(it.href)))
 
-      const manualHrefs = new Set(manualAnnouncements.map(a => normHref(a.href)))
-
-      const blogItems = posts
-        .map(p => ({
-          id: `blog-${p.slug}`,
-          date: toISODate(p.date),
-          tag: 'Blog',
-          type: 'blog',
-          title: decodeTitle(p.title?.rendered || ''),
-          href: p.link || `https://dakagency.net/blog/${p.slug}/`,
-          external: true,
-        }))
-        .filter(it => it.title && !manualHrefs.has(normHref(it.href)))
-
-      const seen = new Set()
-      const merged = [...manualAnnouncements, ...blogItems]
-        .filter(a => (seen.has(a.id) ? false : (seen.add(a.id), true)))
-        .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
-        .slice(0, MAX_ITEMS)
-
-      cache = merged        // solo cacheamos un resultado bueno
-      return merged
-    } catch {
-      return manualAnnouncements   // sin cachear: se reintenta en el próximo montaje
-    } finally {
-      inflight = null
-    }
-  })()
-
-  return inflight
+  const seen = new Set()
+  return [...manualAnnouncements, ...blogItems]
+    .filter(a => (seen.has(a.id) ? false : (seen.add(a.id), true)))
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+    .slice(0, MAX_ITEMS)
 }
 
 const useAnnouncements = () => {
-  const [list, setList] = useState(cache || manualAnnouncements)
+  const [list, setList] = useState(manualAnnouncements)
 
   useEffect(() => {
     let alive = true
