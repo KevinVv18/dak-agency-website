@@ -5,6 +5,20 @@
     RewriteEngine On
     RewriteBase /
 
+    # ── Backups y volcados: nunca servibles por web. Va lo PRIMERO ──
+    #
+    # El panel de Hostinger deja tarballs del WordPress en
+    # public_html/application_backups/. El listado del directorio daba 403, pero
+    # el archivo se descargaba: comprobado el 07-ago-2026, un GET al .tar.gz
+    # devolvia 200. Dentro va wp-config.php con las credenciales de la base de
+    # datos, y el nombre sigue un patron con fecha.
+    #
+    # Se hace con mod_rewrite y no con <FilesMatch>: aqui FilesMatch no llego a
+    # bloquearlo (se probo y seguia dando 200), y <LocationMatch> directamente
+    # no es valido en .htaccess — usarlo tumbo el sitio entero con 403.
+    RewriteRule ^application_backups/ - [F,L]
+    RewriteRule \.(tar\.gz|tgz|sql|zip|bak)$ - [F,L]
+
     # ── 301: www → apex. Va PRIMERO para que todo lo demas (incluido /blog/)
     #    resuelva ya sobre el host canonico y no se encadenen dos redirecciones.
     #    Antes ambos hosts devolvian 200 con el mismo ETag: contenido duplicado
@@ -46,33 +60,6 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule . /index.html [L]
 </IfModule>
-
-# ── Backups del panel de Hostinger: fuera del alcance de la web ──
-#
-# El panel deja los tarballs en public_html/application_backups/. El directorio
-# no lista (403), pero el archivo SI se servia: comprobado el 07-ago-2026, un
-# GET al .tar.gz devolvia 200 y descargaba. Dentro va el WordPress entero,
-# incluido wp-config.php con las credenciales de la base de datos.
-#
-# El nombre sigue un patron con fecha, asi que adivinarlo no es descabellado.
-#
-# Esto lo tapa desde la web. Lo correcto ademas es mover el destino de los
-# backups fuera de public_html desde el panel de Hostinger.
-<IfModule mod_authz_core.c>
-    <LocationMatch "^/application_backups">
-        Require all denied
-    </LocationMatch>
-</IfModule>
-
-<FilesMatch "\.(tar\.gz|tgz|sql|sql\.gz|zip|bak)$">
-    <IfModule mod_authz_core.c>
-        Require all denied
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order allow,deny
-        Deny from all
-    </IfModule>
-</FilesMatch>
 
 # Security headers
 <IfModule mod_headers.c>
