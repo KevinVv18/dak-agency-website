@@ -33,15 +33,17 @@
   position: absolute;
   top: -4px;
   right: -4px;
-  min-width: 16px;
-  height: 16px;
+  /* La pildora crece de 16 a 18px para alojar el texto al piso de 11px: antes
+     iba a 0.62rem = 9.9px. El contador es informacion, no adorno. */
+  min-width: 18px;
+  height: 18px;
   padding: 0 4px;
   border-radius: 100px;
   background: #B024FF;
   color: #fff;
-  font-size: 0.62rem;
+  font-size: var(--texto-minimo);
   font-weight: 700;
-  line-height: 16px;
+  line-height: 18px;
   text-align: center;
   box-shadow: 0 0 0 2px #030106, 0 0 10px rgba(176, 36, 255, 0.6);
 }

@@ -74,3 +74,24 @@
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
 </IfModule>
+
+# El HTML se revalida siempre.
+#
+# Hasta el 06-ago-2026 se servia sin Cache-Control: solo con ETag y
+# Last-Modified. Sin cabecera explicita el navegador aplica cache heuristica
+# (del orden del 10% del tiempo transcurrido desde la ultima modificacion), asi
+# que tras un deploy podia seguir sirviendo el HTML anterior — que apunta a
+# assets con hash que ya no existen. Resultado: la pagina maquetada pero con
+# todas las imagenes rotas.
+#
+# Antes esto apenas se notaba porque el <body> estaba vacio y no habia nada que
+# pintar. Desde que el HTML va prerenderizado, una copia vieja SI se ve, y se ve
+# rota.
+#
+# no-cache no significa "no guardar": guarda, pero revalida siempre. Con el ETag
+# ya presente, la revalidacion es un 304 de unos pocos bytes.
+<IfModule mod_headers.c>
+    <FilesMatch "\.html$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+</IfModule>
