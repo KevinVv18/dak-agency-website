@@ -85,10 +85,9 @@
 }
 
 .title-accent {
-  background: linear-gradient(135deg, #B024FF, #d692ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* Solido en lugar del degradado: el contraste del acento pasa a ser
+     verificable y el enfasis sigue estando en la cursiva y el color. */
+  color: var(--color-accent-texto);
   font-style: italic;
 }
 
@@ -646,8 +645,9 @@
 .gallery-cta-grid-bg {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(176, 36, 255, 0.08) 1px, transparent 1px);
-  background-size: 30px 30px;
+  --luz-x: 50%;
+  --luz-y: 100%;
+  background: var(--luz-seccion);
   pointer-events: none;
 }
 
@@ -669,10 +669,7 @@
 .stat-number {
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   font-weight: 800;
-  background: linear-gradient(135deg, #B024FF, #d692ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-accent-texto);
   line-height: 1;
 }
 

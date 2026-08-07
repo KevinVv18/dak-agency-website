@@ -72,7 +72,8 @@
   --transition-base: 0.3s ease;
   --transition-slow: 0.5s ease;
   --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
-  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* --ease-bounce se elimino. El rebote elastico envejece mal y los objetos
+     reales desaceleran, no rebotan. Sus dos usos pasaron a --ease-out-expo. */
   
   /* Breakpoints (for JS) */
   --breakpoint-mobile: 768px;
@@ -422,12 +423,8 @@ section {
   text-align: center;
 }
 
-.text-gradient {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+/* .text-gradient se elimino: no lo usaba ningun JSX y aplicaba el mismo
+   recorte de degradado sobre el texto que se ha quitado del resto del sitio. */
 
 .mb-sm { margin-bottom: var(--spacing-sm); }
 .mb-md { margin-bottom: var(--spacing-md); }
@@ -523,6 +520,42 @@ section {
   50% {
     opacity: 0.7;
   }
+}
+
+/* =============================================
+   LUZ DE SECCION — textura de fondo
+   =============================================
+
+   Sustituye a la cuadricula que llevaban nueve secciones. El problema no era
+   que existiera una reja: era que la MISMA reja morada, con el mismo mosaico de
+   60px, se repetia en Navigation, Services, PhotoGallery, Blog, About,
+   CTASection, Gallery, Footer y las legales. Individualmente casi no se veia;
+   en conjunto era la firma.
+
+   En su lugar, cada seccion recibe una sola luz suave anclada en un punto
+   distinto. Da profundidad, usa la paleta que ya existe y —lo importante— hace
+   que dos secciones no se lean nunca igual, que es justo lo contrario de una
+   plantilla.
+
+   La reja SI sobrevive en .cursor-grid-reveal, aqui debajo: esa no es textura
+   de fondo sino un gesto que responde al raton, y solo aparece donde el cursor
+   la descubre.
+
+   Se define como variable y no como clase para no tener que tocar los JSX:
+   cada seccion ya tiene su capa de textura, solo cambia lo que pinta. El punto
+   de anclaje se fija con --luz-x / --luz-y en cada regla. */
+:root {
+  --luz-seccion: radial-gradient(120% 90% at var(--luz-x, 50%) var(--luz-y, 0%),
+      rgba(176, 36, 255, 0.16) 0%,
+      rgba(176, 36, 255, 0.05) 38%,
+      transparent 68%);
+
+  /* Variante teal, para que el acento secundario tambien ocupe superficie y no
+     viva solo en pildoras y filetes. */
+  --luz-seccion-teal: radial-gradient(120% 90% at var(--luz-x, 50%) var(--luz-y, 0%),
+      rgba(0, 200, 200, 0.11) 0%,
+      rgba(0, 200, 200, 0.035) 38%,
+      transparent 68%);
 }
 
 /* =============================================

@@ -16,10 +16,9 @@
 .footer-neon-grid {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(176, 36, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(176, 36, 255, 0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
+  --luz-x: 18%;
+  --luz-y: 100%;
+  background: var(--luz-seccion);
   animation: gridPulse 8s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
@@ -71,11 +70,10 @@
   font-weight: 800;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: rgba(176, 36, 255, 0.25);
-  background: linear-gradient(90deg, rgba(176, 36, 255, 0.3), rgba(0, 200, 200, 0.2), rgba(176, 36, 255, 0.3));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  /* Cinta decorativa, no contenido: se mantiene tenue a proposito. Antes lo
+     conseguia con un degradado recortado al texto; ahora con un color solido,
+     que hace lo mismo sin el tell. */
+  color: rgba(176, 36, 255, 0.28);
   user-select: none;
 }
 

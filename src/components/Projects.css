@@ -1055,7 +1055,7 @@
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  transition: transform 0.3s var(--ease-bounce);
+  transition: transform 0.3s var(--ease-out-expo);
 }
 
 .demo-chip--fill {

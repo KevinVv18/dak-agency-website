@@ -105,19 +105,22 @@
 }
 
 .ann-step {
-  width: 14px;
+  /* Ancho fijo para todos. Antes el activo pasaba de 14 a 22px animando width,
+     que recalcula el layout de la fila en cada frame. Ademas ese ancho variable
+     movia el area tactil ampliada y la hacia solapar con el punto vecino.
+     El estado activo se distingue por color, que ya era la senal dominante. */
+  width: 20px;
   height: 3px;
   border-radius: 2px;
   border: none;
   background: rgba(255, 255, 255, 0.18);
   cursor: pointer;
   padding: 0;
-  transition: background 0.3s ease, width 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 .ann-step.on {
-  background: #B024FF;
-  width: 22px;
+  background: var(--color-accent);
 }
 
 @media (max-width: 768px) {
