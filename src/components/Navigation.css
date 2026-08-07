@@ -147,7 +147,8 @@
   font-size: 1rem;
   transition: all var(--transition-base);
   display: inline-block;
-  color: #B024FF;
+  /* #B024FF daba 4.49:1 sobre #030106, una centesima por debajo del minimo AA. */
+  color: var(--color-accent-texto);
 }
 
 .nav-links a:hover,

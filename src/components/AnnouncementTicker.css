@@ -97,7 +97,11 @@
 
 .ann-dots {
   display: flex;
-  gap: 0.4rem;
+  /* 0.4rem = 6.4px dejaba los puntos a 20.4px de centro a centro. WCAG 2.5.8
+     pide 24x24, y su excepcion de espaciado exige que circulos de 24px centrados
+     en cada objetivo no se toquen: con 20.4px si se tocaban. A 0.65rem quedan a
+     24.4px y el area ampliada de 24px cabe sin invadir al vecino. */
+  gap: 0.65rem;
 }
 
 .ann-step {

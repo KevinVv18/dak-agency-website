@@ -183,8 +183,10 @@
 
 /* Colores de categoría por tarjeta — fondo de color, texto blanco */
 .blog-card .blog-category {
-  color: #ffffff !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  /* Esta regla, mas especifica y con !important, era la que mandaba de verdad:
+     blanco sobre el teal de la pildora daba 2.08:1. La sombra de texto se quita
+     porque con tinta oscura ya no aporta separacion, solo suciedad. */
+  color: var(--color-primary) !important;
 }
 
 /* Colores de flecha por tarjeta */
@@ -352,7 +354,10 @@
   display: inline-block;
   font-size: 0.75rem;
   font-weight: 700;
-  color: white;
+  /* La pildora va sobre el teal #00C8C8. En blanco daba 2.08:1, el peor
+     contraste del sitio. Con el fondo oscuro de marca como tinta sube a
+     9.99:1 y el teal se mantiene igual de reconocible. */
+  color: var(--color-primary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 0.4rem 1rem;

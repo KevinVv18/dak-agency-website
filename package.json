@@ -9,7 +9,8 @@
     "build:spa": "vite build",
     "local-build": "vite build && node scripts/prerender.mjs",
     "prerender": "node scripts/prerender.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "auditar:movil": "node scripts/auditar-movil.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

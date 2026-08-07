@@ -656,7 +656,8 @@
   }
 
   .hero-subtitle {
-    font-size: clamp(0.6rem, 2vw, 0.8rem);
+    /* El minimo del clamp era 0.6rem = 9.6px, bajo el piso de 11px. */
+    font-size: clamp(var(--texto-minimo), 2vw, 0.8rem);
     letter-spacing: 0.2em;
   }
 
@@ -670,7 +671,8 @@
   }
 
   .hero-subtitle {
-    font-size: clamp(0.6rem, 2vw, 0.8rem);
+    /* El minimo del clamp era 0.6rem = 9.6px, bajo el piso de 11px. */
+    font-size: clamp(var(--texto-minimo), 2vw, 0.8rem);
     letter-spacing: 0.2em;
   }
 

@@ -552,7 +552,8 @@
   }
 
   .fs-label {
-    font-size: 0.58rem;
+    /* Era 0.58rem = 9.3px en movil, bajo el piso de 11px. */
+    font-size: var(--texto-minimo);
   }
 
   .cta-btn-primary {

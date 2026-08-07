@@ -92,7 +92,10 @@
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.35em;
-  color: rgba(176, 36, 255, 0.55);
+  /* Era rgba(176,36,255,0.55): compuesto sobre el fondo #030106 daba 2.00:1,
+     menos de la mitad del minimo AA. El alpha era el problema, no el tono —
+     ni siquiera al 0.9 llegaba. Color solido y sin transparencia: 5.14:1. */
+  color: var(--color-accent-texto);
   margin-bottom: 0.6rem;
   text-transform: uppercase;
 }
@@ -130,7 +133,7 @@
 /* ---- Section Subtitle ---- */
 .section-subtitle {
   font-size: clamp(0.9rem, 1.8vw, 1.1rem);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--color-texto-2);
   max-width: 500px;
   margin: 0 auto;
   line-height: 1.7;

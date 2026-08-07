@@ -69,7 +69,9 @@ const Services = () => {
       tagline: 'Tu marca, inolvidable',
       description: 'Tu identidad, imposible de ignorar. Diseñamos logo, colores y un sistema de marca completo para que destaques y conectes con tu cliente desde el primer segundo.',
       category: 'IDENTIDAD',
-      color: '#B024FF',
+      // #B024FF daba 4.34:1 como texto sobre la barra inferior; este es el
+      // mismo tono con un 9% de blanco y llega a 4.79:1.
+      color: '#B738FF',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/5_Branding_gs86zn.mp4', // HORIZONTAL (16:9)
       videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318150/v4_branding_z4upbs.mp4',  // VERTICAL (9:16)
       videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763849733/60774eb1-3b74-41e0-9238-796bc61b4c36_hd_m5uts5.mp4', // stock (fallback)
@@ -153,7 +155,8 @@ const Services = () => {
       tagline: 'Trabaja menos, logra más',
       description: 'Vende y atiende en piloto automático. CRM, correos y flujos que responden, hacen seguimiento y cierran ventas mientras tú te enfocas en crecer.',
       category: 'CRM',
-      color: '#9B59B6',
+      // #9B59B6 daba 4.29:1 como texto; +6% de blanco lo sube a 4.78:1.
+      color: '#A163BA',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318081/6_Automatizacion_vcbtoi.mp4', // HORIZONTAL (16:9)
       videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318151/v5_automatizacion_hba6se.mp4',  // VERTICAL (9:16)
       imageSrc: '/images/automation.webp', // imagen actual (fallback si no hay video)

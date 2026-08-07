@@ -8,7 +8,25 @@
   --color-secondary: #B024FF;
   --color-accent: #B024FF;
   --color-light: #B024FF;
-  
+
+  /* Morado de marca para TEXTO pequeno.
+     #B024FF sobre el fondo #030106 da 4.49:1 y sobre #0A0612, 4.34:1. El
+     minimo AA para texto normal es 4.5, asi que fallaba por una centesima en
+     section-tag, link-arrow, footer-tagline y bottom-bar-active, presentes en
+     todas las secciones. Este es el mismo tono con un 12% de blanco: 5.14:1 y
+     4.96:1. En superficies grandes y bordes se sigue usando --color-accent. */
+  --color-accent-texto: #B93EFF;
+
+  /* Piso de tamano para texto funcional, heredado del proyecto. */
+  --texto-minimo: 11px;
+
+  /* Texto secundario sobre fondo oscuro.
+     El sitio usaba blanco con alpha 0.45, 0.35 y hasta 0.25 para subtitulos,
+     descripciones y el pie. Sobre #030106 eso da 4.43, 3.03 y 2.04 — los tres
+     por debajo del minimo AA de 4.5. Al 0.55 queda en 6.26 y se sigue leyendo
+     como secundario, que era la intencion. */
+  --color-texto-2: rgba(255, 255, 255, 0.55);
+
   /* Grayscale */
   --color-white: #ffffff;
   --color-gray-100: #f7f7f7;
@@ -175,6 +193,91 @@ section {
   margin: 0 auto;
   width: 100%;
   padding: 0 2rem;
+}
+
+/* ===================================
+   AREA TACTIL MINIMA (movil / puntero grueso)
+   ===================================
+
+   En 375px habia 41 controles por debajo de 44x44. Los peores no eran
+   discretos: los puntos del ticker median 14x3 px y el boton del menu, 30x24.
+
+   La tecnica es un pseudo-elemento transparente que agranda SOLO la zona
+   sensible al dedo, sin mover ni un pixel de lo que se ve. Se aplica en
+   pantallas estrechas y en punteros gruesos; en escritorio con raton no hace
+   falta y ampliar ahi solo arriesga solapes.
+
+   Nota: ninguno de estos selectores usaba ::after, se comprobo antes. Si
+   alguno lo necesita en el futuro, hay que mover la ampliacion a ::before. */
+@media (max-width: 768px), (pointer: coarse) {
+  .hamburger,
+  .ann-step,
+  .gallery-dot,
+  .nav-arrow,
+  .notif-btn,
+  .social-link,
+  .nav-logo,
+  .demo-try,
+  .demo-wa,
+  .featured-cta,
+  .featured-calc-btn,
+  .btn-schedule-hero,
+  .ann-pill,
+  .back-to-top,
+  .footer-nav a,
+  .footer-legal a {
+    position: relative;
+  }
+
+  .hamburger::after,
+  .ann-step::after,
+  .gallery-dot::after,
+  .nav-arrow::after,
+  .notif-btn::after,
+  .social-link::after,
+  .nav-logo::after,
+  .demo-try::after,
+  .demo-wa::after,
+  .featured-cta::after,
+  .featured-calc-btn::after,
+  .btn-schedule-hero::after,
+  .ann-pill::after,
+  .back-to-top::after,
+  .footer-nav a::after,
+  .footer-legal a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 44px;
+    /* Sin fondo ni borde: existe solo para el dedo. */
+  }
+
+  /* Los puntos del ticker miden 14x3 px. El alto ya lo cubre la regla de
+     arriba; aqui se les da los 24px de ancho que pide WCAG 2.5.8, que caben
+     ahora que .ann-dots separa 0.65rem. */
+  .ann-step::after {
+    left: 50%;
+    right: auto;
+    width: 24px;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Los que ademas son estrechos necesitan crecer tambien a lo ancho. Se
+     dejan fuera los de una fila apretada (los puntos del ticker) para no
+     invadir al vecino: ahi basta con el alto. */
+  .hamburger::after,
+  .nav-arrow::after,
+  .notif-btn::after,
+  .social-link::after,
+  .gallery-dot::after {
+    left: 50%;
+    right: auto;
+    width: 44px;
+    transform: translate(-50%, -50%);
+  }
 }
 
 /* Visible solo para lectores de pantalla. Sirve para dar cabecera a una
