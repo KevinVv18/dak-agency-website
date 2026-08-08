@@ -201,7 +201,6 @@ const PhotoGallery = () => {
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         transition={{ duration: 0.6 }}
       >
-        <span className="section-tag">[ 03 ]</span>
         <h2 className="gallery-title">
           <span className="title-bold">Estudio</span>
         </h2>

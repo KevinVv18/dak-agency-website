@@ -41,7 +41,7 @@ export const announcements = [
     tag: 'Demos',
     type: 'demo',
     title: 'Nueva sección de demos: no te lo contamos, pruébalo',
-    href: '#projects',
+    href: '#demos',
   },
   {
     id: 'post-agentes-ia',
