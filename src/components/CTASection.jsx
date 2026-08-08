@@ -25,7 +25,7 @@ const CTASection = () => {
 
   const handleScrollToProjects = (e) => {
     e.preventDefault()
-    scrollToSection('#projects')
+    scrollToSection('#demos')
   }
 
   const handleScrollToContact = (e) => {
@@ -283,7 +283,7 @@ const CTASection = () => {
             Agendar Reunión
           </motion.a>
           <motion.a
-            href="#projects"
+            href="#demos"
             className="cta-btn-ghost"
             onClick={handleScrollToProjects}
             whileHover={{ scale: 1.03 }}

@@ -6,7 +6,12 @@ import logoSvg from '../assets/logo-nav.svg'
 import { scrollToSection } from '../utils/scrollToSection'
 import NotificationBell from './NotificationBell'
 
-const SPY_IDS = ['services', 'projects', 'gallery', 'blog', 'about', 'contact']
+// 'taller' se deja FUERA a proposito. El spy marca la ultima seccion cuyo tope
+// paso el corte, y el menu resalta el enlace que coincide. Como Taller no tiene
+// enlace propio (el menu se queda en 6 entradas), incluirlo dejaria el indicador
+// apagado durante toda esa seccion. Fuera de la lista, sigue marcado Demos, que
+// es su vecino de arriba y donde el visitante cree estar.
+const SPY_IDS = ['services', 'demos', 'gallery', 'blog', 'about', 'contact']
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -54,7 +59,7 @@ const Navigation = () => {
 
   const navLinks = [
     { name: 'Servicios', href: '#services' },
-    { name: 'Demos', href: '#projects' },
+    { name: 'Demos', href: '#demos' },
     { name: 'Galería', href: '/gallery' },
     { name: 'Blog', href: '#blog' },
     { name: 'Nosotros', href: '#about' },

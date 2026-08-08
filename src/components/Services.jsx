@@ -320,7 +320,6 @@ const Services = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="section-tag">[ 01 ]</span>
             <h2 className="section-title">
               <span className="title-bold">Servicios</span>
             </h2>

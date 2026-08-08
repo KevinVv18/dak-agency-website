@@ -227,23 +227,39 @@ const Projects = () => {
 
   if (isMobile) return <MobileProjects featured={featured} />
 
+  // Dos secciones, no una. Antes los 4 demos y el trabajo de clientes iban
+  // seguidos bajo el mismo titulo, y el subtitulo tenia que explicar las dos
+  // cosas a la vez ("pruébalo Y mira proyectos de clientes"). Son cosas
+  // distintas: unos se abren y se usan, los otros se miran.
   return (
-    <section className="projects-section" id="projects">
-      <ProjectsHeader />
-      <LiveDemos />
-      <div className="projects-flow">
-        {featured.map(({ client, layout }, i) => (
-          <ProjectBlock
-            key={client.id}
-            client={client}
-            index={i}
-            total={featured.length}
-            layout={layout}
-          />
-        ))}
-      </div>
-      <GalleryCTA />
-    </section>
+    <>
+      <section className="projects-section demos-section" id="demos">
+        <SectionHeader
+          titulo="Demos"
+          subtitulo="No te lo contamos: pruébalo. Cuatro trabajos nuestros, en vivo y funcionando."
+        />
+        <LiveDemos />
+      </section>
+
+      <section className="projects-section taller-section" id="taller">
+        <SectionHeader
+          titulo="Taller"
+          subtitulo="Piezas que hemos producido para marcas de Chiclayo y Lambayeque."
+        />
+        <div className="projects-flow">
+          {featured.map(({ client, layout }, i) => (
+            <ProjectBlock
+              key={client.id}
+              client={client}
+              index={i}
+              total={featured.length}
+              layout={layout}
+            />
+          ))}
+        </div>
+        <GalleryCTA />
+      </section>
+    </>
   )
 }
 
@@ -272,8 +288,12 @@ const GalleryCTA = () => {
   )
 }
 
-/* ── Section Header ── */
-const ProjectsHeader = () => {
+/* ── Cabecera de sección ──
+   Sin el `[ 0N ]` que llevaba antes: era un eyebrow sobre el encabezado, un
+   número de sección que no aportaba secuencia y monoespaciada de adorno; tres
+   recursos que el suelo de calidad de impeccable desaconseja, y estaban juntos.
+   El título se sostiene solo. */
+const SectionHeader = ({ titulo, subtitulo }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
@@ -285,12 +305,11 @@ const ProjectsHeader = () => {
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.7 }}
       >
-        <span className="section-tag">[ 02 ]</span>
         <h2 className="section-title">
-          <span className="title-bold">Demos</span>
+          <span className="title-bold">{titulo}</span>
         </h2>
         <div className="title-line" />
-        <p className="section-subtitle">No te lo contamos: pruébalo. Y mira proyectos de clientes que confían en nosotros</p>
+        <p className="section-subtitle">{subtitulo}</p>
       </motion.div>
     </div>
   )
@@ -533,32 +552,49 @@ const MobileProjects = ({ featured }) => {
   const total = featured.length
 
   return (
-    <section className="projects-mobile" id="projects">
-      <div className="pm-header" ref={headerRef}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="section-tag">[ 02 ]</span>
-          <h2 className="proj-title">Demos</h2>
-          <div className="title-line" />
-        </motion.div>
-      </div>
+    <>
+      <section className="projects-mobile demos-section" id="demos">
+        <div className="pm-header" ref={headerRef}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={headerInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="proj-title">Demos</h2>
+            <div className="title-line" />
+            <p className="pm-subtitle">Cuatro trabajos nuestros, en vivo y funcionando.</p>
+          </motion.div>
+        </div>
 
-      <LiveDemos />
+        <LiveDemos />
+      </section>
 
-      <div className="pm-cards">
-        {featured.map(({ client }, i) => {
-          const layout = mobileLayouts[i % mobileLayouts.length]
-          if (layout === 'mHero') return <MobileHeroCard key={client.id} client={client} index={i} total={total} />
-          if (layout === 'mMosaic') return <MobileMosaicCard key={client.id} client={client} index={i} total={total} />
-          return <MobileSimpleCard key={client.id} client={client} index={i} total={total} />
-        })}
-      </div>
+      <section className="projects-mobile taller-section" id="taller">
+        <div className="pm-header">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="proj-title">Taller</h2>
+            <div className="title-line" />
+            <p className="pm-subtitle">Piezas producidas para marcas de Chiclayo y Lambayeque.</p>
+          </motion.div>
+        </div>
 
-      <GalleryCTA />
-    </section>
+        <div className="pm-cards">
+          {featured.map(({ client }, i) => {
+            const layout = mobileLayouts[i % mobileLayouts.length]
+            if (layout === 'mHero') return <MobileHeroCard key={client.id} client={client} index={i} total={total} />
+            if (layout === 'mMosaic') return <MobileMosaicCard key={client.id} client={client} index={i} total={total} />
+            return <MobileSimpleCard key={client.id} client={client} index={i} total={total} />
+          })}
+        </div>
+
+        <GalleryCTA />
+      </section>
+    </>
   )
 }
 

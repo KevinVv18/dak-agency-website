@@ -40,7 +40,6 @@ const Blog = () => {
         transition={{ duration: 0.6 }}
       >
         <div className="blog-header-left">
-          <span className="section-tag">[ 04 ]</span>
           <h2 className="section-title">
             <span className="title-bold">Blog</span>
           </h2>
