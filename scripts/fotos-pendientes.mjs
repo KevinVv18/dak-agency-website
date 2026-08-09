@@ -44,8 +44,13 @@ for (const p of pendientes) {
   console.log(`      ${p.id.padEnd(22)} ${p.alt}`)
 }
 
-console.log(`\nYA ESTÁN (${listas.length}, servidas desde el repo):`)
-for (const l of listas) console.log(`      ${l.id.padEnd(22)} ${l.linea}`)
+console.log(`\nYA ESTÁN (${listas.length}):`)
+for (const l of listas) {
+  const origen = /^(familia|hermanos|pareja|maternidad|newborn|pediatra-corrales)$/.test(l.id)
+    ? 'repo'
+    : 'cloudinary'
+  console.log(`      ${l.id.padEnd(22)} ${l.linea.padEnd(10)} ${origen}`)
+}
 
 console.log(`
 RECOMENDACIONES DE ORIGEN
