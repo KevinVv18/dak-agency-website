@@ -97,7 +97,6 @@ const About = () => {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6 }}
       >
-        <span className="section-tag">[ 05 ]</span>
         <h2 className="section-title">
           <span className="title-bold">Nosotros</span>
         </h2>

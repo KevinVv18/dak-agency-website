@@ -5,6 +5,38 @@
 .projects-section {
   background: #030106;
   position: relative;
+  overflow: hidden;
+}
+
+/* Cada una con su luz anclada en un punto distinto, para que no se lean como
+   la misma seccion partida en dos. Demos entra por la izquierda alta; Taller,
+   por la derecha baja. */
+.projects-section::before,
+.projects-mobile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.demos-section::before {
+  --luz-x: 14%;
+  --luz-y: 0%;
+  background: var(--luz-seccion);
+}
+
+.taller-section::before {
+  --luz-x: 86%;
+  --luz-y: 100%;
+  background: var(--luz-seccion-teal);
+}
+
+/* El contenido por encima de la luz. */
+.projects-section > *,
+.projects-mobile > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Header ── */
@@ -681,11 +713,27 @@
 .projects-mobile {
   background: #030106;
   padding: 4rem 0 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* En movil las dos secciones van seguidas, asi que el Taller no repite el
+   espacio superior: si no, quedaba un hueco doble entre ambas. */
+.projects-mobile.taller-section {
+  padding-top: 1rem;
 }
 
 .pm-header {
   text-align: center;
   padding: 0 1.5rem 1.5rem;
+}
+
+.pm-subtitle {
+  margin: 0.75rem auto 0;
+  max-width: 32ch;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-texto-2);
 }
 
 .pm-cards {
