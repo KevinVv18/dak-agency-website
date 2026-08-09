@@ -80,8 +80,8 @@ export const sesiones = [
   },
   {
     id: 'spa-kreativos-02', cliente: 'Spa Kreativos', sector: 'Spa y bienestar',
-    linea: 'comercial', publicado: false,
-    alt: 'Tratamiento en curso en Spa Kreativos',
+    linea: 'comercial', publicado: true,
+    alt: 'Rótulo de neón de Kreativos Salón & Spa en el interior del local',
   },
   {
     id: 'manuel-pardo-01', cliente: 'Colegio Manuel Pardo', sector: 'Educación',
