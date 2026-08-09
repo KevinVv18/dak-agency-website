@@ -75,8 +75,8 @@ export const sesiones = [
   },
   {
     id: 'spa-kreativos-01', cliente: 'Spa Kreativos', sector: 'Spa y bienestar',
-    linea: 'comercial', publicado: false,
-    alt: 'Sala de tratamiento de Spa Kreativos',
+    linea: 'comercial', publicado: true,
+    alt: 'Tratamiento facial y de cejas en Spa Kreativos',
   },
   {
     id: 'spa-kreativos-02', cliente: 'Spa Kreativos', sector: 'Spa y bienestar',
@@ -115,8 +115,8 @@ export const sesiones = [
   },
   {
     id: 'rosita-01', cliente: 'La Cocina de Rosita', sector: 'Restaurante',
-    linea: 'comercial', publicado: false,
-    alt: 'Plato de La Cocina de Rosita',
+    linea: 'comercial', publicado: true,
+    alt: 'Cantante en vivo durante un evento en La Cocina de Rosita',
   },
   {
     id: 'beauty-house-01', cliente: 'Beauty House', sector: 'Estética',
@@ -135,8 +135,13 @@ export const sesiones = [
   },
   {
     id: 'casa-club-01', cliente: 'Casa Club T&G', sector: 'Inmobiliario',
-    linea: 'comercial', publicado: false,
-    alt: 'Instalaciones de Casa Club T&G',
+    linea: 'comercial', publicado: true,
+    alt: 'Terraza de Casa Club T&G decorada, con comensales en las mesas',
+  },
+  {
+    id: 'casa-club-02', cliente: 'Casa Club T&G', sector: 'Inmobiliario',
+    linea: 'comercial', publicado: true,
+    alt: 'Grupo compartiendo una comida bajo el toldo de Casa Club T&G',
   },
   {
     id: 'prosadis-01', cliente: 'Prosadis', sector: 'Distribución',
