@@ -45,18 +45,18 @@ export const sesiones = [
   // Orden pensado para que dos sectores parecidos no queden seguidos.
   {
     id: 'oasis-dental-01', cliente: 'Oasis Dental', sector: 'Clínica dental',
-    linea: 'comercial', publicado: false,
-    alt: 'Equipo de la clínica Oasis Dental en su consulta',
+    linea: 'comercial', publicado: true,
+    alt: 'Odontóloga de Oasis Dental en su consultorio, junto al sillón dental',
   },
   {
     id: 'oasis-dental-02', cliente: 'Oasis Dental', sector: 'Clínica dental',
-    linea: 'comercial', publicado: false,
-    alt: 'Detalle de gabinete dental de Oasis Dental',
+    linea: 'comercial', publicado: true,
+    alt: 'Dos odontólogas de Oasis Dental atendiendo a una paciente',
   },
   {
     id: 'al-palo-01', cliente: 'Al Palo', sector: 'Restaurante',
-    linea: 'comercial', publicado: false,
-    alt: 'Plato de chicharrón de Al Palo servido en mesa',
+    linea: 'comercial', publicado: true,
+    alt: 'Chef de Al Palo en el comedor del restaurante, entre plantas y botellas de vino',
   },
   {
     id: 'al-palo-02', cliente: 'Al Palo', sector: 'Restaurante',
@@ -65,13 +65,13 @@ export const sesiones = [
   },
   {
     id: 'urban-pet-01', cliente: 'The Urban Pet', sector: 'Veterinaria',
-    linea: 'comercial', publicado: false,
-    alt: 'Atención veterinaria en The Urban Pet',
+    linea: 'comercial', publicado: true,
+    alt: 'Clientas de The Urban Pet sosteniendo un caniche blanco en la tienda',
   },
   {
     id: 'urban-pet-02', cliente: 'The Urban Pet', sector: 'Veterinaria',
-    linea: 'comercial', publicado: false,
-    alt: 'Mascota en consulta en The Urban Pet',
+    linea: 'comercial', publicado: true,
+    alt: 'Perro pomerania en el área de exhibición de The Urban Pet',
   },
   {
     id: 'spa-kreativos-01', cliente: 'Spa Kreativos', sector: 'Spa y bienestar',
@@ -85,33 +85,33 @@ export const sesiones = [
   },
   {
     id: 'manuel-pardo-01', cliente: 'Colegio Manuel Pardo', sector: 'Educación',
-    linea: 'comercial', publicado: false,
-    alt: 'Estudiantes del Colegio Manuel Pardo en el campus',
+    linea: 'comercial', publicado: true,
+    alt: 'Banda de clarinetes del Colegio Manuel Pardo tocando al aire libre',
   },
   {
     id: 'manuel-pardo-02', cliente: 'Colegio Manuel Pardo', sector: 'Educación',
-    linea: 'comercial', publicado: false,
-    alt: 'Actividad académica en el Colegio Manuel Pardo',
+    linea: 'comercial', publicado: true,
+    alt: 'Ceremonia religiosa con alumnos del Colegio Manuel Pardo en el polideportivo',
   },
   {
     id: 'bumbum-01', cliente: 'Bumbum', sector: 'Floristería',
-    linea: 'comercial', publicado: false,
-    alt: 'Arreglo floral de Bumbum',
+    linea: 'comercial', publicado: true,
+    alt: 'Pareja con globos de corazón y un peluche frente a la tienda Bumbum',
   },
   {
     id: 'bumbum-02', cliente: 'Bumbum', sector: 'Floristería',
-    linea: 'comercial', publicado: false,
-    alt: 'Taller de Bumbum durante la preparación de un ramo',
+    linea: 'comercial', publicado: true,
+    alt: 'Clienta con un ramo frente a la fachada de Bumbum, globos y flores',
   },
   {
     id: 'american-vault-01', cliente: 'American Vault', sector: 'Retail',
-    linea: 'comercial', publicado: false,
-    alt: 'Cartera de American Vault fotografiada de producto',
+    linea: 'comercial', publicado: true,
+    alt: 'Bolso negro de American Vault fotografiado sobre fondo blanco',
   },
   {
     id: 'american-vault-02', cliente: 'American Vault', sector: 'Retail',
-    linea: 'comercial', publicado: false,
-    alt: 'Detalle de material de una cartera de American Vault',
+    linea: 'comercial', publicado: true,
+    alt: 'Bolso marrón de American Vault fotografiado sobre fondo blanco',
   },
   {
     id: 'rosita-01', cliente: 'La Cocina de Rosita', sector: 'Restaurante',
@@ -130,8 +130,8 @@ export const sesiones = [
   },
   {
     id: 'bersa-medic-01', cliente: 'Bersa Medic', sector: 'Salud',
-    linea: 'comercial', publicado: false,
-    alt: 'Consulta de Bersa Medic',
+    linea: 'comercial', publicado: true,
+    alt: 'Retrato del Dr. Enrique, de Bersa Medic, con bata blanca',
   },
   {
     id: 'casa-club-01', cliente: 'Casa Club T&G', sector: 'Inmobiliario',
@@ -140,8 +140,8 @@ export const sesiones = [
   },
   {
     id: 'prosadis-01', cliente: 'Prosadis', sector: 'Distribución',
-    linea: 'comercial', publicado: false,
-    alt: 'Equipo de Prosadis',
+    linea: 'comercial', publicado: true,
+    alt: 'Fachada de Prosadis con su rótulo: Cuidando la Salud de tu Familia',
   },
   {
     id: 'titan-01', cliente: 'Titan', sector: 'Industria',
@@ -150,8 +150,13 @@ export const sesiones = [
   },
   {
     id: 'go-01', cliente: 'Gran Oportunidad GO!', sector: 'Retail',
-    linea: 'comercial', publicado: false,
-    alt: 'Tienda de Gran Oportunidad GO!',
+    linea: 'comercial', publicado: true,
+    alt: 'Sorteo de Gran Oportunidad GO! con las participantes y la urna de premios',
+  },
+  {
+    id: 'go-02', cliente: 'Gran Oportunidad GO!', sector: 'Retail',
+    linea: 'comercial', publicado: true,
+    alt: 'Moto y ruleta de premios en una activación de Gran Oportunidad GO!',
   },
 
   // ── LÍNEA FAMILIAR — ya en el repo, se sirven en local ───────────────────
