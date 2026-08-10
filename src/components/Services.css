@@ -4,6 +4,12 @@
    Mobile: Featured arriba + thumbs horizontal abajo
    ============================================= */
 
+/* Aqui iba el divisor de seccion: una linea con degradado morado y un punto
+   de 9px con brillo en el centro. Estaba copiado igual en cuatro archivos y
+   ademas no cuadraba con la regla fina que .section-head dibuja sobre cada
+   titulo: salian dos rayas a pocos pixeles una de otra, sin la misma anchura
+   ni el mismo origen. Ahora el limite de seccion lo marca solo esa regla. */
+
 .services {
   min-height: 100vh;
   background: #030106;
@@ -12,32 +18,7 @@
   flex-direction: column;
 }
 
-.services::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 1200px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(176, 36, 255, 0.15) 15%, rgba(176, 36, 255, 0.5) 35%, #B024FF 50%, rgba(176, 36, 255, 0.5) 65%, rgba(176, 36, 255, 0.15) 85%, transparent 100%);
-  z-index: 5;
-}
 
-.services::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 9px;
-  height: 9px;
-  background: #B024FF;
-  border-radius: 50%;
-  box-shadow: 0 0 12px rgba(176, 36, 255, 0.8), 0 0 30px rgba(176, 36, 255, 0.4);
-  z-index: 5;
-}
 
 .services-container {
   width: 100%;

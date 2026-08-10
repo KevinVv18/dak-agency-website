@@ -682,18 +682,23 @@ section {
   );
 }
 
+/* La escala: 88 → 64 → 48 en escritorio, un salto de un tercio entre pasos.
+   El primer intento fue 88 → 56 → 33 y el escalón pequeño se quedaba
+   raquítico: Blog parecía un pie de página, no una sección. Jerarquía no es
+   empequeñecer lo que acompaña, es que se note quién manda. */
 .section-title--grande {
   font-size: clamp(3rem, 7vw, 5.5rem);
 }
 
 .section-title--medio {
-  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  font-size: clamp(2.5rem, 5vw, 4rem);
 }
 
-/* Blog y Nosotros no compiten con el trabajo: acompañan. En minúsculas y a
-   la mitad de cuerpo, dejan de leerse como otro cartel. */
+/* Blog y Nosotros acompañan al trabajo, no compiten con él. Lo que los separa
+   ya no es sobre todo el cuerpo, sino la caja: en redonda y no en versales,
+   se leen como un rótulo y no como otro cartel. */
 .section-title--menor {
-  font-size: clamp(1.6rem, 2.6vw, 2.25rem);
+  font-size: clamp(2rem, 3.75vw, 3rem);
   text-transform: none;
   letter-spacing: -0.02em;
 }
