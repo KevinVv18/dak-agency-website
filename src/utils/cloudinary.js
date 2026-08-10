@@ -28,6 +28,24 @@ export const cld = (url, w) => {
 }
 
 /**
+ * URL de un vídeo al ancho y la calidad que toca.
+ *
+ * En móvil el reproductor mide 319px, así que w_640 cubre exacto una pantalla
+ * de densidad 2; se pedía w_900. Y `q_auto:eco` baja otro 15% sin que se note
+ * a ese tamaño: el vídeo va detrás de un degradado y a un tercio de pantalla.
+ * Medido sobre los tres verticales: 1.594-1.701 KB el archivo entero a w_900,
+ * 1.082-1.222 KB así.
+ *
+ * En escritorio se queda la calidad normal, que ahí el vídeo ocupa media
+ * pantalla y sí se mira de cerca.
+ */
+export const videoUrl = (url, w, eco = false) => {
+  if (!url || !url.includes('/upload/')) return url
+  const q = eco ? 'q_auto:eco' : 'q_auto'
+  return url.replace('/upload/', `/upload/f_auto,${q},c_limit,w_${w}/`)
+}
+
+/**
  * Fotograma de portada de un vídeo, generado por Cloudinary con so_0 (segundo 0).
  * Pesa unos 36 KB frente a los megas del vídeo y evita el rectángulo negro
  * mientras este decodifica.

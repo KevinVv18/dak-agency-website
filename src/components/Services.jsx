@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import './Services.css'
 import { scrollToSection } from '../utils/scrollToSection'
-import { cld, cldPoster } from '../utils/cloudinary'
+import { cld, cldPoster, videoUrl } from '../utils/cloudinary'
 
 const Services = () => {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -17,6 +17,10 @@ const Services = () => {
   )
   const [viewedServices, setViewedServices] = useState(new Set([0]))
   const [swipeHintVisible, setSwipeHintVisible] = useState(true)
+  // Es estado y no ref a proposito: tres efectos distintos dependen de si la
+  // seccion se ve (reproducir, rebobinar y precargar el siguiente), y con una
+  // ref ninguno se volveria a ejecutar al cambiar la visibilidad.
+  const [seccionVisible, setSeccionVisible] = useState(false)
 
   // Auto-dismiss swipe hint after 4 seconds
   useEffect(() => {
@@ -156,7 +160,9 @@ const Services = () => {
 
   const activeService = services[activeIndex]
   const activeVideo = getServiceVideo(activeService)
-  const activeVideoSrc = activeVideo ? cld(activeVideo, isMobile ? 900 : 1600) : ''
+  const activeVideoSrc = activeVideo
+    ? videoUrl(activeVideo, isMobile ? 640 : 1600, isMobile)
+    : ''
 
   // Detectar mobile
   useEffect(() => {
@@ -182,13 +188,46 @@ const Services = () => {
     }
   }, [activeIndex, isMobile])
 
-  // Reiniciar video al cambiar servicio (o al cambiar orientación)
+  /**
+   * El vídeo solo corre mientras la sección se ve.
+   *
+   * Antes llevaba `autoPlay`, así que empezaba a descargar en cuanto se
+   * montaba —con la sección aún fuera de pantalla— y en bucle acababa
+   * trayéndose el archivo entero: 1,7 MB por servicio. Ahora, con
+   * `preload="none"`, no pide un byte hasta este play(), y se pausa al salir
+   * de pantalla. Quien pasa de largo se lleva unos cientos de KB en vez del
+   * archivo completo, y quien se queda mirando lo ve igual que antes.
+   *
+   * El umbral es 0.25 y no 0: con 0 se dispararía con la sección asomando un
+   * píxel, que es justo lo que se quiere evitar.
+   */
+  useEffect(() => {
+    const seccion = servicesRef.current
+    const video = videoRef.current
+    if (!seccion || !video || !activeVideo) return
+
+    const observador = new IntersectionObserver(
+      ([entrada]) => {
+        setSeccionVisible(entrada.isIntersecting)
+        if (entrada.isIntersecting) video.play().catch(() => { })
+        else video.pause()
+      },
+      { threshold: 0.25 },
+    )
+    observador.observe(seccion)
+    return () => observador.disconnect()
+  }, [activeVideo])
+
+  // Al cambiar de servicio se rebobina, pero solo se reproduce si la sección
+  // está a la vista. Sin esa comprobación el vídeo arrancaría fuera de
+  // pantalla y el observador no lo pausaría: solo avisa cuando la intersección
+  // CAMBIA, y ahí no cambia nada.
   useEffect(() => {
     if (videoRef.current && activeVideo) {
       videoRef.current.currentTime = 0
-      videoRef.current.play().catch(() => { })
+      if (seccionVisible) videoRef.current.play().catch(() => { })
     }
-  }, [activeIndex, activeVideo])
+  }, [activeIndex, activeVideo, seccionVisible])
 
   // ── Fase 2: mostrar / ocultar el texto por inactividad ──
   const IDLE_MS = 3500
@@ -274,17 +313,21 @@ const Services = () => {
 
   // Preload next video/image (según orientación del dispositivo)
   //
-  // En movil NO se precarga. Este elemento esta oculto y con preload="auto", asi
-  // que se descarga el siguiente video entero sin que nadie lo vea: el de
-  // Fotografia pesa 4,2 MB. En un 4G de Chiclayo eso es la diferencia entre una
-  // demo que impresiona y una pestana que se cierra. El carrusel sigue
-  // funcionando igual, solo tarda un instante mas en el primer cambio.
+  // En movil NO se precarga: el video siguiente pesa megas y en un 4G de
+  // Chiclayo eso es la diferencia entre una demo que impresiona y una pestana
+  // que se cierra. El carrusel funciona igual, solo tarda un instante mas en el
+  // primer cambio.
   //
-  // En escritorio se conserva: es una decision de UX deliberada y ahi el ancho
-  // de banda no es el cuello de botella.
+  // En escritorio se conserva, pero con preload="metadata" (ver el elemento):
+  // con "auto" se traia el archivo completo del servicio siguiente.
   useEffect(() => {
     if (!preloadRef.current) return
-    if (isMobile) {
+    // Tampoco se precarga con la seccion fuera de pantalla. Medido en
+    // escritorio: recorriendo la portada entera se descargaban DIEZ videos,
+    // 4.259 KB, la mayoria de servicios que el visitante nunca llego a abrir.
+    // Adelantar el siguiente tiene sentido mientras se esta mirando el
+    // carrusel; antes de llegar a el, no.
+    if (isMobile || !seccionVisible) {
       preloadRef.current.removeAttribute('src')
       return
     }
@@ -293,7 +336,7 @@ const Services = () => {
     if (nextVideo) {
       preloadRef.current.src = cld(nextVideo, 1600)
     }
-  }, [activeIndex, services, isMobile])
+  }, [activeIndex, services, isMobile, seccionVisible])
 
   // Keyboard navigation
   useEffect(() => {
@@ -342,22 +385,28 @@ const Services = () => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  {/* En movil va el fotograma, no el video.
-                      El poster ya estaba puesto, pero el <video> se descargaba
-                      igual: 906 KB del branding en un telefono, el archivo mas
-                      pesado de toda la portada. Y para lo que se ve —el trabajo
-                      grafico de fondo, detras de un degradado— el fotograma
-                      dice lo mismo. El movimiento se queda para escritorio, que
-                      es donde no cuesta.
-                      No hay salto de maquetado: el envoltorio ya tiene alto y
-                      la imagen lo rellena, igual que hacia el video. */}
-                  {activeVideo && !isMobile ? (
+                  {/* El video se queda tambien en movil: es la muestra de
+                      trabajo, y un audiovisual congelado vende menos de lo que
+                      es. Lo que se corrige es lo que costaba de mas.
+
+                      1. Ancho real. Se pedia w_900 para pintarse a 319px. Con
+                         w_640 cubre una pantalla de densidad 2 exacta.
+                      2. preload="none" y poster. El fotograma pesa ~30 KB y
+                         aparece al instante; el video no pide un byte hasta que
+                         empieza a reproducirse.
+                      3. Solo corre mientras se ve (ver el efecto de abajo). Con
+                         autoPlay a secas empezaba a bajar aunque la seccion
+                         estuviera fuera de pantalla, y en bucle acababa
+                         trayendose el archivo entero. Asi se paga por lo que se
+                         mira: quien pasa de largo se lleva unos cientos de KB
+                         en vez de 1,7 MB. */}
+                  {activeVideo ? (
                     <video
                       ref={videoRef}
                       key={activeVideoSrc}
                       src={activeVideoSrc}
-                      poster={cldPoster(activeVideo, 1600)}
-                      autoPlay
+                      poster={cldPoster(activeVideo, isMobile ? 640 : 1600)}
+                      preload="none"
                       muted
                       loop
                       playsInline
@@ -365,7 +414,7 @@ const Services = () => {
                     />
                   ) : (
                     <img
-                      src={activeVideo ? cldPoster(activeVideo, 900) : activeService.imageSrc}
+                      src={activeService.imageSrc}
                       alt={activeService.title}
                       className="featured-video"
                       loading="lazy"
@@ -551,7 +600,13 @@ const Services = () => {
               {/* Preload next video */}
               <video
                 ref={preloadRef}
-                preload="auto"
+                /* "metadata" y no "auto". Con auto se descargaba el siguiente
+                   video ENTERO por si acaso: medido, 3.144 KB solo el de
+                   Fotografia, para un servicio que el visitante puede no abrir
+                   nunca. Con metadata el navegador resuelve cabeceras y
+                   dimensiones —el cambio sigue siendo mas rapido que en frio—
+                   sin traerse los megas. */
+                preload="metadata"
                 style={{ display: 'none' }}
               />
             </div>
