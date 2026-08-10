@@ -149,10 +149,20 @@ const Blog = () => {
 }
 
 // Category colors helper
+/**
+ * Color de fondo de la píldora de categoría. La tinta encima es #030106.
+ *
+ * El morado de marca #B024FF daba 4.49:1 con esa tinta — falla AA por una
+ * centésima. Se usa #B93EFF, que es el mismo morado aclarado que ya define
+ * --color-accent-texto en index.css para este problema exacto, y sube a
+ * 5.14:1. Comprobadas las once categorías: era la única por debajo, y encima
+ * era el color por defecto, así que cualquier categoría nueva del blog nacía
+ * fallando.
+ */
 const getCategoryColor = (category) => {
   const colors = {
-    'Marketing Digital': '#B024FF',
-    'Marketing': '#B024FF',
+    'Marketing Digital': '#B93EFF',
+    'Marketing': '#B93EFF',
     'Redes Sociales': '#00C8C8',
     'SEO': '#00B478',
     'SEO & Ads': '#00A5A5',
@@ -162,11 +172,11 @@ const getCategoryColor = (category) => {
     'Branding': '#009462',
     'Video': '#C08850',
     'Diseño Web': '#00A5A5',
-    'Opinión': '#B024FF',
+    'Opinión': '#B93EFF',
     'Entrevistas': '#009462',
-    'General': '#B024FF'
+    'General': '#B93EFF'
   }
-  return colors[category] || '#B024FF'
+  return colors[category] || '#B93EFF'
 }
 
 export default Blog

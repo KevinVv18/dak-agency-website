@@ -1,4 +1,4 @@
-import { fotoUrl, CARPETA_ESTUDIO } from '../utils/cloudinary'
+import { fotoUrl, fotoFuentes, CARPETA_ESTUDIO } from '../utils/cloudinary'
 
 // Las 6 fotos que ya viven en el repo. Se conservan como línea familiar.
 import fBaby from '../assets/gallery/baby1-min.webp'
@@ -68,8 +68,9 @@ export const monograma = (nombre = '') =>
  * 3. Cambia `publicado: false` por `true` en esa sesión.
  *
  * No hace falta tocar nada más: ni el componente, ni el tamaño, ni el peso.
- * `fotoUrl()` pide la variante que toca según el viewport (900px en móvil,
- * 1600px en escritorio) y Cloudinary la genera al vuelo.
+ * La rejilla sirve un srcset de 400/700/1000/1400px y el navegador pide el que
+ * le toca según su ancho y su densidad; Cloudinary genera cada variante al
+ * vuelo. Sube el original tal cual salga de la edición.
  *
  * `publicado: false` es explícito a propósito. Construir la URL de un archivo
  * que todavía no existe daría un 404 y un hueco roto en producción; así la
@@ -222,6 +223,15 @@ export const sesionesPublicadas = () => sesiones.filter((s) => s.publicado)
  */
 export const srcDeSesion = (sesion, ancho) =>
   sesion.local ? sesion.local : fotoUrl(sesion.id, ancho)
+
+/**
+ * srcset/sizes de una sesión, para que cada pantalla pida el ancho que le hace
+ * falta. Solo aplica a las de Cloudinary: las seis del repo son un archivo
+ * único y no hay variantes que ofrecer, así que devuelven nada y se quedan con
+ * su src.
+ */
+export const fuentesDeSesion = (sesion, medida) =>
+  sesion.local ? {} : fotoFuentes(sesion.id, medida)
 
 /** Para el informe de pendientes: qué falta subir y con qué nombre exacto. */
 export const pendientes = () =>

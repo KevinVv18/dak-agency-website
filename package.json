@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "auditar:movil": "node scripts/auditar-movil.mjs",
     "fotos:pendientes": "node scripts/fotos-pendientes.mjs",
-    "fotos:subir": "node scripts/subir-fotos.mjs"
+    "fotos:subir": "node scripts/subir-fotos.mjs",
+    "taller:variantes": "node scripts/variantes-taller.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

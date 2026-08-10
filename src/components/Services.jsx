@@ -342,12 +342,21 @@ const Services = () => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  {activeVideo ? (
+                  {/* En movil va el fotograma, no el video.
+                      El poster ya estaba puesto, pero el <video> se descargaba
+                      igual: 906 KB del branding en un telefono, el archivo mas
+                      pesado de toda la portada. Y para lo que se ve —el trabajo
+                      grafico de fondo, detras de un degradado— el fotograma
+                      dice lo mismo. El movimiento se queda para escritorio, que
+                      es donde no cuesta.
+                      No hay salto de maquetado: el envoltorio ya tiene alto y
+                      la imagen lo rellena, igual que hacia el video. */}
+                  {activeVideo && !isMobile ? (
                     <video
                       ref={videoRef}
                       key={activeVideoSrc}
                       src={activeVideoSrc}
-                      poster={cldPoster(activeVideo, isMobile ? 900 : 1600)}
+                      poster={cldPoster(activeVideo, 1600)}
                       autoPlay
                       muted
                       loop
@@ -356,9 +365,11 @@ const Services = () => {
                     />
                   ) : (
                     <img
-                      src={activeService.imageSrc}
+                      src={activeVideo ? cldPoster(activeVideo, 900) : activeService.imageSrc}
                       alt={activeService.title}
                       className="featured-video"
+                      loading="lazy"
+                      decoding="async"
                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                     />
                   )}
@@ -400,13 +411,11 @@ const Services = () => {
                   transition={{ duration: 0.4, ease: 'easeOut' }}
                 >
                   <div className="featured-header-info">
-                    <span
-                      className="featured-number"
-                      style={{ color: activeService.color }}
-                    >
-                      {String(activeIndex + 1).padStart(2, '0')}
-                    </span>
-
+                    {/* Aqui iba un "01" de 4rem al 15% de opacidad, detras de
+                        la etiqueta. El mismo numeral fantasma que ya quitamos
+                        de Destacados: no informa de nada —la posicion real ya
+                        la da el contador "01 / 07" del panel— y el lector de
+                        pantalla lo leia como si fuera contenido. */}
                     <span
                       className="featured-category"
                       style={{

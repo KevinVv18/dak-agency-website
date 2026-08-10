@@ -206,16 +206,6 @@
   /* scrim unificado en .featured-overlay (una sola capa = mas video visible) */
 }
 
-.featured-number {
-  font-size: 4rem;
-  font-weight: 900;
-  opacity: 0.15;
-  position: absolute;
-  top: -2.5rem;
-  right: 2rem;
-  letter-spacing: -0.05em;
-  line-height: 1;
-}
 
 .featured-category {
   font-size: 0.75rem;
@@ -623,11 +613,6 @@
     gap: 0.5rem;
   }
 
-  .featured-number {
-    font-size: 2rem;
-    top: -1.5rem;
-    right: 1rem;
-  }
 
   .featured-icon {
     display: none;
@@ -868,16 +853,6 @@
   margin-bottom: 0.5rem;
 }
 
-.featured-number {
-  font-size: 2.5rem !important;
-  font-weight: 900;
-  opacity: 0.5 !important;
-  letter-spacing: -0.05em;
-  line-height: 1;
-  position: relative !important;
-  top: auto !important;
-  right: auto !important;
-}
 
 /* Featured Icon */
 .featured-icon {
