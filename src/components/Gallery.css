@@ -436,107 +436,9 @@
   margin-top: 1rem;
 }
 
-/* ── Photography Parallax ── */
-.photo-parallax-section {
-  padding: 5rem 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.photo-parallax-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.photo-parallax-title {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 700;
-}
-
-.photo-parallax-sub {
-  color: rgba(249, 237, 253, 0.5);
-  margin-top: 0.5rem;
-  font-size: 1rem;
-}
-
-.photo-parallax-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-  align-items: start;
-}
-
-.parallax-card {
-  border-radius: 12px;
-  overflow: hidden;
-  will-change: transform;
-}
-
-.parallax-card--large {
-  grid-row: span 2;
-}
-
-.parallax-card--large .parallax-img-wrap img {
-  height: 100%;
-  object-fit: cover;
-}
-
-.parallax-card--small .parallax-img-wrap img {
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-
-.parallax-img-wrap {
-  position: relative;
-  overflow: hidden;
-  border-radius: 12px;
-  border: 1px solid rgba(176, 36, 255, 0.08);
-  transition: border-color 0.4s ease;
-}
-
-.parallax-img-wrap:hover {
-  border-color: rgba(176, 36, 255, 0.25);
-}
-
-.parallax-img-wrap img {
-  width: 100%;
-  display: block;
-  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-.parallax-img-wrap:hover img {
-  transform: scale(1.06);
-}
-
-.parallax-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(3, 1, 6, 0.85) 0%, transparent 50%);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 1.25rem;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.parallax-img-wrap:hover .parallax-overlay {
-  opacity: 1;
-}
-
-.parallax-cat {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--color-secondary);
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-}
-
-.parallax-overlay h3 {
-  font-size: 0.95rem;
-  font-weight: 600;
-}
+/* El bloque de Photography Parallax vivia aqui (102 lineas). Lo servia el
+   componente PhotoParallax, sustituido por EstudioArchivo, que reusa la
+   rejilla del Estudio de la home. */
 
 /* ── Scroll Reveal Showcase ── */
 .reveal-section {
@@ -599,14 +501,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
-
-.reveal-number {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1;
-  color: rgba(176, 36, 255, 0.15);
-  letter-spacing: -0.04em;
 }
 
 .reveal-type {
@@ -815,7 +709,9 @@
 }
 
 .floating-nav-counter {
-  font-size: 0.65rem;
+  /* 0.65rem daba 10.4px y en movil 0.6rem daba 9.6px: los dos por debajo del
+     piso de 11px que fija PRODUCT.md. */
+  font-size: var(--texto-minimo);
   font-weight: 600;
   color: rgba(176, 36, 255, 0.7);
   padding: 0.2rem 0.6rem;
@@ -837,141 +733,8 @@
     grid-column: span 1;
   }
 
-  .photo-parallax-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .reveal-row,
-  .reveal-row--reverse {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .reveal-row--reverse .reveal-image {
-    order: unset;
-  }
-
-  .reveal-row--reverse .reveal-info {
-    order: unset;
-  }
-
-  .gallery-stats {
-    gap: 2.5rem;
-  }
-
-  .floating-nav-btn span {
-    display: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .banner-nav {
-    display: none;
-  }
-
-  .gallery-hero {
-    padding: 5rem 1rem 2rem;
-  }
-
-  .gallery-hero {
-    padding: 5rem 0 2rem;
-  }
-
-  .hero-images-row {
-    gap: 0.35rem;
-    padding: 0 0.5rem;
-    min-height: 150px;
-    margin-bottom: 1.25rem;
-  }
-
-  .hero-img-1 { height: 160px; margin-bottom: 0.5rem; }
-  .hero-img-2 { height: 110px; margin-bottom: 2rem; }
-  .hero-img-3 { height: 145px; margin-bottom: 0; }
-  .hero-img-4 { height: 130px; margin-bottom: 1.25rem; }
-  .hero-img-5 { height: 155px; margin-bottom: 0.5rem; }
-
-  .hero-img-card {
-    border-radius: 8px;
-  }
-
-  .gallery-hero-title {
-    font-size: clamp(2.5rem, 12vw, 4rem);
-  }
-
-  .gallery-hero-sub {
-    font-size: 0.85rem;
-    padding: 0 0.5rem;
-  }
-
-  .masonry-section {
-    padding: 0 0.75rem;
-  }
-
-  .masonry-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-  }
-
-  .masonry-item--tall {
-    grid-row: span 1;
-  }
-
-  .masonry-item--tall img {
-    aspect-ratio: 1;
-  }
-
-  .masonry-item--wide {
-    grid-column: span 1;
-  }
-
-  .masonry-item--wide img {
-    aspect-ratio: 1;
-  }
-
-  .masonry-item img {
-    aspect-ratio: 1;
-  }
-
-  .filter-bar {
-    padding: 1rem 0.75rem 1.5rem;
-    gap: 0.35rem;
-  }
-
-  .filter-pill {
-    padding: 0.35rem 0.8rem;
-    font-size: 0.72rem;
-  }
-
-  .banner-section,
-  .photo-parallax-section,
-  .reveal-section {
-    padding: 3rem 1rem;
-  }
-
-  .banner-card {
-    flex: 0 0 85%;
-  }
-
-  .photo-parallax-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-  }
-
-  .parallax-card--large {
-    grid-row: span 1;
-  }
-
-  .parallax-card--large .parallax-img-wrap img,
-  .parallax-card--small .parallax-img-wrap img {
-    aspect-ratio: 1;
-  }
-
   .reveal-row {
     margin-bottom: 3rem;
-  }
-
-  .reveal-number {
-    font-size: 2.5rem;
   }
 
   .gallery-stats {
@@ -993,7 +756,6 @@
   }
 
   .floating-nav-counter {
-    font-size: 0.6rem;
     padding: 0.15rem 0.5rem;
   }
 }
@@ -1015,8 +777,4 @@
     gap: 0.4rem;
   }
 
-  .photo-parallax-grid {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
 }

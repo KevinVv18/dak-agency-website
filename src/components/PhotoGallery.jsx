@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import './PhotoGallery.css'
-import { sesionesPublicadas, srcDeSesion, LOGOS, monograma } from '../data/fotografia'
+import './Estudio.css'
+import { sesionesPublicadas } from '../data/fotografia'
+import EstudioRejilla from './EstudioRejilla'
 
 /**
  * Estudio — la sección de fotografía.
@@ -77,45 +78,7 @@ const PhotoGallery = () => {
         </motion.div>
       </div>
 
-      <ul className="estudio-rejilla">
-        {seleccion.map((s, i) => (
-          <motion.li
-            key={s.id}
-            className="estudio-pieza"
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.55, delay: Math.min(i, 5) * 0.06, ease: [0.19, 1, 0.22, 1] }}
-          >
-            <figure className="estudio-figura">
-              <img
-                className="estudio-img"
-                src={srcDeSesion(s, 900)}
-                alt={s.alt}
-                loading="lazy"
-                decoding="async"
-              />
-              <figcaption className="estudio-pie">
-                {/* La marca del cliente: su logo cuando lo hay y, si no, sus
-                    iniciales. El respaldo existe para que la retícula no tenga
-                    huecos donde falta el archivo — solo 4 de los 13 clientes
-                    tienen logo en el repo. */}
-                {s.cliente && (
-                  <span className="estudio-marca" aria-hidden="true">
-                    {LOGOS[s.cliente]
-                      ? <img className="estudio-logo" src={LOGOS[s.cliente]} alt="" loading="lazy" />
-                      : <span className="estudio-monograma">{monograma(s.cliente)}</span>}
-                  </span>
-                )}
-                <span className="estudio-datos">
-                  {s.cliente && <span className="estudio-cliente">{s.cliente}</span>}
-                  <span className="estudio-sector">{s.sector}</span>
-                </span>
-              </figcaption>
-            </figure>
-          </motion.li>
-        ))}
-      </ul>
+      <EstudioRejilla sesiones={seleccion} />
 
       <div className="estudio-cierre">
         <Link to="/gallery" className="estudio-enlace">

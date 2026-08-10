@@ -89,12 +89,26 @@ const medir = () => {
     if (ratio < necesita) contraste.push({ el: clave, ratio: Math.round(ratio * 100) / 100, necesita, txt: el.textContent.trim().slice(0, 20) })
   }
 
+  // Un elemento que se sale del viewport solo es un fallo si algo lo recorta o
+  // lo hace alcanzable. Dentro de un carrusel (overflow-x:auto) o de un marquee
+  // (overflow-x:hidden) salirse es justo lo que toca, así que hay que mirar la
+  // cadena de ancestros y no solo el propio elemento: comprobando solo el
+  // elemento, las tarjetas del carrusel de banners y el marquee del pie salían
+  // como 13 desbordes que no lo eran.
+  const dentroDeUnRecorte = (el) => {
+    for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+      if (['auto', 'scroll', 'hidden', 'clip'].includes(getComputedStyle(p).overflowX)) return true
+    }
+    return false
+  }
+
   const desbordes = []
   for (const el of document.querySelectorAll('body *')) {
     const r = el.getBoundingClientRect()
     if (r.width === 0) continue
     const cs = getComputedStyle(el)
     if (cs.position === 'fixed' || ['auto', 'scroll', 'hidden', 'clip'].includes(cs.overflowX)) continue
+    if (dentroDeUnRecorte(el)) continue
     if (r.right > vw + 2 || r.left < -2) desbordes.push(ruta(el) + ' [' + Math.round(r.left) + '..' + Math.round(r.right) + ']')
   }
 

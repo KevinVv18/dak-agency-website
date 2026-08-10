@@ -39,13 +39,7 @@ import dakSephora from '../assets/dak/dak_sephora.webp'
 import dakSkincare from '../assets/dak/dak_skincare.webp'
 import vetPortada from '../assets/dak/2_portada video veterinaria.webp'
 
-// ── Photography ──
-import babyPhoto from '../assets/gallery/baby1-min.webp'
-import familiaPhoto from '../assets/gallery/Familia1-min.webp'
-import hermanosPhoto from '../assets/gallery/hermanos.webp'
-import mamiPhoto from '../assets/gallery/mami1-min.webp'
-import parejaPhoto from '../assets/gallery/pareja1-min.webp'
-import pediatraPhoto from '../assets/gallery/PEDIATRA CORRALES@3x-min.webp'
+// Las fotos de estudio ya no se importan aquí: las declara fotografia.js.
 
 // Hero images for Gallery page
 export const heroImages = [
@@ -56,11 +50,17 @@ export const heroImages = [
   { src: dakInmobiliario, alt: 'DAK Inmobiliario' },
 ]
 
+/**
+ * Filtros del Taller. Solo van los que tienen piezas de verdad.
+ *
+ * 'banners' y 'photography' estaban aquí y devolvían cero: los banners se
+ * pintan en su propio carrusel (bannerItems) y la fotografía vive en Estudio,
+ * así que ninguna pieza de galleryItems llevaba esas categorías. Eran dos
+ * botones que vaciaban la rejilla.
+ */
 export const categories = [
   { id: 'all', label: 'Todo' },
   { id: 'social', label: 'Social Media' },
-  { id: 'banners', label: 'Banners' },
-  { id: 'photography', label: 'Fotografía' },
   { id: 'branding', label: 'Branding' },
   { id: 'campaigns', label: 'Campañas' },
 ]
@@ -102,11 +102,7 @@ export const bannerItems = [
   { id: 'b4', src: banner4, alt: 'Señor de los Milagros', client: 'Manuel Pardo' },
 ]
 
-export const photoItems = [
-  { id: 'p1', src: pediatraPhoto, title: 'Fotografía Profesional', category: 'Comercial' },
-  { id: 'p2', src: familiaPhoto, title: 'Retrato Familiar', category: 'Familias' },
-  { id: 'p3', src: hermanosPhoto, title: 'Lazos de Hermanos', category: 'Infantil' },
-  { id: 'p4', src: parejaPhoto, title: 'Amor en Pareja', category: 'Parejas' },
-  { id: 'p5', src: mamiPhoto, title: 'Maternidad', category: 'Maternidad' },
-  { id: 'p6', src: babyPhoto, title: 'Sesión Newborn', category: 'Bebés' },
-]
+// photoItems vivía aquí: las mismas 6 fotos del repo que ya declara
+// src/data/fotografia.js, que es ahora la única fuente del archivo fotográfico.
+// Tener las dos listas garantizaba que se desincronizaran —de hecho ya pasó: la
+// home enseñaba las 26 sesiones y /gallery seguía con estas 6.
