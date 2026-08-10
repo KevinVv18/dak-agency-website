@@ -87,253 +87,218 @@
   box-shadow: 0 0 30px rgba(176, 36, 255, 0.6);
 }
 
-.blog-grid {
+/* ═══════════════════════════════════════════
+   BLOG — un destacado y tres en lista
+
+   Antes eran cuatro tarjetas identicas en rejilla. Medido en el sitio: los
+   CUATRO titulares se cortaban a dos lineas y el extracto a otras dos o tres,
+   asi que la tarjeta enseñaba dos textos truncados y ninguna idea completa.
+   La imagen se llevaba del 37% de la tarjeta en escritorio al 62% en tableta,
+   y en la mitad de los posts esa imagen es el flyer de plantilla que genera el
+   pipeline: degradado morado, un icono y la palabra de la categoria, es decir,
+   lo mismo que ya dice la etiqueta de debajo.
+
+   El titular es lo unico que decide si alguien entra a leer. Aqui manda el
+   titular y la imagen se queda solo en el destacado.
+
+   El color sale de la categoria, que es un dato. Antes salia de la POSICION
+   —nth-child(1) morado, (2) cyan…— asi que al publicar un post nuevo los
+   colores se barajaban solos y contradecian a la etiqueta, que si usaba el
+   color correcto.
+   ═══════════════════════════════════════════ */
+
+.blog-layout {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 2.5rem;
+  /* stretch y no start: con start la lista terminaba a media altura del
+     destacado y quedaba un hueco muerto abajo a la derecha. Asi las dos
+     columnas miden lo mismo y los tres titulares se reparten el alto. */
+  align-items: stretch;
   padding: 0 4rem;
-  max-width: 1800px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
-.blog-card {
-  background: rgba(0, 0, 0, 0.6);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+/* ── El destacado ── */
+.blog-destacado {
+  position: relative;
+}
+
+.blog-destacado-enlace {
+  display: block;
   border-radius: 1.25rem;
   overflow: hidden;
-  transition: all var(--transition-base);
-  cursor: pointer;
-  will-change: transform;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  transition: border-color 0.35s ease, transform 0.35s var(--ease-out-expo);
 }
 
-.blog-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-  border-width: 3px;
-  z-index: 10;
+.blog-destacado-enlace:hover {
+  border-color: color-mix(in srgb, var(--cat) 55%, transparent);
+  transform: translateY(-4px);
 }
 
-.blog-card:nth-child(1):hover {
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(176, 36, 255, 0.6);
-  border-color: #B024FF;
-}
-
-.blog-card:nth-child(2):hover {
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 200, 200, 0.6);
-  border-color: #00C8C8;
-}
-
-.blog-card:nth-child(3):hover {
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 180, 120, 0.6);
-  border-color: #00B478;
-}
-
-.blog-card:nth-child(4):hover {
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(212, 165, 116, 0.6);
-  border-color: #D4A574;
-}
-
-/* Different backgrounds for each card - Morado, Cyan, Verde, Marrón */
-.blog-card:nth-child(1) {
-  background: linear-gradient(135deg, rgba(74, 25, 66, 0.95) 0%, rgba(58, 20, 52, 0.9) 100%);
-  border-color: rgba(176, 36, 255, 0.6);
-}
-
-.blog-card:nth-child(2) {
-  background: linear-gradient(135deg, rgba(10, 61, 74, 0.95) 0%, rgba(8, 48, 60, 0.9) 100%);
-  border-color: rgba(0, 200, 200, 0.5);
-}
-
-.blog-card:nth-child(3) {
-  background: linear-gradient(135deg, rgba(26, 58, 46, 0.95) 0%, rgba(20, 45, 36, 0.9) 100%);
-  border-color: rgba(0, 180, 120, 0.5);
-}
-
-.blog-card:nth-child(4) {
-  background: linear-gradient(135deg, rgba(61, 40, 23, 0.95) 0%, rgba(48, 32, 18, 0.9) 100%);
-  border-color: rgba(139, 90, 43, 0.5);
-}
-
-/* Colores de categoría por tarjeta — fondo de color, texto blanco */
-.blog-card .blog-category {
-  /* Esta regla, mas especifica y con !important, era la que mandaba de verdad:
-     blanco sobre el teal de la pildora daba 2.08:1. La sombra de texto se quita
-     porque con tinta oscura ya no aporta separacion, solo suciedad. */
-  color: var(--color-primary) !important;
-}
-
-/* Colores de flecha por tarjeta */
-.blog-card:nth-child(1) .blog-arrow {
-  border-color: #B024FF;
-  box-shadow: 0 0 20px rgba(176, 36, 255, 0.6);
-}
-
-.blog-card:nth-child(1) .blog-arrow svg {
-  fill: #B024FF;
-  filter: drop-shadow(0 0 5px rgba(176, 36, 255, 0.8));
-}
-
-.blog-card:nth-child(2) .blog-arrow {
-  border-color: #00C8C8;
-  box-shadow: 0 0 20px rgba(0, 200, 200, 0.6);
-}
-
-.blog-card:nth-child(2) .blog-arrow svg {
-  fill: #00C8C8;
-  filter: drop-shadow(0 0 5px rgba(0, 200, 200, 0.8));
-}
-
-.blog-card:nth-child(3) .blog-arrow {
-  border-color: #00B478;
-  box-shadow: 0 0 20px rgba(0, 180, 120, 0.6);
-}
-
-.blog-card:nth-child(3) .blog-arrow svg {
-  fill: #00B478;
-  filter: drop-shadow(0 0 5px rgba(0, 180, 120, 0.8));
-}
-
-.blog-card:nth-child(4) .blog-arrow {
-  border-color: #D4A574;
-  box-shadow: 0 0 20px rgba(212, 165, 116, 0.6);
-}
-
-.blog-card:nth-child(4) .blog-arrow svg {
-  fill: #D4A574;
-  filter: drop-shadow(0 0 5px rgba(212, 165, 116, 0.8));
-}
-
-.blog-image-wrapper {
-  position: relative;
-  aspect-ratio: 16/10;
+.blog-destacado-img {
+  aspect-ratio: 16 / 10;
   overflow: hidden;
-  background: #000;
+  background: #0a0710;
 }
 
-.blog-image {
+.blog-destacado-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: transform 0.7s var(--ease-out-expo);
 }
 
-.blog-card:hover .blog-image {
-  transform: scale(1.1);
+.blog-destacado-enlace:hover .blog-destacado-img img {
+  transform: scale(1.04);
 }
 
-.blog-image-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
-  pointer-events: none;
-}
-
-.blog-image-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.placeholder-icon {
-  position: relative;
-  z-index: 1;
-  opacity: 0.3;
-}
-
-.blog-excerpt {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.6;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin: 0;
-}
-
-.blog-card:hover .blog-excerpt {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-/* Circle with arrow */
-.blog-arrow {
-  position: absolute;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  z-index: 10;
-  width: 50px;
-  height: 50px;
-  background: rgba(3, 1, 6, 0.9);
-  border: 2px solid #B024FF;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-base);
-  box-shadow: 0 0 20px rgba(176, 36, 255, 0.4);
-}
-
-.blog-card:hover .blog-arrow {
-  transform: scale(1.15) rotate(45deg);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-}
-
-.blog-card:nth-child(1):hover .blog-arrow {
-  box-shadow: 0 0 30px rgba(176, 36, 255, 0.8), 0 8px 20px rgba(0, 0, 0, 0.5);
-  background: rgba(176, 36, 255, 0.3);
-}
-
-.blog-card:nth-child(2):hover .blog-arrow {
-  box-shadow: 0 0 30px rgba(0, 200, 200, 0.8), 0 8px 20px rgba(0, 0, 0, 0.5);
-  background: rgba(0, 200, 200, 0.3);
-}
-
-.blog-card:nth-child(3):hover .blog-arrow {
-  box-shadow: 0 0 30px rgba(0, 180, 120, 0.8), 0 8px 20px rgba(0, 0, 0, 0.5);
-  background: rgba(0, 180, 120, 0.3);
-}
-
-.blog-card:nth-child(4):hover .blog-arrow {
-  box-shadow: 0 0 30px rgba(212, 165, 116, 0.8), 0 8px 20px rgba(0, 0, 0, 0.5);
-  background: rgba(212, 165, 116, 0.3);
-}
-
-.blog-arrow svg {
-  width: 24px;
-  height: 24px;
-}
-
-.blog-content {
-  padding: 1.75rem;
+.blog-destacado-texto {
+  padding: 1.6rem 1.7rem 1.8rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
+}
+
+.blog-leer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cat);
+}
+
+.blog-leer svg {
+  transition: transform 0.25s ease;
+}
+
+.blog-destacado-enlace:hover .blog-leer svg {
+  transform: translateX(4px);
+}
+
+/* ── Los tres de la lista ── */
+.blog-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Cada uno ocupa un tercio del alto y centra su contenido dentro.
+   Con justify-content: space-between los tres titulares quedaban flotando
+   separados por huecos enormes; asi las lineas divisorias caen a intervalos
+   regulares y la columna se lee como una lista, no como tres islas. */
+.blog-item {
   flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.blog-item + .blog-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.blog-item-enlace {
+  display: block;
+  width: 100%;
+  padding: 1.5rem 0.25rem 1.5rem 1.25rem;
   position: relative;
+}
+
+/* La barra de categoria: nace al pasar por encima y crece de arriba abajo.
+   Es transform, no height, para que no recalcule maquetacion en cada frame. */
+.blog-item-enlace::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1.25rem;
+  bottom: 1.25rem;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--cat);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.4s var(--ease-out-expo);
+}
+
+.blog-item-enlace:hover::before,
+.blog-item-enlace:focus-visible::before {
+  transform: none;
+}
+
+.blog-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+.blog-item-cat {
+  color: var(--cat);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.blog-item-sep {
+  /* Estaba a alpha 0.3, que sobre el fondo da 2.49:1. Es decorativo y va con
+     aria-hidden, asi que no lo exige la norma, pero un glifo visible tan
+     lavado simplemente se ve descolorido. Al mismo tono que la fecha. */
+  color: var(--color-texto-2);
+}
+
+.blog-item .blog-date {
+  font-size: 0.78rem;
+  color: var(--color-texto-2);
+  font-weight: 500;
+}
+
+/* ── El titular, que es lo que importa ──
+   Sin -webkit-line-clamp: ningun titular se corta. Son largos y especificos
+   ("Tus Clientes Ya No Buscan Solo en Google: Como Aparecer Cuando Buscan en
+   TikTok e Instagram") y esa frase entera es justo el argumento. */
+.blog-titular {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  transition: color 0.25s ease;
+}
+
+.blog-item-enlace:hover .blog-titular {
+  color: var(--cat);
+}
+
+.blog-titular--destacado {
+  font-size: clamp(1.4rem, 2.1vw, 1.85rem);
+  line-height: 1.25;
+  letter-spacing: -0.03em;
 }
 
 .blog-meta {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 0;
 }
 
 .blog-category {
   display: inline-block;
   font-size: 0.75rem;
   font-weight: 700;
-  /* La pildora va sobre el teal #00C8C8. En blanco daba 2.08:1, el peor
-     contraste del sitio. Con el fondo oscuro de marca como tinta sube a
-     9.99:1 y el teal se mantiene igual de reconocible. */
+  /* La pildora va sobre el color de su categoria. En blanco daba 2.08:1, el
+     peor contraste del sitio; con la tinta oscura de marca sube a 5.14:1. */
   color: var(--color-primary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -344,41 +309,32 @@
 
 .blog-date {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-texto-2);
   font-weight: 500;
 }
 
-.blog-title {
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: #ffffff;
-  margin: 0;
-  line-height: 1.3;
-  letter-spacing: -0.02em;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
 .blog-excerpt {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.6;
+  font-size: 0.95rem;
+  color: var(--color-texto-2);
+  line-height: 1.65;
+  margin: 0;
+  /* Cuatro lineas y no dos: con el ancho del destacado, cuatro son una idea
+     completa. */
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin: 0;
 }
 
-.blog-card:hover .blog-excerpt {
-  color: rgba(255, 255, 255, 0.85);
+@media (max-width: 900px) {
+  .blog-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 1.5rem;
+  }
 }
 
-.blog-cta {
-  display: none;
-}
+
 
 /* Loading & Error States */
 .skeleton {
@@ -449,18 +405,9 @@
 
 /* Responsive */
 @media (max-width: 1400px) {
-  .blog-grid {
-    gap: 1.5rem;
-    padding: 0 3rem;
-  }
 }
 
 @media (max-width: 1200px) {
-  .blog-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-    padding: 0 2rem;
-  }
 }
 
 @media (max-width: 768px) {
@@ -468,11 +415,6 @@
     padding: 0 2rem var(--spacing-lg);
   }
 
-  .blog-grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    padding: 0 1.5rem;
-  }
 }
 
 @media (max-width: 768px) {
@@ -489,46 +431,18 @@
     padding: 0 1.5rem var(--spacing-md);
   }
 
-  .blog-content {
-    padding: 1.5rem;
-  }
 
-  .blog-title {
-    font-size: 1.2rem;
-  }
 
   .blog-excerpt {
     font-size: 0.85rem;
     -webkit-line-clamp: 2;
   }
 
-  .blog-arrow {
-    width: 45px;
-    height: 45px;
-    bottom: 1.25rem;
-    right: 1.25rem;
-  }
 
 
-  .blog-grid {
-    padding: 0 1.5rem;
-  }
 
-  .blog-content {
-    padding: 2rem 1.5rem;
-  }
 
-  .blog-arrow {
-    width: 50px;
-    height: 50px;
-    bottom: 1.5rem;
-    right: 1.5rem;
-  }
 
-  .blog-arrow svg {
-    width: 20px;
-    height: 20px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -536,17 +450,7 @@
     padding: 0 1rem var(--spacing-md);
   }
 
-  .blog-grid {
-    padding: 0 1rem;
-    gap: 1rem;
-  }
 
-  .blog-content {
-    padding: 1.5rem 1rem;
-  }
 
-  .blog-title {
-    font-size: 1.25rem;
-  }
 }
 

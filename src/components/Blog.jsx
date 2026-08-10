@@ -3,33 +3,36 @@ import { motion, useInView } from 'framer-motion'
 import useWordPressPosts from '../hooks/useWordPressPosts'
 import './Blog.css'
 
+/* A nivel de modulo y no dentro de Blog: los usan tambien Destacado y EnLista,
+   que son componentes hermanos. Ademas son constantes — recrearlas en cada
+   render no aportaba nada. */
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.2
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.19, 1, 0.22, 1]
+    }
+  }
+}
+
 const Blog = () => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const { posts, loading, error } = useWordPressPosts(4)
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.19, 1, 0.22, 1]
-      }
-    }
-  }
 
   return (
     <section className="blog" id="blog" ref={ref}>
@@ -80,77 +83,97 @@ const Blog = () => {
 
       {!loading && !error && (
         <motion.div
-          className="blog-grid"
+          className="blog-layout"
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
-          {posts.map((post, index) => (
-            <motion.article
-              key={post.id}
-              className="blog-card"
-              variants={itemVariants}
-              whileHover={{ y: -8 }}
-              transition={{ duration: 0.3 }}
-              onClick={() => window.location.href = post.link}
-              style={{ cursor: 'pointer' }}
-            >
-              {/* La portada se pinta a 339px en móvil, 716 en tableta y 274 en
-                  escritorio, donde las tarjetas van a cuatro columnas. Pedir el
-                  original de 1080px para eso eran 301 KB entre las cuatro; el
-                  srcSet lo arma useWordPressPosts con los tamaños que WordPress
-                  ya generó al subir la imagen. */}
-              <div className="blog-image-wrapper">
-                {post.featuredImage ? (
-                  <img
-                    src={post.featuredImage}
-                    srcSet={post.featuredSrcSet}
-                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 94vw, 22vw"
-                    alt={post.title}
-                    className="blog-image"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="blog-image-placeholder">
-                    <div className="placeholder-icon">
-                      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                        <rect width="80" height="80" rx="12" fill="white" fillOpacity="0.2" />
-                        <path d="M20 25H60M20 40H60M20 55H45" stroke="white" strokeWidth="4" strokeLinecap="round" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-                <div className="blog-image-overlay" />
-              </div>
-              
-              <div className="blog-content">
-                <div className="blog-meta">
-                  {post.categories[0] && (
-                    <span 
-                      className="blog-category"
-                      style={{ 
-                        backgroundColor: getCategoryColor(post.categories[0]) 
-                      }}
-                    >
-                      {post.categories[0]}
-                    </span>
-                  )}
-                  <span className="blog-date">{post.date}</span>
-                </div>
-                <h3 className="blog-title">{post.title}</h3>
-                <p className="blog-excerpt">{post.excerpt}</p>
-              </div>
-
-              <div className="blog-arrow">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M7 17L17 7M17 7H7M17 7V17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            </motion.article>
-          ))}
+          <Destacado post={posts[0]} />
+          <ul className="blog-lista">
+            {posts.slice(1).map((post) => (
+              <EnLista key={post.id} post={post} />
+            ))}
+          </ul>
         </motion.div>
       )}
     </section>
+  )
+}
+
+/**
+ * El post más reciente, con su titular ENTERO.
+ *
+ * Antes eran cuatro tarjetas iguales y los cuatro titulares se cortaban a dos
+ * líneas: «Tus Clientes Ya No Buscan Solo en…», «Contenido con IA: Hasta Dónde
+ * Usarla…». El titular es lo único que decide si alguien entra a leer, y
+ * cortarlo a media frase es tirar justo lo que hace falta. Aquí no se recorta.
+ */
+const Destacado = ({ post }) => {
+  if (!post) return null
+  const color = getCategoryColor(post.categories[0])
+
+  return (
+    <motion.article
+      className="blog-destacado"
+      variants={itemVariants}
+      style={{ '--cat': color }}
+    >
+      <a href={post.link} className="blog-destacado-enlace">
+        {post.featuredImage && (
+          <div className="blog-destacado-img">
+            <img
+              src={post.featuredImage}
+              srcSet={post.featuredSrcSet}
+              sizes="(max-width: 900px) 92vw, 46vw"
+              alt=""
+              loading="lazy"
+            />
+          </div>
+        )}
+        <div className="blog-destacado-texto">
+          <p className="blog-meta">
+            <span className="blog-category" style={{ backgroundColor: color }}>
+              {post.categories[0]}
+            </span>
+            <span className="blog-date">{post.date}</span>
+          </p>
+          <h3 className="blog-titular blog-titular--destacado">{post.title}</h3>
+          <p className="blog-excerpt">{post.excerpt}</p>
+          <span className="blog-leer">
+            Leer el artículo
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </span>
+        </div>
+      </a>
+    </motion.article>
+  )
+}
+
+/**
+ * Los tres restantes, en lista y sin imagen.
+ *
+ * Sin imagen a propósito: la mitad de las portadas que genera el pipeline son
+ * el mismo flyer de plantilla —degradado morado, un icono y la palabra de la
+ * categoría— y ocupaban más de un tercio de la tarjeta para repetir lo que ya
+ * dice la etiqueta. Quitándolas cabe el titular completo, que sí informa.
+ */
+const EnLista = ({ post }) => {
+  const color = getCategoryColor(post.categories[0])
+
+  return (
+    <motion.li className="blog-item" variants={itemVariants} style={{ '--cat': color }}>
+      <a href={post.link} className="blog-item-enlace">
+        <p className="blog-item-meta">
+          <span className="blog-item-cat">{post.categories[0]}</span>
+          <span className="blog-item-sep" aria-hidden="true">·</span>
+          <span className="blog-date">{post.date}</span>
+        </p>
+        <h3 className="blog-titular">{post.title}</h3>
+      </a>
+    </motion.li>
   )
 }
 
