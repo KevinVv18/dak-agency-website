@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import './CTASection.css'
 import { scrollToSection } from '../utils/scrollToSection'
+import { CIFRAS, CIFRAS_DESTACADAS } from '../data/cifras'
 
 const CTASection = () => {
   const sectionRef = useRef(null)
@@ -51,34 +52,33 @@ const CTASection = () => {
       color: '#FF6B35',
       icon: 'M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z',
       label: 'Resultados Reales',
-      desc: '50+ proyectos exitosos'
+      desc: `${CIFRAS.proyectos.valor} proyectos entregados`
     }
   }
 
-  // Stats with icons and colors
-  const stats = [
-    { 
-      value: '50+', 
-      label: 'Proyectos', 
-      color: '#B024FF',
-      icon: 'M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z',
-      offset: { x: -1, y: -0.8 } 
-    },
-    { 
-      value: '98%', 
-      label: 'Satisfechos', 
-      color: '#00C8C8',
-      icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z',
-      offset: { x: 1.2, y: -0.5 } 
-    },
-    { 
-      value: '5+', 
-      label: 'Años', 
-      color: '#FF6B35',
-      icon: 'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z',
-      offset: { x: 0.9, y: 0.7 } 
-    }
+  /*
+   * Las cifras vienen de src/data/cifras.js, que es la única fuente. Antes
+   * estaban escritas aquí y en Gallery.jsx, y se habían contradicho: esta
+   * página decía 50+ proyectos y /gallery decía 150+.
+   *
+   * "98% satisfechos" se retiró y no se sustituyó por otro porcentaje. Nadie
+   * ha encuestado a nadie y el lector lo sabe: un dato que no se puede
+   * comprobar no suma confianza, la resta. En su lugar va el número de
+   * clientes, que además se puede ir contando al bajar por la página.
+   *
+   * El color y el desplazamiento con el ratón se quedan como estaban.
+   */
+  const ADORNO = [
+    { color: '#B024FF', icon: 'M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z', offset: { x: -1, y: -0.8 } },
+    { color: '#00C8C8', icon: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z', offset: { x: 1.2, y: -0.5 } },
+    { color: '#FF6B35', icon: 'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z', offset: { x: 0.9, y: 0.7 } },
   ]
+
+  const stats = CIFRAS_DESTACADAS.map((c, i) => ({
+    value: c.valor,
+    label: c.etiqueta,
+    ...ADORNO[i],
+  }))
 
   return (
     <section className="cta-section" ref={sectionRef}>
