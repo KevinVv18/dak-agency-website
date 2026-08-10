@@ -8,6 +8,41 @@ import fMami from '../assets/gallery/mami1-min.webp'
 import fPareja from '../assets/gallery/pareja1-min.webp'
 import fPediatra from '../assets/gallery/PEDIATRA CORRALES@3x-min.webp'
 
+// Logos de cliente. Solo hay cuatro por ahora; el resto cae al monograma.
+// Comprobado que los cuatro son a todo color y se leen sobre el fondo claro de
+// la sección — un logo en versión blanca ahí sería invisible.
+import lPardo from '../assets/logos/LOGO-MANUEL PARDO@4x-8.webp'
+import lGo from '../assets/logos/logo-go.webp'
+import lSpa from '../assets/logos/logo-spa-kreativos.svg'
+import lProsadis from '../assets/logos/LOGO 1.svg'
+
+/**
+ * Logo por cliente. Se indexa por el mismo nombre que muestra la ficha.
+ * Para añadir uno: deja el archivo en src/assets/logos/, impórtalo arriba y
+ * añade la entrada aquí. Preferible SVG; si es PNG o WebP, con fondo
+ * transparente y en su versión a color (no la blanca).
+ */
+export const LOGOS = {
+  'Colegio Manuel Pardo': lPardo,
+  'Gran Oportunidad GO!': lGo,
+  'Spa Kreativos': lSpa,
+  'Prosadis': lProsadis,
+}
+
+/**
+ * Iniciales para cuando no hay logo. Se saltan artículos y conectores para que
+ * "La Cocina de Rosita" dé CR y no LC.
+ */
+const IGNORAR = new Set(['la', 'el', 'los', 'las', 'de', 'del', 'the', 'y', '&'])
+
+export const monograma = (nombre = '') =>
+  nombre
+    .split(/[\s.]+/)
+    .filter((p) => p && !IGNORAR.has(p.toLowerCase()))
+    .slice(0, 2)
+    .map((p) => p[0].toUpperCase())
+    .join('')
+
 /**
  * Catálogo de fotografía del Estudio.
  *
@@ -57,11 +92,6 @@ export const sesiones = [
     id: 'al-palo-01', cliente: 'Al Palo', sector: 'Restaurante',
     linea: 'comercial', publicado: true,
     alt: 'Chef de Al Palo en el comedor del restaurante, entre plantas y botellas de vino',
-  },
-  {
-    id: 'al-palo-02', cliente: 'Al Palo', sector: 'Restaurante',
-    linea: 'comercial', publicado: false,
-    alt: 'Preparación en la cocina de Al Palo',
   },
   {
     id: 'urban-pet-01', cliente: 'The Urban Pet', sector: 'Veterinaria',
@@ -119,16 +149,6 @@ export const sesiones = [
     alt: 'Cantante en vivo durante un evento en La Cocina de Rosita',
   },
   {
-    id: 'beauty-house-01', cliente: 'Beauty House', sector: 'Estética',
-    linea: 'comercial', publicado: false,
-    alt: 'Sala de Beauty House',
-  },
-  {
-    id: 'jenny-rodriguez-01', cliente: 'Dra. Jenny Rodríguez', sector: 'Salud',
-    linea: 'comercial', publicado: false,
-    alt: 'Dra. Jenny Rodríguez en su consulta',
-  },
-  {
     id: 'bersa-medic-01', cliente: 'Bersa Medic', sector: 'Salud',
     linea: 'comercial', publicado: true,
     alt: 'Retrato del Dr. Enrique, de Bersa Medic, con bata blanca',
@@ -147,11 +167,6 @@ export const sesiones = [
     id: 'prosadis-01', cliente: 'Prosadis', sector: 'Distribución',
     linea: 'comercial', publicado: true,
     alt: 'Fachada de Prosadis con su rótulo: Cuidando la Salud de tu Familia',
-  },
-  {
-    id: 'titan-01', cliente: 'Titan', sector: 'Industria',
-    linea: 'comercial', publicado: false,
-    alt: 'Instalación de Titan',
   },
   {
     id: 'go-01', cliente: 'Gran Oportunidad GO!', sector: 'Retail',
