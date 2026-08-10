@@ -39,11 +39,10 @@ const Blog = () => {
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="blog-header-left">
-          <h2 className="section-title">
+        <div className="blog-header-left section-head">
+          <h2 className="section-title section-title--menor">
             <span className="title-bold">Blog</span>
           </h2>
-          <div className="title-line" />
         </div>
         <motion.a
           href="/blog/"

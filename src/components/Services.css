@@ -99,49 +99,12 @@
   text-transform: uppercase;
 }
 
-/* ---- Editorial Title ---- */
-.section-title {
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
-  font-weight: 900;
-  margin-bottom: 0;
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
-  line-height: 1;
-  position: relative;
-  z-index: 1;
-}
-
-.title-bold {
-  display: inline-block;
-  /* El enfasis lo dan el peso y el tamano (900 a 4.5rem), no un degradado.
-     El blanco solido ademas hace el contraste medible, cosa que con
-     background-clip: text no lo era. */
-  font-weight: 900;
-  color: #ffffff;
-}
-
-/* ---- Title Line ---- */
-.title-line {
-  width: 50px;
-  height: 2px;
-  margin: 0.75rem auto;
-  background: linear-gradient(90deg, #B024FF, #00C8C8);
-  border-radius: 2px;
-}
-
-/* ---- Section Subtitle ---- */
-.section-subtitle {
-  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
-  color: var(--color-texto-2);
-  max-width: 500px;
-  margin: 0 auto;
-  line-height: 1.7;
-  font-weight: 300;
-  font-style: italic;
-  letter-spacing: 0.02em;
-  position: relative;
-  z-index: 1;
-}
+/* Las cabeceras de seccion vivian aqui —.section-title, .title-bold,
+   .title-line y .section-subtitle— aunque las usan tambien About, Blog,
+   Projects y Estudio. Funcionaba solo porque el CSS acaba todo en el mismo
+   bundle: bastaba con que alguien dejara de importar Services.css para
+   romper cuatro secciones. Ahora estan en index.css, que es de todos.
+   Ver ahi el sistema de jerarquia. */
 
 /* =============================================
    SHOWCASE LAYOUT - Desktop (Video + Filmstrip)
@@ -553,13 +516,7 @@
     padding: 1.5rem 1rem 0.75rem;
   }
 
-  .section-title {
-    font-size: clamp(1.75rem, 7vw, 2.5rem);
-  }
 
-  .section-subtitle {
-    font-size: 0.95rem;
-  }
 
   .showcase-layout {
     flex-direction: column;
@@ -696,13 +653,7 @@
     padding: 0.5rem 0.75rem;
   }
 
-  .section-title {
-    font-size: clamp(1.5rem, 6.5vw, 2rem);
-  }
 
-  .section-subtitle {
-    font-size: 0.85rem;
-  }
 
   .showcase-layout {
     padding: 0 0.75rem;

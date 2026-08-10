@@ -38,7 +38,11 @@
 }
 
 .estudio-titulo {
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  /* La misma escala que el Taller: los dos son el trabajo, y mandan sobre las
+     demás secciones. Esta cabecera sigue centrada aunque el resto del sitio
+     pasara a la izquierda, y a propósito: es la única banda clara, otro sitio
+     dentro de la página, y el centrado ahora lo señala en vez de ser inercia. */
+  font-size: clamp(3rem, 7vw, 5.5rem);
   font-weight: 900;
   letter-spacing: -0.04em;
   text-transform: uppercase;
