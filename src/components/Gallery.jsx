@@ -6,6 +6,7 @@ import { sesionesPublicadas } from '../data/fotografia'
 import EstudioRejilla from './EstudioRejilla'
 import './Estudio.css'
 import './Gallery.css'
+import { CIFRAS_DESTACADAS } from '../data/cifras'
 
 /* ─────────────────────────────────────────
    Section 1: Hero + Category Filter
@@ -331,11 +332,10 @@ const GalleryCTA = () => {
   const isInView = useInView(ref, { once: true, margin: '-60px' })
   const navigate = useNavigate()
 
-  const stats = [
-    { number: '150+', label: 'Proyectos' },
-    { number: '30+', label: 'Clientes' },
-    { number: '5', label: 'Años' },
-  ]
+  /* Estas cifras estaban escritas a mano aquí y decían 150+ proyectos y 30+
+     clientes, mientras la portada decía 50+ y 98% satisfechos. El mismo sitio
+     se contradecía según la página. Ahora salen de src/data/cifras.js. */
+  const stats = CIFRAS_DESTACADAS.map((c) => ({ number: c.valor, label: c.etiqueta }))
 
   const handleCTA = (e) => {
     e.preventDefault()
