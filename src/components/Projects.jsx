@@ -659,7 +659,7 @@ const MobileMosaicCard = ({ client, index }) => {
           <motion.div key={i} className="pm-mosaic-cell"
             initial={{ opacity: 0, scale: 0.9 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.4, delay: 0.08 * i }}>
-            <img src={img.src} alt={img.alt} loading="lazy" />
+            <img src={img.src} {...fuentes(img, '45vw')} alt={img.alt} loading="lazy" />
           </motion.div>
         ))}
       </div>
