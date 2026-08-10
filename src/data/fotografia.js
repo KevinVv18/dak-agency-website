@@ -15,6 +15,10 @@ import lPardo from '../assets/logos/LOGO-MANUEL PARDO@4x-8.webp'
 import lGo from '../assets/logos/logo-go.webp'
 import lSpa from '../assets/logos/logo-spa-kreativos.svg'
 import lProsadis from '../assets/logos/LOGO 1.svg'
+import lOasis from '../assets/logos/logo-oasis-dental.webp'
+import lUrbanPet from '../assets/logos/logo-urban-pet.webp'
+import lBumbum from '../assets/logos/logo-bumbum.webp'
+import lRosita from '../assets/logos/logo-cocina-rosita.webp'
 
 /**
  * Logo por cliente. Se indexa por el mismo nombre que muestra la ficha.
@@ -27,6 +31,10 @@ export const LOGOS = {
   'Gran Oportunidad GO!': lGo,
   'Spa Kreativos': lSpa,
   'Prosadis': lProsadis,
+  'Oasis Dental': lOasis,
+  'The Urban Pet': lUrbanPet,
+  'Bumbum': lBumbum,
+  'La Cocina de Rosita': lRosita,
 }
 
 /**
