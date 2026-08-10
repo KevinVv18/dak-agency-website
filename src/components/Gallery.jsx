@@ -107,7 +107,18 @@ const MasonryGrid = () => {
               transition={{ duration: 0.4, delay: i * 0.04 }}
               onClick={() => setLightbox(item)}
             >
-              <img src={item.src} alt={item.alt} loading="lazy" />
+              {/* Los archivos son de 1080px y aquí se pintan a 134px en móvil,
+                  318 en tableta y 393 en escritorio. La variante de 700px que
+                  genera `npm run taller:variantes` cubre el peor caso (393 en
+                  una pantalla de densidad 2 pide 786, y por encima de eso el
+                  navegador ya coge el original). El lightbox se queda con el
+                  grande, que ahí sí se ve entero. */}
+              <img
+                src={item.src}
+                {...(item.srcSm ? { srcSet: `${item.srcSm} 700w, ${item.src} 1080w`, sizes: '(max-width: 768px) 40vw, 32vw' } : {})}
+                alt={item.alt}
+                loading="lazy"
+              />
               <div className="masonry-overlay">
                 <span className="masonry-type" style={{ borderColor: item.color }}>{item.type}</span>
                 <h3>{item.alt}</h3>
