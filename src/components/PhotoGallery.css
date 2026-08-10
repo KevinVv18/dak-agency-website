@@ -106,10 +106,45 @@
    negocio real se hizo y de qué rubro es. */
 .estudio-pie {
   display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.85rem 1rem 0.95rem;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 0.9rem 0.85rem;
   border-top: 1px solid var(--filete);
+}
+
+/* Casilla de marca. Mide siempre lo mismo lleve logo o iniciales, para que
+   todas las fichas alineen el nombre a la misma altura. */
+.estudio-marca {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--filete);
+}
+
+.estudio-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 3px;
+}
+
+.estudio-monograma {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--acento-claro);
+}
+
+.estudio-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
 }
 
 .estudio-cliente {
