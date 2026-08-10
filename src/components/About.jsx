@@ -92,15 +92,14 @@ const About = () => {
       <div className="about-grid-bg" />
 
       <motion.div
-        className="about-header"
+        className="about-header section-head"
         initial={{ opacity: 0, y: 30 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="section-title">
+        <h2 className="section-title section-title--menor">
           <span className="title-bold">Nosotros</span>
         </h2>
-        <div className="title-line" />
       </motion.div>
 
       {/* Manifiesto */}

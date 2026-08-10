@@ -236,9 +236,13 @@ const Projects = () => {
       </section>
 
       <section className="projects-section taller-section" id="taller">
+        {/* El Taller va a escala grande: junto al Estudio es el trabajo, que
+            es a lo que se viene. Demos, Servicios, Blog y Nosotros lo rodean
+            en escalas menores. */}
         <SectionHeader
           titulo="Taller"
           subtitulo="Piezas que hemos producido para marcas de Chiclayo y Lambayeque."
+          escala="grande"
         />
         <div className="projects-flow">
           {featured.map(({ client, layout }, i) => (
@@ -287,22 +291,21 @@ const GalleryCTA = () => {
    número de sección que no aportaba secuencia y monoespaciada de adorno; tres
    recursos que el suelo de calidad de impeccable desaconseja, y estaban juntos.
    El título se sostiene solo. */
-const SectionHeader = ({ titulo, subtitulo }) => {
+const SectionHeader = ({ titulo, subtitulo, escala = 'medio' }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
     <div className="proj-header" ref={ref}>
       <motion.div
-        className="proj-header-inner"
+        className="proj-header-inner section-head"
         initial={{ opacity: 0, y: 30 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.7 }}
       >
-        <h2 className="section-title">
+        <h2 className={`section-title section-title--${escala}`}>
           <span className="title-bold">{titulo}</span>
         </h2>
-        <div className="title-line" />
         <p className="section-subtitle">{subtitulo}</p>
       </motion.div>
     </div>
@@ -568,12 +571,15 @@ const MobileProjects = ({ featured }) => {
       <section className="projects-mobile demos-section" id="demos">
         <div className="pm-header" ref={headerRef}>
           <motion.div
+            className="section-head"
             initial={{ opacity: 0, y: 20 }}
             animate={headerInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="proj-title">Demos</h2>
-            <div className="title-line" />
+            {/* La misma escala que en escritorio. Antes era .proj-title, que no
+                tenia CSS propio: caia al h2 global y Demos y Taller pesaban
+                igual, justo lo que la jerarquia intenta evitar. */}
+            <h2 className="section-title section-title--medio">Demos</h2>
             <p className="pm-subtitle">Cuatro trabajos nuestros, en vivo y funcionando.</p>
           </motion.div>
         </div>
@@ -584,13 +590,13 @@ const MobileProjects = ({ featured }) => {
       <section className="projects-mobile taller-section" id="taller">
         <div className="pm-header">
           <motion.div
+            className="section-head"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="proj-title">Taller</h2>
-            <div className="title-line" />
+            <h2 className="section-title section-title--grande">Taller</h2>
             <p className="pm-subtitle">Piezas producidas para marcas de Chiclayo y Lambayeque.</p>
           </motion.div>
         </div>

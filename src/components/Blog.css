@@ -70,14 +70,11 @@
   margin-bottom: 0.4rem;
 }
 
+/* El cuerpo y las mayusculas los pone ahora .section-title--menor. Esta regla
+   los repetia con la misma especificidad y ganaba por orden de carga, asi que
+   el Blog seguia gritando a 64px como si fuera una seccion principal. */
 .blog-header .section-title {
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
-  font-weight: 900;
   margin: 0;
-  text-align: left;
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
-  line-height: 1;
 }
 
 .blog-header .section-subtitle {
@@ -529,9 +526,6 @@
     right: 1.25rem;
   }
 
-  .blog-header .section-title {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-  }
 
   .blog-grid {
     padding: 0 1.5rem;

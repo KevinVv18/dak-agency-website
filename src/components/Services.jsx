@@ -357,16 +357,15 @@ const Services = () => {
         <div className="services-container">
           {/* Header */}
           <motion.div
-            className="services-header"
+            className="services-header section-head"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="section-title">
+            <h2 className="section-title section-title--medio">
               <span className="title-bold">Servicios</span>
             </h2>
-            <div className="title-line" />
             <p className="section-subtitle">
               Soluciones digitales que impulsan tu negocio
             </p>
