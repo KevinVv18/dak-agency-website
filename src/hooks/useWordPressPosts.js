@@ -10,6 +10,25 @@ import { loadPosts } from './wordpressPosts'
  */
 
 /**
+ * Recorta por palabra entera, no a mitad.
+ *
+ * Antes era `.substring(0, 150) + '...'` y el resultado en pantalla era
+ * «…Cómo funciona esa búsqueda, qué mira e...». Cortar a mitad de palabra
+ * hace que el texto parezca roto en vez de continuado, que es justo lo
+ * contrario de lo que busca un extracto.
+ *
+ * Si el texto ya cabe entero, se devuelve tal cual y sin puntos suspensivos:
+ * los tres puntos prometen que hay más, y si no lo hay, mienten.
+ */
+const recortar = (texto, limite) => {
+  const limpio = texto.replace(/\s+/g, ' ').trim()
+  if (limpio.length <= limite) return limpio
+  const corte = limpio.slice(0, limite)
+  const ultimoEspacio = corte.lastIndexOf(' ')
+  return (ultimoEspacio > limite * 0.6 ? corte.slice(0, ultimoEspacio) : corte).replace(/[,;:.\s]+$/, '') + '…'
+}
+
+/**
  * srcset de la imagen destacada, a partir de los tamaños que WordPress ya
  * generó al subirla.
  *
@@ -73,9 +92,7 @@ const useWordPressPosts = (limit = 3) => {
         return {
           id: post.id,
           title: post.title.rendered,
-          excerpt: post.excerpt.rendered
-            .replace(/<[^>]*>/g, '')
-            .substring(0, 150) + '...',
+          excerpt: recortar(post.excerpt.rendered.replace(/<[^>]*>/g, ''), 200),
           date: new Date(post.date).toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'short',
