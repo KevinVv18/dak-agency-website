@@ -226,7 +226,10 @@ section {
   .ann-pill,
   .back-to-top,
   .footer-nav a,
-  .footer-legal a {
+  .footer-legal a,
+  .filter-pill,
+  .floating-nav-btn,
+  .banner-arrow {
     position: relative;
   }
 
@@ -245,7 +248,10 @@ section {
   .ann-pill::after,
   .back-to-top::after,
   .footer-nav a::after,
-  .footer-legal a::after {
+  .footer-legal a::after,
+  .filter-pill::after,
+  .floating-nav-btn::after,
+  .banner-arrow::after {
     content: '';
     position: absolute;
     left: 0;
@@ -273,7 +279,8 @@ section {
   .nav-arrow::after,
   .notif-btn::after,
   .social-link::after,
-  .gallery-dot::after {
+  .gallery-dot::after,
+  .banner-arrow::after {
     left: 50%;
     right: auto;
     width: 44px;
