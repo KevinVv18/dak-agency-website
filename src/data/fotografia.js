@@ -19,6 +19,10 @@ import lOasis from '../assets/logos/logo-oasis-dental.webp'
 import lUrbanPet from '../assets/logos/logo-urban-pet.webp'
 import lBumbum from '../assets/logos/logo-bumbum.webp'
 import lRosita from '../assets/logos/logo-cocina-rosita.webp'
+// El monograma A+V, no el lockup con la palabra: a 38px el texto no se lee y
+// el nombre del cliente ya va impreso al lado. Usa currentColor, que dentro de
+// un <img> resuelve a negro, asi que contrasta con la caja blanca del rotulo.
+import lAmericanVault from '../assets/logos/logo-american-vault.svg'
 
 /**
  * Logo por cliente. Se indexa por el mismo nombre que muestra la ficha.
@@ -35,6 +39,7 @@ export const LOGOS = {
   'The Urban Pet': lUrbanPet,
   'Bumbum': lBumbum,
   'La Cocina de Rosita': lRosita,
+  'American Vault': lAmericanVault,
 }
 
 /**
