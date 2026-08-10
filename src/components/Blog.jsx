@@ -96,10 +96,17 @@ const Blog = () => {
               onClick={() => window.location.href = post.link}
               style={{ cursor: 'pointer' }}
             >
+              {/* La portada se pinta a 339px en móvil, 716 en tableta y 274 en
+                  escritorio, donde las tarjetas van a cuatro columnas. Pedir el
+                  original de 1080px para eso eran 301 KB entre las cuatro; el
+                  srcSet lo arma useWordPressPosts con los tamaños que WordPress
+                  ya generó al subir la imagen. */}
               <div className="blog-image-wrapper">
                 {post.featuredImage ? (
-                  <img 
-                    src={post.featuredImage} 
+                  <img
+                    src={post.featuredImage}
+                    srcSet={post.featuredSrcSet}
+                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 94vw, 22vw"
                     alt={post.title}
                     className="blog-image"
                     loading="lazy"
