@@ -1,6 +1,15 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { srcDeSesion, LOGOS, monograma } from '../data/fotografia'
+import { srcDeSesion, fuentesDeSesion, LOGOS, monograma } from '../data/fotografia'
+
+/**
+ * Ancho al que se pinta cada foto, en el mismo orden que los cortes de
+ * Estudio.css: una columna hasta 640px, dos hasta 1024, tres por encima.
+ * Medido en el sitio: 325px a 375 de viewport (87vw), 348 a 768 (45vw) y
+ * 395 a 1280 (31vw). Si cambia el número de columnas, hay que cambiar esto o
+ * el navegador elegirá el tamaño equivocado.
+ */
+const MEDIDA = '(max-width: 640px) 88vw, (max-width: 1024px) 46vw, 32vw'
 
 /**
  * Rejilla de fotografía del Estudio.
@@ -32,6 +41,7 @@ const EstudioRejilla = ({ sesiones, ancho = 900 }) => (
           <img
             className="estudio-img"
             src={srcDeSesion(s, ancho)}
+            {...fuentesDeSesion(s, MEDIDA)}
             alt={s.alt}
             width={s.w}
             height={s.h}
