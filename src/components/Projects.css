@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════ */
 
 .projects-section {
-  background: #030106;
+  /* El fondo lo pone el ritmo de superficies de index.css. */
   position: relative;
   overflow: hidden;
 }
@@ -698,7 +698,7 @@
    MOBILE
    ═══════════════════════════════════════ */
 .projects-mobile {
-  background: #030106;
+  /* El fondo lo pone el ritmo de superficies de index.css. */
   padding: 4rem 0 3rem;
   position: relative;
   overflow: hidden;

@@ -6,7 +6,7 @@
 
 .blog {
   padding: var(--spacing-3xl) 0;
-  background: #030106;
+  /* El fondo lo pone el ritmo de superficies de index.css. */
   position: relative;
 }
 

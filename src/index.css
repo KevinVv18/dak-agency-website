@@ -20,6 +20,25 @@
   /* Piso de tamano para texto funcional, heredado del proyecto. */
   --texto-minimo: 11px;
 
+  /* ── Las dos superficies oscuras ──
+     Nueve de las diez secciones eran el MISMO negro #030106. Medido en el
+     sitio: se recorrian 7.642px seguidos de negro identico antes de llegar a
+     la unica banda clara (el Estudio) y otros 3.723 despues. Bajando, nada
+     avisaba de que cambiabas de sitio.
+
+     La solucion no es meter otra banda clara —eso dilapidaria lo que hace
+     especial al Estudio, que es el unico tramo claro y ademas por un motivo:
+     la fotografia esta hecha sobre fondos claros. Basta con alternar el propio
+     negro. La diferencia es de unos pocos puntos de luminosidad: de cerca casi
+     no se ve, pero el borde entre dos secciones si se registra.
+
+     El levantado lleva mas azul y morado que gris para que siga siendo el
+     negro de la marca y no un gris sucio. Comprobado el contraste sobre el:
+     blanco 20.04:1 y el texto secundario 6.26:1, practicamente igual que sobre
+     el base. */
+  --superficie: #030106;
+  --superficie-alta: #0A0612;
+
   /* Texto secundario sobre fondo oscuro.
      El sitio usaba blanco con alpha 0.45, 0.35 y hasta 0.25 para subtitulos,
      descripciones y el pie. Sobre #030106 eso da 4.43, 3.03 y 2.04 — los tres
@@ -721,4 +740,44 @@ section {
   .section-head .section-subtitle {
     max-width: none;
   }
+}
+
+/* ═══════════════════════════════════════════
+   RITMO DE SUPERFICIE
+
+   Cuál va levantada y cuál no, en el orden en que se recorren:
+
+     Hero            base
+     Portada (h1)    levantada
+     Servicios       base
+     Demos           levantada
+     Taller          base
+     Estudio         CLARA — es su propio mundo, no entra en la alternancia
+     Blog            levantada
+     Nosotros        base
+     Contacto        levantada
+     Pie             base
+
+   Se alternan de una en una porque lo que hace falta es el BORDE: al pasar de
+   una a otra, el ojo registra que ha cambiado de sitio. Agrupándolas de dos en
+   dos se pierde justo eso.
+
+   Va aquí y no en cada archivo para poder leer la secuencia entera de un
+   vistazo. Repartido por siete CSS distintos, nadie sabría qué ritmo tiene la
+   página.
+   ═══════════════════════════════════════════ */
+
+.cta-section,
+.demos-section,
+.blog,
+.contact-section {
+  background: var(--superficie-alta);
+}
+
+.hero,
+.services,
+.taller-section,
+.about,
+.footer {
+  background: var(--superficie);
 }

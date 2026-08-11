@@ -9,7 +9,7 @@
    ni el mismo origen. Ahora el limite de seccion lo marca solo esa regla. */
 
 .contact-section {
-  background: #030106;
+  /* El fondo lo pone el ritmo de superficies de index.css. */
   padding: 6rem 3rem;
   position: relative;
   overflow: hidden;
