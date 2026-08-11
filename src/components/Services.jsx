@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import './Services.css'
 import { scrollToSection } from '../utils/scrollToSection'
@@ -38,6 +38,9 @@ const Services = () => {
   const reducedMotionRef = useRef(false)   // respeta prefers-reduced-motion
   const contentFocusedRef = useRef(false)  // no ocultar si un boton tiene foco
   const hoveringRef = useRef(false)        // no ocultar mientras el mouse esta encima
+  // Espejo de seccionVisible para leerlo desde callbacks imperativos sin
+  // arrastrar un valor obsoleto de un closure viejo.
+  const visibleRef = useRef(false)
 
   // ════════════════════════════════════════════════════════════
   //  VIDEOS PERSONALIZADOS — cómo agregar los links
@@ -203,12 +206,17 @@ const Services = () => {
    */
   useEffect(() => {
     const seccion = servicesRef.current
-    const video = videoRef.current
-    if (!seccion || !video || !activeVideo) return
+    if (!seccion) return
 
     const observador = new IntersectionObserver(
       ([entrada]) => {
+        visibleRef.current = entrada.isIntersecting
         setSeccionVisible(entrada.isIntersecting)
+        // Se lee el ref en cada aviso en vez de capturar el elemento al crear
+        // el observador: con `key` en el <video>, el elemento cambia cada vez
+        // que se cambia de servicio y el capturado quedaba obsoleto.
+        const video = videoRef.current
+        if (!video) return
         if (entrada.isIntersecting) video.play().catch(() => { })
         else video.pause()
       },
@@ -216,18 +224,30 @@ const Services = () => {
     )
     observador.observe(seccion)
     return () => observador.disconnect()
-  }, [activeVideo])
+  }, [])
 
-  // Al cambiar de servicio se rebobina, pero solo se reproduce si la sección
-  // está a la vista. Sin esa comprobación el vídeo arrancaría fuera de
-  // pantalla y el observador no lo pausaría: solo avisa cuando la intersección
-  // CAMBIA, y ahí no cambia nada.
-  useEffect(() => {
-    if (videoRef.current && activeVideo) {
-      videoRef.current.currentTime = 0
-      if (seccionVisible) videoRef.current.play().catch(() => { })
-    }
-  }, [activeIndex, activeVideo, seccionVisible])
+  /**
+   * Arrancar el vídeo cuando el elemento se monta, no cuando cambia el estado.
+   *
+   * Aquí estaba el fallo que se veía en el móvil: solo funcionaba el primer
+   * servicio. El <video> lleva `key`, así que al cambiar de servicio React
+   * monta un elemento NUEVO, y va dentro de un <AnimatePresence mode="wait">,
+   * que espera a que termine la animación de salida antes de montarlo. El
+   * efecto que llamaba a play() se disparaba al cambiar activeIndex —cuando el
+   * elemento nuevo todavía no existía— y ya no volvía a dispararse. Resultado:
+   * play() no se llegaba a llamar nunca y el vídeo se quedaba en readyState 0.
+   *
+   * Antes no se notaba porque el elemento llevaba `autoPlay` y el navegador
+   * arrancaba solo al montarlo. Al quitarlo para poder usar preload="none" se
+   * perdió eso sin sustituirlo.
+   *
+   * Con un ref de función el navegador nos avisa en el momento exacto en que
+   * el elemento entra en el DOM, que es justo cuando hay que reproducirlo.
+   */
+  const montarVideo = useCallback((nodo) => {
+    videoRef.current = nodo
+    if (nodo && visibleRef.current) nodo.play().catch(() => { })
+  }, [])
 
   // ── Fase 2: mostrar / ocultar el texto por inactividad ──
   const IDLE_MS = 3500
@@ -401,7 +421,7 @@ const Services = () => {
                          en vez de 1,7 MB. */}
                   {activeVideo ? (
                     <video
-                      ref={videoRef}
+                      ref={montarVideo}
                       key={activeVideoSrc}
                       src={activeVideoSrc}
                       poster={cldPoster(activeVideo, isMobile ? 640 : 1600)}
