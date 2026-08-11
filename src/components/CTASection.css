@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #030106;
+  /* El fondo lo pone el ritmo de superficies de index.css. */
   position: relative;
   overflow: hidden;
   padding: 6rem 2rem;

@@ -3,7 +3,7 @@
    ============================================= */
 
 .footer {
-  background: #030106;
+  /* El fondo lo pone el ritmo de superficies de index.css. */
   color: #ffffff;
   position: relative;
   overflow: hidden;
