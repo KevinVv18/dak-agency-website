@@ -5,60 +5,81 @@ import logoBerseLine from '../assets/logos/logo-berse-line.svg'
 import logoGO from '../assets/logos/logo-go.webp'
 import logoPardo from '../assets/logos/LOGO-MANUEL PARDO@4x-8.webp'
 
-/* Cómo trabajamos: 4 pasos. */
+/**
+ * Cómo trabajamos: 4 pasos.
+ *
+ * Sin color por paso. Antes cada uno llevaba el suyo —morado, cyan, naranja,
+ * verde— y no significaban nada: "Diseñamos" no es más cyan que "Lanzamos".
+ * Entre estos cuatro, los tres resaltados del manifiesto y los tres bloques de
+ * cliente, la sección acumulaba cuatro colores repartidos por diez sitios en
+ * tres sistemas que no tienen relación entre sí.
+ *
+ * Los números SÍ se quedan: aquí hay una secuencia de verdad —no se puede
+ * lanzar antes de diseñar— y eso es información, al revés que los números de
+ * sección decorativos que se retiraron del resto del sitio.
+ */
 const STEPS = [
   {
     n: '01',
     title: 'Descubrimos',
     desc: 'Escuchamos tu negocio, tu cliente y tus números. Sin plantillas: cada marca arranca con un diagnóstico real.',
-    color: '#B024FF',
   },
   {
     n: '02',
     title: 'Diseñamos',
     desc: 'Identidad, contenido y experiencia digital que se sienten tuyos. Todo se presenta, se discute y se afina contigo.',
-    color: '#00C8C8',
   },
   {
     n: '03',
     title: 'Lanzamos',
     desc: 'Web, campañas y automatizaciones salen a producción con métricas conectadas desde el día uno.',
-    color: '#FF6B35',
   },
   {
     n: '04',
     title: 'Escalamos',
     desc: 'Medimos, aprendemos y duplicamos lo que funciona. El objetivo no es publicar: es crecer.',
-    color: '#2ECC71',
   },
 ]
 
-/* Testimonios de clientes (citas redactadas por DAK, pendientes de
-   confirmación literal con cada cliente — editar aquí para ajustar). */
-const TESTIMONIALS = [
+/**
+ * Qué hicimos para cada cliente.
+ *
+ * ─── POR QUÉ YA NO SON CITAS ──────────────────────────────────────────────
+ *
+ * Esto era un bloque de "testimonios": tres citas entrecomilladas, con cinco
+ * estrellas y el logo del cliente, como si las hubieran dicho ellos. El
+ * comentario que había aquí lo admitía: «citas redactadas por DAK, pendientes
+ * de confirmación literal con cada cliente».
+ *
+ * Poner en boca de un cliente algo que no ha dicho no es un problema de
+ * diseño. Y las cinco estrellas eran directamente una nota que nadie ha
+ * puesto: no hay encuesta, no hay reseña, no hay de dónde salga ese 5/5.
+ *
+ * El contenido es el mismo —lo que DAK dice haber hecho para cada uno— pero
+ * atribuido a quien lo afirma. Y encima es comprobable sin salir de la página:
+ * los tres clientes aparecen con su trabajo en el Taller y en el Estudio.
+ *
+ * Si algún día hay citas confirmadas por escrito con cada cliente, vuelven a
+ * ser citas. Hasta entonces, esto es lo que se puede sostener.
+ */
+const CLIENTES = [
   {
-    quote:
-      'DAK nos ordenó la marca de pies a cabeza: identidad, catálogo y campañas. Ahora los clientes nos escriben diciendo que la tienda "se ve de otro nivel".',
+    trabajo: 'Rehicimos la marca de arriba abajo: identidad, catálogo y campañas.',
     logo: logoBerseLine,
     name: 'Berse Line',
     role: 'Moda · Chiclayo',
-    color: '#B024FF',
   },
   {
-    quote:
-      'Necesitábamos vender online sin complicarnos. Nos lanzaron la web con catálogo y las campañas de Meta; las consultas por WhatsApp se multiplicaron.',
+    trabajo: 'Web con catálogo y campañas en Meta, para vender online sin complicarse.',
     logo: logoGO,
     name: 'Gran Oportunidad GO!',
     role: 'Retail · Lambayeque',
-    color: '#00C8C8',
   },
   {
-    quote:
-      'La cobertura fotográfica y el manejo de redes en admisión nos dieron una imagen a la altura del colegio. Puntuales, creativos y muy fáciles de trabajar.',
+    trabajo: 'Cobertura fotográfica y gestión de redes durante la campaña de admisión.',
     logo: logoPardo,
     name: 'Colegio Manuel Pardo',
     role: 'Educación · Chiclayo',
-    color: '#FF6B35',
   },
 ]
 
@@ -142,7 +163,6 @@ const About = () => {
             <motion.div
               key={s.n}
               className={`about-step ${stepsInView ? 'lit' : ''}`}
-              style={{ '--sc': s.color }}
               variants={itemVariants}
             >
               <span className="about-step-n">{s.n}</span>
@@ -153,7 +173,7 @@ const About = () => {
         </motion.div>
       </div>
 
-      {/* Testimonios */}
+      {/* Qué hicimos para cada cliente — ver la nota sobre CLIENTES arriba */}
       <div className="about-testimonials" ref={testRef}>
         <motion.p
           className="about-kicker"
@@ -161,36 +181,30 @@ const About = () => {
           animate={testInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.5 }}
         >
-          Lo que dicen nuestros clientes
+          Algunos de nuestros clientes
         </motion.p>
-        <motion.div
+        <motion.ul
           className="about-t-grid"
           variants={containerVariants}
           initial="hidden"
           animate={testInView ? 'visible' : 'hidden'}
         >
-          {TESTIMONIALS.map((t) => (
-            <motion.figure
-              key={t.name}
+          {CLIENTES.map((c) => (
+            <motion.li
+              key={c.name}
               className="about-t-card"
-              style={{ '--tc': t.color }}
               variants={itemVariants}
               whileHover={{ y: -6 }}
             >
-              <div className="about-t-stars" aria-hidden="true">★★★★★</div>
-              <blockquote>“{t.quote}”</blockquote>
-              <figcaption>
-                <span className="about-t-logo">
-                  <img src={t.logo} alt={t.name} loading="lazy" />
-                </span>
-                <span>
-                  <b>{t.name}</b>
-                  <small>{t.role}</small>
-                </span>
-              </figcaption>
-            </motion.figure>
+              <span className="about-t-logo">
+                <img src={c.logo} alt="" loading="lazy" />
+              </span>
+              <p className="about-t-nombre">{c.name}</p>
+              <p className="about-t-rubro">{c.role}</p>
+              <p className="about-t-trabajo">{c.trabajo}</p>
+            </motion.li>
           ))}
-        </motion.div>
+        </motion.ul>
       </div>
     </section>
   )
