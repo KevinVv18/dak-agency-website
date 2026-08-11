@@ -63,11 +63,6 @@
   max-width: 100%;
 }
 
-.hero-title-wrapper {
-  overflow: visible;
-  width: 100%;
-  text-align: center;
-}
 
 .hero-logo-container {
   width: 100%;
@@ -78,11 +73,6 @@
   z-index: 2;
 }
 
-.hero-logo-svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
 
 .hero-title {
   font-size: clamp(6rem, 20vw, 18rem);
@@ -411,151 +401,25 @@
   }
 }
 
-/* Right block - Social Media Icons (Dark) */
-.hero-social-block {
-  background: linear-gradient(135deg, #030106 0%, rgba(176, 36, 255, 0.15) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 3rem;
-  position: relative;
-  box-shadow: inset 0 0 40px rgba(176, 36, 255, 0.15), 0 0 20px rgba(176, 36, 255, 0.2);
-  overflow: hidden;
-}
 
-.hero-social-block::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent 0%, rgba(176, 36, 255, 0.15) 50%, transparent 100%);
-  animation: sweep 4s infinite;
-}
 
 @keyframes sweep {
   0% { left: -100%; }
   100% { left: 200%; }
 }
 
-.social-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-  width: 100%;
-  max-width: 400px;
-  position: relative;
-  z-index: 1;
-}
 
-.social-icon-wrapper {
-  aspect-ratio: 1;
-  background: rgba(3, 1, 6, 0.8);
-  border: 3px solid #B024FF;
-  border-radius: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.4s var(--ease-out-expo);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 20px rgba(176, 36, 255, 0.4), inset 0 0 20px rgba(176, 36, 255, 0.1);
-}
 
-.social-icon-wrapper::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
 
-.social-icon-wrapper:hover {
-  transform: translateY(-12px) scale(1.05);
-  border-color: #B024FF;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6),
-              0 0 30px rgba(176, 36, 255, 0.6),
-              inset 0 0 30px rgba(176, 36, 255, 0.3);
-  background: #B024FF;
-}
 
-.social-icon-wrapper:hover::before {
-  opacity: 1;
-}
 
-.social-icon-wrapper svg {
-  width: 50%;
-  height: 50%;
-  fill: #ffffff;
-  position: relative;
-  z-index: 1;
-  transition: all 0.4s ease;
-  filter: drop-shadow(0 0 5px rgba(176, 36, 255, 0.5));
-}
 
-.social-icon-wrapper:hover svg {
-  fill: #ffffff;
-  transform: scale(1.2) rotate(5deg);
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
-}
 
-.social-label {
-  position: absolute;
-  bottom: 0.75rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #ffffff;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 2;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
 
-.social-icon-wrapper:hover .social-label {
-  opacity: 1;
-}
 
-/* Background Decorations - subtle */
-.hero-bg-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-}
 
-.decoration-circle {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.4;
-  filter: blur(100px);
-}
 
-.circle-1 {
-  background: radial-gradient(circle, rgba(176, 36, 255, 0.15) 0%, transparent 70%);
-  width: 500px;
-  height: 500px;
-  top: -200px;
-  right: -100px;
-}
 
-.circle-2 {
-  background: radial-gradient(circle, rgba(176, 36, 255, 0.1) 0%, transparent 70%);
-  width: 400px;
-  height: 400px;
-  bottom: -100px;
-  left: -100px;
-}
 
 /* Responsive */
 @media (max-width: 1024px) {
@@ -565,10 +429,6 @@
   }
 
   .hero-cta-block,
-  .hero-social-block {
-    min-height: 40vh;
-    padding: 3rem 2rem;
-  }
 
   .hero-cta-block {
     border-right: none;
@@ -627,11 +487,6 @@
     font-size: clamp(4rem, 12vw, 8rem);
   }
 
-  .hero-title-wrapper {
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
 
   .hero-logo-container {
     max-width: 100% !important;
@@ -686,20 +541,7 @@
   }
 
   .hero-cta-block,
-  .hero-social-block {
-    padding: 2.5rem 1rem !important;
-    min-height: 35vh;
-    width: 100% !important;
-    margin: 0 !important;
-    box-sizing: border-box;
-  }
 
-  .social-grid {
-    gap: 1.5rem;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
 
   .cta-small-text {
     font-size: clamp(1.2rem, 2.5vw, 2rem);
@@ -722,15 +564,7 @@
     max-width: 350px;
   }
 
-  .circle-1 {
-    width: 300px;
-    height: 300px;
-  }
 
-  .circle-2 {
-    width: 300px;
-    height: 300px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -759,18 +593,7 @@
   }
 
   .hero-cta-block,
-  .hero-social-block {
-    padding: 2rem 1rem;
-    min-height: 30vh;
-    width: 100%;
-  }
 
-  .social-grid {
-    gap: 1rem;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 0 0.5rem;
-  }
 
   .cta-text-group {
     text-align: center;
@@ -793,4 +616,101 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+/* ═══════════════════════════════════════════
+   REDISEÑO DEL HERO — ajustes de composición
+
+   El problema medido: el hero ocupaba 1,44 pantallas en 1280x800 y los dos
+   botones propios caían FUERA (933px y 1025px) mientras los cuatro iconos de
+   Meta y TikTok sí se veían (692px). No era casualidad: .hero-title-section
+   pedía min-height 50vh y .hero-bottom-section otro 45vh, así que sumando la
+   franja de clientes y el ticker no cabía por construcción.
+
+   Estas reglas van al final del archivo a propósito: pisan a las de arriba sin
+   tener que reescribirlas, y así se lee de un vistazo qué cambió el rediseño y
+   qué venía de antes.
+   ═══════════════════════════════════════════ */
+
+/* El wordmark manda, pero deja de empujar. 38vh en vez de 50vh: sigue siendo
+   la pieza dominante y ahora el resto entra en pantalla. */
+.hero-title-section {
+  /* El ticker va en position:absolute con z-index 20 sobre la cabecera del
+     hero: ocupa de 96px a 150px. Sin este hueco arriba se comía 38px del
+     wordmark, medido. El min-height baja de 38vh a 32vh para compensar el
+     hueco y que el conjunto siga cabiendo en una pantalla. */
+  min-height: 32vh;
+  padding: 4rem 0 0.5rem;
+}
+
+.hero-logo-container {
+  padding: 1rem 1rem 0.5rem;
+}
+
+/* Al irse el bloque social, el inferior deja de ser dos columnas. El lema y la
+   acción se reparten la anchura en una línea de base, como un pie de cartel. */
+.hero-bottom-section {
+  grid-template-columns: 1fr;
+  min-height: 0;
+}
+
+.hero-cta-block {
+  /* Sin el degradado de caja: era la mitad izquierda de un díptico que ya no
+     existe, y una caja con degradado dentro de una sección con degradado es
+     ruido sobre ruido. Con él se van los otros restos del díptico: el borde
+     que lo separaba del bloque social y la sombra que lo despegaba del fondo. */
+  background: none;
+  border-right: none;
+  box-shadow: none;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+  flex-wrap: wrap;
+  padding: 1.75rem 3rem 2rem;
+}
+
+/* La línea de acento se va: con el lema a todo tamaño y sin la caja que lo
+   encerraba, era un adorno separando cosas que ya no están separadas. */
+.cta-accent-line {
+  display: none;
+}
+
+.hero-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.9rem;
+}
+
+.hero-acciones .cta-tagline {
+  margin: 0;
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .hero-cta-block {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 2rem 1.5rem 2.5rem;
+  }
+
+  .hero-acciones {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .hero-acciones .cta-tagline {
+    text-align: left;
+  }
+}
+
+/* El resplandor que latía en la esquina del bloque de CTA. Era
+   `animation: pulse 5s infinite` animando scale y opacity para siempre — otra
+   animación perpetua, y encima pertenecía a la caja del díptico que ya no
+   está. El hero se queda con lo que se mueve una vez (la construcción de la
+   marca) y lo que se mueve porque el visitante hace scroll. */
+.hero-cta-block::before {
+  display: none;
 }
