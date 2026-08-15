@@ -16,29 +16,43 @@
   max-width: min(92vw, 640px);
 }
 
+/* Ventana de lectura, no cápsula. Radio corto, filete de un píxel y las
+   esquineras del instrumental (tokens en index.css): la misma familia que los
+   botones del CTA y el distintivo. La estructura de dentro —etiqueta, texto
+   rotativo, flecha, escala— no cambia: ya hablaba el idioma.
+
+   OJO: el ::after de .ann-pill lo reserva el sistema global de área táctil de
+   index.css; por eso las esquineras van en background y no en pseudo. */
 .ann-pill {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  padding: 0.45rem 0.9rem 0.45rem 0.45rem;
-  border-radius: 100px;
-  background: rgba(16, 10, 22, 0.55);
-  border: 1px solid rgba(176, 36, 255, 0.28);
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  padding: 0.5rem 0.95rem 0.5rem 0.5rem;
+  border-radius: 4px;
+  background-color: rgba(6, 3, 11, 0.62);
+  --esq-color: rgba(255, 255, 255, 0.3);
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   text-decoration: none;
   color: #fff;
   max-width: 100%;
-  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+  transition: border-color 0.25s ease, background-color 0.25s ease,
+    background-position 0.3s var(--ease-out-expo);
 }
 
 .ann-pill:hover {
-  border-color: rgba(176, 36, 255, 0.6);
-  background: rgba(22, 12, 30, 0.72);
-  transform: translateY(-1px);
+  border-color: rgba(176, 36, 255, 0.55);
+  background-color: rgba(10, 5, 17, 0.78);
+  background-position: var(--esq-abierta);
   color: #fff;
 }
 
+/* La etiqueta acompaña a su ventana: rectangular, no cápsula. */
 .ann-tag {
   display: inline-flex;
   align-items: center;
@@ -52,7 +66,7 @@
   background: color-mix(in srgb, var(--ann-color, #B024FF) 28%, transparent);
   border: 1px solid color-mix(in srgb, var(--ann-color, #B024FF) 55%, transparent);
   padding: 0.28rem 0.65rem;
-  border-radius: 100px;
+  border-radius: 2px;
 }
 
 .ann-dot {
@@ -95,29 +109,55 @@
   color: #B024FF;
 }
 
+/* ── Los pasos, como marcas de una escala ──
+   Eran barritas redondeadas sueltas. Ahora son marcas sobre un filete, igual
+   que el eje del ensayo del hero: el mismo instrumento en dos sitios en vez de
+   dos vocabularios.
+
+   La separacion no es estetica. Cada marca lleva un area tactil de 44x44 en un
+   ::after, y para que esas areas no se invadan el PASO entre marcas tiene que
+   ser 44: como la marca mide 2px, el hueco es 42, no 44. Con el hueco a 24 el
+   paso salia de 26 y las areas se pisaban 18px, asi que al tocar entre dos
+   marcas respondia la que estuviera despues en el DOM — peor que un objetivo
+   pequeno. */
 .ann-dots {
+  position: relative;
   display: flex;
-  /* 0.4rem = 6.4px dejaba los puntos a 20.4px de centro a centro. WCAG 2.5.8
-     pide 24x24, y su excepcion de espaciado exige que circulos de 24px centrados
-     en cada objetivo no se toquen: con 20.4px si se tocaban. A 0.65rem quedan a
-     24.4px y el area ampliada de 24px cabe sin invadir al vecino. */
-  gap: 0.65rem;
+  align-items: center;
+  gap: 42px;
+  padding: 0 2px;
+}
+
+/* El filete que convierte las marcas en escala. */
+.ann-dots::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
 }
 
 .ann-step {
-  /* Ancho fijo para todos. Antes el activo pasaba de 14 a 22px animando width,
-     que recalcula el layout de la fila en cada frame. Ademas ese ancho variable
-     movia el area tactil ampliada y la hacia solapar con el punto vecino.
-     El estado activo se distingue por color, que ya era la senal dominante. */
-  width: 20px;
-  height: 3px;
-  border-radius: 2px;
+  position: relative;
+  /* Medidas fijas para todos: el activo se distingue por color, nunca por
+     tamano. Animar el ancho recalcularia la fila entera en cada fotograma y
+     movería el area tactil bajo el dedo. */
+  width: 2px;
+  height: 8px;
   border: none;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.24);
   cursor: pointer;
   padding: 0;
   transition: background 0.3s ease;
 }
+
+/* El area tactil de 44x44 NO se define aqui: vive en el bloque global de
+   index.css junto a la de los demas controles estrechos, que es donde se
+   decide esa politica para toda la web. Ponerla tambien aqui creaba dos reglas
+   compitiendo por lo mismo, y ganaba la global sin que se notara. */
 
 .ann-step.on {
   background: var(--color-accent);

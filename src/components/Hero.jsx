@@ -1,192 +1,196 @@
-import React from 'react'
-import { motion } from 'framer-motion'
+import React, { useEffect, useRef } from 'react'
 import './Hero.css'
 import { scrollToSection } from '../utils/scrollToSection'
 import AnnouncementTicker from './AnnouncementTicker'
-import Wordmark from './Wordmark'
-import './Wordmark.css'
 
-// Import client logos for carousel
+// Los doce clientes del banco inferior.
 import logoBerseLine from '../assets/logos/logo-berse-line.svg'
 import logoGO from '../assets/logos/logo-go.webp'
 import logoJeny from '../assets/logos/LOGO BLANCO.svg'
 import logoPardo from '../assets/logos/LOGO-MANUEL PARDO@4x-8.webp'
 import logoProsadis from '../assets/logos/LOGO 1.svg'
 import logoSpaKreativos from '../assets/logos/logo-spa-kreativos.svg'
+import logoBHouse from '../assets/logos/Logo principal BHouse.webp'
+import logoVault from '../assets/logos/logo-american-vault.svg'
+import logoBumbum from '../assets/logos/logo-bumbum.webp'
+import logoRosita from '../assets/logos/logo-cocina-rosita.webp'
+import logoOasis from '../assets/logos/logo-oasis-dental.webp'
+import logoUrbanPet from '../assets/logos/logo-urban-pet.webp'
 
+/**
+ * TÚNEL DE VIENTO
+ *
+ * THESIS — La marca no se dibuja: se revela como el obstáculo dentro de una
+ * corriente. Rechaza el arreglo por defecto de la categoría, el wordmark
+ * gigante centrado sobre negro con acento neón, que es lo que esta misma
+ * página hacía antes.
+ *
+ * OWN-WORLD — Visualización de flujo: fondo #030106, miles de trazos de un
+ * píxel, blanco donde la corriente va lenta, teal al acelerar y morado #B024FF
+ * donde se estrecha al rodear la letra. Rótulos técnicos en versalitas
+ * espaciadas. Ni cajas, ni marcos, ni degradados de superficie.
+ *
+ * STORY — El visitante ve un sistema calculándose en vivo, mueve el puntero y
+ * la corriente se abre a su alrededor: entiende que esto no es una plantilla
+ * ni un vídeo, y de ahí deduce el nivel técnico de quien lo hizo. Al desplazar,
+ * el ensayo AVANZA: la marca se suelta y el flujo se ordena. La acción vive
+ * abajo, sin protagonismo.
+ *
+ * FIRST VIEWPORT — El campo ocupa la pantalla entera. La marca aparece por
+ * ausencia en la franja superior. Debajo, «- RUIDO» anclado a la izquierda
+ * donde el flujo entra turbulento y «+ IMPACTO» a la derecha donde sale
+ * laminar. Al pie, el raíl de seis clientes y una sola acción discreta.
+ *
+ * SECOND BEAT — El hero mide más de una pantalla y el lienzo queda fijo dentro.
+ * Al desplazar, la marca se disuelve y la corriente pasa de turbulenta a
+ * laminar. No es un efecto de salida: son los dos estados con nombre propio de
+ * un flujo, que son literalmente ruido y orden. El lema deja de rotular y pasa
+ * a ser la estructura del scroll. Todo lo lee una sola variable, --ensayo, que
+ * el bucle del campo escribe una vez por fotograma.
+ *
+ * FORM — Túnel de viento, candidata 3 de la lista ordenada por resonancia.
+ * Seed key a92eb373.
+ *
+ * FINISH — unreviewed and undocumented is unfinished; this build ends with the
+ * finish review, the verdict, and DESIGN.md.
+ */
 const Hero = () => {
-  // Client logos for carousel (6 clientes)
-  const clientLogos = [
-    { id: 1, src: logoBerseLine, alt: 'Berse Line', className: 'logo-berse' },
-    { id: 2, src: logoGO, alt: 'Gran Oportunidad GO!', className: 'logo-go' },
-    { id: 3, src: logoJeny, alt: 'Dra. Jenny', className: 'logo-jeny' },
-    { id: 4, src: logoPardo, alt: 'Colegio Manuel Pardo', className: 'logo-pardo' },
-    { id: 5, src: logoProsadis, alt: 'Prosadis', className: 'logo-prosadis' },
-    { id: 6, src: logoSpaKreativos, alt: 'Spa Kreativos', className: 'logo-spa' }
+  /* La deriva del banco se para fuera de pantalla, igual que el campo. Es una
+     animación de compositor y cuesta poco, pero «poco» por tiempo indefinido en
+     una pestaña de fondo sigue siendo batería que nadie está mirando. */
+  const bancoRef = useRef(null)
+  useEffect(() => {
+    const nodo = bancoRef.current
+    if (!nodo) return
+    const pista = nodo.querySelector('.hero-banco-pista')
+    if (!pista) return
+    const observador = new IntersectionObserver(
+      ([e]) => { pista.style.animationPlayState = e.isIntersecting ? 'running' : 'paused' },
+      { threshold: 0 },
+    )
+    observador.observe(nodo)
+    return () => observador.disconnect()
+  }, [])
+
+  /* Los doce clientes.
+   *
+   * `invertir` no es un gusto: son los logos cuya tinta es oscura, medida. Con
+   * el gris de siempre quedaban por debajo de 50 de luminancia media sobre un
+   * fondo casi negro — es decir, invisibles. Invertidos se leen y CONSERVAN su
+   * estructura interna, que es lo que se pierde si se aplanan a silueta blanca:
+   * probado, y así el escudo de Manuel Pardo o el círculo de Prosadis se
+   * convertían en manchas macizas. Cada logo según su tinta. */
+  const clientes = [
+    { id: 1, src: logoBerseLine, alt: 'Berse Line', clase: 'logo-berse' },
+    { id: 2, src: logoGO, alt: 'Gran Oportunidad GO!', clase: 'logo-go' },
+    { id: 3, src: logoJeny, alt: 'Dra. Jenny', clase: 'logo-jeny' },
+    { id: 4, src: logoPardo, alt: 'Colegio Manuel Pardo', clase: 'logo-pardo' },
+    { id: 5, src: logoProsadis, alt: 'Clínica Prosadis', clase: 'logo-prosadis' },
+    { id: 6, src: logoSpaKreativos, alt: 'Kreativos Salón & Spa', clase: 'logo-spa' },
+    { id: 7, src: logoBHouse, alt: 'Beauty House', clase: 'logo-bhouse' },
+    { id: 8, src: logoVault, alt: 'American Vault', clase: 'logo-vault invertir' },
+    { id: 9, src: logoBumbum, alt: 'BumBum Globos y Flores', clase: 'logo-bumbum invertir' },
+    { id: 10, src: logoRosita, alt: 'Cocina Rosita', clase: 'logo-rosita' },
+    { id: 11, src: logoOasis, alt: 'Oasis Dental', clase: 'logo-oasis' },
+    { id: 12, src: logoUrbanPet, alt: 'The Urban Pet', clase: 'logo-urban invertir' },
   ]
 
   return (
     <section className="hero" id="hero">
-      <AnnouncementTicker />
-      <div className="hero-container">
-        {/* MASSIVE Title Section */}
-        {/* La marca construyéndose. Ya no es un <img> del logo: el SVG va
-            insertado para poder trazarlo, rellenarlo y texturizarlo por partes.
-            Ver Wordmark.jsx y Wordmark.css.
+      {/* El campo no se monta aquí: vive en el envoltorio .tunel de Home.jsx,
+          porque es también la superficie del titular que viene después. */}
 
-            Sin envoltorio de framer-motion: la entrada la hace el propio SVG
-            con CSS y la salida va ligada al scroll de forma nativa, fuera del
-            hilo principal. Una animación de opacidad en JS aquí solo añadiría
-            trabajo al hilo para tapar la construcción. */}
-        <div className="hero-title-section">
-          <div className="hero-content">
-            <div className="hero-logo-container wordmark-wrap">
-              <Wordmark />
-            </div>
+      {/* La marca vive en el campo como hueco, así que no hay ningún texto que
+          la nombre. Para quien navega con lector de pantalla eso sería una
+          sección muda: este rótulo la nombra sin pintar nada. */}
+      <span className="sr-only">DAK — Digital Acceleration Key</span>
+
+      {/* La capa va fija sobre el campo durante todo el compás, por eso el
+          ticker vive dentro y no suelto en la sección: si no, se iría por
+          arriba en cuanto empezara a desplazarse. */}
+      <div className="hero-capa">
+        <AnnouncementTicker />
+
+        {/* Los dos estados de un flujo tienen nombre propio en física:
+            turbulento y laminar. Son, literalmente, ruido y orden. Por eso el
+            lema no cuelga debajo del logo — rotula el fenómeno, anclado a la
+            zona del campo que describe.
+
+            Y como el ensayo va de uno al otro, entre ambos hay un eje medido de
+            verdad: marcas finas y un índice que recorre la escala conforme la
+            marca se suelta. El lema deja de ser una etiqueta y pasa a ser la
+            lectura del aparato. */}
+        <div className="hero-medida">
+          {/* RUIDO como señal mal sintonizada: la palabra queda QUIETA y el
+              ruido son dos copias fantasma desfasadas que se disipan conforme
+              avanza el índice (ver Hero.css). Hubo una versión con cada letra
+              desplazada por su cuenta; hacía lo que decía, pero rompía la
+              simetría del par − RUIDO / + IMPACTO, y un diagrama vive de su
+              equilibrio. El fantasma ensucia sin mover la caja. */}
+          <p className="hero-rotulo hero-rotulo--ruido">
+            <span className="hero-signo">−</span>
+            <span className="hero-fantasma" data-t="RUIDO">RUIDO</span>
+          </p>
+          {/* El índice va dentro de un carro que mide todo el eje: así se
+              desplaza con un transform en porcentaje de SU PROPIO ancho —que es
+              el del eje— en vez de con `left`, que obligaría a recalcular la
+              maquetación en cada fotograma del scroll.
+
+              El tramo recorrido se pinta detrás. Un índice de tres píxeles
+              sobre un eje de mil quinientos es invisible por mucho que brille;
+              lo que hace legible el avance es la parte que ya se ha medido. */}
+          <div className="hero-eje" aria-hidden="true">
+            <span className="hero-eje-recorrido" />
+            <span className="hero-eje-carro">
+              <span className="hero-eje-indice" />
+            </span>
           </div>
+          <p className="hero-rotulo hero-rotulo--impacto">
+            <span className="hero-signo">+</span>
+            <span className="hero-crece">IMPACTO</span>
+          </p>
         </div>
 
-        {/* Subtitle Strip - Client Wall */}
-        <motion.div
-          className="hero-subtitle-strip"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          {/* Left logos */}
-          <div className="client-logos-side left">
-            {clientLogos.slice(0, 3).map((logo, i) => (
-              <motion.div
-                key={`logo-l-${logo.id}`}
-                className="logo-item"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 + i * 0.12 }}
-              >
-                <img
-                  src={logo.src}
-                  alt={logo.alt}
-                  className={`logo-image ${logo.className}`}
-                />
-              </motion.div>
-            ))}
+        <div className="hero-pie">
+          {/* ── El banco de clientes ──
+              Se apoyan en una regla con marcas —el mismo vocabulario que el eje
+              del ensayo— en vez de flotar sobre el vacío, y derivan muy despacio
+              como muestras pasando por el conducto. La pista lleva los doce DOS
+              veces: el bucle recorre exactamente la mitad, así que al reiniciar
+              cae en un punto idéntico y no se ve la costura. La segunda copia
+              está oculta al lector de pantalla para no leer doce clientes dos
+              veces. */}
+          <div className="hero-banco" ref={bancoRef}>
+            <ul className="hero-banco-pista">
+              {clientes.map((c) => (
+                <li key={c.id} className="hero-banco-item">
+                  <img src={c.src} alt={c.alt} className={`logo-image ${c.clase}`} loading="lazy" />
+                </li>
+              ))}
+              {clientes.map((c) => (
+                <li key={`bis-${c.id}`} className="hero-banco-item" aria-hidden="true">
+                  <img src={c.src} alt="" className={`logo-image ${c.clase}`} loading="lazy" />
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Center text */}
-          <motion.p
-            className="hero-subtitle"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.4, ease: [0.19, 1, 0.22, 1] }}
+          <a
+            href="#contact"
+            className="hero-accion"
+            onClick={(e) => {
+              e.preventDefault()
+              scrollToSection('#contact')
+            }}
           >
-            Digital Acceleration Key
-          </motion.p>
-
-          {/* Right logos */}
-          <div className="client-logos-side right">
-            {clientLogos.slice(3, 6).map((logo, i) => (
-              <motion.div
-                key={`logo-r-${logo.id}`}
-                className="logo-item"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.8 + i * 0.12 }}
-              >
-                <img
-                  src={logo.src}
-                  alt={logo.alt}
-                  className={`logo-image ${logo.className}`}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Bottom Section - Asymmetric Blocks */}
-        <div className="hero-bottom-section">
-          {/* Left Block - CTA */}
-          <motion.div
-            className="hero-cta-block"
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: [0.19, 1, 0.22, 1] }}
-          >
-            {/* Recurso grafico, no estructura del documento: son dos lineas de
-                un lema, no la cabecera de una seccion. Como encabezados dejaban
-                el documento abriendo en h3 y sin h1. El CSS no cambia. */}
-            <div className="cta-text-group">
-              <p className="cta-small-text">- RUIDO</p>
-              <p className="cta-large-text">+ IMPACTO</p>
-            </div>
-            {/* Las acciones agrupadas: sin el bloque social, el lema y lo que
-                se puede hacer se reparten la anchura en una linea de base, como
-                el pie de un cartel. Sueltas se solapaban al maquetar. */}
-            <div className="hero-acciones">
-            <motion.p
-              className="cta-tagline"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
-            >
-              Transformamos ideas en resultados
-            </motion.p>
-            <motion.a
-              href="#contact"
-              className="btn-cta-hero"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={(e) => {
-                e.preventDefault()
-                scrollToSection('#contact')
-              }}
-            >
-              <span>Comenzar Proyecto</span>
-              <svg className="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
-              </svg>
-            </motion.a>
-            <motion.a
-              href="https://plan.dakagency.net/agendar.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-schedule-hero"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 1.5 }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-              </svg>
-              <span>Agendar reunión gratuita</span>
-            </motion.a>
-            </div>
-          </motion.div>
-
-          {/* Aqui iba una rejilla de cuatro iconos sociales gigantes.
-
-              Ocupaba la mitad derecha del bloque inferior, y medido en
-              1280x800 era lo unico de esta franja que SI se veia sin hacer
-              scroll: los dos botones propios caian a 933px y 1025px, fuera
-              de pantalla. El sitio mas caro de la web ensenaba la marca de
-              Meta y de TikTok y escondia la de DAK.
-
-              Los cuatro enlaces siguen en el pie, que es su sitio. Al
-              liberarse esta mitad, "- RUIDO / + IMPACTO" gana todo el ancho
-              y la seccion cabe en una pantalla. */}
+            Comenzar proyecto
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
         </div>
       </div>
-
-      {/* Aqui vivian dos circulos decorativos con repeat: Infinity,
-          animando scale y opacity para siempre — tambien con el hero fuera
-          de pantalla. Eran 2 de las 14 animaciones infinitas de la pagina.
-          Lo que se mueve ahora se mueve una vez, o se mueve porque el
-          visitante esta haciendo scroll. */}
     </section>
   )
 }

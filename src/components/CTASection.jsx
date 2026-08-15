@@ -1,27 +1,92 @@
-import React, { useRef, useState, useEffect } from 'react'
-import { motion, useInView, AnimatePresence } from 'framer-motion'
+import React, { useEffect, useRef, useState } from 'react'
 import './CTASection.css'
 import { scrollToSection } from '../utils/scrollToSection'
 import { CIFRAS, CIFRAS_DESTACADAS } from '../data/cifras'
 
+/**
+ * EL TITULAR, ENTREGADO POR LA CORRIENTE
+ *
+ * Segundo acto del túnel. No es una sección aparte con su propio fondo: la
+ * superficie es el campo de flujo, que sigue corriendo por detrás.
+ *
+ * ─── POR QUÉ NO HAY NI UNA ANIMACIÓN DE ENTRADA ───────────────────────────
+ *
+ * Todo lo que aparece aquí lo hace SEGÚN BAJAS, leyendo --entrega, que escribe
+ * el bucle del campo sobre .tunel. Antes cada pieza entraba con su propio
+ * temporizador disparado por un observador: bajabas rápido y te encontrabas la
+ * sección a medio montar, o parada, según lo que hubiera tardado el reloj. Un
+ * túnel de viento no tiene un reloj por instrumento.
+ *
+ * Como consecuencia, framer-motion desaparece de este archivo: no hay ninguna
+ * animación que dependa del tiempo. Solo transform y opacity leyendo una
+ * variable, que es lo que el compositor sabe hacer gratis.
+ */
+
+/* De dónde a dónde entra cada pieza, en fracción de --entrega. El escalonado
+   es el que da la sensación de que la corriente va DEPOSITANDO el contenido. */
+const ENTRADAS = {
+  distintivo: 0.02,
+  titular: 0.1,
+  bajada: 0.3,
+  medidas: 0.42,
+  acciones: 0.66,
+}
+
+/** Separa «+80» en el signo y el número, para poder contar solo la cifra. */
+const partir = (valor) => {
+  const n = parseInt(String(valor).replace(/\D/g, ''), 10) || 0
+  return { prefijo: String(valor).replace(/[\d]/g, ''), n }
+}
+
 const CTASection = () => {
   const sectionRef = useRef(null)
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
   const [hoveredWord, setHoveredWord] = useState(null)
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
-  // Mouse tracking for parallax
+  /* ── Los contadores ──
+   *
+   * El CSS puede llenar una barra pero no puede contar. Estos tres números se
+   * escriben directamente en el DOM, sin pasar por React: un estado por
+   * fotograma de scroll volvería a renderizar la sección entera, que es
+   * justamente el problema que tenía el seguimiento del ratón que se retiró
+   * con los orbes.
+   *
+   * Solo se escribe cuando el ENTERO cambia, así que en la mayoría de los
+   * fotogramas no se toca el DOM. */
+  const cifrasRef = useRef([])
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!sectionRef.current) return
-      const rect = sectionRef.current.getBoundingClientRect()
-      const x = (e.clientX - rect.left) / rect.width - 0.5
-      const y = (e.clientY - rect.top) / rect.height - 0.5
-      setMousePos({ x, y })
+    const nodos = cifrasRef.current.filter(Boolean)
+    if (!nodos.length) return
+    const tunel = sectionRef.current?.closest('.tunel')
+    if (!tunel) return
+
+    let cuadro = 0
+    let visible = false
+    const ultimos = nodos.map(() => -1)
+
+    const pintar = () => {
+      const t = parseFloat(getComputedStyle(tunel).getPropertyValue('--entrega')) || 0
+      nodos.forEach((nodo, i) => {
+        const total = Number(nodo.dataset.total)
+        // Cada cifra termina de contar cuando su barra acaba de llenarse.
+        const propio = Math.min(1, Math.max(0, (t - ENTRADAS.medidas - i * 0.05) / 0.34))
+        const v = Math.round(total * propio)
+        if (v !== ultimos[i]) {
+          nodo.textContent = nodo.dataset.prefijo + v
+          ultimos[i] = v
+        }
+      })
+      cuadro = requestAnimationFrame(pintar)
     }
-    const el = sectionRef.current
-    if (el) el.addEventListener('mousemove', handleMouseMove)
-    return () => { if (el) el.removeEventListener('mousemove', handleMouseMove) }
+
+    // Solo cuenta mientras se ve, igual que el campo.
+    const observador = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting
+      if (visible && !cuadro) cuadro = requestAnimationFrame(pintar)
+      if (!visible && cuadro) { cancelAnimationFrame(cuadro); cuadro = 0 }
+    }, { threshold: 0 })
+    observador.observe(sectionRef.current)
+
+    return () => { cancelAnimationFrame(cuadro); observador.disconnect() }
   }, [])
 
   const handleScrollToProjects = (e) => {
@@ -34,27 +99,51 @@ const CTASection = () => {
     scrollToSection('#contact')
   }
 
-  // Interactive words data
+  /* Las tres palabras del titular.
+   *
+   * Un solo acento, el morado de marca. Antes cada una llevaba el suyo
+   * —morado, teal y un naranja #FF6B35 que no aparecía en ningún otro sitio de
+   * la web—, y sobre el túnel eso se leía como tres sistemas distintos. El
+   * contenido de las tarjetas se conserva entero: es real y solo sale si lo
+   * buscas. */
   const words = {
     branding: {
-      color: '#B024FF',
       icon: 'M19 3H5L2 9l10 13L22 9l-3-6zM9.62 8l1.5-3h1.76l1.5 3H9.62zM11 10v6.68L5.44 10H11zm2 0h5.56L13 16.68V10zm6.26-2h-2.65l-1.5-3h2.65l1.5 3zM6.24 5h2.65l-1.5 3H4.74l1.5-3z',
       label: 'Identidad Visual',
-      desc: 'Logos · Paletas · Tipografía'
+      desc: 'Logos · Paletas · Tipografía',
     },
     digital: {
-      color: '#00C8C8',
       icon: 'M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z',
       label: 'Experiencia Digital',
-      desc: 'Web · Apps · UI/UX'
+      desc: 'Web · Apps · UI/UX',
     },
     impacto: {
-      color: '#FF6B35',
       icon: 'M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z',
       label: 'Resultados Reales',
-      desc: `${CIFRAS.proyectos.valor} proyectos entregados`
-    }
+      desc: `${CIFRAS.proyectos.valor} proyectos entregados`,
+    },
   }
+
+  const Palabra = ({ clave, llega, children }) => (
+    <span
+      className={`hover-word ${hoveredWord === clave ? 'active' : ''}`}
+      style={{ '--llega': llega }}
+      onMouseEnter={() => setHoveredWord(clave)}
+      onMouseLeave={() => setHoveredWord(null)}
+    >
+      {children}
+      {/* La tarjeta vive siempre en el DOM y se muestra con CSS. Montándola y
+          desmontándola hacía falta una animación en JS para que no apareciera
+          de golpe; con una transición no hace falta ninguna. */}
+      <span className="word-popup" aria-hidden="true">
+        <svg className="popup-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d={words[clave].icon} />
+        </svg>
+        <span className="popup-label">{words[clave].label}</span>
+        <span className="popup-desc">{words[clave].desc}</span>
+      </span>
+    </span>
+  )
 
   /*
    * Las cifras vienen de src/data/cifras.js, que es la única fuente. Antes
@@ -65,233 +154,109 @@ const CTASection = () => {
    * ha encuestado a nadie y el lector lo sabe: un dato que no se puede
    * comprobar no suma confianza, la resta. En su lugar va el número de
    * clientes, que además se puede ir contando al bajar por la página.
-   *
-   * El color y el desplazamiento con el ratón se quedan como estaban.
    */
-  const ADORNO = [
-    { color: '#B024FF', icon: 'M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z', offset: { x: -1, y: -0.8 } },
-    { color: '#00C8C8', icon: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z', offset: { x: 1.2, y: -0.5 } },
-    { color: '#FF6B35', icon: 'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z', offset: { x: 0.9, y: 0.7 } },
-  ]
-
-  const stats = CIFRAS_DESTACADAS.map((c, i) => ({
-    value: c.valor,
-    label: c.etiqueta,
-    ...ADORNO[i],
-  }))
+  const medidas = CIFRAS_DESTACADAS.map((c) => ({ etiqueta: c.etiqueta, ...partir(c.valor) }))
 
   return (
     <section className="cta-section" ref={sectionRef}>
-      {/* Background */}
-      <div className="cta-bg-elements">
-        <motion.div
-          className="cta-orb cta-orb-1"
-          animate={{ x: mousePos.x * 25, y: mousePos.y * 25 }}
-          transition={{ type: 'spring', stiffness: 50, damping: 30 }}
-        />
-        <motion.div
-          className="cta-orb cta-orb-2"
-          animate={{ x: mousePos.x * -18, y: mousePos.y * -18 }}
-          transition={{ type: 'spring', stiffness: 50, damping: 30 }}
-        />
-        <motion.div
-          className="cta-grid-bg"
-          animate={{ x: mousePos.x * 6, y: mousePos.y * 6 }}
-          transition={{ type: 'spring', stiffness: 80, damping: 40 }}
-        />
-      </div>
+      {/* El fondo es la corriente del túnel, que sigue corriendo por detrás.
+          Aquí había dos orbes de 550 y 450 px desenfocados a 120 px, más una
+          rejilla, los tres desplazándose con el ratón. Sobre un campo de flujo
+          que ya reacciona al puntero, eso eran dos sistemas de movimiento
+          compitiendo por el mismo gesto.
 
+          El velo que hace legible el titular sobre las líneas lo pone el CSS
+          con un degradado, no un elemento. */}
       <div className="cta-container">
-        {/* Badge */}
-        <motion.div
-          className="cta-badge"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={isInView ? { opacity: 1, scale: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
+        <div className="cta-entra cta-badge" style={{ '--desde': ENTRADAS.distintivo }}>
           <span className="badge-dot" />
           <span>Listos para tu próximo proyecto</span>
-        </motion.div>
+        </div>
 
-        {/* Interactive Heading — es el h1 del documento: el enunciado dominante
-            de la home. Antes la pagina no tenia ningun h1 y su primer encabezado
-            era el h3 "- RUIDO" del Hero. */}
-        <motion.h1
-          className="cta-heading"
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, ease: [0.19, 1, 0.22, 1], delay: 0.3 }}
-        >
-          <span className="heading-row">Creamos</span>
-          <span className="heading-row">
-            <span
-              className={`hover-word ${hoveredWord === 'branding' ? 'active' : ''}`}
-              style={{ '--wc': words.branding.color }}
-              onMouseEnter={() => setHoveredWord('branding')}
-              onMouseLeave={() => setHoveredWord(null)}
-            >
-              branding
-              <AnimatePresence>
-                {hoveredWord === 'branding' && (
-                  <motion.div
-                    className="word-popup"
-                    style={{ borderColor: words.branding.color }}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    transition={{ duration: 0.18 }}
-                  >
-                    <svg className="popup-icon" width="22" height="22" viewBox="0 0 24 24" fill={words.branding.color}><path d={words.branding.icon}/></svg>
-                    <span className="popup-label">{words.branding.label}</span>
-                    <span className="popup-desc">{words.branding.desc}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </span>
-            {' '}y experiencias
-          </span>
-          <span className="heading-row">
-            <span
-              className={`hover-word ${hoveredWord === 'digital' ? 'active' : ''}`}
-              style={{ '--wc': words.digital.color }}
-              onMouseEnter={() => setHoveredWord('digital')}
-              onMouseLeave={() => setHoveredWord(null)}
-            >
-              digitales
-              <AnimatePresence>
-                {hoveredWord === 'digital' && (
-                  <motion.div
-                    className="word-popup"
-                    style={{ borderColor: words.digital.color }}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    transition={{ duration: 0.18 }}
-                  >
-                    <svg className="popup-icon" width="22" height="22" viewBox="0 0 24 24" fill={words.digital.color}><path d={words.digital.icon}/></svg>
-                    <span className="popup-label">{words.digital.label}</span>
-                    <span className="popup-desc">{words.digital.desc}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </span>
-            {' '}de alto{' '}
-            <span
-              className={`hover-word ${hoveredWord === 'impacto' ? 'active' : ''}`}
-              style={{ '--wc': words.impacto.color }}
-              onMouseEnter={() => setHoveredWord('impacto')}
-              onMouseLeave={() => setHoveredWord(null)}
-            >
-              impacto
-              <AnimatePresence>
-                {hoveredWord === 'impacto' && (
-                  <motion.div
-                    className="word-popup"
-                    style={{ borderColor: words.impacto.color }}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    transition={{ duration: 0.18 }}
-                  >
-                    <svg className="popup-icon" width="22" height="22" viewBox="0 0 24 24" fill={words.impacto.color}><path d={words.impacto.icon}/></svg>
-                    <span className="popup-label">{words.impacto.label}</span>
-                    <span className="popup-desc">{words.impacto.desc}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </span>
-          </span>
-        </motion.h1>
+        {/* Es el h1 del documento: el enunciado dominante de la home. Antes la
+            página no tenía ningún h1 y su primer encabezado era el «- RUIDO»
+            del hero. */}
+        {/* El barrido de medición: una línea cruza el enunciado según bajas —el
+            mismo índice que recorre el eje del hero, ahora midiendo el
+            titular—. Por detrás el texto queda pleno; por delante, atenuado. Y
+            las tres palabras clave se subrayan justo cuando el barrido las
+            alcanza, reutilizando el mismo subrayado que ya tenían para el ratón
+            en vez de inventar otro camino.
 
-        {/* Subtitle */}
-        <motion.p
-          className="cta-subtitle"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.5 }}
-        >
+            `--llega` es dónde cae cada fila y cada palabra a lo largo del
+            barrido. Va aquí, en el marcado, porque es composición: depende de
+            en qué línea y en qué posición está cada cosa. */}
+        <h1 className="cta-entra cta-heading" style={{ '--desde': ENTRADAS.titular }}>
+          <span className="cta-barrido" aria-hidden="true">
+            <span className="cta-barrido-linea" />
+          </span>
+          <span className="heading-row" style={{ '--llega': 0.14 }}>Creamos</span>
+          <span className="heading-row" style={{ '--llega': 0.3 }}>
+            <Palabra clave="branding" llega={0.36}>branding</Palabra> y experiencias
+          </span>
+          <span className="heading-row" style={{ '--llega': 0.46 }}>
+            <Palabra clave="digital" llega={0.5}>digitales</Palabra> de alto{' '}
+            <Palabra clave="impacto" llega={0.62}>impacto</Palabra>
+          </span>
+        </h1>
+
+        <p className="cta-entra cta-subtitle" style={{ '--desde': ENTRADAS.bajada }}>
           Transformamos ideas en resultados. Desde identidad visual hasta desarrollo web,
           impulsamos tu negocio al siguiente nivel.
-        </motion.p>
+        </p>
 
-        {/* Floating Stats */}
-        <div className="cta-stats-floating">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              className="floating-stat"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? {
-                opacity: 1,
-                y: 0,
-                x: mousePos.x * stat.offset.x * 8,
-              } : {}}
-              transition={{
-                opacity: { duration: 0.5, delay: 0.6 + i * 0.12 },
-                y: { duration: 0.5, delay: 0.6 + i * 0.12 },
-                x: { type: 'spring', stiffness: 60, damping: 30 },
-              }}
-              style={{ '--stat-color': stat.color }}
+        {/* ── Las cifras, como lecturas de un instrumento ──
+            Mismo vocabulario que el eje del ensayo del hero: escala con marcas
+            y un tramo que se llena. El túnel mide el flujo arriba y mide el
+            trabajo aquí. */}
+        <div className="cta-medidas">
+          {medidas.map((m, i) => (
+            <div
+              key={m.etiqueta}
+              className="cta-entra medida"
+              style={{ '--desde': ENTRADAS.medidas + i * 0.05 }}
             >
-              <div className="fs-accent" style={{ backgroundColor: stat.color }} />
-              <div className="fs-icon" style={{ color: stat.color }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d={stat.icon} />
-                </svg>
-              </div>
-              <div className="fs-content">
-                <span className="fs-value" style={{ color: stat.color }}>{stat.value}</span>
-                <span className="fs-label">{stat.label}</span>
-              </div>
-            </motion.div>
+              <span className="medida-etq">{m.etiqueta}</span>
+              <span
+                className="medida-valor"
+                ref={(n) => { cifrasRef.current[i] = n }}
+                data-total={m.n}
+                data-prefijo={m.prefijo}
+              >
+                {m.prefijo}{m.n}
+              </span>
+              <span className="medida-escala">
+                <span className="medida-barra" />
+              </span>
+            </div>
           ))}
         </div>
 
-        {/* CTAs */}
-        <motion.div
-          className="cta-actions"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          <motion.a
-            href="#contact"
-            className="cta-btn-primary"
-            onClick={handleScrollToContact}
-            whileHover={{ scale: 1.03, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-          >
+        <div className="cta-entra cta-actions" style={{ '--desde': ENTRADAS.acciones }}>
+          <a href="#contact" className="cta-btn-primary" onClick={handleScrollToContact}>
             Comenzar Proyecto
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
+              <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
-          </motion.a>
-          <motion.a
+          </a>
+          <a
             href="https://plan.dakagency.net/agendar.html"
             target="_blank"
             rel="noopener noreferrer"
             className="cta-btn-schedule"
-            whileHover={{ scale: 1.03, y: -2 }}
-            whileTap={{ scale: 0.97 }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
             Agendar Reunión
-          </motion.a>
-          <motion.a
-            href="#demos"
-            className="cta-btn-ghost"
-            onClick={handleScrollToProjects}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
+          </a>
+          <a href="#demos" className="cta-btn-ghost" onClick={handleScrollToProjects}>
             Ver Proyectos
-          </motion.a>
-        </motion.div>
+          </a>
+        </div>
       </div>
     </section>
   )

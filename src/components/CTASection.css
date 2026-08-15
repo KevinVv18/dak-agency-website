@@ -2,66 +2,63 @@
    CTA SECTION - Interactive Hover Reveal
    ============================================= */
 
+/* ── El titular, entregado por la corriente ──
+   El fondo de esta sección es el campo de flujo del túnel, que sigue corriendo
+   por detrás. Sin fondo propio: lo pinta pages/Home.css a través de .tunel. */
 .cta-section {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* El fondo lo pone el ritmo de superficies de index.css. */
   position: relative;
   overflow: hidden;
   padding: 6rem 2rem;
 }
 
-/* No divider here — hero's neon border already acts as separator.
-   The gradient line merges with the hero border and only the dot
-   remains visible as an artifact, so both are hidden. */
-.cta-section::before,
-.cta-section::after {
+/* No lleva divisor: el corte entre el hero y esta sección ya no existe, porque
+   son el mismo plano. (Antes el comentario decía que separaba el borde de neón
+   del hero; ese borde se retiró al pasar la barra al lenguaje de instrumento.) */
+.cta-section::before {
   display: none;
 }
 
-/* =============================================
-   BACKGROUND
-   ============================================= */
+/* ── El velo ──
+   El titular va sobre líneas de flujo en movimiento. Arriba es transparente
+   —ahí se ve la corriente y con ella la continuidad con el hero— y se cierra
+   donde está el texto. Es un degradado sobre el propio elemento, no una capa
+   más en el DOM.
 
-.cta-bg-elements {
+   El nivel no se eligió a ojo: es el que hace que la auditoría de contraste
+   siga dando cero por debajo de AA con el campo corriendo. */
+.cta-section::after {
+  content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  overflow: hidden;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(3, 1, 6, 0.55) 16%,
+    rgba(3, 1, 6, 0.82) 42%,
+    rgba(3, 1, 6, 0.82) 78%,
+    rgba(3, 1, 6, 0.6) 100%
+  );
 }
 
-.cta-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-}
+/* El contenido ya queda por encima del velo: .cta-container de más abajo tiene
+   z-index 10 y el velo va sin z-index. */
 
-.cta-orb-1 {
-  width: 550px;
-  height: 550px;
-  background: radial-gradient(circle, rgba(176, 36, 255, 0.14) 0%, transparent 70%);
-  top: -15%;
-  left: -8%;
-}
+/* ── La entrada, con el scroll ──
+   Cada pieza declara desde dónde entra (--desde) y sube en el tramo siguiente
+   de --entrega. Sin temporizadores: bajes rápido o despacio, ves siempre el
+   mismo estado para la misma posición.
 
-.cta-orb-2 {
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(0, 200, 200, 0.08) 0%, transparent 70%);
-  bottom: -10%;
-  right: -8%;
-}
-
-.cta-grid-bg {
-  position: absolute;
-  inset: 0;
-  --luz-x: 78%;
-  --luz-y: 96%;
-  background: var(--luz-seccion);
-  mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black 20%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black 20%, transparent 100%);
+   Solo opacity y transform, que se resuelven en el compositor. Con `top` o
+   `margin` esto costaría una maquetación por fotograma de scroll. */
+.cta-entra {
+  --v: clamp(0, calc((var(--entrega, 1) - var(--desde, 0)) * 3.4), 1);
+  opacity: var(--v);
+  transform: translateY(calc((1 - var(--v)) * 26px));
 }
 
 /* =============================================
@@ -84,14 +81,22 @@
    BADGE
    ============================================= */
 
+/* Ventana de lectura, no cápsula: radio corto, filete y esquineras — el mismo
+   instrumental que los botones y el ticker. El punto pulsante se queda: es un
+   indicador de vivo, exactamente lo que un aparato tendría. */
 .cta-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1.25rem;
-  background: rgba(176, 36, 255, 0.08);
-  border: 1px solid rgba(176, 36, 255, 0.25);
-  border-radius: 2rem;
+  background-color: rgba(176, 36, 255, 0.06);
+  --esq-color: rgba(176, 36, 255, 0.55);
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
   margin-bottom: 2.5rem;
 }
 
@@ -121,6 +126,7 @@
    ============================================= */
 
 .cta-heading {
+  position: relative;
   font-size: clamp(2.5rem, 5.5vw, 4.5rem);
   font-weight: 900;
   color: #ffffff;
@@ -129,18 +135,53 @@
   margin: 0 0 1.5rem;
 }
 
-.heading-row {
-  display: block;
+/* ── El barrido de medición ──
+   Cruza el enunciado con el scroll. El carro mide todo el titular y se desplaza
+   con transform —igual que el índice del eje— porque colocarlo con `left`
+   costaría una maquetación por fotograma. */
+.cta-barrido {
+  position: absolute;
+  inset: -0.2em 0;
+  width: 100%;
+  pointer-events: none;
+  transform: translateX(calc(clamp(0, calc((var(--entrega, 1) - 0.08) * 1.55), 1) * (100% - 2px)));
+  will-change: transform;
 }
 
-/* Hover words */
+.cta-barrido-linea {
+  position: absolute;
+  inset: 0 auto;
+  left: 0;
+  width: 2px;
+  background: linear-gradient(to bottom,
+    transparent, var(--color-accent-texto) 18%, var(--color-accent-texto) 82%, transparent);
+  box-shadow: 0 0 12px rgba(176, 36, 255, 0.7);
+  /* Desaparece cuando ha terminado de medir: un instrumento que ya leyó no
+     deja la aguja encima del resultado. */
+  opacity: clamp(0, calc((1 - clamp(0, calc((var(--entrega, 1) - 0.08) * 1.55), 1)) * 5), 1);
+}
+
+/* Cada fila se enciende al paso del barrido. No baja de 0.66: por delante del
+   barrido el texto sigue teniendo que leerse, y ahí es donde la auditoría de
+   contraste manda sobre el efecto. */
+.heading-row {
+  display: block;
+  --v: clamp(0, calc((var(--entrega, 1) - var(--llega, 0)) * 7), 1);
+  color: rgba(255, 255, 255, calc(0.66 + var(--v) * 0.34));
+}
+
+/* Las palabras con tarjeta. El acento ya no viaja desde el JSX en una
+   variable en línea: las tres llevan el mismo, así que vive aquí. */
 .hover-word {
+  --wc: var(--color-accent-texto);
   position: relative;
   cursor: pointer;
   display: inline-block;
   transition: color 0.3s ease;
 }
 
+/* El subrayado lo dibuja el BARRIDO al pasar, y también el ratón. Es el mismo
+   trazo para las dos cosas: la palabra no tiene dos maneras de encenderse. */
 .hover-word::after {
   content: '';
   position: absolute;
@@ -150,8 +191,8 @@
   height: 3px;
   background: var(--wc);
   border-radius: 2px;
-  transform: scaleX(0);
-  transform-origin: center;
+  transform: scaleX(clamp(0, calc((var(--entrega, 1) - var(--llega, 0)) * 9), 1));
+  transform-origin: left center;
   transition: transform 0.3s ease;
   box-shadow: 0 0 10px var(--wc);
 }
@@ -166,14 +207,19 @@
   color: var(--wc);
 }
 
-/* Word Popup - Sharp text, no blur */
+/* La tarjeta. Filete de un píxel en vez de un borde de 1.5 con el color propio
+   de cada palabra: el color ya lo lleva el subrayado, y repetirlo en el borde
+   convertía una nota al margen en un cartel.
+
+   Vive siempre en el DOM y se muestra con una transición. Montándola y
+   desmontándola hacía falta una animación en JS para que no apareciera de
+   golpe; así no hace falta ninguna. */
 .word-popup {
   position: absolute;
   top: calc(100% + 14px);
   left: 50%;
-  transform: translateX(-50%);
-  background: #0a0412;
-  border: 1.5px solid;
+  background: rgba(6, 3, 11, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 0.85rem;
   padding: 0.85rem 1.35rem;
   display: flex;
@@ -184,8 +230,21 @@
   z-index: 30;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
   pointer-events: none;
+  color: var(--color-accent-texto);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 8px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+}
+
+.hover-word.active .word-popup,
+.hover-word:hover .word-popup {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
 }
 
 .word-popup::before {
@@ -196,10 +255,9 @@
   transform: translateX(-50%) rotate(45deg);
   width: 10px;
   height: 10px;
-  background: #0a0412;
-  border-top: 1.5px solid;
-  border-left: 1.5px solid;
-  border-color: inherit;
+  background: rgba(6, 3, 11, 0.96);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .popup-icon {
@@ -233,99 +291,94 @@
 }
 
 /* =============================================
-   FLOATING STATS - Metric Cards
-   ============================================= */
+   LAS CIFRAS, COMO LECTURAS DE UN INSTRUMENTO
+   =============================================
 
-.cta-stats-floating {
+   Eran tres tarjetas: caja, icono de color y texto dentro. Ahora son tres
+   lecturas con el mismo vocabulario que el eje del ensayo del hero — escala de
+   marcas y un tramo que se llena. El túnel mide el flujo arriba y mide el
+   trabajo aquí; es el mismo aparato, no dos maneras de enseñar un número.
+
+   La barra la llena el CSS con --entrega. El número lo cuenta el JS, porque el
+   CSS no sabe contar, pero con el MISMO divisor: si se toca uno hay que tocar
+   el otro o la cifra y su barra dejan de ir a la vez. */
+
+.cta-medidas {
   display: flex;
   justify-content: center;
-  gap: 1.25rem;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
   margin-bottom: 3rem;
+  width: 100%;
   flex-wrap: wrap;
 }
 
-.floating-stat {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 1rem 1.5rem 1rem 1.25rem;
-  background: rgba(8, 4, 18, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 0.85rem;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  cursor: default;
-}
-
-.floating-stat:hover {
-  border-color: color-mix(in srgb, var(--stat-color) 30%, transparent);
-  background: rgba(8, 4, 18, 0.8);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-}
-
-/* Left accent bar */
-.fs-accent {
-  position: absolute;
-  left: 0;
-  top: 15%;
-  bottom: 15%;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
-}
-
-.floating-stat:hover .fs-accent {
-  opacity: 1;
-  box-shadow: 0 0 10px currentColor;
-}
-
-/* Icon */
-.fs-icon {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.6rem;
-  background: color-mix(in srgb, var(--stat-color, #B024FF) 10%, transparent);
-  flex-shrink: 0;
-  transition: all 0.3s ease;
-}
-
-.floating-stat:hover .fs-icon {
-  background: color-mix(in srgb, var(--stat-color, #B024FF) 18%, transparent);
-  transform: scale(1.05);
-}
-
-.fs-icon svg {
-  opacity: 0.9;
-}
-
-/* Content */
-.fs-content {
+/* Las tres reparten el ancho a partes iguales. A lo que daba el contenido, la
+   escala medía 150 px y las marcas quedaban tan juntas que no se leían como
+   escala: un instrumento necesita sitio para tener marcas. */
+.medida {
+  --llenado: clamp(0, calc((var(--entrega, 1) - var(--desde, 0)) / 0.34), 1);
+  flex: 1 1 0;
+  max-width: 260px;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  align-items: flex-start;
+  gap: 0.4rem;
+  text-align: left;
 }
 
-.fs-value {
-  font-size: clamp(1.5rem, 3vw, 2rem);
+.medida-etq {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-texto-2);
+}
+
+.medida-valor {
+  font-size: clamp(2rem, 4vw, 2.9rem);
   font-weight: 900;
   letter-spacing: -0.03em;
-  line-height: 1.1;
+  line-height: 1;
+  color: var(--color-accent-texto);
+  /* Cifras de ancho fijo: contando, un 1 más estrecho que un 8 haría bailar
+     toda la línea en cada incremento. */
+  font-variant-numeric: tabular-nums;
+  /* Y la caja tampoco cambia de tamaño al pasar de una a dos o tres cifras.
+
+     Esto no es cosmética: cambiar el texto obliga al navegador a recalcular la
+     maquetación, y contando hasta 80 son ochenta cambios. Medido, el tramo del
+     titular pasaba de 16 maquetaciones por barrido a 64. Con un ancho mínimo y
+     el contenido aislado, el recálculo no sale de este elemento. */
+  min-width: 3ch;
+  contain: layout style;
 }
 
-.fs-label {
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.45);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+/* La escala, misma receta que el eje del hero. */
+.medida-escala {
+  position: relative;
+  width: 100%;
+  height: 9px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.17))
+      0 100% / 100% 1px no-repeat,
+    repeating-linear-gradient(to right,
+      rgba(255, 255, 255, 0.17) 0 1px,
+      transparent 1px 15px)
+      0 100% / 100% 5px no-repeat;
 }
 
+.medida-barra {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--color-accent-texto);
+  box-shadow: 0 0 6px rgba(176, 36, 255, 0.55);
+  transform: scaleX(var(--llenado));
+  transform-origin: left center;
+  will-change: transform;
+}
 /* =============================================
    CTA BUTTONS
    ============================================= */
@@ -336,32 +389,75 @@
   gap: 1rem;
 }
 
+/* ── Los tres, con el instrumental de la casa ──
+
+   Eran píldoras redondeadas que podrían estar en cualquier web. Ahora llevan
+   ESQUINERAS —las marcas de esquina de una mira, tokens en index.css— que se
+   abren un par de píxeles al pasar el ratón, y un BARRIDO de corriente que
+   cruza el botón una vez al entrar el puntero. El barrido es una transición,
+   no un keyframe: nada corre en bucle, y quieto no cuesta nada. */
+.cta-btn-primary,
+.cta-btn-schedule,
+.cta-btn-ghost {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  transition: background-position 0.3s var(--ease-out-expo),
+    background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.cta-btn-primary:hover,
+.cta-btn-schedule:hover,
+.cta-btn-ghost:hover {
+  background-position: var(--esq-abierta);
+}
+
+/* El barrido. En ::before: el ::after de estos selectores lo reserva el
+   sistema global de área táctil de index.css. */
+.cta-btn-primary::before,
+.cta-btn-schedule::before,
+.cta-btn-ghost::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.16) 50%,
+    transparent 62%);
+  transform: translateX(-130%);
+  pointer-events: none;
+}
+
+.cta-btn-primary:hover::before,
+.cta-btn-schedule:hover::before,
+.cta-btn-ghost:hover::before {
+  transform: translateX(130%);
+  transition: transform 0.55s ease;
+}
+
 .cta-btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
   padding: 0.95rem 2.25rem;
-  background: #B024FF;
+  background-color: #B024FF;
+  --esq-color: rgba(255, 255, 255, 0.55);
   color: #ffffff !important;
   border: none;
-  border-radius: 0.6rem;
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 25px rgba(176, 36, 255, 0.4);
 }
 
 .cta-btn-primary:hover {
-  background: #9B1FE0;
+  background-color: #9B1FE0;
   color: #ffffff !important;
-  box-shadow: 0 8px 35px rgba(176, 36, 255, 0.6);
-}
-
-.cta-btn-primary:hover svg {
-  stroke: #ffffff;
 }
 
 .cta-btn-primary svg {
@@ -378,15 +474,14 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.95rem 2rem;
-  background: rgba(176, 36, 255, 0.08);
+  background-color: rgba(176, 36, 255, 0.08);
+  --esq-color: rgba(176, 36, 255, 0.6);
   color: rgba(255, 255, 255, 0.8);
-  border: 1.5px solid rgba(176, 36, 255, 0.25);
-  border-radius: 0.6rem;
+  border: 1px solid rgba(176, 36, 255, 0.3);
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .cta-btn-schedule svg {
@@ -398,10 +493,9 @@
 }
 
 .cta-btn-schedule:hover {
-  background: rgba(176, 36, 255, 0.15);
+  background-color: rgba(176, 36, 255, 0.15);
   border-color: rgba(176, 36, 255, 0.5);
   color: #fff;
-  box-shadow: 0 4px 20px rgba(176, 36, 255, 0.2);
 }
 
 .cta-btn-schedule:hover svg {
@@ -410,19 +504,18 @@
 
 .cta-btn-ghost {
   padding: 0.95rem 2rem;
-  background: transparent;
+  background-color: transparent;
+  --esq-color: rgba(255, 255, 255, 0.35);
   color: rgba(255, 255, 255, 0.65);
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
-  border-radius: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .cta-btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background-color: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.3);
   color: white;
 }
@@ -447,27 +540,23 @@
     font-size: clamp(1.85rem, 6.5vw, 2.5rem);
   }
 
-  .cta-stats-floating {
-    gap: 0.75rem;
+  /* Las tres lecturas se apilan. En una fila a 768px cada escala quedaría tan
+     corta que no se distinguirían las marcas, y una escala sin marcas ya no es
+     una escala. */
+  .cta-medidas {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 340px;
   }
 
-  .floating-stat {
-    padding: 0.75rem 1rem 0.75rem 0.85rem;
-    gap: 0.6rem;
+  .medida {
+    min-width: 0;
   }
 
-  .fs-icon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .fs-icon svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .fs-value {
-    font-size: 1.5rem;
+  .medida-valor {
+    font-size: 1.9rem;
   }
 
   .cta-actions {
@@ -531,27 +620,12 @@
     margin-bottom: 2rem;
   }
 
-  .floating-stat {
-    padding: 0.6rem 0.85rem 0.6rem 0.7rem;
-    gap: 0.5rem;
+  .medida-valor {
+    font-size: 1.7rem;
   }
 
-  .fs-icon {
-    width: 28px;
-    height: 28px;
-  }
-
-  .fs-icon svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  .fs-value {
-    font-size: 1.35rem;
-  }
-
-  .fs-label {
-    /* Era 0.58rem = 9.3px en movil, bajo el piso de 11px. */
+  .medida-etq {
+    /* No baja de 11px, que es el piso que audita scripts/auditar-movil.mjs. */
     font-size: var(--texto-minimo);
   }
 
