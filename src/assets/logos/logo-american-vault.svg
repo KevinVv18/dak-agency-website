@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  American Vault — monograma A + V superpuestos (asimetrico).
+  Construccion:
+    Linea larga (35,10)→(75,90): V-izquierda + A-derecha en una sola recta
+      (es decir, la V comparte el lado derecho del triangulo interno de la A).
+    Linea corta (25,90)→(50,40): pata izquierda de la A.
+    Linea corta (75,10)→(50,40): pata derecha de la V, pendiente distinta
+      a la pata izquierda de la A — por eso la V se ve "encima pero no
+      exactamente", unida por un solo lado.
+    Barra horizontal: crossbar de la A.
+  Trazo fino, `currentColor` para que el mismo archivo funcione sobre
+  fondo claro u oscuro.
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 100 100"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="2.2"
+     stroke-linecap="square"
+     stroke-linejoin="miter"
+     role="img"
+     aria-label="American Vault">
+  <line x1="35" y1="10" x2="75" y2="90"/>
+  <line x1="25" y1="90" x2="50" y2="40"/>
+  <line x1="75" y1="10" x2="50" y2="40"/>
+  <line x1="36" y1="68" x2="64" y2="68"/>
+</svg>

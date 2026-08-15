@@ -28,4 +28,12 @@ agro/
 # No los produce el build y borrarlos destruiria copias de seguridad.
 # Aparecio el 07-ago-2026 y la guarda lo detuvo antes de que el deploy se lo
 # llevara por delante.
+#
+# El 10-ago-2026 el tarball se movio a /home/u567580447/backups-fuera-de-web/,
+# fuera de todo docroot: dentro de public_html lo unico que lo separaba de
+# internet era una regla de .htaccess, y contiene wp-config.php con la clave de
+# la BD. La carpeta ya no existe en el servidor, pero la entrada se queda: el
+# panel puede volver a crearla en cualquier momento y entonces hay que
+# protegerla otra vez. Una entrada protegida que no existe no molesta a la
+# guarda (resta servidor - build - protegidas; lo que no esta, no cuenta).
 application_backups/

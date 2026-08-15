@@ -1,0 +1,237 @@
+/* =============================================
+   ESTUDIO — fotografía comercial
+   =============================================
+
+   El único tramo claro del sitio. La fotografía de DAK está hecha sobre fondos
+   claros y saturados y sobre el negro del resto de la página se apaga.
+
+   Los tokens de contraste del sitio (--color-texto-2, --color-accent-texto)
+   están calculados sobre fondo OSCURO y aquí no valen: el morado de marca
+   #B024FF da 4.13:1 sobre este claro y el teal, 1.86:1. Los de abajo están
+   medidos sobre #F4F1F6.
+   ============================================= */
+
+.estudio {
+  --claro: #F4F1F6;
+  --tinta: #030106;                 /* 18.56:1 */
+  --tinta-2: #5F5A66;               /* 5.97:1  */
+  --acento-claro: #8D1DCC;          /* 5.90:1 — morado de marca al 80% de luz */
+  --filete: #DDD6E3;
+
+  background: var(--claro);
+  color: var(--tinta);
+  padding: 6rem 0 5rem;
+  position: relative;
+}
+
+/* Sin filete de separacion. Llevaba uno de 3px en el borde superior y sobraba:
+   el salto de negro a claro ya es un corte inequivoco. Anadirle una linea de
+   color encima era subrayar lo que no necesita subrayado — y es, literalmente,
+   la franja de acento que el detector marca. */
+
+/* ---- Cabecera ---- */
+.estudio-cabecera {
+  max-width: 62ch;
+  margin: 0 auto 3.5rem;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.estudio-titulo {
+  /* La misma escala que el Taller: los dos son el trabajo, y mandan sobre las
+     demás secciones. Esta cabecera sigue centrada aunque el resto del sitio
+     pasara a la izquierda, y a propósito: es la única banda clara, otro sitio
+     dentro de la página, y el centrado ahora lo señala en vez de ser inercia. */
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+  margin: 0;
+  color: var(--tinta);
+}
+
+.estudio-filete {
+  width: 50px;
+  height: 2px;
+  margin: 1rem auto;
+  background: var(--acento-claro);
+  border-radius: 2px;
+}
+
+.estudio-entrada {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  line-height: 1.7;
+  color: var(--tinta-2);
+}
+
+/* ---- Rejilla ----
+   Columnas en vez de grid: 11 de las 19 fotos son verticales y de proporciones
+   distintas. Con columns cada una conserva su forma y no hay que recortar ni
+   dejar huecos. */
+.estudio-rejilla {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  max-width: 1400px;
+  columns: 3;
+  column-gap: 1.25rem;
+}
+
+.estudio-pieza {
+  break-inside: avoid;
+  margin-bottom: 1.25rem;
+}
+
+.estudio-figura {
+  margin: 0;
+  background: #fff;
+  border: 1px solid var(--filete);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: box-shadow 0.35s var(--ease-out-expo), transform 0.35s var(--ease-out-expo);
+}
+
+/* Sombra con desplazamiento y desenfoque: profundidad, no halo de color. */
+.estudio-pieza:hover .estudio-figura {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(3, 1, 6, 0.16);
+}
+
+.estudio-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- Rótulo ----
+   Es lo que distingue esta sección de un mood board: cada imagen dice para qué
+   negocio real se hizo y de qué rubro es. */
+.estudio-pie {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 0.9rem 0.85rem;
+  border-top: 1px solid var(--filete);
+}
+
+/* Casilla de marca. Mide siempre lo mismo lleve logo o iniciales, para que
+   todas las fichas alineen el nombre a la misma altura. */
+.estudio-marca {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--filete);
+}
+
+.estudio-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 3px;
+}
+
+.estudio-monograma {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--acento-claro);
+}
+
+.estudio-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.estudio-cliente {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--tinta);
+  line-height: 1.25;
+}
+
+.estudio-sector {
+  font-size: var(--texto-minimo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--acento-claro);
+}
+
+/* ---- Cierre ---- */
+.estudio-cierre {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.estudio-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1rem 2.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--claro);
+  background: var(--tinta);
+  border-radius: 3rem;
+  transition: background 0.3s var(--ease-out-expo), transform 0.3s var(--ease-out-expo);
+}
+
+.estudio-enlace:hover {
+  background: var(--acento-claro);
+  transform: translateY(-2px);
+}
+
+.estudio-enlace svg {
+  transition: transform 0.3s var(--ease-out-expo);
+}
+
+.estudio-enlace:hover svg {
+  transform: translateX(4px);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+  .estudio-rejilla { columns: 2; }
+}
+
+@media (max-width: 640px) {
+  .estudio {
+    padding: 4rem 0 3.5rem;
+  }
+
+  .estudio-cabecera {
+    margin-bottom: 2.5rem;
+  }
+
+  /* Una sola columna: a dos, con imagen vertical, cada pieza baja de 160px y
+     el rótulo deja de leerse. */
+  .estudio-rejilla {
+    columns: 1;
+    max-width: 460px;
+  }
+
+  .estudio-enlace {
+    width: calc(100% - 3rem);
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .estudio-figura,
+  .estudio-enlace,
+  .estudio-enlace svg {
+    transition: none;
+  }
+}

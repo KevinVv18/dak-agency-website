@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import './Services.css'
 import { scrollToSection } from '../utils/scrollToSection'
-import { cld, cldPoster } from '../utils/cloudinary'
+import { cld, cldPoster, videoUrl } from '../utils/cloudinary'
 
 const Services = () => {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -17,6 +17,10 @@ const Services = () => {
   )
   const [viewedServices, setViewedServices] = useState(new Set([0]))
   const [swipeHintVisible, setSwipeHintVisible] = useState(true)
+  // Es estado y no ref a proposito: tres efectos distintos dependen de si la
+  // seccion se ve (reproducir, rebobinar y precargar el siguiente), y con una
+  // ref ninguno se volveria a ejecutar al cambiar la visibilidad.
+  const [seccionVisible, setSeccionVisible] = useState(false)
 
   // Auto-dismiss swipe hint after 4 seconds
   useEffect(() => {
@@ -34,6 +38,9 @@ const Services = () => {
   const reducedMotionRef = useRef(false)   // respeta prefers-reduced-motion
   const contentFocusedRef = useRef(false)  // no ocultar si un boton tiene foco
   const hoveringRef = useRef(false)        // no ocultar mientras el mouse esta encima
+  // Espejo de seccionVisible para leerlo desde callbacks imperativos sin
+  // arrastrar un valor obsoleto de un closure viejo.
+  const visibleRef = useRef(false)
 
   // ════════════════════════════════════════════════════════════
   //  VIDEOS PERSONALIZADOS — cómo agregar los links
@@ -156,7 +163,9 @@ const Services = () => {
 
   const activeService = services[activeIndex]
   const activeVideo = getServiceVideo(activeService)
-  const activeVideoSrc = activeVideo ? cld(activeVideo, isMobile ? 900 : 1600) : ''
+  const activeVideoSrc = activeVideo
+    ? videoUrl(activeVideo, isMobile ? 640 : 1600, isMobile)
+    : ''
 
   // Detectar mobile
   useEffect(() => {
@@ -182,13 +191,63 @@ const Services = () => {
     }
   }, [activeIndex, isMobile])
 
-  // Reiniciar video al cambiar servicio (o al cambiar orientación)
+  /**
+   * El vídeo solo corre mientras la sección se ve.
+   *
+   * Antes llevaba `autoPlay`, así que empezaba a descargar en cuanto se
+   * montaba —con la sección aún fuera de pantalla— y en bucle acababa
+   * trayéndose el archivo entero: 1,7 MB por servicio. Ahora, con
+   * `preload="none"`, no pide un byte hasta este play(), y se pausa al salir
+   * de pantalla. Quien pasa de largo se lleva unos cientos de KB en vez del
+   * archivo completo, y quien se queda mirando lo ve igual que antes.
+   *
+   * El umbral es 0.25 y no 0: con 0 se dispararía con la sección asomando un
+   * píxel, que es justo lo que se quiere evitar.
+   */
   useEffect(() => {
-    if (videoRef.current && activeVideo) {
-      videoRef.current.currentTime = 0
-      videoRef.current.play().catch(() => { })
-    }
-  }, [activeIndex, activeVideo])
+    const seccion = servicesRef.current
+    if (!seccion) return
+
+    const observador = new IntersectionObserver(
+      ([entrada]) => {
+        visibleRef.current = entrada.isIntersecting
+        setSeccionVisible(entrada.isIntersecting)
+        // Se lee el ref en cada aviso en vez de capturar el elemento al crear
+        // el observador: con `key` en el <video>, el elemento cambia cada vez
+        // que se cambia de servicio y el capturado quedaba obsoleto.
+        const video = videoRef.current
+        if (!video) return
+        if (entrada.isIntersecting) video.play().catch(() => { })
+        else video.pause()
+      },
+      { threshold: 0.25 },
+    )
+    observador.observe(seccion)
+    return () => observador.disconnect()
+  }, [])
+
+  /**
+   * Arrancar el vídeo cuando el elemento se monta, no cuando cambia el estado.
+   *
+   * Aquí estaba el fallo que se veía en el móvil: solo funcionaba el primer
+   * servicio. El <video> lleva `key`, así que al cambiar de servicio React
+   * monta un elemento NUEVO, y va dentro de un <AnimatePresence mode="wait">,
+   * que espera a que termine la animación de salida antes de montarlo. El
+   * efecto que llamaba a play() se disparaba al cambiar activeIndex —cuando el
+   * elemento nuevo todavía no existía— y ya no volvía a dispararse. Resultado:
+   * play() no se llegaba a llamar nunca y el vídeo se quedaba en readyState 0.
+   *
+   * Antes no se notaba porque el elemento llevaba `autoPlay` y el navegador
+   * arrancaba solo al montarlo. Al quitarlo para poder usar preload="none" se
+   * perdió eso sin sustituirlo.
+   *
+   * Con un ref de función el navegador nos avisa en el momento exacto en que
+   * el elemento entra en el DOM, que es justo cuando hay que reproducirlo.
+   */
+  const montarVideo = useCallback((nodo) => {
+    videoRef.current = nodo
+    if (nodo && visibleRef.current) nodo.play().catch(() => { })
+  }, [])
 
   // ── Fase 2: mostrar / ocultar el texto por inactividad ──
   const IDLE_MS = 3500
@@ -274,17 +333,21 @@ const Services = () => {
 
   // Preload next video/image (según orientación del dispositivo)
   //
-  // En movil NO se precarga. Este elemento esta oculto y con preload="auto", asi
-  // que se descarga el siguiente video entero sin que nadie lo vea: el de
-  // Fotografia pesa 4,2 MB. En un 4G de Chiclayo eso es la diferencia entre una
-  // demo que impresiona y una pestana que se cierra. El carrusel sigue
-  // funcionando igual, solo tarda un instante mas en el primer cambio.
+  // En movil NO se precarga: el video siguiente pesa megas y en un 4G de
+  // Chiclayo eso es la diferencia entre una demo que impresiona y una pestana
+  // que se cierra. El carrusel funciona igual, solo tarda un instante mas en el
+  // primer cambio.
   //
-  // En escritorio se conserva: es una decision de UX deliberada y ahi el ancho
-  // de banda no es el cuello de botella.
+  // En escritorio se conserva, pero con preload="metadata" (ver el elemento):
+  // con "auto" se traia el archivo completo del servicio siguiente.
   useEffect(() => {
     if (!preloadRef.current) return
-    if (isMobile) {
+    // Tampoco se precarga con la seccion fuera de pantalla. Medido en
+    // escritorio: recorriendo la portada entera se descargaban DIEZ videos,
+    // 4.259 KB, la mayoria de servicios que el visitante nunca llego a abrir.
+    // Adelantar el siguiente tiene sentido mientras se esta mirando el
+    // carrusel; antes de llegar a el, no.
+    if (isMobile || !seccionVisible) {
       preloadRef.current.removeAttribute('src')
       return
     }
@@ -293,7 +356,7 @@ const Services = () => {
     if (nextVideo) {
       preloadRef.current.src = cld(nextVideo, 1600)
     }
-  }, [activeIndex, services, isMobile])
+  }, [activeIndex, services, isMobile, seccionVisible])
 
   // Keyboard navigation
   useEffect(() => {
@@ -314,16 +377,15 @@ const Services = () => {
         <div className="services-container">
           {/* Header */}
           <motion.div
-            className="services-header"
+            className="services-header section-head"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="section-title">
+            <h2 className="section-title section-title--medio">
               <span className="title-bold">Servicios</span>
             </h2>
-            <div className="title-line" />
             <p className="section-subtitle">
               Soluciones digitales que impulsan tu negocio
             </p>
@@ -342,13 +404,28 @@ const Services = () => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5 }}
                 >
+                  {/* El video se queda tambien en movil: es la muestra de
+                      trabajo, y un audiovisual congelado vende menos de lo que
+                      es. Lo que se corrige es lo que costaba de mas.
+
+                      1. Ancho real. Se pedia w_900 para pintarse a 319px. Con
+                         w_640 cubre una pantalla de densidad 2 exacta.
+                      2. preload="none" y poster. El fotograma pesa ~30 KB y
+                         aparece al instante; el video no pide un byte hasta que
+                         empieza a reproducirse.
+                      3. Solo corre mientras se ve (ver el efecto de abajo). Con
+                         autoPlay a secas empezaba a bajar aunque la seccion
+                         estuviera fuera de pantalla, y en bucle acababa
+                         trayendose el archivo entero. Asi se paga por lo que se
+                         mira: quien pasa de largo se lleva unos cientos de KB
+                         en vez de 1,7 MB. */}
                   {activeVideo ? (
                     <video
-                      ref={videoRef}
+                      ref={montarVideo}
                       key={activeVideoSrc}
                       src={activeVideoSrc}
-                      poster={cldPoster(activeVideo, isMobile ? 900 : 1600)}
-                      autoPlay
+                      poster={cldPoster(activeVideo, isMobile ? 640 : 1600)}
+                      preload="none"
                       muted
                       loop
                       playsInline
@@ -359,6 +436,8 @@ const Services = () => {
                       src={activeService.imageSrc}
                       alt={activeService.title}
                       className="featured-video"
+                      loading="lazy"
+                      decoding="async"
                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                     />
                   )}
@@ -400,13 +479,11 @@ const Services = () => {
                   transition={{ duration: 0.4, ease: 'easeOut' }}
                 >
                   <div className="featured-header-info">
-                    <span
-                      className="featured-number"
-                      style={{ color: activeService.color }}
-                    >
-                      {String(activeIndex + 1).padStart(2, '0')}
-                    </span>
-
+                    {/* Aqui iba un "01" de 4rem al 15% de opacidad, detras de
+                        la etiqueta. El mismo numeral fantasma que ya quitamos
+                        de Destacados: no informa de nada —la posicion real ya
+                        la da el contador "01 / 07" del panel— y el lector de
+                        pantalla lo leia como si fuera contenido. */}
                     <span
                       className="featured-category"
                       style={{
@@ -542,7 +619,13 @@ const Services = () => {
               {/* Preload next video */}
               <video
                 ref={preloadRef}
-                preload="auto"
+                /* "metadata" y no "auto". Con auto se descargaba el siguiente
+                   video ENTERO por si acaso: medido, 3.144 KB solo el de
+                   Fotografia, para un servicio que el visitante puede no abrir
+                   nunca. Con metadata el navegador resuelve cabeceras y
+                   dimensiones —el cambio sigue siendo mas rapido que en frio—
+                   sin traerse los megas. */
+                preload="metadata"
                 style={{ display: 'none' }}
               />
             </div>

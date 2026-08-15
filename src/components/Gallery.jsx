@@ -1,8 +1,12 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { motion, useInView, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { galleryItems, bannerItems, photoItems, categories, heroImages } from '../data/galleryData'
+import { galleryItems, bannerItems, categories, heroImages } from '../data/galleryData'
+import { sesionesPublicadas } from '../data/fotografia'
+import EstudioRejilla from './EstudioRejilla'
+import './Estudio.css'
 import './Gallery.css'
+import { CIFRAS_DESTACADAS } from '../data/cifras'
 
 /* ─────────────────────────────────────────
    Section 1: Hero + Category Filter
@@ -71,7 +75,7 @@ const MasonryGrid = () => {
     <div className="masonry-section" ref={ref}>
       {/* Esta seccion solo tiene barra de filtros: sin encabezado, sus tarjetas
           colgaban directamente del h1 y dejaban un salto h1 -> h3. */}
-      <h2 className="sr-only">Proyectos por categoría</h2>
+      <h2 className="sr-only">Taller: piezas gráficas por categoría</h2>
       {/* Filter bar */}
       <motion.div
         className="filter-bar"
@@ -104,7 +108,18 @@ const MasonryGrid = () => {
               transition={{ duration: 0.4, delay: i * 0.04 }}
               onClick={() => setLightbox(item)}
             >
-              <img src={item.src} alt={item.alt} loading="lazy" />
+              {/* Los archivos son de 1080px y aquí se pintan a 134px en móvil,
+                  318 en tableta y 393 en escritorio. La variante de 700px que
+                  genera `npm run taller:variantes` cubre el peor caso (393 en
+                  una pantalla de densidad 2 pide 786, y por encima de eso el
+                  navegador ya coge el original). El lightbox se queda con el
+                  grande, que ahí sí se ve entero. */}
+              <img
+                src={item.src}
+                {...(item.srcSm ? { srcSet: `${item.srcSm} 700w, ${item.src} 1080w`, sizes: '(max-width: 768px) 40vw, 32vw' } : {})}
+                alt={item.alt}
+                loading="lazy"
+              />
               <div className="masonry-overlay">
                 <span className="masonry-type" style={{ borderColor: item.color }}>{item.type}</span>
                 <h3>{item.alt}</h3>
@@ -209,58 +224,44 @@ const BannerShowcase = () => {
 /* ─────────────────────────────────────────
    Section 4: Photography Parallax Showcase
    ───────────────────────────────────────── */
-const PhotoParallax = () => {
-  const containerRef = useRef(null)
-  const isInView = useInView(containerRef, { once: true, margin: '-60px' })
-  const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start end', 'end start'] })
+/**
+ * El archivo fotográfico completo.
+ *
+ * Antes esta sección mostraba seis fotos fijas —cinco de línea familiar— desde
+ * galleryData. Eran las mismas seis que ya salían en la home, así que el
+ * "archivo" no añadía nada; y desde que la portada enseña el trabajo comercial,
+ * la galería se había quedado sin la mayor parte de la cartera.
+ *
+ * Ahora lee el mismo catálogo que la home (src/data/fotografia.js) y las
+ * muestra todas, con tratamiento idéntico: mismo tramo claro y mismos rótulos
+ * de cliente y rubro.
+ */
+const EstudioArchivo = () => {
+  const todas = sesionesPublicadas()
 
   return (
-    <div className="photo-parallax-section" ref={containerRef}>
-      <motion.div
-        className="photo-parallax-header"
-        initial={{ opacity: 0, y: 30 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.6 }}
-      >
-        <h2 className="photo-parallax-title">Detrás del <span className="title-accent">Lente</span></h2>
-        <p className="photo-parallax-sub">Sesiones profesionales que capturan la esencia de cada marca</p>
-      </motion.div>
-
-      <div className="photo-parallax-grid">
-        {photoItems.map((photo, i) => (
-          <ParallaxCard key={photo.id} photo={photo} index={i} scrollProgress={scrollYProgress} isInView={isInView} />
-        ))}
+    <div className="estudio">
+      <div className="estudio-cabecera">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: [0.19, 1, 0.22, 1] }}
+        >
+          <h2 className="estudio-titulo">Estudio</h2>
+          <div className="estudio-filete" />
+          <p className="estudio-entrada">
+            Las {todas.length} sesiones del archivo, comerciales y de familia.
+          </p>
+        </motion.div>
       </div>
+
+      <EstudioRejilla sesiones={todas} />
     </div>
   )
 }
 
-const ParallaxCard = ({ photo, index, scrollProgress, isInView }) => {
-  const speed = index % 2 === 0 ? 40 : -40
-  const y = useTransform(scrollProgress, [0, 1], [speed, -speed])
 
-  return (
-    <motion.div
-      className={`parallax-card parallax-card--${index % 3 === 0 ? 'large' : 'small'}`}
-      style={{ y }}
-      initial={{ opacity: 0, y: 60 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-    >
-      <div className="parallax-img-wrap">
-        <img src={photo.src} alt={photo.title} loading="lazy" />
-        <div className="parallax-overlay">
-          <span className="parallax-cat">{photo.category}</span>
-          <h3>{photo.title}</h3>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-/* ─────────────────────────────────────────
-   Section 5: Reveal-on-Scroll Showcase
-   ───────────────────────────────────────── */
 const ScrollRevealShowcase = () => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-60px' })
@@ -311,7 +312,9 @@ const RevealRow = ({ item, index, reverse }) => {
         <img src={item.src} alt={item.alt} loading="lazy" />
       </div>
       <div className="reveal-info">
-        <span className="reveal-number">{String(index + 1).padStart(2, '0')}</span>
+        {/* Aquí iba un "01 / 02 / 03" a 15% de opacidad. Numerar tres tarjetas
+            no le dice nada a nadie, no llegaba ni a 1.1:1 de contraste y el
+            lector de pantalla lo leía como si fuera contenido. */}
         <span className="reveal-type" style={{ color: item.color }}>{item.type}</span>
         <h3>{item.alt}</h3>
         <p className="reveal-client">{item.client}</p>
@@ -329,11 +332,10 @@ const GalleryCTA = () => {
   const isInView = useInView(ref, { once: true, margin: '-60px' })
   const navigate = useNavigate()
 
-  const stats = [
-    { number: '150+', label: 'Proyectos' },
-    { number: '30+', label: 'Clientes' },
-    { number: '5', label: 'Años' },
-  ]
+  /* Estas cifras estaban escritas a mano aquí y decían 150+ proyectos y 30+
+     clientes, mientras la portada decía 50+ y 98% satisfechos. El mismo sitio
+     se contradecía según la página. Ahora salen de src/data/cifras.js. */
+  const stats = CIFRAS_DESTACADAS.map((c) => ({ number: c.valor, label: c.etiqueta }))
 
   const handleCTA = (e) => {
     e.preventDefault()
@@ -389,15 +391,15 @@ const GalleryCTA = () => {
    Glossy Floating Nav (bottom)
    ───────────────────────────────────────── */
 const navSections = [
-  { id: 'masonry', label: 'Grid', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> },
+  { id: 'masonry', label: 'Taller', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> },
   { id: 'banners', label: 'Banners', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="18" y2="10"/></svg> },
-  { id: 'photos', label: 'Fotos', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> },
+  { id: 'photos', label: 'Estudio', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> },
   { id: 'featured', label: 'Destacados', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> },
 ]
 
 const GlossyNav = ({ activeSection, totalImages }) => {
   const scrollTo = (sectionId) => {
-    const map = { masonry: '.masonry-section', banners: '.banner-section', photos: '.photo-parallax-section', featured: '.reveal-section' }
+    const map = { masonry: '.masonry-section', banners: '.banner-section', photos: '.estudio', featured: '.reveal-section' }
     const el = document.querySelector(map[sectionId])
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
@@ -427,26 +429,41 @@ const GlossyNav = ({ activeSection, totalImages }) => {
    ───────────────────────────────────────── */
 const Gallery = () => {
   const [activeSection, setActiveSection] = useState(null)
-  const totalImages = galleryItems.length + bannerItems.length + photoItems.length
+  const totalImages = galleryItems.length + bannerItems.length + sesionesPublicadas().length
 
   useEffect(() => {
     const sectionMap = [
       { id: 'masonry', selector: '.masonry-section' },
       { id: 'banners', selector: '.banner-section' },
-      { id: 'photos', selector: '.photo-parallax-section' },
+      { id: 'photos', selector: '.estudio' },
       { id: 'featured', selector: '.reveal-section' },
     ]
 
+    /*
+     * Qué sección está activa se decide por una línea imaginaria trazada al
+     * 30% de la altura del viewport: la sección que la cruza es la que se está
+     * mirando. Eso es lo que hace el rootMargin, que reduce el área de
+     * observación a esa franja.
+     *
+     * Al 30% y no a media altura porque los botones hacen scrollIntoView, que
+     * deja la sección pegada al borde superior; con la línea en el centro, al
+     * pulsar "Banners" se encendía "Estudio", que es lo que quedaba a media
+     * pantalla.
+     *
+     * Antes se elegía por intersectionRatio con umbral 0.2, y eso solo funciona
+     * mientras las secciones quepan en pantalla. Al pasar el Estudio de 6 fotos
+     * a 26, su ratio ya no llega nunca al 20% y el observador dejaba de
+     * dispararse: se podía estar en mitad del Estudio con "Destacados"
+     * encendido. Medir contra una línea no depende del alto de la sección.
+     */
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries.filter(e => e.isIntersecting)
-        if (visible.length > 0) {
-          const top = visible.reduce((a, b) => a.intersectionRatio > b.intersectionRatio ? a : b)
-          const match = sectionMap.find(s => top.target.matches(s.selector))
-          if (match) setActiveSection(match.id)
-        }
+        const cruzando = entries.find(e => e.isIntersecting)
+        if (!cruzando) return
+        const match = sectionMap.find(s => cruzando.target.matches(s.selector))
+        if (match) setActiveSection(match.id)
       },
-      { threshold: 0.2 }
+      { rootMargin: '-30% 0px -69% 0px', threshold: 0 }
     )
 
     const galleryEl = document.querySelector('.gallery-page')
@@ -477,7 +494,7 @@ const Gallery = () => {
       <GalleryHero />
       <MasonryGrid />
       <BannerShowcase />
-      <PhotoParallax />
+      <EstudioArchivo />
       <ScrollRevealShowcase />
       <GalleryCTA />
       <GlossyNav activeSection={activeSection} totalImages={totalImages} />

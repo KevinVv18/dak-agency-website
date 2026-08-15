@@ -20,6 +20,25 @@
   /* Piso de tamano para texto funcional, heredado del proyecto. */
   --texto-minimo: 11px;
 
+  /* ── Las dos superficies oscuras ──
+     Nueve de las diez secciones eran el MISMO negro #030106. Medido en el
+     sitio: se recorrian 7.642px seguidos de negro identico antes de llegar a
+     la unica banda clara (el Estudio) y otros 3.723 despues. Bajando, nada
+     avisaba de que cambiabas de sitio.
+
+     La solucion no es meter otra banda clara —eso dilapidaria lo que hace
+     especial al Estudio, que es el unico tramo claro y ademas por un motivo:
+     la fotografia esta hecha sobre fondos claros. Basta con alternar el propio
+     negro. La diferencia es de unos pocos puntos de luminosidad: de cerca casi
+     no se ve, pero el borde entre dos secciones si se registra.
+
+     El levantado lleva mas azul y morado que gris para que siga siendo el
+     negro de la marca y no un gris sucio. Comprobado el contraste sobre el:
+     blanco 20.04:1 y el texto secundario 6.26:1, practicamente igual que sobre
+     el base. */
+  --superficie: #030106;
+  --superficie-alta: #0A0612;
+
   /* Texto secundario sobre fondo oscuro.
      El sitio usaba blanco con alpha 0.45, 0.35 y hasta 0.25 para subtitulos,
      descripciones y el pie. Sobre #030106 eso da 4.43, 3.03 y 2.04 — los tres
@@ -226,7 +245,10 @@ section {
   .ann-pill,
   .back-to-top,
   .footer-nav a,
-  .footer-legal a {
+  .footer-legal a,
+  .filter-pill,
+  .floating-nav-btn,
+  .banner-arrow {
     position: relative;
   }
 
@@ -245,7 +267,10 @@ section {
   .ann-pill::after,
   .back-to-top::after,
   .footer-nav a::after,
-  .footer-legal a::after {
+  .footer-legal a::after,
+  .filter-pill::after,
+  .floating-nav-btn::after,
+  .banner-arrow::after {
     content: '';
     position: absolute;
     left: 0;
@@ -273,7 +298,8 @@ section {
   .nav-arrow::after,
   .notif-btn::after,
   .social-link::after,
-  .gallery-dot::after {
+  .gallery-dot::after,
+  .banner-arrow::after {
     left: 50%;
     right: auto;
     width: 44px;
@@ -582,3 +608,176 @@ section {
   }
 }
 
+
+/* ===================================
+   CABECERAS DE SECCIÓN
+   ===================================
+
+   El problema que resuelve: seis secciones seguidas —Servicios, Demos, Taller,
+   Estudio, Blog, Nosotros— llevaban la MISMA cabecera hasta el píxel: 64px,
+   peso 900, mayúsculas, centrada, un guion de 50px debajo y un subtítulo en
+   cursiva centrado. Medido en el sitio en vivo, no de memoria.
+
+   Eso no es un estilo, es una plantilla estampada seis veces, y se nota: si
+   todas las secciones gritan igual de fuerte, ninguna manda. La única que
+   parecía diseñada era Contacto ("Hablemos.", a la izquierda, sin mayúsculas
+   ni guion), y por eso es el modelo de lo que viene.
+
+   Se probó a alinear las cabeceras a la izquierda y NO funcionó, por un motivo
+   concreto: los cuerpos de las secciones están centrados —el manifiesto de
+   Nosotros, el carrusel del Taller—, así que el título apuntaba a un borde que
+   su contenido no compartía. Contacto sí puede ir a la izquierda porque esa
+   sección entera está montada sobre una retícula alineada; es la excepción y
+   por eso se lee bien. Alinear el resto exigiría re-maquetar cada cuerpo, y
+   sería pelear contra contenido que pide estar centrado.
+
+   Lo que sí resuelve el problema sin tocar la alineación:
+
+   1. Tres escalas según el papel. El trabajo (Taller, Estudio) manda, la
+      oferta (Servicios, Demos) va detrás y el apoyo (Blog, Nosotros) acompaña.
+      La monotonía venía de que las seis pesaban lo mismo, no de que
+      estuvieran centradas.
+   2. Fuera el guion decorativo de 50px que repetían las seis. En su lugar, una
+      regla fina que cruza la columna por encima del título: separa una sección
+      de la anterior, que es información, en vez de adornar.
+
+   Los modificadores llevan dos clases a propósito: Services.css todavía tiene
+   anulaciones de .section-title dentro de sus media queries, y con una sola
+   clase aplastarían la jerarquía en móvil. */
+
+.section-title {
+  font-weight: 900;
+  margin-bottom: 0;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  /* El cuerpo lo fija el modificador de escala. Sin él queda el tamaño medio,
+     para que una sección nueva nazca razonable y no gigante. */
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+}
+
+.title-bold {
+  display: inline-block;
+  /* El énfasis lo dan el peso y el tamaño, no un degradado. El blanco sólido
+     además hace el contraste medible, cosa que con background-clip: text no
+     lo era. */
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.section-subtitle {
+  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+  color: var(--color-texto-2);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.section-head {
+  text-align: center;
+  position: relative;
+  padding-top: 1.75rem;
+}
+
+/* La regla que separa. Cruza la columna y se apaga hacia los dos lados, para
+   acompañar a un título centrado sin cerrarlo como una caja. */
+.section-head::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 22%,
+    rgba(176, 36, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.06) 78%,
+    transparent 100%
+  );
+}
+
+/* La escala: 88 → 64 → 48 en escritorio, un salto de un tercio entre pasos.
+   El primer intento fue 88 → 56 → 33 y el escalón pequeño se quedaba
+   raquítico: Blog parecía un pie de página, no una sección. Jerarquía no es
+   empequeñecer lo que acompaña, es que se note quién manda. */
+.section-title--grande {
+  font-size: clamp(3rem, 7vw, 5.5rem);
+}
+
+.section-title--medio {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+}
+
+/* Blog y Nosotros acompañan al trabajo, no compiten con él. Lo que los separa
+   ya no es sobre todo el cuerpo, sino la caja: en redonda y no en versales,
+   se leen como un rótulo y no como otro cartel. */
+.section-title--menor {
+  font-size: clamp(2rem, 3.75vw, 3rem);
+  text-transform: none;
+  letter-spacing: -0.02em;
+}
+
+/* El subtítulo se queda centrado, pero en redonda y no en cursiva ligera: esa
+   cursiva en gris bajo un título es el acabado por defecto de cualquier
+   plantilla, y aquí no aportaba nada que no aportara ya el color. */
+.section-head .section-subtitle {
+  margin: 0.9rem auto 0;
+  font-style: normal;
+  font-weight: 400;
+  max-width: 46ch;
+}
+
+@media (max-width: 768px) {
+  .section-head {
+    padding-top: 1.25rem;
+  }
+
+  .section-head .section-subtitle {
+    max-width: none;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RITMO DE SUPERFICIE
+
+   Cuál va levantada y cuál no, en el orden en que se recorren:
+
+     Hero            base
+     Portada (h1)    levantada
+     Servicios       base
+     Demos           levantada
+     Taller          base
+     Estudio         CLARA — es su propio mundo, no entra en la alternancia
+     Blog            levantada
+     Nosotros        base
+     Contacto        levantada
+     Pie             base
+
+   Se alternan de una en una porque lo que hace falta es el BORDE: al pasar de
+   una a otra, el ojo registra que ha cambiado de sitio. Agrupándolas de dos en
+   dos se pierde justo eso.
+
+   Va aquí y no en cada archivo para poder leer la secuencia entera de un
+   vistazo. Repartido por siete CSS distintos, nadie sabría qué ritmo tiene la
+   página.
+   ═══════════════════════════════════════════ */
+
+.cta-section,
+.demos-section,
+.blog,
+.contact-section {
+  background: var(--superficie-alta);
+}
+
+.hero,
+.services,
+.taller-section,
+.about,
+.footer {
+  background: var(--superficie);
+}

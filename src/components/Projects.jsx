@@ -98,12 +98,11 @@ const DemoLinks = ({ d, onLive }) => (
   </div>
 )
 
-const DemoChips = () => (
-  <span className="demo-chips" aria-hidden="true">
-    <i className="demo-chip demo-chip--fill" />
-    <i className="demo-chip demo-chip--line" />
-  </span>
-)
+// Aqui vivia DemoChips: dos cuadrados redondeados de 36px al lado de cada
+// demo, aria-hidden, sin significado ninguno. Uno se pintaba del color del
+// demo y el otro llevaba un borde #F39C12 fijo que no correspondia a nada.
+// Geometria de relleno: ocupaba sitio junto al recorte del producto —que es
+// lo que de verdad hay que mirar— sin decir nada de el.
 
 const DemoCell = ({ d, index, inView, onLive }) => {
   const isTop = d.pos === 'tl' || d.pos === 'tr'
@@ -127,7 +126,6 @@ const DemoCell = ({ d, index, inView, onLive }) => {
       >
         <img className="demo-img" src={d.img} alt={d.alt} loading="lazy" />
       </a>
-      <DemoChips />
     </div>
   )
 
@@ -160,15 +158,11 @@ const LiveDemos = () => {
 
   return (
     <div className="live-demos" ref={ref}>
-      <motion.p
-        className="live-demos-kicker"
-        initial={{ opacity: 0, y: 20 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.5 }}
-      >
-        Demos en vivo — no te lo contamos, <span>pruébalo tú mismo</span>
-      </motion.p>
-
+      {/* Aqui iba "Demos en vivo — no te lo contamos, pruébalo tú mismo",
+          que repetia palabra por palabra el subtitulo que esta tres lineas
+          mas arriba ("No te lo contamos: pruébalo. Cuatro trabajos nuestros,
+          en vivo y funcionando."). Decirlo dos veces seguidas no lo hace mas
+          creible; lo hace sonar a relleno. */}
       <div className="demo-stage">
         <span className="demo-axis demo-axis--v" aria-hidden="true" />
         <span className="demo-axis demo-axis--h" aria-hidden="true" />
@@ -242,9 +236,13 @@ const Projects = () => {
       </section>
 
       <section className="projects-section taller-section" id="taller">
+        {/* El Taller va a escala grande: junto al Estudio es el trabajo, que
+            es a lo que se viene. Demos, Servicios, Blog y Nosotros lo rodean
+            en escalas menores. */}
         <SectionHeader
           titulo="Taller"
           subtitulo="Piezas que hemos producido para marcas de Chiclayo y Lambayeque."
+          escala="grande"
         />
         <div className="projects-flow">
           {featured.map(({ client, layout }, i) => (
@@ -293,22 +291,21 @@ const GalleryCTA = () => {
    número de sección que no aportaba secuencia y monoespaciada de adorno; tres
    recursos que el suelo de calidad de impeccable desaconseja, y estaban juntos.
    El título se sostiene solo. */
-const SectionHeader = ({ titulo, subtitulo }) => {
+const SectionHeader = ({ titulo, subtitulo, escala = 'medio' }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
     <div className="proj-header" ref={ref}>
       <motion.div
-        className="proj-header-inner"
+        className="proj-header-inner section-head"
         initial={{ opacity: 0, y: 30 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.7 }}
       >
-        <h2 className="section-title">
+        <h2 className={`section-title section-title--${escala}`}>
           <span className="title-bold">{titulo}</span>
         </h2>
-        <div className="title-line" />
         <p className="section-subtitle">{subtitulo}</p>
       </motion.div>
     </div>
@@ -331,6 +328,25 @@ const ProjectBlock = ({ client, index, total, layout }) => {
     </div>
   )
 }
+
+/**
+ * Fuentes de una pieza del Taller.
+ *
+ * Los archivos son de 1080px y aquí casi nunca se pintan a más de 420: en la
+ * tira son 220px y en la desordenada 256. Medido en la portada en vivo, hasta
+ * 4.9x más grandes de lo necesario. `npm run taller:variantes` genera un
+ * gemelo de 700px y esto deja que el navegador elija según el ancho real y la
+ * densidad de la pantalla.
+ *
+ * `medida` tiene que ser el ancho al que se pinta de verdad: si mientes ahí,
+ * el navegador elige mal. Las maquetaciones de escritorio no se renderizan en
+ * móvil (ahí entra MobileProjects), así que pueden ir en píxeles fijos.
+ *
+ * Sin gemelo —las piezas del bloque hero, que sí se ven a tamaño real— no
+ * devuelve nada y la etiqueta se queda con su src de siempre.
+ */
+const fuentes = (img, medida) =>
+  img.srcSm ? { srcSet: `${img.srcSm} 700w, ${img.src} 1080w`, sizes: medida } : {}
 
 /* ── Client Info Badge (shared) ── */
 const ClientBadge = ({ client, variant = 'default' }) => (
@@ -437,6 +453,7 @@ const MinimalLayout = ({ client, index, inView }) => {
           <motion.img
             key={imgIdx}
             src={client.imagenes[imgIdx].src}
+            {...fuentes(client.imagenes[imgIdx], '420px')}
             alt={client.imagenes[imgIdx].alt}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -470,11 +487,12 @@ const FilmstripLayout = ({ client, index, inView }) => (
     animate={inView ? { opacity: 1, y: 0 } : {}}
     transition={{ duration: 0.6 }}
   >
+    {/* Sin el "03" translucido que iba aqui: numerar los clientes no dice
+        nada —no hay un orden que signifique algo— y a esa opacidad no llegaba
+        al contraste minimo. Es el mismo numeral que ya salio de Destacados y
+        de Servicios. */}
     <div className="film-header">
       <ClientBadge client={client} />
-      <span className="film-number" style={{ color: `${client.color}30` }}>
-        {String(index + 1).padStart(2, '0')}
-      </span>
     </div>
     <div className="film-strip">
       {client.imagenes.map((img, i) => (
@@ -485,7 +503,7 @@ const FilmstripLayout = ({ client, index, inView }) => (
           animate={inView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.4, delay: 0.12 * i }}
         >
-          <img src={img.src} alt={img.alt} loading="lazy" />
+          <img src={img.src} {...fuentes(img, '220px')} alt={img.alt} loading="lazy" />
           <span className="film-tipo">{img.tipo}</span>
         </motion.div>
       ))}
@@ -526,14 +544,11 @@ const ScatteredLayout = ({ client, index, inView }) => {
             transition={{ duration: 0.5, delay: 0.15 * i }}
             whileHover={{ scale: 1.05, zIndex: 10, rotate: 0 }}
           >
-            <img src={img.src} alt={img.alt} loading="lazy" />
+            <img src={img.src} {...fuentes(img, '256px')} alt={img.alt} loading="lazy" />
           </motion.div>
         ))}
       </div>
       <div className="scattered-info">
-        <span className="scattered-num" style={{ color: `${client.color}25` }}>
-          {String(index + 1).padStart(2, '0')}
-        </span>
         <ClientBadge client={client} />
         <ServiceTags client={client} />
       </div>
@@ -556,12 +571,15 @@ const MobileProjects = ({ featured }) => {
       <section className="projects-mobile demos-section" id="demos">
         <div className="pm-header" ref={headerRef}>
           <motion.div
+            className="section-head"
             initial={{ opacity: 0, y: 20 }}
             animate={headerInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="proj-title">Demos</h2>
-            <div className="title-line" />
+            {/* La misma escala que en escritorio. Antes era .proj-title, que no
+                tenia CSS propio: caia al h2 global y Demos y Taller pesaban
+                igual, justo lo que la jerarquia intenta evitar. */}
+            <h2 className="section-title section-title--medio">Demos</h2>
             <p className="pm-subtitle">Cuatro trabajos nuestros, en vivo y funcionando.</p>
           </motion.div>
         </div>
@@ -572,13 +590,13 @@ const MobileProjects = ({ featured }) => {
       <section className="projects-mobile taller-section" id="taller">
         <div className="pm-header">
           <motion.div
+            className="section-head"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="proj-title">Taller</h2>
-            <div className="title-line" />
+            <h2 className="section-title section-title--grande">Taller</h2>
             <p className="pm-subtitle">Piezas producidas para marcas de Chiclayo y Lambayeque.</p>
           </motion.div>
         </div>
@@ -614,7 +632,7 @@ const MobileHeroCard = ({ client, index }) => {
       initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }}>
       <div className="pm-hero-img">
         <AnimatePresence mode="wait">
-          <motion.img key={imgIdx} src={client.imagenes[imgIdx].src} alt={client.imagenes[imgIdx].alt} loading="lazy"
+          <motion.img key={imgIdx} src={client.imagenes[imgIdx].src} {...fuentes(client.imagenes[imgIdx], '91vw')} alt={client.imagenes[imgIdx].alt} loading="lazy"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} />
         </AnimatePresence>
         <div className="pm-hero-overlay" />
@@ -647,7 +665,7 @@ const MobileMosaicCard = ({ client, index }) => {
           <motion.div key={i} className="pm-mosaic-cell"
             initial={{ opacity: 0, scale: 0.9 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.4, delay: 0.08 * i }}>
-            <img src={img.src} alt={img.alt} loading="lazy" />
+            <img src={img.src} {...fuentes(img, '45vw')} alt={img.alt} loading="lazy" />
           </motion.div>
         ))}
       </div>
@@ -671,7 +689,7 @@ const MobileSimpleCard = ({ client, index, total }) => {
       initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }}>
       <div className="pm-simple-img">
         <AnimatePresence mode="wait">
-          <motion.img key={imgIdx} src={client.imagenes[imgIdx].src} alt={client.imagenes[imgIdx].alt} loading="lazy"
+          <motion.img key={imgIdx} src={client.imagenes[imgIdx].src} {...fuentes(client.imagenes[imgIdx], '45vw')} alt={client.imagenes[imgIdx].alt} loading="lazy"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} />
         </AnimatePresence>
       </div>

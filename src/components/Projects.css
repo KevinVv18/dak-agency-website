@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════ */
 
 .projects-section {
-  background: #030106;
+  /* El fondo lo pone el ritmo de superficies de index.css. */
   position: relative;
   overflow: hidden;
 }
@@ -42,7 +42,6 @@
 /* ── Header ── */
 .proj-header {
   padding: 2.5rem 3rem 2rem;
-  text-align: center;
 }
 
 .proj-header-inner {
@@ -440,11 +439,6 @@
   margin-bottom: 1rem;
 }
 
-.film-number {
-  font-size: 3rem;
-  font-weight: 900;
-  line-height: 1;
-}
 
 .film-strip {
   display: flex;
@@ -648,13 +642,6 @@
   position: relative;
 }
 
-.scattered-num {
-  font-size: 6rem;
-  font-weight: 900;
-  line-height: 1;
-  display: block;
-  margin-bottom: -0.5rem;
-}
 
 /* ═══════════════════════════════════════
    RESPONSIVE — tablet
@@ -711,7 +698,7 @@
    MOBILE
    ═══════════════════════════════════════ */
 .projects-mobile {
-  background: #030106;
+  /* El fondo lo pone el ritmo de superficies de index.css. */
   padding: 4rem 0 3rem;
   position: relative;
   overflow: hidden;
@@ -724,7 +711,6 @@
 }
 
 .pm-header {
-  text-align: center;
   padding: 0 1.5rem 1.5rem;
 }
 
@@ -966,19 +952,6 @@
   padding: 1rem 3rem 4rem;
 }
 
-.live-demos-kicker {
-  text-align: center;
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 0.95rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin: 0 0 2rem;
-}
-
-.live-demos-kicker span {
-  color: #fff;
-  font-weight: 700;
-}
 
 /* ── Escenario 2×2 con separadores en cruz y demo nuevo al centro ──
    Réplica del diseño "apartado de proyectos": recortes flotando sobre el
@@ -1091,32 +1064,10 @@
     drop-shadow(0 0 42px color-mix(in srgb, var(--demo-color) 30%, transparent));
 }
 
-.demo-chips {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  flex-shrink: 0;
-}
 
-.demo-chip {
-  display: block;
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  transition: transform 0.3s var(--ease-out-expo);
-}
 
-.demo-chip--fill {
-  background: var(--demo-color);
-  box-shadow: 0 0 18px color-mix(in srgb, var(--demo-color) 40%, transparent);
-}
 
-.demo-chip--line {
-  border: 2.5px solid #F39C12;
-}
 
-.demo-cell:hover .demo-chip--fill { transform: scale(1.12); }
-.demo-cell:hover .demo-chip--line { transform: scale(0.92); }
 
 .demo-links {
   display: flex;
@@ -1215,7 +1166,6 @@
 @media (max-width: 560px) {
   .demo-visual { height: 205px; gap: 1.1rem; }
   .demo-cell--center .demo-visual { height: 175px; }
-  .demo-chip { width: 30px; height: 30px; border-radius: 10px; }
   .demo-links { flex-wrap: wrap; gap: 0.6rem 1.1rem; }
 }
 
