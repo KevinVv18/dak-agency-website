@@ -190,13 +190,28 @@ const CTASection = () => {
           <span className="cta-barrido" aria-hidden="true">
             <span className="cta-barrido-linea" />
           </span>
-          <span className="heading-row" style={{ '--llega': 0.14 }}>Creamos</span>
-          <span className="heading-row" style={{ '--llega': 0.3 }}>
-            <Palabra clave="branding" llega={0.36}>branding</Palabra> y experiencias
+          {/* Los tres --llega se corrieron de 0,14 / 0,30 / 0,46 a 0,62 / 0,72 /
+              0,82, y las palabras con ellos.
+
+              No es un ajuste de gusto: está medido. Con los valores viejos la
+              entrega ENTERA ocurría con el titular todavía por debajo del borde
+              de la pantalla. A --entrega 0,26 el h1 arrancaba en y=917 de una
+              ventana de 900, y para cuando estaba centrado ya se había
+              encendido todo. La aguja de medición, que va con ellos, vivía en
+              y=900-927: literalmente nunca se veía, y de ahí que se leyera como
+              un fallo de pintado y no como un instrumento.
+
+              De 0,62 a 1 el titular sí está en pantalla, y ahí ocurre ahora
+              todo. Con esto la aguja se queda casi quieta en la ventana y es el
+              texto el que le pasa por dentro — que es lo que hace un cabezal de
+              lectura de verdad. */}
+          <span className="heading-row" style={{ '--llega': 0.62 }}>Creamos</span>
+          <span className="heading-row" style={{ '--llega': 0.72 }}>
+            <Palabra clave="branding" llega={0.67}>branding</Palabra> y experiencias
           </span>
-          <span className="heading-row" style={{ '--llega': 0.46 }}>
-            <Palabra clave="digital" llega={0.5}>digitales</Palabra> de alto{' '}
-            <Palabra clave="impacto" llega={0.62}>impacto</Palabra>
+          <span className="heading-row" style={{ '--llega': 0.82 }}>
+            <Palabra clave="digital" llega={0.78}>digitales</Palabra> de alto{' '}
+            <Palabra clave="impacto" llega={0.88}>impacto</Palabra>
           </span>
         </h1>
 

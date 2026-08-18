@@ -135,38 +135,67 @@
   margin: 0 0 1.5rem;
 }
 
-/* ── El barrido de medición ──
-   Cruza el enunciado con el scroll. El carro mide todo el titular y se desplaza
-   con transform —igual que el índice del eje— porque colocarlo con `left`
-   costaría una maquetación por fotograma. */
+/* ── La aguja de medición ──
+
+   Antes cruzaba el titular en HORIZONTAL mientras el encendido del texto iba
+   fila por fila hacia ABAJO. Las dos cosas se contradecían: la aguja nunca
+   estaba donde ocurría lo que decía medir, y por eso se leía como un artefacto
+   y no como un instrumento. Además arrancaba visible y quieta en el borde
+   izquierdo, y llevaba un resplandor morado de 12px del mundo anterior.
+
+   Ahora desciende, y va exactamente en el límite entre las filas ya encendidas
+   y las que faltan. La aguja ES el borde de lectura.
+
+   El recorrido sale de cuadrar los centros de las tres filas —1/6, 3/6 y 5/6 de
+   la altura— con el --entrega al que cada una se enciende (su --llega de 0,62 /
+   0,72 / 0,82, más el medio paso que tarda en llenarse): cruza cada fila justo
+   cuando esa fila se enciende.
+
+   La franja 0,60-0,92 no es arbitraria: es el tramo en que el titular está de
+   verdad en pantalla. Con los valores anteriores la aguja se movía por y=900 de
+   una ventana de 900 —o sea, nunca se veía—, y eso es lo que la hacía parecer
+   un fallo de pintado. El porqué completo está en CTASection.jsx.
+
+   Se desplaza con transform —igual que el índice del eje del hero— porque
+   colocarla con `top` costaría una maquetación por fotograma. */
 .cta-barrido {
   position: absolute;
   inset: -0.2em 0;
-  width: 100%;
+  --recorrido: clamp(0, calc((var(--entrega, 1) - 0.60) * 3.125), 1);
   pointer-events: none;
-  transform: translateX(calc(clamp(0, calc((var(--entrega, 1) - 0.08) * 1.55), 1) * (100% - 2px)));
+  transform: translateY(calc(var(--recorrido) * (100% - 1px)));
   will-change: transform;
 }
 
 .cta-barrido-linea {
   position: absolute;
-  inset: 0 auto;
-  left: 0;
-  width: 2px;
-  background: linear-gradient(to bottom,
-    transparent, var(--color-accent-texto) 18%, var(--color-accent-texto) 82%, transparent);
-  box-shadow: 0 0 12px rgba(176, 36, 255, 0.7);
-  /* Desaparece cuando ha terminado de medir: un instrumento que ya leyó no
+  inset: auto 0;
+  top: 0;
+  height: 1px;
+  /* Los extremos difuminados: si acabara en seco se leería como un borde
+     suelto, no como el filo de una regla. */
+  background: linear-gradient(to right,
+    transparent, var(--color-accent-texto) 6%, var(--color-accent-texto) 62%, transparent 96%);
+  /* Entra y sale. Antes solo tenía la salida, así que se quedaba parada arriba
+     a la vista antes de empezar a medir; y un instrumento que ya leyó tampoco
      deja la aguja encima del resultado. */
-  opacity: clamp(0, calc((1 - clamp(0, calc((var(--entrega, 1) - 0.08) * 1.55), 1)) * 5), 1);
+  opacity: min(
+    clamp(0, calc(var(--recorrido) * 8), 1),
+    clamp(0, calc((1 - var(--recorrido)) * 5), 1)
+  );
 }
 
-/* Cada fila se enciende al paso del barrido. No baja de 0.66: por delante del
-   barrido el texto sigue teniendo que leerse, y ahí es donde la auditoría de
-   contraste manda sobre el efecto. */
+/* Cada fila se enciende al paso de la aguja. No baja de 0.66: por delante de la
+   aguja el texto sigue teniendo que leerse, y ahí es donde la auditoría de
+   contraste manda sobre el efecto.
+
+   La rampa pasó de ×7 a ×12 —de tardar 0,143 de recorrido en llenarse a tardar
+   0,083— porque toda la entrega se corrió a la franja 0,62-0,82: con la rampa
+   vieja la última fila no habría acabado de encenderse hasta --entrega 0,963,
+   y la última palabra habría necesitado 1,023, que no existe. */
 .heading-row {
   display: block;
-  --v: clamp(0, calc((var(--entrega, 1) - var(--llega, 0)) * 7), 1);
+  --v: clamp(0, calc((var(--entrega, 1) - var(--llega, 0)) * 12), 1);
   color: rgba(255, 255, 255, calc(0.66 + var(--v) * 0.34));
 }
 
@@ -191,7 +220,9 @@
   height: 3px;
   background: var(--wc);
   border-radius: 2px;
-  transform: scaleX(clamp(0, calc((var(--entrega, 1) - var(--llega, 0)) * 9), 1));
+  /* ×12 igual que las filas: con ×9 la última palabra («impacto», --llega 0,88)
+     no habría terminado de subrayarse hasta --entrega 0,991, al filo. */
+  transform: scaleX(clamp(0, calc((var(--entrega, 1) - var(--llega, 0)) * 12), 1));
   transform-origin: left center;
   transition: transform 0.3s ease;
   box-shadow: 0 0 10px var(--wc);

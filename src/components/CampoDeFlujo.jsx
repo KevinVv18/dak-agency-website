@@ -426,26 +426,50 @@ const CampoDeFlujo = ({ className = '' }) => {
 
     const medir = () => {
       const caja = contenedor.getBoundingClientRect()
-      ancho = Math.max(1, Math.round(caja.width))
-      alto = Math.max(1, Math.round(caja.height))
-      const dpr = densidad(ancho)
-      lienzo.width = Math.round(ancho * dpr)
-      lienzo.height = Math.round(alto * dpr)
-      lienzo.style.width = `${ancho}px`
-      lienzo.style.height = `${alto}px`
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      ctx.fillStyle = '#030106'
-      ctx.fillRect(0, 0, ancho, alto)
+      const nuevoAncho = Math.max(1, Math.round(caja.width))
+      const nuevoAlto = Math.max(1, Math.round(caja.height))
 
-      /* El campo depende de la PROPORCIÓN del encuadre, no de su tamaño, así
-         que solo se reconstruye cuando esa proporción cambia de verdad. Al
-         girar un teléfono sí; al aparecer la barra del navegador al desplazar,
-         no — y esa es la diferencia entre un giro y un tirón cada vez que la
-         barra entra o sale. */
-      const prop = ancho / alto
-      if (!campoX || Math.abs(prop - propCampo) / propCampo > 0.08) {
-        construirCampo()
-        propCampo = prop
+      /* ── El encuadre, comprobado ANTES de tocar un solo píxel ──
+         Aquí estaba el parpadeo que se veía en el móvil. Esta función corre en
+         cada `resize`, y en un teléfono la barra del navegador entrando y
+         saliendo dispara `resize` continuamente. Lo que hacía sin preguntar:
+
+           1. `lienzo.width = …` — asignar el ancho de un lienzo BORRA el mapa
+              de bits entero, aunque le asignes exactamente el mismo número.
+           2. lo pintaba de negro.
+           3. `sembrar()` — resembraba las 1.100-4.200 partículas en posiciones
+              nuevas al azar.
+
+         Y todo eso para nada: el contenedor mide en `svh`, que es justamente la
+         unidad que NO cambia cuando aparece la barra, así que ancho y alto
+         salían idénticos. Cada scroll en el móvil borraba la corriente y la
+         volvía a sembrar de cero.
+
+         Con el encuadre igual no hay nada que rehacer en los píxeles. Lo que sí
+         se recalcula siempre es la geometría de scroll de más abajo, que es
+         aritmética y no toca el lienzo. */
+      const mismoEncuadre = nuevoAncho === ancho && nuevoAlto === alto && campoX
+      ancho = nuevoAncho
+      alto = nuevoAlto
+
+      if (!mismoEncuadre) {
+        const dpr = densidad(ancho)
+        lienzo.width = Math.round(ancho * dpr)
+        lienzo.height = Math.round(alto * dpr)
+        lienzo.style.width = `${ancho}px`
+        lienzo.style.height = `${alto}px`
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        ctx.fillStyle = '#030106'
+        ctx.fillRect(0, 0, ancho, alto)
+
+        /* El campo depende de la PROPORCIÓN del encuadre, no de su tamaño, así
+           que solo se reconstruye cuando esa proporción cambia de verdad. Al
+           girar un teléfono sí; al redimensionar poco a lo ancho, no. */
+        const prop = ancho / alto
+        if (!campoX || Math.abs(prop - propCampo) / propCampo > 0.08) {
+          construirCampo()
+          propCampo = prop
+        }
       }
 
       /* La geometría del compás, cacheada.
@@ -465,7 +489,7 @@ const CampoDeFlujo = ({ className = '' }) => {
       const cta = tunelNodo ? tunelNodo.querySelector('.cta-section') : null
       ctaDesde = cta ? cta.getBoundingClientRect().top + window.scrollY : 0
 
-      sembrar()
+      if (!mismoEncuadre) sembrar()
     }
 
     /* ── Muestreo del campo, interpolado entre las cuatro celdas vecinas ──
@@ -798,7 +822,14 @@ const CampoDeFlujo = ({ className = '' }) => {
     )
     observador.observe(contenedor)
 
+    /* Solo el RATÓN abre la corriente.
+       `pointermove` dispara también con el dedo, y en táctil `pointerleave`
+       casi nunca llega: el hueco de repulsión se quedaba clavado donde tocaste
+       hasta que volvieras a tocar. La comprobación es por EVENTO y no por
+       dispositivo, así que un portátil táctil con ratón conectado sigue
+       respondiendo al ratón mientras el dedo no mueve nada. */
     const alMover = (e) => {
+      if (e.pointerType !== 'mouse') return
       const caja = contenedor.getBoundingClientRect()
       punteroRef.current = { x: e.clientX - caja.left, y: e.clientY - caja.top }
     }

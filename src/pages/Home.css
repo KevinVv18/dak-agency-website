@@ -56,6 +56,31 @@
   background: transparent;
 }
 
+/* ── El final del túnel ──
+   El lienzo se acaba justo donde empieza Servicios, y hasta ahora las
+   partículas llegaban a su última fila a pleno brillo: un filo recto de lado a
+   lado. Medido en el empalme, la luminancia media caía de 12,9 a 2,65 en una
+   sola fila de píxeles.
+
+   Esto no es un parche de degradado: es el remate que le faltaba a la idea. El
+   aire sale del túnel y la corriente se disuelve en la superficie, en vez de
+   que alguien apague el ventilador de golpe.
+
+   Va en z-index 1 —encima del lienzo, debajo del hero y del titular— así que
+   difumina la corriente sin tocar el texto. Es un degradado estático: se pinta
+   una vez y no cuesta nada por fotograma. */
+.tunel::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 220px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 0%, var(--superficie) 100%);
+}
+
 @media (max-width: 768px) {
   .tunel > .campo {
     height: 92svh;

@@ -42,19 +42,22 @@ const Blog = () => {
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="blog-header-left section-head">
-          <h2 className="section-title section-title--menor">
+        {/* Sube del escalón `--menor` al `--medio`: versales y 64px, como
+            SERVICIOS, DEMOS y TALLER. El `--menor` traía `text-transform: none`
+            y por eso Blog era el único rótulo en redonda de toda la página.
+            Nosotros se queda en `--menor`, intacto, hasta que le toque.
+
+            Y vuelve el subtítulo: era la única sección sin una línea que dijera
+            de qué va. El CSS ocultaba `.blog-header .section-subtitle`, pero es
+            que ese elemento ni siquiera existía aquí. */}
+        <div className="section-head">
+          <h2 className="section-title section-title--medio">
             <span className="title-bold">Blog</span>
           </h2>
+          <p className="section-subtitle">
+            Lo que vamos aprendiendo sobre marketing, y lo contamos.
+          </p>
         </div>
-        <motion.a
-          href="/blog/"
-          className="blog-header-button"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Visitar Blog
-        </motion.a>
       </motion.div>
 
       {loading && (
@@ -95,6 +98,22 @@ const Blog = () => {
             ))}
           </ul>
         </motion.div>
+      )}
+
+      {/* El botón, al FINAL. Estaba pegado bajo el título, o sea pidiendo salir
+          de la web antes de haber enseñado un solo titular. Aquí llega cuando
+          ya has leído cuatro y puede que quieras más — el mismo sitio y el
+          mismo papel que «Ver galería completa» en Taller. */}
+      {!loading && !error && (
+        <div className="blog-cierre">
+          <a href="/blog/" className="blog-boton">
+            Ver todo el blog
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
+        </div>
       )}
     </section>
   )
@@ -177,36 +196,24 @@ const EnLista = ({ post }) => {
   )
 }
 
-// Category colors helper
 /**
- * Color de fondo de la píldora de categoría. La tinta encima es #030106.
+ * El acento de la categoría. Uno solo, el de la casa.
  *
- * El morado de marca #B024FF daba 4.49:1 con esa tinta — falla AA por una
- * centésima. Se usa #B93EFF, que es el mismo morado aclarado que ya define
- * --color-accent-texto en index.css para este problema exacto, y sube a
- * 5.14:1. Comprobadas las once categorías: era la única por debajo, y encima
- * era el color por defecto, así que cualquier categoría nueva del blog nacía
- * fallando.
+ * Aquí había un mapa de CATORCE colores —teal, verde, naranja, oro, azul,
+ * marrón— uno por categoría. Es el mismo arcoíris que ya salió de Servicios
+ * (siete), de Demos (cuatro) y de Taller (seis): color inventado por tema, en
+ * una web de un solo acento. Lo que distingue una categoría de otra es su
+ * NOMBRE, que además es lo único de las dos cosas que informa.
+ *
+ * Sigue siendo una función y no una constante para no tocar los dos sitios que
+ * la llaman, y porque es donde vive el porqué.
+ *
+ * El tono es #B93EFF y no el #B024FF de marca: la tinta encima es #030106, y
+ * con el morado sin aclarar daba 4.49:1 — falla AA por una centésima. Es el
+ * mismo aclarado que --color-accent-texto define en index.css para este
+ * problema exacto, y sube a 5.14:1.
  */
-const getCategoryColor = (category) => {
-  const colors = {
-    'Marketing Digital': '#B93EFF',
-    'Marketing': '#B93EFF',
-    'Redes Sociales': '#00C8C8',
-    'SEO': '#00B478',
-    'SEO & Ads': '#00A5A5',
-    'Email Marketing': '#FF6B35',
-    'Inversión': '#D4A574',
-    'Startups': '#4A90E2',
-    'Branding': '#009462',
-    'Video': '#C08850',
-    'Diseño Web': '#00A5A5',
-    'Opinión': '#B93EFF',
-    'Entrevistas': '#009462',
-    'General': '#B93EFF'
-  }
-  return colors[category] || '#B93EFF'
-}
+const getCategoryColor = () => '#B93EFF'
 
 export default Blog
 

@@ -20,16 +20,45 @@
   z-index: 0;
 }
 
+/* ── Demos: la estela media ──
+   Siguiente escalón del ritmo de superficies de index.css: Servicios estrena
+   --estela-fuerte, Demos hereda la media, Taller la tenue, y el Estudio es el
+   ancla clara. El resplandor radial morado que había aquí se retira — es el
+   lenguaje del mundo anterior, el mismo que ya salió de la nav, del CTA y de
+   Servicios. Un halo de acento no viene de ningún sitio; la estela sí.
+
+   Y la superficie baja de --superficie-alta a --superficie, que es lo que hace
+   que la costura con Servicios sea de textura y no de color. */
+.demos-section {
+  background-color: var(--superficie);
+  background-image: var(--estela-media);
+  /* Los 96px de la regla global `section` se quedan cortos por arriba —la nav
+     es fija y mide 83— y sobran por abajo. */
+  padding: 6rem 0 3rem;
+}
+
 .demos-section::before {
-  --luz-x: 14%;
-  --luz-y: 0%;
-  background: var(--luz-seccion);
+  content: none;
+}
+
+/* Aquí vivía `.demos-section::after`, un desvanecido de 180px hacia
+   --superficie-alta. Era un apaño con fecha de caducidad: existía solo para
+   tapar el escalón contra un Taller que todavía estaba en --superficie-alta con
+   su resplandor teal. Ahora las dos comparten superficie y el escalón no
+   existe, así que el apaño sobra. */
+
+/* ── Taller: la estela tenue ──
+   Último escalón del ritmo: Servicios --estela-fuerte, Demos --estela-media,
+   Taller --estela-tenue, y el Estudio claro como ancla. Sale el resplandor
+   radial teal, que era lo único que quedaba del mundo anterior en este tramo. */
+.taller-section {
+  background-color: var(--superficie);
+  background-image: var(--estela-tenue);
+  padding: 6rem 0 3rem;
 }
 
 .taller-section::before {
-  --luz-x: 86%;
-  --luz-y: 100%;
-  background: var(--luz-seccion-teal);
+  content: none;
 }
 
 /* El contenido por encima de la luz. */
@@ -58,13 +87,206 @@
   margin-top: 0.75rem;
 }
 
-.projects-flow {
+/* ═══════════════════════════════════════════
+   TALLER — el padrón de marcas
+   ═══════════════════════════════════════════
+
+   Una fila por cliente: la lectura a la izquierda, sus piezas a la derecha.
+   Sustituye a cuatro maquetaciones a medida más tres de móvil, que no eran
+   riqueza sino el origen de los fallos —la dispersa pintaba sus cartas 134px
+   fuera de su caja y tapaba el botón de la galería; la hero enterraba la pieza
+   bajo un velo casi opaco—. La variedad la pone el trabajo, que ya es distinto
+   en cada fila. */
+.taller-padron {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 2.5rem 3rem;
+  padding: 2rem 3rem 2.5rem;
   display: flex;
   flex-direction: column;
-  gap: 4rem;
+  gap: 2.5rem;
+}
+
+.tal-fila {
+  display: grid;
+  grid-template-columns: minmax(200px, 250px) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+  /* El filete que separa una marca de la siguiente. Un solo píxel: no hacen
+     falta tarjetas ni cajas para que se entienda que son seis cosas. */
+  padding-top: 2.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tal-fila:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+/* ── La lectura ── */
+.tal-lectura {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.tal-n {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-accent-texto);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.4rem;
+}
+
+.tal-marca {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+/* El logo va en una ventana propia con fondo claro: la mitad son SVG blancos
+   —Berse Line, Dra. Jenny, Prosadis, Spa— y sobre el fondo casi negro
+   desaparecían. El color de cada cliente vive aquí y en sus piezas, que es
+   donde le corresponde; ya no pinta textos ni bordes. */
+.tal-logo {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+.tal-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.tal-nombre {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.tal-sector {
+  font-size: 0.8rem;
+  color: var(--color-texto-2);
+  margin: 0.35rem 0 0;
+}
+
+.tal-servicios {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+  color: var(--color-accent-texto);
+  margin: 0.15rem 0 0;
+}
+
+.tal-cuenta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-texto-3, rgba(255, 255, 255, 0.55));
+  margin-top: 0.5rem;
+}
+
+/* ── La tira de piezas ──
+   Las columnas se topan en 200px a propósito. Sin tope, en una pantalla ancha
+   cada pieza se iba a 260px y las seis filas empezaban a parecerse a la
+   galería — que es justo lo que Taller no tiene que ser. Aquí se enseña una
+   MUESTRA; el archivo entero está en /gallery, a un botón. */
+.tal-tira {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 200px));
+  justify-content: start;
+  gap: 0.85rem;
+}
+
+/* Sin esquineras ni borde que se enciende: las piezas NO se pueden pulsar, y
+   un hover que se comporta como un control promete un clic que no existe. Lo
+   único que hace el puntero aquí es levantar la opacidad, que es una respuesta
+   sin promesa. */
+.tal-pieza {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--superficie-alta);
+}
+
+/* Cuadrado: casi todas las piezas son posts de redes, que ya lo son. Con una
+   proporción fija las seis filas se alinean entre sí sin importar qué llegue. */
+.tal-pieza img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.tal-pieza:hover img {
+  opacity: 1;
+}
+
+/* El tipo de pieza —Post, Campaña, Reel, Carrusel— viene de los datos y es
+   información real sobre qué es cada cosa. */
+.tal-tipo {
+  position: absolute;
+  left: 0.5rem;
+  bottom: 0.5rem;
+  font-family: var(--font-mono);
+  /* 0.7rem y no 0.62: la auditoría móvil lo cazó a 9,9px, por debajo del
+     mínimo de 11px que nos exigimos. */
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: rgba(3, 1, 6, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 2px;
+  padding: 0.15rem 0.4rem;
+}
+
+/* Apilado: la lectura arriba, las piezas debajo. Una sola maquetación para las
+   dos pantallas, que es lo que permite que el componente sea uno solo. */
+@media (max-width: 860px) {
+  .taller-padron {
+    padding: 1.5rem 1.25rem 2rem;
+    gap: 2rem;
+  }
+
+  .tal-fila {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.1rem;
+    padding-top: 2rem;
+  }
+
+  /* En móvil sí se reparte el ancho disponible: el tope de 200px dejaría las
+     tres piezas apelotonadas a la izquierda con un hueco a la derecha. */
+  .tal-tira {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
+  /* Y el rótulo de tipo se retira. A 200px de pieza informa; a 110px —lo que
+     mide en un móvil— una etiqueta legible ocuparía dos tercios del ancho y
+     taparía el trabajo, que es lo que se ha venido a ver. El tipo de cada
+     pieza sigue estando en la galería. */
+  .tal-tipo {
+    display: none;
+  }
 }
 
 /* ── CTA → galería completa ── */
@@ -83,29 +305,39 @@
   margin: 0;
 }
 
+/* Era una cápsula de 3rem de radio con borde de 2px, que al pasar el ratón se
+   levantaba 3px y se rodeaba de un resplandor morado de 30px. Ahora lleva el
+   mismo instrumental que el resto: el acento como superficie, tinta oscura
+   encima y las esquineras de mira que se abren.
+
+   La tinta es OSCURA y no blanca: blanco sobre #B93EFF no llega al mínimo AA
+   para un texto de este cuerpo. Mismo criterio que en Servicios y Demos. */
 .projects-cta-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1.1rem 2.5rem;
-  font-size: 1rem;
+  padding: 0.95rem 2.25rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #ffffff;
-  background: transparent;
-  border: 2px solid rgba(176, 36, 255, 0.5);
-  border-radius: 3rem;
+  color: var(--superficie);
+  background-color: var(--color-accent-texto);
+  border: 1px solid transparent;
+  border-radius: 0;
   cursor: pointer;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  transition: all 0.3s ease;
+  letter-spacing: 0.1em;
   text-decoration: none;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(3, 1, 6, 0.5);
+  transition: background-position 0.35s var(--ease-out-expo);
 }
 
-.projects-cta-btn:hover {
-  background: rgba(176, 36, 255, 0.1);
-  border-color: #B024FF;
-  box-shadow: 0 0 30px rgba(176, 36, 255, 0.3);
-  transform: translateY(-3px);
+.projects-cta-btn:hover,
+.projects-cta-btn:focus-visible {
+  background-position: var(--esq-abierta);
 }
 
 .projects-cta-btn svg {
@@ -130,819 +362,6 @@
   }
 }
 
-/* ── Shared Components ── */
-.client-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.client-badge--light .client-badge-name {
-  font-size: 1.3rem;
-}
-
-.client-badge-logo {
-  width: 44px;
-  height: 44px;
-  background: #fff;
-  border-radius: 10px;
-  padding: 0.3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.client-badge-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.client-badge-name {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.client-badge-cat {
-  font-size: 0.6rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.proj-services {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-top: 0.75rem;
-}
-
-.proj-service-tag {
-  font-size: 0.65rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 100px;
-  border: 1px solid;
-  color: rgba(249, 237, 253, 0.55);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-/* ═══════════════════════════════════════
-   LAYOUT 1: HERO — full-width cinematic
-   ═══════════════════════════════════════ */
-.hero-layout {
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.hero-layout-img {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 21 / 9;
-  overflow: hidden;
-}
-
-.hero-layout-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.hero-layout-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(3, 1, 6, 0.95) 0%, rgba(3, 1, 6, 0.3) 40%, transparent 70%);
-}
-
-.hero-number {
-  position: absolute;
-  top: -0.2rem;
-  right: 1.5rem;
-  font-size: 9rem;
-  font-weight: 900;
-  line-height: 1;
-  pointer-events: none;
-}
-
-.hero-layout-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 1.5rem 2rem;
-  display: flex;
-  align-items: flex-end;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.hero-dots {
-  display: flex;
-  gap: 0.3rem;
-  margin-left: auto;
-  align-self: center;
-}
-
-.hdot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.hdot.active {
-  width: 22px;
-  border-radius: 4px;
-}
-
-/* ═══════════════════════════════════════
-   LAYOUT 2: MOSAIC — multi-image grid
-   ═══════════════════════════════════════ */
-.mosaic-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 1.5rem;
-  align-items: start;
-}
-
-.mosaic-info {
-  position: relative;
-  padding-top: 0.5rem;
-}
-
-.mosaic-number {
-  font-size: 5rem;
-  font-weight: 900;
-  line-height: 1;
-  display: block;
-  margin-bottom: -0.5rem;
-}
-
-.mosaic-count {
-  display: block;
-  font-size: 0.7rem;
-  color: rgba(249, 237, 253, 0.3);
-  margin-top: 0.75rem;
-}
-
-.mosaic-grid {
-  display: grid;
-  gap: 0.5rem;
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.mosaic-grid--2 {
-  grid-template-columns: 1fr 1fr;
-}
-
-.mosaic-grid--3 {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-}
-
-.mosaic-grid--3 .mosaic-cell:first-child {
-  grid-row: 1 / 3;
-}
-
-.mosaic-grid--4 {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-}
-
-.mosaic-cell {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  aspect-ratio: 1;
-}
-
-.mosaic-cell img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.4s ease;
-}
-
-.mosaic-cell:hover img {
-  transform: scale(1.05);
-}
-
-.mosaic-tipo {
-  position: absolute;
-  bottom: 0.5rem;
-  left: 0.5rem;
-  font-size: 0.55rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 0.2rem 0.5rem;
-  border-radius: 100px;
-  color: #fff;
-}
-
-/* ═══════════════════════════════════════
-   LAYOUT 3: MINIMAL — centered elegance
-   ═══════════════════════════════════════ */
-.minimal-layout {
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.minimal-top {
-  margin-bottom: 1.5rem;
-}
-
-.minimal-idx {
-  display: block;
-  font-size: 4.5rem;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: 0;
-  margin-bottom: -0.25rem;
-  opacity: 0.2;
-}
-
-.minimal-name {
-  font-size: 1.6rem;
-  font-weight: 800;
-  margin: 0.3rem 0;
-}
-
-.minimal-cat {
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.minimal-img-wrap {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  aspect-ratio: 4 / 5;
-  margin: 0 auto;
-  max-width: 420px;
-}
-
-.minimal-img-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.minimal-bottom {
-  margin-top: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.minimal-dots {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.mdot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  transition: all 0.3s;
-}
-
-.mdot.active {
-  width: 18px;
-  border-radius: 3px;
-}
-
-/* ═══════════════════════════════════════
-   LAYOUT 4: FILMSTRIP — horizontal row
-   ═══════════════════════════════════════ */
-.film-layout {
-  overflow: hidden;
-}
-
-.film-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-
-.film-strip {
-  display: flex;
-  gap: 0.75rem;
-  overflow-x: auto;
-  padding-bottom: 0.75rem;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-}
-
-.film-strip::-webkit-scrollbar {
-  height: 3px;
-}
-
-.film-strip::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 3px;
-}
-
-.film-strip::-webkit-scrollbar-thumb {
-  background: rgba(176, 36, 255, 0.3);
-  border-radius: 3px;
-}
-
-.film-frame {
-  flex-shrink: 0;
-  width: 220px;
-  border-radius: 12px;
-  overflow: hidden;
-  scroll-snap-align: start;
-  position: relative;
-}
-
-.film-frame img {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.4s ease;
-}
-
-.film-frame:hover img {
-  transform: scale(1.05);
-}
-
-.film-tipo {
-  position: absolute;
-  bottom: 0.5rem;
-  left: 0.5rem;
-  font-size: 0.55rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 0.2rem 0.5rem;
-  border-radius: 100px;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
-  color: rgba(255, 255, 255, 0.8);
-}
-
-/* ═══════════════════════════════════════
-   LAYOUT 5: SPLIT — asymmetric 2-column
-   ═══════════════════════════════════════ */
-.split-layout {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 2rem;
-  align-items: center;
-  background: rgba(12, 10, 18, 0.6);
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid rgba(176, 36, 255, 0.06);
-}
-
-.split-left {
-  position: relative;
-  overflow: hidden;
-  min-height: 400px;
-}
-
-.split-main-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.split-right {
-  padding: 2rem 2rem 2rem 0;
-  position: relative;
-}
-
-.split-number {
-  font-size: 6rem;
-  font-weight: 900;
-  line-height: 1;
-  position: absolute;
-  top: -0.5rem;
-  right: 1rem;
-  pointer-events: none;
-}
-
-.split-logo-wrap {
-  width: 44px;
-  height: 44px;
-  background: #fff;
-  border-radius: 10px;
-  padding: 0.3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.split-logo-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.split-name {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin: 0 0 0.3rem;
-}
-
-.split-cat {
-  font-size: 0.6rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.split-thumbs {
-  display: flex;
-  gap: 0.4rem;
-  margin-top: 1.25rem;
-}
-
-.split-thumb {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 2px solid transparent;
-  cursor: pointer;
-  padding: 0;
-  background: none;
-  transition: border-color 0.3s;
-}
-
-.split-thumb.active {
-  border-width: 2px;
-}
-
-.split-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* ═══════════════════════════════════════
-   LAYOUT 6: SCATTERED — overlapping
-   ═══════════════════════════════════════ */
-.scattered-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  min-height: 420px;
-  align-items: center;
-}
-
-.scattered-imgs {
-  position: relative;
-  height: 380px;
-}
-
-.scattered-card {
-  position: absolute;
-  width: 55%;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  cursor: pointer;
-  transition: box-shadow 0.3s;
-}
-
-.scattered-card:hover {
-  box-shadow: 0 12px 48px rgba(176, 36, 255, 0.15);
-}
-
-.scattered-card img {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-  display: block;
-}
-
-.scattered-info {
-  position: relative;
-}
-
-
-/* ═══════════════════════════════════════
-   RESPONSIVE — tablet
-   ═══════════════════════════════════════ */
-@media (max-width: 1024px) {
-  .projects-flow {
-    padding: 1.5rem 1.5rem 4rem;
-    gap: 3rem;
-  }
-
-  .mosaic-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .mosaic-number {
-    font-size: 3rem;
-  }
-
-  .split-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .split-left {
-    min-height: 280px;
-  }
-
-  .split-right {
-    padding: 1.5rem;
-  }
-
-  .scattered-layout {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .scattered-imgs {
-    height: 300px;
-  }
-
-  .hero-layout-img {
-    aspect-ratio: 16 / 9;
-  }
-
-  .hero-number {
-    font-size: 5rem;
-  }
-
-  .film-frame {
-    width: 180px;
-  }
-}
-
-/* ═══════════════════════════════════════
-   MOBILE
-   ═══════════════════════════════════════ */
-.projects-mobile {
-  /* El fondo lo pone el ritmo de superficies de index.css. */
-  padding: 4rem 0 3rem;
-  position: relative;
-  overflow: hidden;
-}
-
-/* En movil las dos secciones van seguidas, asi que el Taller no repite el
-   espacio superior: si no, quedaba un hueco doble entre ambas. */
-.projects-mobile.taller-section {
-  padding-top: 1rem;
-}
-
-.pm-header {
-  padding: 0 1.5rem 1.5rem;
-}
-
-.pm-subtitle {
-  margin: 0.75rem auto 0;
-  max-width: 32ch;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: var(--color-texto-2);
-}
-
-.pm-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  padding: 0 1rem;
-}
-
-/* Mobile: Hero */
-.pm-hero {
-  border-radius: 16px;
-  overflow: hidden;
-  position: relative;
-}
-
-.pm-hero-img {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-}
-
-.pm-hero-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.pm-hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(3, 1, 6, 0.9) 0%, transparent 60%);
-}
-
-.pm-hero-content {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.pm-hero-logo {
-  width: 32px;
-  height: 32px;
-  background: #fff;
-  border-radius: 8px;
-  padding: 0.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.pm-hero-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.pm-hero-content h3 {
-  font-size: 0.95rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.pm-hero-content span {
-  /* Era 0.55rem = 8.8px. */
-  font-size: var(--texto-minimo);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-/* Mobile: Mosaic */
-.pm-mosaic {
-  border-radius: 16px;
-  overflow: hidden;
-  background: rgba(12, 10, 18, 0.7);
-  border: 1px solid rgba(176, 36, 255, 0.06);
-}
-
-.pm-mosaic-head {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.85rem 1rem;
-}
-
-.pm-mosaic-logo {
-  width: 32px;
-  height: 32px;
-  background: #fff;
-  border-radius: 8px;
-  padding: 0.2rem;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pm-mosaic-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.pm-mosaic-name {
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.pm-mosaic-cat {
-  /* Era 0.55rem = 8.8px, muy por debajo del piso de 11px del proyecto, y en un
-     gris azulado que sobre el fondo del mosaico daba 1.79:1. */
-  font-size: var(--texto-minimo);
-  color: var(--color-gray-300);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.pm-mosaic-grid {
-  display: grid;
-  gap: 2px;
-}
-
-.pm-mosaic-grid--2 {
-  grid-template-columns: 1fr 1fr;
-}
-
-.pm-mosaic-grid--3 {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-}
-
-.pm-mosaic-grid--3 .pm-mosaic-cell:first-child {
-  grid-row: 1 / 3;
-}
-
-.pm-mosaic-cell {
-  overflow: hidden;
-}
-
-.pm-mosaic-cell img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  display: block;
-}
-
-/* Mobile: Simple card */
-.pm-simple {
-  border-radius: 16px;
-  overflow: hidden;
-  background: rgba(12, 10, 18, 0.7);
-  border: 1px solid rgba(176, 36, 255, 0.06);
-}
-
-.pm-simple-img {
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-}
-
-.pm-simple-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.pm-simple-info {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.85rem 1rem;
-}
-
-.pm-simple-logo {
-  width: 32px;
-  height: 32px;
-  background: #fff;
-  border-radius: 8px;
-  padding: 0.2rem;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pm-simple-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.pm-simple-info h3 {
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin: 0;
-  line-height: 1.2;
-}
-
-/* Este selector (0,1,1) gana a .pm-simple-counter (0,1,0), asi que era el que
-   fijaba de verdad los 8.8px de ambos. */
-.pm-simple-info span {
-  font-size: var(--texto-minimo);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.pm-simple-counter {
-  margin-left: auto;
-  font-size: var(--texto-minimo);
-  font-weight: 700;
-}
-
 /* ═══════════════════════════════════════════
    LIVE DEMOS — productos reales, clickeables
    ═══════════════════════════════════════════ */
@@ -953,115 +372,119 @@
 }
 
 
-/* ── Escenario 2×2 con separadores en cruz y demo nuevo al centro ──
-   Réplica del diseño "apartado de proyectos": recortes flotando sobre el
-   fondo, título en color por demo, chips de color y cruz con hueco central. */
+/* ── Cuadrícula 2×2 de ventanas ──
+   Cuatro celdas iguales. Antes alternaban el orden del rótulo alrededor de una
+   cruz de ejes, con 5rem de relleno hacia el centro: geometría que hacía
+   trabajar a la maquetación sin decir nada de los demos. Son cuatro cosas del
+   mismo tipo, y así se leen. */
 .demo-stage {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  row-gap: 4rem;
-  column-gap: 0;
-  padding-top: 1.5rem;
-}
-
-.demo-axis {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.13);
-  pointer-events: none;
-}
-
-.demo-axis--v {
-  left: 50%;
-  top: 2%;
-  bottom: 2%;
-  width: 1px;
-}
-
-.demo-axis--h {
-  top: 50%;
-  left: 4%;
-  right: 4%;
-  height: 1px;
-  /* pequeño respiro donde cruza la vertical, como en el diseño */
-  -webkit-mask-image: linear-gradient(90deg, #000 calc(50% - 28px), transparent calc(50% - 27px), transparent calc(50% + 27px), #000 calc(50% + 28px));
-  mask-image: linear-gradient(90deg, #000 calc(50% - 28px), transparent calc(50% - 27px), transparent calc(50% + 27px), #000 calc(50% + 28px));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3rem 2.5rem;
+  padding-top: 1rem;
 }
 
 .demo-cell {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 1.5rem;
-  padding: 0.5rem 1rem;
+  gap: 1rem;
+  min-width: 0;
 }
 
-/* aire hacia la cruz para que el centro respire */
-.demo-cell--tl,
-.demo-cell--bl { padding-right: 5rem; }
+/* ── La ventana ──
+   La captura del producto, dentro de un filete de un píxel con las esquineras
+   de mira de la casa. No lleva sombra difusa ni resplandor de color: es una
+   ventana a algo real, no una tarjeta flotando. */
+.demo-ventana {
+  display: block;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--superficie-alta);
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(255, 255, 255, 0.32);
+  transition: border-color 0.3s ease, background-position 0.4s var(--ease-out-expo);
+}
 
-.demo-cell--tr,
-.demo-cell--br { padding-left: 5rem; }
+.demo-cell:hover .demo-ventana,
+.demo-ventana:focus-visible {
+  border-color: var(--color-accent-texto);
+  background-position: var(--esq-abierta);
+  --esq-color: var(--color-accent-texto);
+}
 
-.demo-head {
+.demo-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+  /* Un punto por debajo en reposo para que la captura no compita con el texto;
+     al pasar por encima se enciende del todo. Es opacidad, que se compone
+     gratis — no un filtro. */
+  opacity: 0.88;
+  transition: opacity 0.3s ease;
+}
+
+.demo-cell:hover .demo-img {
+  opacity: 1;
+}
+
+/* ── La lectura ── */
+.demo-lectura {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.35rem;
+  align-items: flex-start;
 }
 
 .demo-name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
   font-family: var(--font-display);
-  font-size: clamp(1.15rem, 1.9vw, 1.5rem);
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
   font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--demo-color);
+  letter-spacing: 0.02em;
+  color: #ffffff;
   line-height: 1.15;
   margin: 0;
 }
 
-.demo-sub {
-  font-family: var(--font-display);
-  font-size: clamp(0.85rem, 1.2vw, 1rem);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: #fff;
-  line-height: 1.4;
+/* El número es lo único con color: es lo que distingue un demo de otro ahora
+   que los cuatro comparten el morado de marca. */
+.demo-n {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-accent-texto);
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-prueba {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-texto-2);
   margin: 0;
+  max-width: 44ch;
 }
 
-.demo-visual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.6rem;
-  height: 280px;
-}
-
-/* chips mirando hacia la cruz central */
-.demo-cell--tr .demo-visual,
-.demo-cell--br .demo-visual { flex-direction: row-reverse; }
-
-.demo-img-link {
-  display: block;
-  height: 100%;
-}
-
-.demo-img {
-  height: 100%;
-  width: auto;
-  max-width: min(340px, 56vw);
-  object-fit: contain;
-  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.45));
-  transition: transform 0.4s var(--ease-out-expo), filter 0.4s ease;
-}
-
-.demo-cell:hover .demo-img {
-  transform: translateY(-6px) scale(1.03);
-  filter: drop-shadow(0 30px 55px rgba(0, 0, 0, 0.5))
-    drop-shadow(0 0 42px color-mix(in srgb, var(--demo-color) 30%, transparent));
+/* El dominio real, en mono. Es lo que convierte esto en una prueba y no en una
+   maqueta: se puede teclear en la barra del navegador y comprobarlo. */
+.demo-dominio {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--color-texto-3, rgba(255, 255, 255, 0.55));
+  margin-top: 0.15rem;
 }
 
 
@@ -1072,89 +495,83 @@
 .demo-links {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 1.2rem;
+  gap: 1.25rem;
+  margin-top: 0.65rem;
+  flex-wrap: wrap;
 }
 
+/* El principal, con el acento como superficie y tinta oscura encima: blanco
+   sobre #B93EFF no llega al mínimo AA para un texto de este cuerpo. Mismo
+   criterio que los botones de Servicios. */
 .demo-try {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--font-display);
-  color: var(--demo-color);
-  font-size: 0.8rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid transparent;
+  background-color: var(--color-accent-texto);
+  color: var(--superficie);
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   text-decoration: none;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(3, 1, 6, 0.5);
+  transition: background-position 0.35s var(--ease-out-expo);
 }
 
-.demo-try:hover {
-  color: var(--demo-color);
-  filter: brightness(1.3);
+.demo-try:hover,
+.demo-try:focus-visible {
+  background-position: var(--esq-abierta);
 }
 
-.demo-try .demo-live-dot {
-  background: var(--demo-color);
+.demo-try svg {
+  transition: transform 0.25s var(--ease-out-expo);
 }
 
+.demo-try:hover svg {
+  transform: translateX(3px);
+}
+
+/* El punto en vivo se quedó SOLO en la cabecera del modal, donde de verdad hay
+   algo corriendo. En las celdas latía en bucle infinito, siempre, lo viera
+   alguien o no; y que el demo está vivo ya lo dicen el dominio y el botón. */
 .demo-live-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #fff;
-  animation: demo-pulse 1.6s ease-in-out infinite;
-}
-
-@keyframes demo-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.45; transform: scale(0.75); }
+  background: var(--color-accent-texto);
 }
 
 .demo-wa {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-texto-2);
   font-size: 0.8rem;
   font-weight: 600;
   text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  padding-bottom: 1px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+  padding-bottom: 2px;
   transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .demo-wa:hover {
   color: #fff;
-  border-color: var(--demo-color);
+  border-color: var(--color-accent-texto);
 }
 
-/* ── Responsive del escenario ── */
-@media (max-width: 1100px) {
-  .demo-visual { height: 240px; }
-  .demo-cell--tl,
-  .demo-cell--bl { padding-right: 3.5rem; }
-  .demo-cell--tr,
-  .demo-cell--br { padding-left: 3.5rem; }
-}
-
-/* apilado en una columna */
+/* ── Responsive del escenario ──
+   Todo lo que había aquí colgaba de la maqueta vieja: alturas fijas para el
+   recorte flotante, rellenos hacia la cruz de ejes y reordenados por posición
+   (tl/tr/bl/br). Con cuatro celdas iguales no hace falta ninguna: basta con
+   pasar de dos columnas a una. */
 @media (max-width: 900px) {
   .demo-stage {
-    display: flex;
-    flex-direction: column;
-    gap: 3.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.75rem;
   }
-
-  .demo-axis { display: none; }
-
-  .demo-cell--tl,
-  .demo-cell--bl { padding-right: 1rem; }
-  .demo-cell--tr,
-  .demo-cell--br { padding-left: 1rem; }
-
-  /* texto siempre arriba y chips al mismo lado al apilar */
-  .demo-cell--bl .demo-head,
-  .demo-cell--br .demo-head { order: -1; }
-  .demo-cell--tr .demo-visual,
-  .demo-cell--br .demo-visual { flex-direction: row; }
 }
 
 @media (max-width: 768px) {
@@ -1164,9 +581,7 @@
 }
 
 @media (max-width: 560px) {
-  .demo-visual { height: 205px; gap: 1.1rem; }
-  .demo-cell--center .demo-visual { height: 175px; }
-  .demo-links { flex-wrap: wrap; gap: 0.6rem 1.1rem; }
+  .demo-links { gap: 0.75rem 1.1rem; }
 }
 
 /* ── Modal del demo embebido (se monta solo al hacer click) ── */

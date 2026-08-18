@@ -4,87 +4,43 @@
    titulo: salian dos rayas a pocos pixeles una de otra, sin la misma anchura
    ni el mismo origen. Ahora el limite de seccion lo marca solo esa regla. */
 
+/* Blog entra en el ritmo de superficies: --superficie con la estela tenue, el
+   último apunte que quedaba pendiente del mapa de index.css. Antes iba sobre
+   --superficie-alta con un resplandor radial encima, que es el lenguaje del
+   mundo anterior. */
 .blog {
-  padding: var(--spacing-3xl) 0;
-  /* El fondo lo pone el ritmo de superficies de index.css. */
+  padding: 6rem 0 3rem;
+  background-color: var(--superficie);
+  background-image: var(--estela-tenue);
   position: relative;
 }
 
-/* Subtle grid texture */
+/* El resplandor radial morado que pintaba `.blog-grid-bg` se retira: es el
+   mismo halo de acento que ya salió de la nav, del CTA, de Servicios, de Demos
+   y de Taller. La textura la pone ahora la estela, que viene de algo. */
 .blog-grid-bg {
-  position: absolute;
-  inset: 0;
-  --luz-x: 6%;
-  --luz-y: 100%;
-  background: var(--luz-seccion);
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.6;
-  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,0.5) 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, rgba(0,0,0,0.5) 85%, transparent 100%);
+  display: none;
 }
 
 
 
-/* Header with title left, button right */
+/* La cabecera es ya solo título y subtítulo, centrados como en el resto de
+   secciones: el botón se ha ido al final, después de los titulares. */
 .blog-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
-  gap: 1.25rem;
-  padding: 0 4rem var(--spacing-2xl);
-  margin-bottom: var(--spacing-xl);
+  padding: 0 2rem var(--spacing-xl);
   position: relative;
   z-index: 1;
 }
 
-.blog-header-left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.blog-header-left .section-tag {
-  text-align: center;
-  margin-bottom: 0.4rem;
-}
-
-/* El cuerpo y las mayusculas los pone ahora .section-title--menor. Esta regla
-   los repetia con la misma especificidad y ganaba por orden de carga, asi que
-   el Blog seguia gritando a 64px como si fuera una seccion principal. */
+/* El cuerpo y las versales los pone .section-title--medio. Esta regla los
+   repetía con la misma especificidad y ganaba por orden de carga; ahora solo
+   quita el margen. */
 .blog-header .section-title {
   margin: 0;
-}
-
-.blog-header .section-subtitle {
-  display: none;
-}
-
-.blog-header-button {
-  background: #B024FF;
-  color: #ffffff;
-  padding: 0.75rem 2rem;
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 2px solid #B024FF;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  text-decoration: none;
-  display: inline-block;
-  box-shadow: 0 0 20px rgba(176, 36, 255, 0.4);
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-}
-
-.blog-header-button:hover {
-  background: #030106;
-  color: #ffffff;
-  border-color: #B024FF;
-  transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(176, 36, 255, 0.6);
 }
 
 /* ═══════════════════════════════════════════
@@ -293,18 +249,71 @@
   margin: 0;
 }
 
+/* De cápsula de 2rem a ventana de lectura: filete de un píxel y radio corto,
+   la misma familia que el distintivo de categoría de Servicios. El fondo sigue
+   siendo el acento y la tinta la oscura de marca —en blanco daba 2.08:1, el
+   peor contraste del sitio; así sube a 5.14:1—. */
 .blog-category {
   display: inline-block;
   font-size: 0.75rem;
   font-weight: 700;
-  /* La pildora va sobre el color de su categoria. En blanco daba 2.08:1, el
-     peor contraste del sitio; con la tinta oscura de marca sube a 5.14:1. */
   color: var(--color-primary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 0.4rem 1rem;
-  border-radius: 2rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 3px;
   width: fit-content;
+}
+
+/* ── El cierre ──
+   El botón, después de los titulares. El mismo instrumental que «Ver galería
+   completa» en Taller: sin radio, el acento como superficie, tinta oscura y
+   las esquineras de mira que se abren al pasar el ratón.
+
+   Sustituye a una pastilla de relleno sólido con borde de 2px, resplandor de
+   20px y `text-shadow`, que además vivía pegada bajo el título — o sea, pedía
+   salir de la web antes de haber enseñado un solo titular. */
+.blog-cierre {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 2rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.blog-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.95rem 2.25rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  color: var(--superficie);
+  background-color: var(--color-accent-texto);
+  border: 1px solid transparent;
+  border-radius: 0;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(3, 1, 6, 0.5);
+  transition: background-position 0.35s var(--ease-out-expo);
+}
+
+.blog-boton:hover,
+.blog-boton:focus-visible {
+  background-position: var(--esq-abierta);
+}
+
+.blog-boton svg {
+  transition: transform 0.25s var(--ease-out-expo);
+}
+
+.blog-boton:hover svg {
+  transform: translateX(4px);
 }
 
 .blog-date {

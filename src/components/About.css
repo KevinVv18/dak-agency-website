@@ -6,24 +6,18 @@
    ni el mismo origen. Ahora el limite de seccion lo marca solo esa regla. */
 
 .about {
-  padding: var(--spacing-3xl) 4rem;
-  /* El fondo lo pone el ritmo de superficies de index.css. */
+  padding: 6rem 4rem 3rem;
+  background-color: var(--superficie);
+  background-image: var(--estela-tenue);
   position: relative;
   overflow: hidden;
 }
 
-
-
+/* Aquí `.about-grid-bg` pintaba un resplandor radial TEAL anclado arriba a la
+   derecha. Era el último halo de acento que quedaba en la página, y encima de
+   un color que ya no existe en ninguna otra parte. */
 .about-grid-bg {
-  position: absolute;
-  inset: 0;
-  --luz-x: 94%;
-  --luz-y: 18%;
-  background: var(--luz-seccion-teal);
-  pointer-events: none;
-  opacity: 0.6;
-  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.5) 15%, rgba(0,0,0,.5) 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.5) 15%, rgba(0,0,0,.5) 85%, transparent 100%);
+  display: none;
 }
 
 .about-header {
@@ -54,29 +48,15 @@
   letter-spacing: -0.01em;
 }
 
+/* El acento ya no viaja desde el JSX en una variable en línea, porque ya no hay
+   tres colores que repartir: es uno y vive aquí. El subrayado es un filete de
+   un píxel, siempre puesto y sin resplandor — antes nacía al pasar el ratón, o
+   sea que en un móvil no se veía nunca. */
 .about-hl {
   position: relative;
-  color: var(--hl, #B024FF);
+  color: var(--color-accent-texto);
   white-space: nowrap;
-}
-
-.about-hl::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -3px;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--hl, #B024FF);
-  box-shadow: 0 0 12px var(--hl, #B024FF);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.about-hl:hover::after {
-  transform: none;
+  box-shadow: inset 0 -2px 0 -1px var(--color-accent-texto);
 }
 
 .about-sub {
@@ -95,13 +75,14 @@
 
 /* ── Kicker compartido ── */
 .about-kicker {
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--color-accent-texto);
   text-align: center;
-  margin-bottom: 1.6rem;
+  margin-bottom: 2.2rem;
 }
 
 /* ── Cómo trabajamos ── */
@@ -115,55 +96,44 @@
 .about-steps {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.2rem;
+  gap: 0;
+  /* El EJE: un filete de un píxel del que cuelgan las cuatro estaciones. Es la
+     misma idea que el eje del ensayo del hero y la escala de marcas de
+     Servicios — aquí hay una secuencia de verdad (no se puede lanzar antes de
+     diseñar) y un eje la dibuja mejor que cuatro cajas sueltas. */
+  background: linear-gradient(rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.14))
+    0 0 / 100% 1px no-repeat;
 }
 
+/* Eran cajas de 18px de radio con fondo, borde, un degradado que se desplegaba
+   por arriba y un salto de 4px al pasar el ratón. Ahora son estaciones: una
+   marca sobre el eje, el número, el título y el texto colgando. */
 .about-step {
   position: relative;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 18px;
-  padding: 1.6rem 1.4rem;
-  overflow: hidden;
-  transition: border-color 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  padding: 1.5rem 1.6rem 0 0;
 }
 
-.about-step:hover {
-  border-color: #B024FF;
-  transform: translateY(-4px);
-}
-
+/* La marca de la estación sobre el eje. */
 .about-step::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  height: 2px;
-  width: 100%;
-  background: linear-gradient(90deg, #B024FF, transparent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+  width: 1px;
+  height: 12px;
+  background: var(--color-accent-texto);
 }
-
-.about-step.lit::before {
-  transform: none;
-}
-
-.about-step:nth-child(2)::before { transition-delay: 0.45s; }
-.about-step:nth-child(3)::before { transition-delay: 0.6s; }
-.about-step:nth-child(4)::before { transition-delay: 0.75s; }
 
 .about-step-n {
   display: block;
-  font-family: var(--font-display, 'Poppins', sans-serif);
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 1px #B024FF;
-  opacity: 0.9;
-  margin-bottom: 0.85rem;
+  color: var(--color-accent-texto);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.7rem;
 }
 
 .about-step h4 {
@@ -202,41 +172,51 @@
   gap: 1.2rem;
 }
 
+/* De cápsula de 18px con sombra morada a ventana de filete y esquineras de
+   mira, la misma caja que las piezas del Taller y las celdas de Demos. */
 .about-t-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.55rem;
   margin: 0;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 18px;
-  padding: 1.7rem 1.5rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 1.6rem 1.5rem;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(255, 255, 255, 0.26);
+  transition: border-color 0.3s ease, background-position 0.4s var(--ease-out-expo);
 }
 
 .about-t-card:hover {
-  border-color: rgba(176, 36, 255, 0.55);
-  box-shadow: 0 18px 50px -20px rgba(176, 36, 255, 0.45);
+  border-color: var(--color-accent-texto);
+  background-position: var(--esq-abierta);
+  --esq-color: var(--color-accent-texto);
 }
 
+/* Ventana clara para el logo, con el mismo radio y tamaño que la del padrón
+   del Taller: varios de estos logos son SVG blancos y sobre el fondo casi
+   negro desaparecen. */
 .about-t-logo {
   flex: 0 0 auto;
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 3px;
   display: grid;
   place-items: center;
-  /* Caja blanca, como en los rotulos del Estudio: varios de estos logos son a
-     todo color y sobre el fondo oscuro se pierden. */
-  background: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.5rem;
 }
 
 .about-t-logo img {
-  max-width: 38px;
-  max-height: 38px;
+  max-width: 30px;
+  max-height: 30px;
   object-fit: contain;
 }
 
@@ -249,7 +229,8 @@
 }
 
 .about-t-rubro {
-  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
   letter-spacing: 0.04em;
   color: var(--color-texto-2);
   margin: 0;
@@ -281,6 +262,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .about-step::before { transition: none; }
-  .about-hl::after { transition: none; }
+  .about-t-card { transition: none; }
 }

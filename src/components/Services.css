@@ -10,12 +10,42 @@
    titulo: salian dos rayas a pocos pixeles una de otra, sin la misma anchura
    ni el mismo origen. Ahora el limite de seccion lo marca solo esa regla. */
 
+/* ── La estela ──
+   Servicios estrena el sistema de fondos definido en index.css. Después de la
+   tobera el aire ha salido del túnel, y lo que queda aguas abajo es su estela:
+   trazos casi horizontales, tenues y ESTÁTICOS — cero JS, un solo pintado.
+
+   El color de superficie es el MISMO que el del túnel, así que al bajar no hay
+   salto de fondo: lo único que cambia es la textura. Ese es el punto — que se
+   note la continuidad y no el corte. Demos y Taller heredarán la versión media
+   y la tenue cuando les toque, hasta llegar limpio al Estudio, que es claro y
+   es el único contraste que sobrevive a propósito. */
+/* ── Un solo encuadre ──
+   La sección tiene que caber entera en una pantalla: el título, el servicio y
+   la tira de los siguientes. Medido antes, en 1897×988 ocupaba 1239px y se
+   comía 251px de las miniaturas.
+
+   El grueso del sobrante no era el contenido: eran los 96px de relleno arriba y
+   abajo que la regla global `section` de index.css le pone a todas —192px, tres
+   cuartas partes del desbordamiento— pensados para secciones que se leen
+   seguidas, no para una que es un panel. El hero ya hace lo mismo por la misma
+   razón.
+
+   El resto se reparte con flex: lo fijo es el título y la tira de miniaturas, y
+   el panel del vídeo se queda con lo que sobre. Así ni se toca el cuerpo del
+   título ni se encoge la tipografía de la ficha; lo que cede es el alto del
+   vídeo, que es lo único elástico que hay aquí. */
 .services {
-  min-height: 100vh;
-  /* El fondo lo pone el ritmo de superficies de index.css. */
+  min-height: 100svh;
+  /* El color lo pone el ritmo de superficies de index.css; aquí solo la textura. */
+  background-image: var(--estela-fuerte);
   position: relative;
   display: flex;
   flex-direction: column;
+  /* Arriba, lo que mide la nav —fija, 83px— más un respiro; no es decoración:
+     con menos, el título «SERVICIOS» se lee por debajo de la barra. Abajo solo
+     el respiro, que no hay nada que esquivar. */
+  padding: 6rem 0 1.5rem;
 }
 
 
@@ -29,19 +59,24 @@
   position: relative;
 }
 
-/* Subtle grid texture */
+/* El resplandor radial morado que había aquí se retiró: es el lenguaje del
+   mundo anterior, el mismo que salió de la nav y de los orbes del CTA. Un
+   degradado radial de acento no dice nada — la estela sí, porque viene de
+   algo. La textura ahora la pone .services con var(--estela-fuerte).
+
+   Lo que se conserva es el DESVANECIDO por arriba y por abajo, que es lo que
+   hace que la sección no empiece ni acabe con un filo. */
 .services-container::after {
   content: '';
   position: absolute;
   inset: 0;
-  --luz-x: 12%;
-  --luz-y: 0%;
-  background: var(--luz-seccion);
   pointer-events: none;
   z-index: 0;
-  opacity: 0.6;
-  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 15%, rgba(0, 0, 0, 0.5) 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 15%, rgba(0, 0, 0, 0.5) 85%, transparent 100%);
+  background: linear-gradient(to bottom,
+    var(--superficie) 0%,
+    transparent 12%,
+    transparent 88%,
+    var(--superficie) 100%);
 }
 
 /* =============================================
@@ -56,15 +91,10 @@
   flex-shrink: 0;
 }
 
-.services-header::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 30% 50%, rgba(176, 36, 255, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 50%, rgba(0, 200, 200, 0.03) 0%, transparent 50%);
-  pointer-events: none;
-}
+/* Aquí había dos elipses de resplandor —una morada y una teal— detrás del
+   título. El mismo recurso que se retiró de la nav, del CTA y del contenedor
+   de esta sección: un halo de color que no viene de ningún sitio. La textura
+   de fondo la pone ahora la estela. */
 
 /* ---- Editorial Section Tag ---- */
 .section-tag {
@@ -107,17 +137,26 @@
    FEATURED SERVICE - Panel Principal (Full Width)
    ============================================= */
 
+/* Radio de 4px, no de 1,25rem. El panel es la ventana del instrumento: con la
+   esquina muy redondeada chocaba con el filete recto de la placa, de las
+   lecturas y de los botones, y además recortaba las esquinas de la placa.
+
+   Y es el elemento ELÁSTICO del encuadre: en vez de imponer 16/9 y un tope de
+   65vh —que era lo que empujaba las miniaturas fuera de la pantalla— se queda
+   con la altura que sobra. El vídeo va con object-fit: cover, así que llenar un
+   encuadre más ancho no lo deforma, solo lo recorta. El suelo de 300px es para
+   que en una ventana muy baja el panel no se convierta en una rendija; ahí sí
+   preferimos que la página se desplace. */
 .featured-service {
-  flex: none;
+  flex: 1 1 auto;
+  min-height: 300px;
   width: 100%;
-  aspect-ratio: 16/9;
   position: relative;
-  border-radius: 1.25rem;
+  border-radius: 4px;
   overflow: hidden;
   background: #0a0a0a;
   display: flex;
   flex-direction: column;
-  max-height: 65vh;
 }
 
 .featured-video-wrapper {
@@ -132,34 +171,97 @@
   object-fit: cover;
 }
 
+/* El velo ya solo asienta el pie del vídeo. No es él quien tiene que hacer
+   legible el texto —ese era el error: un degradado a altura fija contra un
+   bloque de texto de altura variable— así que puede ser suave y dejar ver el
+   trabajo, que es de lo que va la sección. */
 .featured-overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
+  background: linear-gradient(to top,
+    rgba(3, 1, 6, 0.55) 0%,
+    rgba(3, 1, 6, 0.22) 22%,
+    transparent 45%);
 }
 
+/* ── La placa de lectura ──
+   Aquí estaba el fallo visible: el texto flotaba sobre el vídeo confiando en
+   un degradado que se apagaba al 55% de la altura. Con los vídeos claros —los
+   de WhatsApp son pantallas blancas— el título quedaba blanco sobre blanco.
+
+   La solución no es más sombra de texto: es que el texto tenga SUPERFICIE. La
+   placa la pone este mismo elemento, así que mide exactamente lo que mide el
+   contenido y no puede volver a quedarse corta, cambie el vídeo o el copy.
+
+   Y de paso deja de ser un parche para ser lenguaje: filete de un píxel
+   arriba, el acento del servicio en los primeros píxeles, y el fondo es el
+   color de superficie de la web, no un negro cualquiera. Un tercio inferior de
+   instrumento, no un subtítulo de vídeo. */
 .featured-content {
   position: relative;
   z-index: 5;
-  padding: 1.5rem 2rem;
+  padding: 1.35rem 2rem 1.5rem;
   margin-top: auto;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.4rem;
-  /* scrim unificado en .featured-overlay (una sola capa = mas video visible) */
+  background:
+    linear-gradient(to right,
+      var(--acento-servicio, var(--color-accent-texto)) 0 2px,
+      rgba(255, 255, 255, 0.16) 2px 100%) top / 100% 1px no-repeat,
+    linear-gradient(to top, rgba(3, 1, 6, 0.96), rgba(3, 1, 6, 0.86));
 }
+/* Aquí llevaba un `backdrop-filter: blur(6px)`. Desenfocar el fondo de una
+   franja a todo lo ancho de un vídeo EN REPRODUCCIÓN es de las cosas más caras
+   que se le pueden pedir a un móvil de gama media, y detrás de una placa al
+   86-96% de opacidad no se ve. Medido con la CPU 4x más lenta, mediana de tres
+   pasadas: 39,5% de un núcleo con el desenfoque, 38,2% sin él — contra 37,8%
+   del commit anterior, o sea otra vez dentro del ruido. */
 
 
+/* Ventana de lectura, no cápsula de color: filete de un píxel y radio corto,
+   la misma familia que las píldoras del túnel. Antes llevaba el color del
+   servicio como texto y como fondo al 20%; ahora el color no está aquí porque
+   quien distingue el servicio es su número. */
 .featured-category {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  padding: 0.4rem 1rem;
-  border-radius: 2rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--color-texto-2);
 }
 
+/* El número, en el acento del servicio. Es lo único de la cabecera que lleva
+   color, porque es lo único que cambia de un servicio a otro. */
+.featured-indice {
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: var(--acento-servicio, var(--color-accent-texto));
+  font-variant-numeric: tabular-nums;
+}
+
+/* Distintivo, icono y título en el mismo renglón. Envuelve solo cuando no cabe
+   —móvil—, y entonces el distintivo se va solo a la línea de arriba, que es la
+   maqueta que tenía antes. */
+.featured-titular {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  margin-top: 0.15rem;
+}
+
+/* Las tres sombras de texto de este bloque se han ido con el degradado que las
+   hacía falta. Sobre la placa el contraste ya está resuelto, y una sombra que
+   no hace falta solo emborrona el filo de la letra. */
 .featured-title {
   font-size: clamp(1.75rem, 3vw, 2.5rem);
   font-weight: 800;
@@ -167,111 +269,126 @@
   line-height: 1.1;
   letter-spacing: -0.03em;
   margin: 0;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65), 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
+/* El entregable, en el acento del servicio y en mono: es una lista de piezas,
+   no una frase. La mono lo separa del titular sin subir un punto de tamaño. */
 .featured-tagline {
-  font-size: clamp(1rem, 1.5vw, 1.25rem);
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
-  margin: 0;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
+  font-family: var(--font-mono);
+  font-size: clamp(0.78rem, 0.95vw, 0.88rem);
+  letter-spacing: 0.06em;
+  color: var(--acento-servicio, var(--color-accent-texto));
+  font-weight: 600;
+  margin: 0.15rem 0 0;
 }
 
 .featured-description {
   font-size: clamp(0.85rem, 1.1vw, 0.95rem);
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.5;
-  max-width: 550px;
-  margin: 0.25rem 0 0;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
-}
-
-.featured-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.75rem;
-  color: #ffffff;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.featured-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  filter: brightness(1.1);
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.55;
+  max-width: 58ch;
+  margin: 0.35rem 0 0;
 }
 
 .featured-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-top: 0.75rem;
+  gap: 0.75rem;
+  margin-top: 0.9rem;
   flex-wrap: wrap;
 }
 
+/* ── Los botones, en el lenguaje del instrumento ──
+   Antes: relleno sólido del color del servicio en el primero, borde y texto de
+   color en los otros dos, radio de 0.5rem y un `translateY(-2px)` con sombra
+   difusa al pasar por encima. Tres botones de color en un bloque que ya lleva
+   el acento en el número y en el entregable.
+
+   Ahora los tres comparten caja —esquineras de mira, sin radio, filete de un
+   píxel— y se distinguen por PESO, no por color: el principal lleva el acento
+   como fondo y las esquineras claras; los secundarios van en transparente. El
+   hover no levanta el botón: abre las esquineras, que es el gesto que ya usa
+   el CTA de la portada. */
+.featured-cta,
 .featured-calc-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.5rem;
-  border: 1px solid currentColor;
-  border-radius: 0.5rem;
-  font-size: 0.85rem;
+  gap: 0.55rem;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0;
+  font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   text-decoration: none;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  transition: all 0.3s ease;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  transition: background-position 0.35s var(--ease-out-expo),
+    border-color 0.25s ease, color 0.25s ease;
+}
+
+.featured-cta:hover,
+.featured-calc-btn:hover {
+  background-position: var(--esq-abierta);
+  border-color: var(--acento-servicio, var(--color-accent-texto));
+}
+
+/* El principal: el acento como superficie. Es el único relleno de color que
+   queda en todo el panel, y por eso funciona como jerarquía.
+
+   La tinta es OSCURA, no blanca. Blanco sobre el morado #B738FF da 4,16:1 y
+   sobre el teal #00C8C8 da 2,08:1 —los dos por debajo del mínimo AA para un
+   texto de 12,5px— y era el defecto que traía el botón de antes. Con la tinta
+   de superficie sube a 4,83:1 y 9,65:1. */
+.featured-cta {
+  color: var(--superficie);
+  --esq-color: rgba(3, 1, 6, 0.55);
+  background-color: var(--acento-servicio, var(--color-accent-texto));
+  border-color: transparent;
+}
+
+.featured-calc-btn {
+  color: var(--color-texto-2);
+  --esq-color: rgba(255, 255, 255, 0.35);
+  background-color: rgba(3, 1, 6, 0.5);
 }
 
 .featured-calc-btn:hover {
-  background: var(--btn-color);
-  transform: translateY(-2px);
+  color: #ffffff;
+  --esq-color: var(--acento-servicio, var(--color-accent-texto));
 }
 
-.featured-calc-btn:hover svg,
-.featured-calc-btn:hover {
-  color: white !important;
+.featured-calc-btn svg {
+  opacity: 0.75;
 }
 
-/* Fase 4: micro-interacciones de botones */
 .featured-cta-arrow {
   flex-shrink: 0;
-  transition: transform 0.25s ease;
+  transition: transform 0.25s var(--ease-out-expo);
 }
 
 .featured-cta:hover .featured-cta-arrow {
   transform: translateX(4px);
 }
 
-.featured-cta:hover {
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--btn-color, #000) 38%, transparent);
-}
-
 .featured-cta:active,
 .featured-calc-btn:active {
-  transform: translateY(0) scale(0.97);
+  transform: scale(0.98);
 }
 
-/* Progress Bar */
+/* La escala de marcas al pie del panel. Medía 3px de alto con overflow oculto,
+   que es por lo que el texto de progreso que llevaba dentro no se vio nunca. */
 .featured-progress {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.1);
   z-index: 10;
+  pointer-events: none;
 }
 
 /* .progress-bar se elimino: ningun JSX la usaba. Animaba width, que ademas
@@ -521,28 +638,29 @@
     height: auto;
     min-height: 0;
     max-height: 70vh;
-    border-radius: 1rem;
+    /* Mismo radio corto que en escritorio: el panel es una ventana, no una
+       tarjeta. */
+    border-radius: 4px;
     overflow: hidden;
   }
 
   .featured-video-wrapper {
     position: absolute;
     inset: 0;
-    border-radius: 1rem;
+    border-radius: 4px;
   }
 
   .featured-video {
-    border-radius: 1rem;
+    border-radius: 4px;
     object-fit: cover;
   }
 
-  .featured-overlay {
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.55) 20%, rgba(0, 0, 0, 0.12) 42%, transparent 62%) !important;
-  }
-
+  /* El `!important` que había aquí existía para ganarle al degradado que se
+     pintaba en línea desde el JSX. Ese estilo en línea ya no está, así que la
+     cascada normal basta. */
   .featured-content {
-    padding: 1.25rem 1.25rem;
-    gap: 0.5rem;
+    padding: 1.1rem 1.25rem 1.25rem;
+    gap: 0.4rem;
     justify-content: flex-end;
     min-height: 0;
   }
@@ -551,10 +669,13 @@
     gap: 0.5rem;
   }
 
-
-  .featured-icon {
-    display: none;
-  }
+  /* Aquí había un `.featured-icon { display: none }` para el móvil. Tenía
+     sentido cuando el icono era un pictograma de 48px con resplandor flotando
+     sobre el vídeo: en una pantalla estrecha no cabía. Ahora es una marca de
+     24px en el mismo renglón del título, así que cabe y se queda — y además la
+     regla ya estaba MUERTA: la declaración base la pisa por venir después en
+     el archivo, con la misma especificidad. Se retira para que lo que se lee
+     sea lo que pasa. */
 
   .featured-title {
     font-size: clamp(1.3rem, 5.5vw, 1.6rem);
@@ -577,28 +698,42 @@
   }
 
   .featured-stats {
-    gap: 0.5rem;
-    margin: 0.25rem 0;
+    gap: 1.5rem;
+    margin: 0.6rem 0 0;
   }
 
-  .stat-badge {
-    padding: 0.3rem 0.7rem;
-    font-size: 0.7rem;
+  .medida-cifra {
+    font-size: 1.1rem;
   }
 
+  .medida-cifra--precio {
+    font-size: 0.95rem;
+  }
+
+  /* Los tres botones se apilaban a lo ancho y la placa acababa tapando tres
+     cuartos del vídeo, que es justo lo que hay que enseñar. El principal se
+     queda solo en su renglón; los dos secundarios comparten el siguiente. */
   .featured-actions {
-    gap: 0.6rem;
+    gap: 0.5rem;
+    width: 100%;
   }
 
   .featured-cta {
-    padding: 0.55rem 1.1rem;
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
+    flex: 1 0 100%;
+    justify-content: center;
+    padding: 0.6rem 1rem;
+    font-size: 0.72rem;
+    margin-top: 0.2rem;
   }
 
   .featured-calc-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.75rem;
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    padding: 0.55rem 0.6rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
   }
 
   .featured-progress {
@@ -684,9 +819,9 @@
     gap: 1rem;
   }
 
-  .featured-service {
-    max-height: 55vh;
-  }
+  /* El `max-height: 55vh` que había aquí ya no vale: ahora el panel es el
+     elemento elástico del encuadre y un tope fijo volvería a empujar las
+     miniaturas fuera de la pantalla, que es justo lo que se ha arreglado. */
 
   .featured-content {
     padding: 1.5rem;
@@ -725,8 +860,11 @@
     gap: 1.5rem;
   }
 
+  /* 2.5rem arriba y abajo eran 80px de relleno en una placa de 213: más de un
+     tercio, y en un panel que ahora es ancho y bajo eso se paga en vídeo
+     tapado. A lo ancho sí sobra sitio, así que ahí se conservan los 3rem. */
   .featured-content {
-    padding: 2.5rem 3rem;
+    padding: 1.5rem 3rem 1.75rem;
   }
 
   .services-thumbnails {
@@ -786,97 +924,102 @@
 }
 
 
-/* Featured Icon */
+/* El icono ya no flota en bucle ni lleva resplandor de su propio color: es una
+   marca junto al título, del tamaño de una mayúscula. `iconFloat` se retiró
+   entera — era una animación infinita corriendo siempre, viera alguien la
+   sección o no. */
 .featured-icon {
-  margin: 0.75rem 0;
-  opacity: 0.9;
-  filter: drop-shadow(0 0 10px currentColor);
+  display: inline-flex;
+  color: var(--acento-servicio, var(--color-accent-texto));
+  opacity: 0.85;
+  flex-shrink: 0;
 }
 
-.service-icon {
-  display: block;
-  animation: iconFloat 3s ease-in-out infinite;
-}
-
-@keyframes iconFloat {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-/* Featured Stats */
+/* ── Las lecturas ──
+   Rótulo pequeño arriba, cifra grande abajo, filete a la izquierda: el mismo
+   instrumento que las medidas del CTA. Sustituyen a dos píldoras de 2rem de
+   radio con su iconito de gente y su moneda. */
 .featured-stats {
   display: flex;
-  gap: 0.75rem;
-  margin: 0.5rem 0;
+  gap: 2rem;
+  margin: 0.9rem 0 0;
   flex-wrap: wrap;
 }
 
-.stat-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.9rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 2rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+.medida-servicio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-left: 0.7rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-.stat-badge:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+/* 0.7rem y no 0.62rem: la auditoría móvil lo cazó a 9,9px, por debajo del
+   mínimo de 11px que nos exigimos. El rótulo de una lectura es pequeño por
+   jerarquía, no ilegible por descuido. */
+.medida-rotulo {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-texto-3, rgba(255, 255, 255, 0.55));
 }
 
-.stat-badge svg {
-  opacity: 0.8;
+.medida-cifra {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
 }
 
-.price-badge {
-  background: rgba(176, 36, 255, 0.15);
-  border-color: rgba(176, 36, 255, 0.3);
-  color: #B024FF;
+/* El precio es más largo que un número de dos cifras; se le baja el cuerpo
+   para que las dos lecturas pesen lo mismo en la línea. */
+.medida-cifra--precio {
+  font-size: 1.05rem;
+  letter-spacing: 0;
 }
 
 /* Progress Track - Servicios vistos */
+/* Escala de marcas, la misma receta que el eje del ensayo del hero: los siete
+   servicios son siete divisiones de un instrumento, no siete pastillas de
+   colores. El filete de abajo es la regla; cada segmento, una marca. */
 .progress-track {
   display: flex;
-  gap: 0.25rem;
-  height: 4px;
-  border-radius: 2px;
-  overflow: hidden;
-  margin-bottom: 0.5rem;
+  gap: 2px;
+  height: 7px;
+  align-items: flex-end;
+  /* El filete que hace de regla: 1px al pie, de lado a lado. */
+  background: linear-gradient(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.16))
+    0 100% / 100% 1px no-repeat;
 }
 
+/* La marca mide siempre 7px y se recorta con scaleY desde su base. Animar la
+   altura de verdad recalcula el layout de la fila en cada fotograma; scaleY se
+   compone en la GPU y da exactamente el mismo dibujo. */
 .progress-segment {
-  height: 100%;
-  transition: all 0.3s ease;
-  border-radius: 2px;
-  transform-origin: left;
+  flex: 1;
+  height: 7px;
+  transform: scaleY(0.4285);
+  transform-origin: bottom;
+  background-color: rgba(255, 255, 255, 0.14);
+  transition: transform 0.35s var(--ease-out-expo), background-color 0.35s ease;
 }
 
+.progress-segment.viewed {
+  background-color: color-mix(in srgb, var(--marca-color) 55%, transparent);
+}
+
+/* El activo se distingue por ALTURA, no por brillo: una marca que sobresale es
+   lectura de instrumento; subir el brillo es un resplandor más. */
 .progress-segment.active {
-  filter: brightness(1.3);
+  transform: scaleY(1);
+  background-color: var(--marca-color);
 }
 
-.progress-text {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.6);
-  text-align: center;
-  display: block;
-  margin-top: 0.25rem;
-}
+/* .progress-text se retiró: vivía dentro de un contenedor de 3px con overflow
+   oculto, así que nunca llegó a verse. El detalle está en Services.jsx. */
 
 /* Thumbnail Icon */
 .thumbnail-icon {
@@ -1471,43 +1614,67 @@
   letter-spacing: 0.05em;
 }
 
-/* ── Mobile nav arrows (Services) ── */
+/* ── El mando del carrusel ──
+
+   La banda ocupa el hueco que queda por ENCIMA de la placa de texto, porque es
+   su hermana en el flex de columna y crece con `flex: 1` mientras la placa se
+   ancla abajo. De ahí que las flechas queden siempre centradas en el vídeo que
+   se ve, y que suban solas cuando la placa se despliega. Sin porcentajes a ojo.
+
+   No captura el puntero: el clic tiene que seguir llegando al vídeo, que es lo
+   que pliega y despliega la ficha en móvil. */
+.nav-banda {
+  position: relative;
+  z-index: 6;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.85rem;
+  pointer-events: none;
+}
+
+/* Cuadradas y de filete, como todo lo demás: eran dos pastillas redondas con
+   desenfoque de fondo pegadas la una a la otra en una esquina. 44px de lado
+   para cumplir el mínimo táctil sin necesitar un pseudoelemento que lo estire. */
 .featured-service .nav-arrow {
-  position: absolute;
-  top: 0.75rem;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(249, 237, 253, 0.8);
+  pointer-events: auto;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0;
+  background-color: rgba(3, 1, 6, 0.55);
+  background-repeat: no-repeat;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  --esq-color: rgba(255, 255, 255, 0.35);
+  color: var(--color-texto-2);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 10;
-  padding: 0;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background-position 0.35s var(--ease-out-expo),
+    border-color 0.25s ease, color 0.25s ease;
+}
+
+.featured-service .nav-arrow:hover,
+.featured-service .nav-arrow:focus-visible {
+  color: #ffffff;
+  border-color: var(--acento-servicio, var(--color-accent-texto));
+  background-position: var(--esq-abierta);
+  --esq-color: var(--acento-servicio, var(--color-accent-texto));
 }
 
 .featured-service .nav-arrow:active {
-  background: rgba(176, 36, 255, 0.25);
-  border-color: rgba(176, 36, 255, 0.3);
+  transform: scale(0.94);
 }
 
-.featured-service .nav-arrow-left {
-  right: 3rem;
-}
-
-.featured-service .nav-arrow-right {
-  right: 0.5rem;
-}
-
-@media (min-width: 769px) {
+@media (prefers-reduced-motion: reduce) {
   .featured-service .nav-arrow {
-    display: none;
+    transition: none;
   }
 }
 
@@ -1538,6 +1705,50 @@
   gap: 0.4rem;
 }
 
+/* ── La ficha abierta, en horizontal ──
+   Apilada, la ficha ocupaba 394px de un panel de 463 y dejaba 69px de vídeo:
+   un filo de color que parece un error, no un punto medio entre ver el trabajo
+   y leer la ficha.
+
+   El panel es ancho y bajo —1470×463— así que el sitio está a los lados, no
+   debajo. Descripción, lecturas y botones se alinean por su base, como el pie
+   de un instrumento. Ni una tipografía baja de cuerpo: lo único que cambia es
+   en qué dirección se reparte.
+
+   Va con `flex-wrap` y no con tres columnas fijas a propósito: entre 1025 y
+   1440px no hay ancho para las tres, y con columnas rígidas la descripción se
+   partía en cinco líneas y volvía a tapar el vídeo. Envolviendo, los botones
+   bajan a un segundo renglón y la altura crece UNA fila, no cinco. */
+@media (min-width: 769px) {
+  .featured-extra-inner {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.85rem 2.25rem;
+  }
+
+  .featured-extra-inner > * {
+    margin: 0;
+  }
+
+  .featured-extra-inner .featured-description {
+    flex: 1 1 300px;
+    /* Dos líneas y punto. La descripción es lo único de altura variable aquí, y
+       sin tope es lo que decide cuánto vídeo tapas — que es justo lo que no
+       puede quedar al azar del ancho de la ventana. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .featured-extra-inner .featured-stats,
+  .featured-extra-inner .featured-actions {
+    flex: 0 0 auto;
+  }
+}
+
 .featured-content.is-idle .featured-extra {
   opacity: 0;
   grid-template-rows: 0fr;
@@ -1545,17 +1756,53 @@
   pointer-events: none;
 }
 
-.featured-content.is-idle .featured-icon {
-  opacity: 0;
-  transform: translateY(8px) scale(0.92);
+/* ── El galón, solo en móvil ──
+   Marca que la placa se abre. Apunta hacia arriba cuando está plegada («hay
+   más») y gira al abrirse, la misma gramática que el galón de la barra
+   inferior de servicios. Es la única señal de que ahí debajo están el precio y
+   los botones, y en móvil está el grueso del tráfico. */
+.featured-galon {
+  position: absolute;
+  top: 0.85rem;
+  right: 1.1rem;
+  display: inline-flex;
+  color: var(--color-texto-2);
+  opacity: 0.75;
+  transform: rotate(180deg);
+  transition: transform 0.35s var(--ease-out-expo), opacity 0.25s ease;
   pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.featured-content:not(.is-idle) .featured-galon {
+  transform: rotate(0deg);
+  opacity: 0.5;
+}
+
+/* La placa plegada es un objetivo táctil: se le da altura de dedo aunque el
+   texto de dentro sea corto. */
+@media (max-width: 768px) {
+  .featured-content.is-idle {
+    cursor: pointer;
+    padding-bottom: 1.35rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .featured-galon {
+    transition: none;
+  }
+}
+
+/* Aquí el icono se ocultaba junto con la ficha. Tenía sentido cuando era un
+   pictograma grande que flotaba solo y la placa estaba abierta casi siempre.
+   Ahora vive en el renglón del título —que es de lo que SÍ se ve estando
+   plegada— y, como la placa arranca plegada, esa regla lo dejaba invisible
+   salvo al pasar el ratón: el servicio se quedaba sin su marca justo en el
+   estado en que más se mira. */
+
+@media (prefers-reduced-motion: reduce) {
   .featured-extra,
-  .featured-content.is-idle .featured-extra,
-  .featured-content.is-idle .featured-icon {
+  .featured-content.is-idle .featured-extra {
     transition: none;
   }
 }
