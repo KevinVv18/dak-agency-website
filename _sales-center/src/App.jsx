@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import {
   getBaseHealth,
   getDisplayName,
@@ -9,10 +10,11 @@ import {
 } from './lib/sales'
 
 const VIEWS = [
-  { id: 'hoy', label: 'Hoy' },
-  { id: 'prospectos', label: 'Prospectos' },
-  { id: 'base', label: 'Base' },
-  { id: 'como-funciona', label: 'Cómo funciona' },
+  { id: 'panorama', label: 'Panorama', icon: 'panorama' },
+  { id: 'hoy', label: 'Hoy', icon: 'today' },
+  { id: 'prospectos', label: 'Prospectos', icon: 'prospects' },
+  { id: 'base', label: 'Base', icon: 'database' },
+  { id: 'como-funciona', label: 'Cómo funciona', icon: 'info' },
 ]
 
 const stages = {
@@ -60,6 +62,33 @@ function getHref(value) {
 
 function Icon({ name, size = 16 }) {
   const paths = {
+    panorama: (
+      <>
+        <rect height="7" rx="1.5" width="7" x="3" y="3" />
+        <rect height="7" rx="1.5" width="7" x="14" y="3" />
+        <rect height="7" rx="1.5" width="7" x="3" y="14" />
+        <rect height="7" rx="1.5" width="7" x="14" y="14" />
+      </>
+    ),
+    today: <path d="M4 6h16M4 12h10M4 18h6" />,
+    prospects: (
+      <>
+        <path d="M4 5h16v14H4z" />
+        <path d="M4 10h16M10 10v9" />
+      </>
+    ),
+    database: (
+      <>
+        <ellipse cx="12" cy="6" rx="8" ry="3" />
+        <path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6" />
+      </>
+    ),
+    info: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 16v-4M12 8h.01" />
+      </>
+    ),
     arrow: <path d="M5 19 19 5M9 5h10v10" />,
     copy: (
       <>
@@ -268,11 +297,112 @@ function EmptyReplyState() {
   )
 }
 
+function wholePercent(value, previous) {
+  if (value === null || value === undefined || !previous) return missing
+  return `${Math.round((value / previous) * 100)} %`
+}
+
+function getSnapshotDate(data) {
+  const source = data.meta?.fuentes?.outbound ?? ''
+  const date = source.match(/\d{4}-\d{2}-\d{2}/)?.[0]
+  return formatDate(date)
+}
+
+function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView }) {
+  const processed = baseHealth.length && baseHealth.every((source) => source.procesadas !== null)
+    ? baseHealth.reduce((total, source) => total + source.procesadas, 0)
+    : null
+  const funnel = [
+    { label: 'Minadas', value: processed, note: 'Base procesada por las fuentes disponibles.' },
+    { label: 'Investigadas', value: data.meta?.totales?.outbound, note: 'Prospectos outbound con investigación comercial.' },
+    { label: 'Con mensaje', value: data.meta?.totales?.mensajes, note: 'Contacto verificado y mensaje redactado.' },
+    { label: 'Aprobadas', value: data.meta?.embudo?.porEnviar, note: 'Listas para salir por WhatsApp.' },
+    { label: 'Enviadas', value: data.meta?.embudo?.enviados, note: 'Contactos registrados como enviados.', warning: true },
+  ]
+  const maxFunnel = funnel[0].value || 1
+  const cities = Object.entries(
+    prospects
+      .filter((prospect) => prospect.origen === 'outbound')
+      .reduce((groups, prospect) => {
+        const city = valueOrMissing(prospect.ciudad)
+        groups[city] = (groups[city] ?? 0) + 1
+        return groups
+      }, {}),
+  ).sort((left, right) => right[1] - left[1])
+  const maxCity = cities[0]?.[1] || 1
+  const inbound = prospects.filter((prospect) => prospect.origen === 'inbound')
+  const newestInbound = [...inbound].sort((left, right) => (right.fechaDeteccion ?? '').localeCompare(left.fechaDeteccion ?? ''))[0] ?? null
+  const readyNames = todayActions.readyToSend.map(({ prospect }) => getDisplayName(prospect)).join(' · ')
+  const topPending = todayActions.pending[0]?.prospect ?? null
+
+  return (
+    <section aria-label="Panorama comercial" className="panorama-console">
+      <section className="console-zone panorama-funnel" aria-labelledby="panorama-funnel-title">
+        <header className="zone-heading"><h2 id="panorama-funnel-title">Recorrido</h2><span>Vista derivada</span></header>
+        <div className="funnel-route">
+          {funnel.map((stage, index) => (
+            <React.Fragment key={stage.label}>
+              <div aria-label={`${valueOrMissing(stage.value)} ${stage.label}. ${stage.note}`} className={`funnel-node ${stage.warning ? 'funnel-node--warning' : ''}`} tabIndex="0">
+                <span className="funnel-node__survival">{index ? wholePercent(stage.value, funnel[index - 1].value) : stage.value === null ? missing : '100 %'}</span>
+                <strong>{valueOrMissing(stage.value)}</strong>
+                <span className="funnel-node__label">{stage.label}</span>
+                <span className="funnel-node__measure"><i style={{ '--measure': Math.max((stage.value ?? 0) / maxFunnel, 0) }} /></span>
+                <span className="funnel-node__note">{stage.note}</span>
+              </div>
+              {index < funnel.length - 1 && (
+                <div className={`funnel-connector ${funnel[index + 1].warning ? 'funnel-connector--warning' : ''}`} aria-label={`${wholePercent(funnel[index + 1].value, stage.value)} continúa`}>
+                  <span>{wholePercent(funnel[index + 1].value, stage.value)}</span>
+                  <i aria-hidden="true" />
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      </section>
+
+      <div className="panorama-lower">
+        <section className="console-zone decision-zone" aria-labelledby="decision-title">
+          <header className="zone-heading"><h2 id="decision-title">Requiere tu decisión</h2></header>
+          <div className="decision-list">
+            <button className="decision-row decision-row--purple" onClick={() => onSelectView('hoy')} type="button">
+              <strong>{todayActions.pending.length}</strong>
+              <span><b>Por aprobar</b><small>{topPending ? `${getDisplayName(topPending)} · preparación ${valueOrMissing(topPending.readiness)}` : missing}</small></span>
+              <Icon name="arrow" size={15} />
+            </button>
+            <button className="decision-row decision-row--teal" onClick={() => onSelectView('hoy')} type="button">
+              <strong>{todayActions.readyToSend.length}</strong>
+              <span><b>Por enviar</b><small>{readyNames || missing}</small></span>
+              <Icon name="arrow" size={15} />
+            </button>
+          </div>
+        </section>
+
+        <section className="console-zone coverage-zone" aria-labelledby="coverage-title">
+          <header className="zone-heading"><h2 id="coverage-title">Dónde están</h2><span>Outbound · derivado</span></header>
+          <div className="coverage-list">
+            {cities.map(([city, count]) => <div className="coverage-row" key={city}><span>{city}</span><strong>{count}</strong><i><b style={{ '--measure': count / maxCity }} /></i></div>)}
+          </div>
+        </section>
+
+        <section className="console-zone inbound-zone" aria-labelledby="inbound-title">
+          <header className="zone-heading"><h2 id="inbound-title">Vinieron solos</h2></header>
+          <div className="inbound-signal">
+            <strong>{valueOrMissing(data.meta?.totales?.inbound)}</strong>
+            <span>Chat y WhatsApp</span>
+            <p>{newestInbound ? `Uno del ${formatDate(newestInbound.fechaDeteccion).replace(/\s+\d{4}$/, '')} sigue sin responsable` : `Último ingreso: ${missing}`}</p>
+          </div>
+        </section>
+      </div>
+    </section>
+  )
+}
+
 function TodayView({ todayActions }) {
+  const blockers = todayActions.pending.length + todayActions.readyToSend.length
   return (
     <>
-      <PageHeading title="Qué necesita pasar hoy">
-        <p>Ocho conversaciones están detenidas antes del primer contacto. Primero se revisan las cinco pendientes; después se envían las tres aprobadas.</p>
+      <PageHeading title={`${blockers} bloqueos`}>
+        <p>Vista derivada de las colas por aprobar y por enviar.</p>
       </PageHeading>
 
       <section className="queue-section" aria-labelledby="pending-heading">
@@ -382,7 +512,7 @@ function ProspectsView({ data, prospects }) {
 
   return (
     <>
-      <PageHeading title="Prospectos y contexto"><p>Tabla derivada de las filas disponibles. Selecciona una fila para leer una ficha humana, no una exportación de columnas.</p></PageHeading>
+      <PageHeading title={`${prospects.length} prospectos`}><p>Vista derivada · selecciona una fila para abrir su contexto.</p></PageHeading>
       <section className="prospect-workbench">
         <div className="prospect-list">
           <div className="filter-bar">
@@ -405,7 +535,7 @@ function ProspectsView({ data, prospects }) {
 function BaseView({ baseHealth }) {
   return (
     <>
-      <PageHeading title="¿Qué fuente merece más trabajo?"><p>Esta vista no enumera la base cruda. Contrasta el rendimiento que reporta cada fuente con los contactos que realmente quedaron validados.</p></PageHeading>
+      <PageHeading title={`${baseHealth.length} ${baseHealth.length === 1 ? 'fuente' : 'fuentes'}`}><p>Rendimiento reportado · vista derivada.</p></PageHeading>
       <section className="base-grid">
         {baseHealth.map((source) => <article className="source-card" key={source.fuente}>
           <div className="source-card__heading"><div><span className="detail-kicker">Fuente · vista derivada</span><h2>{source.fuente}</h2></div></div>
@@ -428,7 +558,7 @@ const flow = [
 function HowItWorksView() {
   return (
     <>
-      <PageHeading title="Cómo se mueve un prospecto"><p>Twin y DAK LEADS MASTER mantienen la operación. Este panel solo presenta una vista de lectura para que las decisiones humanas no queden ocultas entre columnas.</p></PageHeading>
+      <PageHeading title={`${flow.length} etapas`}><p>Twin y DAK LEADS MASTER mantienen la operación.</p></PageHeading>
       <section aria-label="Embudo comercial de cuatro etapas" className="flow-diagram">
         {flow.map((step, index) => <article className="flow-step" key={step.number}><span className="flow-step__number">{step.number}</span><div><p className="section-label">Etapa {index + 1}</p><h2>{step.title}</h2><p>{step.copy}</p><Badge tone={index === 3 ? 'teal' : 'outline'}>{step.agent}</Badge></div></article>)}
       </section>
@@ -448,15 +578,13 @@ function ErrorState({ onRetry }) {
 function App() {
   const getCurrentView = () => {
     const requested = window.location.hash.replace('#', '')
-    return VIEWS.some((view) => view.id === requested) ? requested : 'hoy'
+    return VIEWS.some((view) => view.id === requested) ? requested : 'panorama'
   }
   const [currentView, setCurrentView] = useState(getCurrentView)
   const [renderedView, setRenderedView] = useState(getCurrentView)
   const [viewPhase, setViewPhase] = useState('entered')
-  const [navIndicator, setNavIndicator] = useState({ left: 0, width: 0 })
   const [resource, setResource] = useState({ status: 'loading', data: null })
   const [requestKey, setRequestKey] = useState(0)
-  const navRef = useRef(null)
   const exitTimerRef = useRef(null)
   const entryFrameRef = useRef(null)
   const renderedViewRef = useRef(renderedView)
@@ -472,6 +600,17 @@ function App() {
 
     if (nextView === renderedViewRef.current) {
       setViewPhase('entered')
+      return
+    }
+
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        flushSync(() => {
+          renderedViewRef.current = nextView
+          setRenderedView(nextView)
+          setViewPhase('entered')
+        })
+      })
       return
     }
 
@@ -496,16 +635,6 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const positionIndicator = () => {
-      const activeButton = navRef.current?.querySelector(`[data-view="${currentView}"]`)
-      if (activeButton) setNavIndicator({ left: activeButton.offsetLeft, width: activeButton.offsetWidth })
-    }
-    positionIndicator()
-    window.addEventListener('resize', positionIndicator)
-    return () => window.removeEventListener('resize', positionIndicator)
-  }, [currentView])
-
-  useEffect(() => {
     let cancelled = false
     setResource({ status: 'loading', data: null })
     loadSalesData().then((data) => {
@@ -524,30 +653,36 @@ function App() {
   const todayActions = data ? getTodayActions(data) : null
   const prospects = data ? getProspects(data) : null
   const baseHealth = data ? getBaseHealth(data) : null
-  const viewContent = renderedView === 'hoy'
-    ? <TodayView todayActions={todayActions} />
-    : renderedView === 'prospectos'
-      ? <ProspectsView data={data} prospects={prospects} />
-      : renderedView === 'base'
-        ? <BaseView baseHealth={baseHealth} />
-        : <HowItWorksView />
+  const activeView = VIEWS.find((view) => view.id === currentView) ?? VIEWS[0]
+  const viewContent = renderedView === 'panorama'
+    ? <PanoramaView baseHealth={baseHealth} data={data} onSelectView={selectView} prospects={prospects} todayActions={todayActions} />
+    : renderedView === 'hoy'
+      ? <TodayView todayActions={todayActions} />
+      : renderedView === 'prospectos'
+        ? <ProspectsView data={data} prospects={prospects} />
+        : renderedView === 'base'
+          ? <BaseView baseHealth={baseHealth} />
+          : <HowItWorksView />
 
   return (
     <div className="app-shell">
+      <nav aria-label="Vistas del panel" className="app-rail">
+        <a aria-label="Ir a Panorama" className="brand" href="#panorama" onClick={() => selectView('panorama')}><span aria-hidden="true" className="brand__mark"><i /><i /><i /></span></a>
+        <div className="rail-actions">
+          {VIEWS.map((view) => <button aria-current={currentView === view.id ? 'page' : undefined} aria-label={view.label} className={currentView === view.id ? 'is-active' : ''} data-view={view.id} key={view.id} onClick={() => selectView(view.id)} type="button"><Icon name={view.icon} size={17} /><span aria-hidden="true">{view.label}</span></button>)}
+        </div>
+      </nav>
       <header className="app-header">
-        <a className="brand" href="#hoy" onClick={() => selectView('hoy')}><span aria-hidden="true" className="brand__mark"><i /><i /><i /></span><span><strong>DAK</strong><small>Sales Control Center</small></span></a>
-        <nav aria-label="Vistas del panel" className="primary-nav" ref={navRef}>
-          <span aria-hidden="true" className="primary-nav__indicator" style={{ transform: `translateX(${navIndicator.left}px)`, width: navIndicator.width }} />
-          {VIEWS.map((view) => <button aria-current={currentView === view.id ? 'page' : undefined} className={currentView === view.id ? 'is-active' : ''} data-view={view.id} key={view.id} onClick={() => selectView(view.id)} type="button">{view.label}</button>)}
-        </nav>
+        <h1>{activeView.label}</h1>
+        {data && <span className="header-meta">{getSnapshotDate(data)}</span>}
+        <span className="header-spacer" />
         {data?.meta.esMock && <Badge tone="mock">Datos de ejemplo</Badge>}
       </header>
-      <main className="main-content">
+      <main className={`main-content main-content--${renderedView}`}>
         {resource.status === 'loading' && <LoadingState />}
         {resource.status === 'error' && <ErrorState onRetry={() => setRequestKey((key) => key + 1)} />}
         {resource.status === 'ready' && <div className={`view-frame view-frame--${viewPhase}`} key={renderedView}>{viewContent}</div>}
       </main>
-      <footer className="app-footer"><span>Modo mock · teléfonos redactados · lectura únicamente</span><span>Fuente: DAK LEADS MASTER + inventario inbound</span></footer>
     </div>
   )
 }
