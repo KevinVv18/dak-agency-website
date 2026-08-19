@@ -1,6 +1,18 @@
-# Encargo para Codex — Fase 1 del panel de ventas
+# Encargo para Codex — panel de ventas
 
 Este archivo es el punto de entrada. Kevin te lo señala y tú empiezas por aquí.
+
+> **Estado: Fases 1 y 2 hechas y verificadas.** Compila, `impeccable detect` devuelve cero
+> hallazgos (comprobado contra un control que sí reporta 64), no desborda a 375 px y respeta el
+> contrato. Lo que falta es la **Fase 3: la pasada de diseño**.
+>
+> **Fase 3 — lee [`DISENO.md`](DISENO.md) y aplícalo.** Las fases 1 y 2 se construyeron contra una
+> instrucción de este mismo archivo que decía priorizar la lectura «por encima de animaciones», y
+> salió correcto pero plano: cuatro transiciones en toda la página, todas `160ms ease`. La
+> dirección real es **Apple dark: profundidad por luz, movimiento continuo, cero brillos**.
+> `DISENO.md` trae las curvas, las duraciones, los tres planos de superficie y la lista de lo que
+> sigue prohibido. El listón: **cero hallazgos de `impeccable` se mantiene** — todo lo que pide ese
+> documento se puede hacer sin un solo glow.
 
 ## Lee, en este orden
 

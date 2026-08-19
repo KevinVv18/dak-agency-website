@@ -112,7 +112,10 @@ cifras no cuadran con la hoja se deja de usar en una semana.
 - Debe sentirse como herramienta interna de operaciones comerciales, no como landing page.
 - Reutilizar identidad DAK: fondo oscuro, morado, teal, Poppins, contraste AA y componentes
   responsivos.
-- Priorizar lectura, acciones del día, filtros y estados por encima de animaciones o decoración.
+- Priorizar lectura, acciones del día, filtros y estados por encima de la **decoración**. Esto no
+  es lo mismo que renunciar al movimiento: la dirección es «Apple dark», con profundidad por luz y
+  transiciones continuas. Las curvas, duraciones y prohibiciones concretas están en
+  `_sales-center/DISENO.md`, que manda sobre esta línea.
 - No mostrar información sensible de prospectos sin el muro de autenticación puesto.
 
 ## Reparto de trabajo entre agentes
