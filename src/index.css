@@ -129,6 +129,55 @@ body {
 }
 
 /* ===================================
+   LA PÁGINA NO SE MANOSEA
+
+   El texto de la web no se selecciona ni se arrastra, y en móvil el pulsado
+   largo no abre el menú de «copiar / guardar imagen». Es una web de una agencia
+   de diseño y fotografía: el trabajo está a la vista, no en el portapapeles.
+
+   Va aquí y no en cada componente porque es una regla de la página entera; los
+   componentes solo se nombran abajo para EXIMIRLOS.
+   ================================== */
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Ni arrastrar una foto fuera de la ventana. */
+img,
+svg,
+video {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* ── Lo que SÍ se selecciona ──
+   Tres excepciones, y las tres son de negocio, no de gusto:
+
+   1. Los campos. Sin esto no se puede seleccionar ni corregir lo ya escrito
+      dentro de un input, y el formulario de contacto se vuelve una trampa.
+   2. Los datos de contacto. Un lead que quiere pegar el correo en su gestor o
+      la dirección en Maps tiene que poder copiarlos: bloquearlos es cerrarse la
+      puerta uno mismo.
+   3. Cualquier enlace de correo o teléfono, esté donde esté — también el del
+      ErrorBoundary, que es justo cuando más falta hace poder escribir. */
+input,
+textarea,
+select,
+[contenteditable='true'],
+.contact-item,
+.contact-item-value,
+.pie-coords,
+.pie-dato,
+a[href^='mailto:'],
+a[href^='tel:'] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* ===================================
    TYPOGRAPHY
    ================================== */
 
