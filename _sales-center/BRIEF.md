@@ -72,14 +72,13 @@ Los nombres internos en inglés (Lead Hunter, Outreach Strategist) solo aparecen
 
 ## 5. Navegación **[cambio]**
 
-> ⚠️ **Revisado tras la Fase 0.** La hoja real dice que **0 de 12 prospectos son contactables** y
-> que **no existen las columnas de responsable, acción ni fecha**. «Hoy» no tiene de dónde sacar
-> una fila, y la vista principal pasa a ser **«Conseguir el contacto»**. El razonamiento completo,
-> con los números, está en [`data/CONTRATO.md`](data/CONTRATO.md) §1–2. Léelo antes de construir.
+> ⚠️ **Revisado tras la Fase 0, con las cuatro pestañas de la hoja.** DAK LEADS MASTER es un
+> **embudo de cuatro etapas**, no una tabla: 109 empresas minadas → 12 investigadas → 8 con
+> teléfono verificado y mensaje escrito → 3 aprobadas → **0 enviadas**. El cuello de botella son
+> las dos puertas humanas, aprobar y enviar, y las dos son de un clic. El razonamiento con los
+> números está en [`data/CONTRATO.md`](data/CONTRATO.md) §1–2. **Léelo antes de construir nada.**
 
-**Inicio · Contacto · Prospectos · Base · Cómo funciona**
-
-(«Hoy» vuelve en cuanto la hoja tenga las cuatro columnas operativas de `CONTRATO.md` §4.)
+**Hoy · Prospectos · Base · Cómo funciona**
 
 «Base Cámara» era una pestaña de primer nivel dedicada a **una** de cinco fuentes; envejece mal en
 cuanto Apollo, Apify e inbound tengan volumen. Se convierte en **«Base»**, agnóstica de la fuente,
@@ -91,16 +90,18 @@ Prospectos totales · de alta prioridad · acciones pendientes hoy · nuevos · 
 embudo por estado · últimos movimientos · alertas (datos incompletos, acción vencida, contacto sin
 seguimiento). Separado en inbound / outbound.
 
-### Contacto **[nueva, y es la principal]**
-Cola de enriquecimiento, ordenada por **cuánto valor se desbloquea al conseguir el dato** — es
-decir, por los otros cuatro componentes del score, ignorando la contactabilidad. Por prospecto: qué
-falta (teléfono · decisor · redes · email), dónde buscarlo (`Website` y `Google Maps URL`, las dos
-únicas pistas que la hoja sí trae), el teléfono histórico **extraído de la prosa y etiquetado como
-sin verificar** en vez de escondido, y «abrir en la hoja» para escribir el dato donde toca.
+### Hoy — **es la vista principal, y hoy tiene 8 filas reales**
 
-### Hoy — **pospuesta**
-La cola diaria (acciones vencidas, responsable, canal) no se construye todavía: ninguna de sus
-columnas existe en ninguna fuente. Vuelve cuando la hoja tenga las cuatro de `CONTRATO.md` §4.
+Dos colas, en este orden. El detalle de cada una está en `CONTRATO.md` §2.
+
+**Por aprobar (5).** El mensaje **completo, tal como se enviaría**, con la señal de compra que lo
+justifica, el horario recomendado, las dos objeciones previstas con su respuesta y los dos
+follow-ups ya redactados. Se pide leer y decir sí o no.
+
+**Por enviar (3).** El `WhatsApp Link` como botón grande —un toque abre WhatsApp con el texto
+puesto—, el mensaje visible para releerlo antes, el horario y el responsable.
+
+**Esperando respuesta.** Vacía hoy; se ordena por `Next Follow-Up Due`.
 
 ### Prospectos
 Tabla principal y detalle. El detalle **no** es un volcado de columnas: es un resumen humano.

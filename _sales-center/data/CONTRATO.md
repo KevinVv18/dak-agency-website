@@ -1,198 +1,211 @@
-# Contrato de datos — Fase 0 cerrada
+# Contrato de datos — Fase 0
 
-Derivado de la exportación real de **DAK LEADS MASTER** (31 columnas, 12 filas, todas del
-15-ago-2026) y del inventario del MySQL inbound ([`INVENTARIO-INBOUND.md`](INVENTARIO-INBOUND.md)).
+Derivado de las **cuatro pestañas** de DAK LEADS MASTER (exportadas el 19-ago-2026) y del
+inventario del MySQL inbound ([`INVENTARIO-INBOUND.md`](INVENTARIO-INBOUND.md)).
 
----
-
-## 1. Lo que dice la hoja real, y por qué cambia el MVP
-
-El brief partía de una premisa: *«el problema ya no es conseguir información, es priorizarla»*.
-Con la hoja delante, esa premisa **no describe el estado actual**. Tres hechos medidos:
-
-### Ningún prospecto es contactable hoy. Cero de doce.
-
-| Columna | Filas con dato usable |
-|---|---|
-| Phone | **0 / 12** (las 12 dicen `UNVERIFIED`) |
-| WhatsApp | **0 / 12** |
-| Email | **0 / 12** (vacías) |
-| Instagram · Facebook · TikTok · LinkedIn | **0 / 12** (vacías) |
-| Decision Maker | 2 / 12, y ambos marcados `UNVERIFIED LEGACY CONTACT` |
-| Decision Maker Position | **0 / 12** |
-
-Los únicos dos teléfonos que existen en todo el archivo están **enterrados en prosa dentro de la
-columna `Notes`** —`900814819`, `986495932`— vienen del archivo histórico de la Cámara y están
-declarados sin verificar.
-
-La investigación es buenísima: Charles Sutton con su primera subasta desierta, la sucursal nueva de
-Delcrosa, la planta de Westfalia arrancando. Ángulos de venta concretos y fechados. Y no hay a quién
-llamar en ninguno.
-
-**El cuello de botella de DAK no es priorizar. Es contactar.** El propio sistema ya lo está midiendo
-sin que nadie lo mire: `Contactability Score` va de **2 a 8**, y es el más bajo de los cinco
-componentes en casi todas las filas.
-
-### La hoja no tiene capa operativa. Ninguna.
-
-No existen las columnas `Responsable`, `Próxima acción`, `Fecha de acción` ni `Última actividad`.
-No están vacías: **no existen**.
-
-DAK LEADS MASTER es un **informe de investigación**, no un CRM. Y eso significa que la vista
-«Acciones de hoy» del brief —la que iba a ser el corazón del panel— **no tiene de dónde sacar una
-sola fila**. No es un problema de datos incompletos: es que ese modelo no está en ningún sitio.
-
-### El score es transparente, y eso es un regalo
-
-`DAK Opportunity Score` = suma exacta de sus cinco componentes en **12 de 12 filas**:
-
-```
-Business Potential + Buying Signal + Marketing Opportunity + DAK Fit + Contactability
-        20        +      21       +          16           +   16    +      4          = 77
-```
-
-No hay que confiar en el número: se puede **descomponer y enseñar por qué**. El panel muestra el
-score como cinco barras, y ahí se ve de un vistazo que lo que hunde a los prospectos es siempre la
-misma barra.
-
-### Detalles menores del formato
-
-- `Lead Temperature` y `Status` son **la misma columna duplicada** (idénticas en 12/12). Se lee una.
-- Dos formas de fila conviven: **10 de señal pública** (en inglés, sin contacto histórico) y
-  **2 de la Cámara de Comercio** (con notas en español y el teléfono viejo en `Notes`).
-- Las 12 filas son del mismo día. Es un lote, no un flujo.
+> **Corrección respecto a la primera versión de este documento.** Se escribió con una sola
+> pestaña (`Leads`) y concluía que no había ningún prospecto contactable y que no existía capa
+> operativa. Ambas cosas son falsas del libro completo: los teléfonos verificados viven en
+> `DAK OUTREACH QUEUE` y la capa operativa en `DAK DAILY OUTREACH`. Lo que sigue está escrito
+> contra las cuatro.
 
 ---
 
-## 2. Qué se construye entonces
+## 1. El sistema real es un embudo de cuatro etapas
 
-La navegación del brief se mantiene, pero **cambia cuál es la vista principal**.
+Cada pestaña es una etapa, y el paso de una a otra es una decisión. Con los números de hoy:
 
-| Brief original | Fase 0 dice | Resultado |
+```
+CAMARA REACTIVATION LOG          Leads              DAK OUTREACH QUEUE        DAK DAILY OUTREACH
+      109 empresas         →    12 prospectos   →      8 con mensaje      →    3 aprobados
+      minadas del padron        investigados          escrito y telefono        listos para enviar
+                                                      verificado
+      2 pasaron (1.8%)          ↑                     5 esperan aprobacion      0 ENVIADOS
+                                └─────────────────────┘                          ↑
+                                                                          aqui se para todo
+```
+
+### Dónde está el cuello de botella, medido
+
+| Etapa | Filas | Estado |
 |---|---|---|
-| «Acciones de hoy» como corazón | No hay responsable, ni acción, ni fecha en ninguna fuente | Se pospone hasta que existan esas columnas |
-| «Prospectos» como tabla | Sí existe, y es rica | Se mantiene, con el score descompuesto |
-| «Base Cámara» | Solo 2 de 12 filas | Ya estaba previsto: pasa a «Base», agnóstica |
-| — | **0/12 contactables** | **Nueva vista principal: «Conseguir el contacto»** |
+| Investigados | 12 | ✅ Twin lo hace bien |
+| Con teléfono verificado y mensaje escrito | 8 | ✅ `Contact Handle` en 8/8, con motivo documentado |
+| **Esperando aprobación humana** | **5** | ⏳ `Human Review: PENDING` desde el **15-ago** |
+| **Aprobados y sin enviar** | **3** | ⏳ `Send Status: NOT SENT`, `Sent At` vacío |
+| Enviados | **0** | ❌ |
 
-### La vista nueva: «Conseguir el contacto»
+**El cuello de botella no es investigar, ni conseguir el contacto. Son las dos puertas humanas:
+aprobar y enviar.** Ocho mensajes están escritos, con su enlace `wa.me` armado y su horario
+recomendado, y ninguno ha salido. El de mayor `Outreach Readiness Score` de todo el lote —Acuña
+Inmobiliaria, 94— es justamente uno de los que nadie ha aprobado.
 
-Cola de trabajo de enriquecimiento, ordenada por *cuánto valor se desbloquea al conseguir el dato*
-—es decir, por los otros cuatro componentes del score, ignorando la contactabilidad. Por prospecto:
+Las dos son acciones de un clic. No se hacen porque viven en una hoja de 30 columnas donde no se
+ven. **Eso es exactamente lo que arregla un panel**, y es lo que tiene que hacer el MVP.
 
-- **Qué falta**: teléfono · decisor · redes · email.
-- **Dónde buscarlo**: los enlaces que la hoja **sí** tiene — `Website` (7/12) y `Google Maps URL`
-  (9/12) son las dos pistas reales para conseguir un teléfono.
-- **Qué hay de dudoso**: si existe un teléfono histórico en `Notes`, se muestra **extraído y
-  etiquetado como sin verificar**, no escondido en un párrafo.
-- **Abrir en la hoja**, para escribir el dato donde toca.
+### La reactivación de la Cámara tiene un rendimiento del 1,8 %
 
-Esto convierte al panel en lo que DAK necesita este mes: no un tablero de prioridades sobre doce
-filas que se leen de un vistazo, sino **la máquina de cerrar la brecha entre investigación y
-llamada**.
+De 109 empresas procesadas: **75 REJECTED**, **32 NOT QUALIFIED - LOGGED ONLY**, **2 APPENDED TO
+LEADS**. Y `Validated Phone` en **0 de 109** — la reactivación no consiguió un solo teléfono
+(solo 8 webs). `Business Active?` sale `UNCERTAIN` en 75.
+
+Es un dato que merece estar en pantalla: dice si vale la pena seguir minando ese padrón. La vista
+**Base** existe para responder eso, no para listar 109 empresas rechazadas.
+
+---
+
+## 2. Qué se construye
+
+Navegación: **Hoy · Prospectos · Base · Cómo funciona**
+
+### Hoy — es la vista principal, y hoy tiene 8 filas reales
+
+Dos colas, en este orden:
+
+**a) Por aprobar (5).** Por cada una: la empresa, la señal de compra, el **mensaje completo tal
+como se enviaría**, el canal y el horario recomendado, las dos objeciones previstas con su
+respuesta, y los dos follow-ups ya redactados. Ordenadas por `Outreach Readiness Score`.
+La decisión que se pide es leer y decir sí o no.
+
+**b) Por enviar (3).** Por cada una: el `WhatsApp Link` como botón grande, el mensaje visible
+para releerlo antes, el horario recomendado, y el dueño (`Owner`). Un toque abre WhatsApp con el
+texto puesto.
+
+**c) Esperando respuesta.** Vacía hoy. Se llena en cuanto algo se marque enviado, y se ordena por
+`Next Follow-Up Due`.
+
+> **Ojo con la escritura.** Aprobar y marcar-enviado **son escrituras**, y el MVP es de solo
+> lectura. En v1 los botones abren la fila en la hoja y abren `wa.me`; la marca la pone la persona
+> en Sheets. Que sea de solo lectura no impide que el panel sea el sitio donde se *decide*: impide
+> que sea el sitio donde se *registra*. Ver §5.
+
+### Prospectos
+Tabla y detalle, con el score descompuesto en sus cinco componentes (suman exacto en 12/12) y la
+etapa del embudo en la que está cada uno.
+
+### Base
+Rendimiento de las fuentes. Hoy: la Cámara rindió 2 de 109. Eso es la vista, no una lista.
+
+### Cómo funciona
+El diagrama de las cuatro etapas y qué agente actúa en cada una.
 
 ---
 
 ## 3. El contrato
 
-Congelado. Los componentes visuales solo conocen esto.
+Dos entidades, porque son dos cosas distintas: la empresa y el intento de contactarla.
 
 ```ts
 type SalesProspect = {
   id: string
   origen: 'inbound' | 'outbound'
+  etapa: 'investigado' | 'con-mensaje' | 'por-aprobar' | 'por-enviar'
+       | 'enviado' | 'respondido' | 'descartado'
 
-  // Identidad. Outbound identifica empresa; inbound identifica persona.
-  // Nunca son ambas. La UI muestra la que haya, jamas un hueco.
-  empresa: string | null
-  persona: string | null
-
+  empresa: string | null        // outbound identifica empresa...
+  persona: string | null        // ...inbound identifica persona. Nunca ambas.
   rubro: string | null
   ciudad: string | null
   fuente: 'Senal publica' | 'Camara' | 'Apollo' | 'Apify' | 'Reactivacion' | 'Manual'
         | 'Web' | 'Chat' | 'Calculadora' | 'WhatsApp' | 'Facebook' | 'Instagram'
 
-  // --- Puntuacion. Las dos escalas NO se mezclan: ver regla 2 de AGENTS.md ---
-  score: number | null              // outbound: DAK Opportunity Score (0-100)
-  scoreDetalle: {                   // outbound: los cinco componentes, que suman `score`
-    potencial: number
-    senal: number
-    oportunidad: number
-    encaje: number
-    contactabilidad: number
-  } | null
-  scoreBot: number | null           // inbound: lead_score del bot. Otra escala. No comparar.
-  temperatura: 'STRONG' | 'QUALIFIED' | 'WARM' | null
+  // Puntuacion. Tres escalas distintas que NO se mezclan (regla 2 de AGENTS.md).
+  score: number | null              // DAK Opportunity Score (0-100)
+  scoreDetalle: { potencial: number, senal: number, oportunidad: number,
+                  encaje: number, contactabilidad: number } | null   // suma = score
+  readiness: number | null          // Outreach Readiness Score: listo para CONTACTAR
+  readinessBand: 'PRIORITY OUTREACH' | 'READY' | null
+  scoreBot: number | null           // inbound: lead_score del bot. Otra escala.
+  temperatura: 'STRONG' | 'QUALIFIED' | null
+  potencialNegocio: 'HIGH' | 'MEDIUM' | 'SMALL' | null   // Deal Potential
 
-  // --- Contactabilidad: el eje que resulto ser el cuello de botella ---
   contacto: {
-    telefono: string | null
-    whatsapp: string | null
-    email: string | null
-    decisor: string | null
-    cargo: string | null
-    redes: { instagram?: string, facebook?: string, tiktok?: string, linkedin?: string }
-    verificado: boolean             // false = dato historico sin confirmar
-    faltantes: Array<'telefono' | 'email' | 'decisor' | 'redes'>   // derivado, se etiqueta
+    handle: string | null           // Contact Handle, ya verificado
+    motivoCanal: string | null      // por que ese canal, en palabras
+    canal: 'WHATSAPP' | 'EMAIL' | 'LLAMADA' | 'LINKEDIN' | null
+    mejorMomento: string | null     // Best Timing
+    verificado: boolean
   }
 
-  // --- Investigacion: lo que Twin ya hace bien ---
-  oportunidad: string | null        // Primary Opportunity
-  senalCompra: string | null        // Buying Signal
-  porQueAhora: string | null        // Why Now
-  servicioSugerido: string | null   // Recommended First Service
-  anguloVenta: string | null        // Sales Angle
-  evidencia: string | null          // Evidence / Sources
-  notas: string | null
-
-  // --- Pistas para conseguir contacto ---
+  // Investigacion (pestaña Leads)
+  oportunidad: string | null
+  senalCompra: string | null
+  porQueAhora: string | null
+  servicioSugerido: string | null
+  anguloVenta: string | null
+  evidencia: string | null
   web: string | null
   mapsUrl: string | null
 
-  // --- Capa operativa. HOY NO EXISTE EN NINGUNA FUENTE. ---
-  // Se declara para que la UI se disene con ella, pero llega null en todas las filas
-  // hasta que la hoja tenga las columnas. Ver seccion 4.
-  estado: 'Nuevo' | 'Investigado' | 'Listo para contactar' | 'Contactado'
-        | 'En seguimiento' | 'Descartado' | null
-  responsable: string | null
-  proximaAccion: string | null
-  fechaAccion: string | null
-  ultimaActividad: string | null
+  // Capa operativa (pestaña DAK DAILY OUTREACH)
+  responsable: string | null        // Owner
+  proximaAccion: string | null      // Next Action
+  fechaSeguimiento: string | null   // Next Follow-Up Due
+  enviadoEn: string | null          // Sent At
+  estadoEnvio: 'NOT SENT' | 'SENT' | null
+  estadoRespuesta: 'NO REPLY' | 'REPLIED' | null
+  resumenRespuesta: string | null
 
-  enlaceFuente: string | null       // fila en la hoja o registro de origen
-  fechaDeteccion: string | null     // Date Found / created_at
+  enlaceFuente: string | null
+  fechaDeteccion: string | null
+  dedupKey: string | null           // ya existe en la hoja: EMPRESA|telefono
+}
+
+// El intento de contacto. Vive aparte porque un prospecto puede tener varios
+// a lo largo del tiempo, y porque es lo que se aprueba y se envia.
+type OutreachMessage = {
+  prospectoId: string
+  estadoRevision: 'PENDING' | 'APPROVED' | 'REJECTED'
+  etapa: 'OPENER' | 'FOLLOWUP_1' | 'FOLLOWUP_2'
+  canal: 'WHATSAPP' | 'EMAIL'
+  enlaceWhatsApp: string | null     // wa.me ya armado con el texto
+  texto: string                     // el mensaje tal como se enviaria
+  asuntoEmail: string | null
+  cuerpoEmail: string | null
+  ganchoValor: string | null        // Value Hook
+  primeraOferta: string | null      // Suggested First Offer
+  formaRelacion: 'PROYECTO + RETAINER' | 'RETAINER' | 'PROYECTO' | null
+  ideaVenta: string | null
+  objeciones: Array<{ objecion: string, respuesta: string }>
+  seguimientos: Array<{ orden: 1 | 2, mensaje: string, angulo: string, plazo: string }>
 }
 ```
 
-Casi todo es `null`able porque casi todo llega nulo. **La UI se diseña contra los huecos, no contra
-un caso ideal que no existe en ninguna de las dos fuentes.**
+## 4. Rendimiento de fuentes (pestaña Base)
 
----
+```ts
+type FuenteSalud = {
+  fuente: string
+  procesadas: number
+  aceptadas: number
+  rendimiento: number          // aceptadas / procesadas
+  contactosValidados: number
+  notas: string | null
+}
+```
 
-## 4. Lo que la hoja necesita para que el panel sirva de verdad
+Hoy la Cámara sale: `procesadas: 109, aceptadas: 2, rendimiento: 0.018, contactosValidados: 0`.
 
-Cuatro columnas nuevas en DAK LEADS MASTER. Sin ellas, la capa operativa del panel llega vacía y
-«Acciones de hoy» no se puede construir nunca:
+## 5. La escritura, y por qué se pospone bien
 
-| Columna | Valores | Para qué |
-|---|---|---|
-| `Owner` | nombre o vacío | Quién lo tiene. Sin esto no hay «sin responsable» |
-| `Next Action` | texto libre | Qué toca hacer |
-| `Next Action Date` | `YYYY-MM-DD` | Lo que hace posible «hoy» y «vencido» |
-| `Last Activity` | `YYYY-MM-DD` | Detectar prospectos abandonados |
+Aprobar y marcar-enviado son las dos acciones que desatascan el sistema, y las dos son escrituras.
+El MVP no escribe. Eso **no** lo convierte en un callejón sin salida, porque las dos se pueden
+hacer desde el panel sin que el panel escriba:
 
-Se añaden **en la hoja**, no en el panel. El panel las lee. Si el panel las gestionara, habría dos
-fuentes de verdad y la regla que sostiene todo esto se rompe.
+- **Enviar** ya es un enlace: `WhatsApp Link` abre WhatsApp con el texto puesto. El panel no
+  necesita permisos para eso.
+- **Aprobar** abre la fila en la hoja, en la celda `Human Review`.
 
----
+Cuando toque escribir de verdad (Fase 4), es **un solo endpoint**: actualizar una celda
+(`Human Review` o `Send Status`) por fila. Nada más. Un Apps Script publicado o una ruta en
+`admin.dakagency.net`.
 
-## 5. Ficheros
+## 6. Ficheros
 
 ```
 _sales-center/data/
-  muestra.csv               ← exportacion real. NO SE VERSIONA (.gitignore): telefonos privados
-  normalizar.mjs            ← muestra.csv + inbound → mock.json
-  mock.json                 ← lo que consume el adaptador. Telefonos redactados
-  CONTRATO.md               ← este archivo
-  INVENTARIO-INBOUND.md
+  muestra-*.csv            ← las cuatro pestañas. NO SE VERSIONAN (.gitignore)
+  normalizar.mjs           ← las cuatro + inbound → mock.json. Aborta si escapa un telefono
+  mock.json                ← lo que consume el adaptador. Redactado
+  CONTRATO.md · INVENTARIO-INBOUND.md
 ```
