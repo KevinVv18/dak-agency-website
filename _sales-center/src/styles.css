@@ -24,9 +24,25 @@
   --text: #f4f1f8;
   --secondary: rgba(244, 241, 248, .74);
   --muted: rgba(244, 241, 248, .58);
+  /* ── Paleta ────────────────────────────────────────────────────────────────
+     Aqui habia morado + cian sobre casi negro. Es la combinacion por defecto de
+     practicamente todo lo que genera una IA, y se nota: por muy bien resuelto
+     que este el resto, esos dos colores juntos delatan de donde salio.
+
+     Un panel de instrumentos serio casi no tiene color. Trabaja en blanco hueso
+     sobre negro y reserva UN acento calido para lo que de verdad importa. Eso es
+     lo que hace que se lea caro: la escasez, no la saturacion.
+
+     Asi que el cian se va entero y el oro pasa a ser el unico acento. El morado
+     sobrevive en un sitio y solo uno —los 2px que marcan en que vista estas—
+     como guiño a la marca; en cuanto compite con el oro, deja de ser identidad y
+     vuelve a ser el cliche. */
   --purple: #b93eff;
-  --teal: #00c8c8;
-  --amber: #e0a33e;
+
+  --oro: #E8B562;          /* el acento. Uno. */
+  --oro-tenue: #8a6c3c;    /* el mismo, apagado, para barras en reposo */
+  --amber: #E8B562;        /* el aviso comparte el acento: es el mismo lenguaje */
+
   --danger: #ff9b9b;
   --radius: 12px;
   --rail-width: 60px;
@@ -58,7 +74,7 @@ p, h1, h2, h3 { margin-top: 0; }
 .brand__mark i { display: block; border-radius: 1px; background: var(--purple); }
 .brand__mark i:nth-child(1) { height: 52%; opacity: .62; }
 .brand__mark i:nth-child(2) { height: 78%; opacity: .84; }
-.brand__mark i:nth-child(3) { height: 100%; background: var(--teal); }
+.brand__mark i:nth-child(3) { height: 100%; background: var(--oro); }
 .rail-actions { display: grid; gap: 4px; }
 .rail-actions button { position: relative; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: var(--muted); transition: color var(--t-corta) var(--ease-suave), background-color var(--t-corta) var(--ease-suave), transform var(--t-micro) var(--ease-suave); }
 .rail-actions button.is-active { color: var(--text); }
@@ -70,8 +86,8 @@ p, h1, h2, h3 { margin-top: 0; }
 .header-meta { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
 .header-spacer { flex: 1; }
 .badge { display: inline-flex; align-items: center; width: fit-content; min-height: 24px; padding: 5px 9px; border: 1px solid var(--linea-viva); border-radius: 8px; color: var(--secondary); font-size: 11px; font-weight: 500; letter-spacing: .08em; line-height: 1.1; text-transform: uppercase; }
-.badge--violet { border-color: #70408a; color: #e8c6ff; }
-.badge--teal { border-color: #286d6d; color: #b8f3f3; }
+.badge--marca { border-color: var(--linea-viva); color: var(--secondary); }
+.badge--oro { border-color: #6d5427; color: var(--oro); }
 .badge--neutral, .badge--outline { color: var(--secondary); }
 .badge--mock { border-radius: 999px; }
 
@@ -110,7 +126,7 @@ p, h1, h2, h3 { margin-top: 0; }
 .funnel-node__label { display: block; margin-top: 11px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .12em; line-height: 1.3; text-transform: uppercase; }
 .funnel-node__survival { display: none; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .08em; }
 .funnel-node__measure { display: block; height: 3px; margin-top: 14px; overflow: hidden; border-radius: 2px; background: rgba(255, 255, 255, .05); }
-.funnel-node__measure i, .coverage-row i b { display: block; width: 100%; height: 100%; border-radius: inherit; background: var(--teal); opacity: .58; transform: scaleX(0); transform-origin: left; animation: measure-entry var(--t-vista) var(--ease-suave) forwards; }
+.funnel-node__measure i, .coverage-row i b { display: block; width: 100%; height: 100%; border-radius: inherit; background: rgba(244,241,248,.42); opacity: .58; transform: scaleX(0); transform-origin: left; animation: measure-entry var(--t-vista) var(--ease-suave) forwards; }
 /* La explicacion de cada etapa NO es un globo flotante sobre el nodo. Un
    recuadro con borde y fondo colgando de la cifra tapa el nodo siguiente, se
    sale de la rejilla y se lee como un tooltip de sistema operativo pegado
@@ -153,8 +169,8 @@ p, h1, h2, h3 { margin-top: 0; }
 .decision-row b { display: block; color: var(--secondary); font-size: 14px; font-weight: 500; letter-spacing: .09em; text-transform: uppercase; }
 .decision-row small { display: block; margin-top: 5px; overflow: hidden; color: var(--muted); font-size: 14px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
 .decision-row .icon { color: var(--muted); opacity: 0; transform: translateX(-4px); transition: opacity var(--t-corta) var(--ease-suave), transform var(--t-corta) var(--ease-suave); }
-.decision-row--purple > strong { color: var(--purple); }
-.decision-row--teal > strong { color: var(--teal); }
+.decision-row--purple > strong { color: var(--oro); }
+.decision-row--oro > strong { color: var(--oro); }
 .coverage-list { display: flex; flex: 1; flex-direction: column; justify-content: center; gap: 14px; min-height: 0; padding: 10px 26px 22px; }
 .coverage-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; color: var(--secondary); font-size: 14px; }
 .coverage-row strong { color: var(--muted); font-weight: 500; }
@@ -190,7 +206,7 @@ p, h1, h2, h3 { margin-top: 0; }
 .message-card__actions, .detail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-top: 17px; }
 .icon { display: block; flex: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; }
 .whatsapp-button, .copy-button, .source-link, .retry-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border-radius: 10px; font-size: 14px; font-weight: 500; line-height: 1.2; text-decoration: none; }
-.whatsapp-button { padding: 10px 14px; border: 1px solid #2a8585; background: transparent; color: #8feaea; transition: background-color var(--t-corta) var(--ease-suave), border-color var(--t-corta) var(--ease-suave), transform var(--t-micro) var(--ease-suave); }
+.whatsapp-button { padding: 10px 14px; border: 1px solid var(--oro); background: var(--oro); color: #241803; font-weight: 600; transition: background-color var(--t-corta) var(--ease-suave), border-color var(--t-corta) var(--ease-suave), transform var(--t-micro) var(--ease-suave); }
 .whatsapp-button .icon { transition: transform var(--t-corta) var(--ease-suave); }
 .copy-button, .retry-button { padding: 10px 12px; border: 1px solid var(--linea-viva); background: transparent; color: var(--secondary); transition: background-color var(--t-corta) var(--ease-suave), border-color var(--t-corta) var(--ease-suave), color var(--t-corta) var(--ease-suave), transform var(--t-micro) var(--ease-suave); }
 .copy-button:disabled { border-color: var(--linea); color: var(--muted); }
@@ -270,7 +286,7 @@ tbody tr.is-selected { background: var(--elevada); }
 .flow-step { display: grid; grid-template-columns: minmax(70px, .22fr) minmax(0, 1fr); gap: 22px; padding: clamp(21px, 3vw, 32px); }
 .flow-step + .flow-step { border-top: 1px solid var(--linea); }
 .flow-step__number { color: var(--purple); font-size: clamp(1.7rem, 3.5vw, 2.6rem); font-variant-numeric: tabular-nums; font-weight: 200; letter-spacing: -.03em; line-height: 1; }
-.flow-step:nth-child(4) .flow-step__number { color: var(--teal); }
+.flow-step:nth-child(4) .flow-step__number { color: var(--oro); }
 .flow-step h2 { margin-bottom: 7px; font-size: clamp(1.1rem, 2vw, 1.45rem); font-weight: 500; letter-spacing: -.025em; }
 .flow-step p:not(.section-label) { max-width: 72ch; margin-bottom: 16px; color: var(--secondary); font-size: 14px; line-height: 1.7; }
 .scope-note { max-width: 820px; margin-top: 18px; padding: 22px; }
@@ -307,7 +323,7 @@ tbody tr.is-selected { background: var(--elevada); }
   .decision-row:hover { border-color: var(--linea-viva); background: var(--superficie); }
   .decision-row:hover .icon { opacity: 1; transform: translateX(0); }
   .message-card:hover, .prospect-detail:hover, .source-card:hover, .scope-note:hover { border-color: var(--linea-viva); background: var(--elevada); }
-  .whatsapp-button:hover { border-color: var(--teal); background: rgba(0, 200, 200, .06); }
+  .whatsapp-button:hover { border-color: #F2C77C; background: #F2C77C; }
   .whatsapp-button:hover .icon { transform: translateX(2px); }
   .copy-button:hover, .retry-button:hover { border-color: var(--linea-viva); background: var(--elevada); color: var(--text); }
   .source-link:hover, .table-select:hover { color: #e8c6ff; }

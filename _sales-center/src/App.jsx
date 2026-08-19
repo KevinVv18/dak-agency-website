@@ -184,7 +184,7 @@ function PageHeading({ title, children }) {
   )
 }
 
-function QueueHeader({ title, copy, count, tone = 'violet' }) {
+function QueueHeader({ title, copy, count, tone = 'marca' }) {
   return (
     <div className="queue-header">
       <div className={`queue-header__signal queue-header__signal--${tone}`} aria-hidden="true" />
@@ -208,7 +208,7 @@ function MessageCard({ prospect, message, readyToSend = false }) {
       <div className="message-card__topline">
         <div>
           <div className="message-card__labels">
-            <Badge tone={readyToSend ? 'teal' : 'violet'}>
+            <Badge tone={readyToSend ? 'oro' : 'marca'}>
               {readyToSend ? 'Aprobado' : 'Revisión pendiente'}
             </Badge>
             {prospect.readiness !== null && <Badge tone="outline">Preparación {prospect.readiness}</Badge>}
@@ -386,7 +386,7 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
               <span><b>Por aprobar</b><small>{topPending ? `${getDisplayName(topPending)} · preparación ${valueOrMissing(topPending.readiness)}` : missing}</small></span>
               <Icon name="arrow" size={15} />
             </button>
-            <button className="decision-row decision-row--teal" onClick={() => onSelectView('hoy')} type="button">
+            <button className="decision-row decision-row--oro" onClick={() => onSelectView('hoy')} type="button">
               <strong>{todayActions.readyToSend.length}</strong>
               <span><b>Por enviar</b><small>{readyNames || missing}</small></span>
               <Icon name="arrow" size={15} />
@@ -430,7 +430,7 @@ function TodayView({ todayActions }) {
       </section>
 
       <section className="queue-section" aria-labelledby="ready-heading">
-        <QueueHeader count={todayActions.readyToSend.length} title="Por enviar" tone="teal" copy="Ya fueron aprobados. Relee el opener y abre WhatsApp con el texto ya preparado." />
+        <QueueHeader count={todayActions.readyToSend.length} title="Por enviar" tone="oro" copy="Ya fueron aprobados. Relee el opener y abre WhatsApp con el texto ya preparado." />
         <div className="message-stack">
           {todayActions.readyToSend.map(({ prospect, message }) => <MessageCard key={prospect.id} message={message} prospect={prospect} readyToSend />)}
         </div>
@@ -488,7 +488,7 @@ function ProspectDetail({ data, prospect }) {
     <aside aria-live="polite" className="prospect-detail">
       <div className="prospect-detail__header">
         <div><span className="detail-kicker">Ficha derivada del registro</span><h2>{getDisplayName(prospect)}</h2></div>
-        <Badge tone={prospect.origen === 'inbound' ? 'teal' : 'violet'}>{prospect.origen === 'inbound' ? 'Llegó solo' : 'Búsqueda activa'}</Badge>
+        <Badge tone={prospect.origen === 'inbound' ? 'oro' : 'marca'}>{prospect.origen === 'inbound' ? 'Llegó solo' : 'Búsqueda activa'}</Badge>
       </div>
       <div className="detail-grid">
         <Field label="Etapa" value={stages[prospect.etapa]} /><Field label="Fuente" value={prospect.fuente} />
@@ -577,7 +577,7 @@ function HowItWorksView() {
     <>
       <PageHeading title={`${flow.length} etapas`}><p>Twin y DAK LEADS MASTER mantienen la operación.</p></PageHeading>
       <section aria-label="Embudo comercial de cuatro etapas" className="flow-diagram">
-        {flow.map((step, index) => <article className="flow-step" key={step.number}><span className="flow-step__number">{step.number}</span><div><p className="section-label">Etapa {index + 1}</p><h2>{step.title}</h2><p>{step.copy}</p><Badge tone={index === 3 ? 'teal' : 'outline'}>{step.agent}</Badge></div></article>)}
+        {flow.map((step, index) => <article className="flow-step" key={step.number}><span className="flow-step__number">{step.number}</span><div><p className="section-label">Etapa {index + 1}</p><h2>{step.title}</h2><p>{step.copy}</p><Badge tone={index === 3 ? 'oro' : 'outline'}>{step.agent}</Badge></div></article>)}
       </section>
       <aside className="scope-note"><p className="section-label">Límite de esta fase</p><p>No se escribe ningún dato desde este sitio. Aprobar sigue ocurriendo en la hoja; enviar abre WhatsApp con el texto preparado. El panel no reemplaza a Twin ni a DAK LEADS MASTER.</p></aside>
     </>
