@@ -1,0 +1,52 @@
+# ventas.dakagency.net — DAK Sales Control Center.
+#
+# Aqui dentro hay nombres de empresas prospecto, telefonos de contacto y los
+# mensajes de venta que todavia no se han enviado. No es un demo: es material
+# comercial en curso.
+#
+# Por eso el muro es Basic Auth de verdad, no un noindex de buena fe. El
+# noindex esta igualmente, pero como segunda linea: le pide a Google que no
+# indexe, no impide que nadie entre.
+
+DirectoryIndex index.html
+
+# ── Muro ────────────────────────────────────────────────────────────────────
+# El .htpasswd vive FUERA de todo docroot. Si estuviera aqui dentro, lo unico
+# que lo separaria de internet seria una regla de este mismo archivo — y ya
+# pasamos por eso en agosto con los tarballs del panel.
+AuthType Basic
+AuthName "DAK · Centro de Ventas"
+AuthUserFile /home/u567580447/ventas-auth/.htpasswd
+Require valid-user
+
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "no-referrer"
+
+  # El HTML no se cachea nunca: es el que arrastra el hash de los assets.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate, private"
+    Header set Pragma "no-cache"
+    Header unset Expires
+  </FilesMatch>
+
+  # Los assets de Vite llevan hash en el nombre, asi que se pueden cachear
+  # fuerte. `private` porque el contenido es de una sola persona autenticada:
+  # ninguna cache compartida debe guardarlos.
+  <FilesMatch "\.(css|js|woff2)$">
+    Header set Cache-Control "private, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+
+# ── Nada de ficheros de servicio por web ────────────────────────────────────
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule (^|/)\. - [F,L]
+  RewriteRule \.(tar\.gz|tgz|sql|zip|bak|csv|json\.bak)$ - [F,L]
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json
+</IfModule>
