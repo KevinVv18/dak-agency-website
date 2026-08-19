@@ -97,6 +97,7 @@ function Icon({ name, size = 16 }) {
       </>
     ),
     check: <path d="m5 12 4.2 4.2L19 6.5" />,
+    chevron: <path d="m6 9 6 6 6-6" />,
     retry: (
       <>
         <path d="M20 11a8 8 0 1 0 2.2 5.5" />
@@ -117,6 +118,45 @@ function Icon({ name, size = 16 }) {
     >
       {paths[name]}
     </svg>
+  )
+}
+
+/**
+ * Adonde ir para mirar a la empresa por tu cuenta antes de decidir.
+ *
+ * Falta a proposito el hueco de "sin dato" por cada red: la hoja no trae ni una
+ * sola red social rellena, asi que enseñar cinco huecos vacios seria ruido con
+ * forma de dato. Se pintan solo los enlaces que existen, y si no hay ninguno se
+ * dice en una linea. Web sale en 7 de 12 y Maps en 9 de 12; las redes se
+ * pintaran solas el dia que el pipeline las traiga.
+ */
+function EnlacesEmpresa({ prospect }) {
+  const redes = prospect.contacto?.redes ?? {}
+  const enlaces = [
+    { etiqueta: 'Web', href: getHref(prospect.web) },
+    { etiqueta: 'Google Maps', href: getHref(prospect.mapsUrl) },
+    { etiqueta: 'Instagram', href: getHref(redes.instagram) },
+    { etiqueta: 'Facebook', href: getHref(redes.facebook) },
+    { etiqueta: 'LinkedIn', href: getHref(redes.linkedin) },
+    { etiqueta: 'TikTok', href: getHref(redes.tiktok) },
+  ].filter((enlace) => enlace.href)
+
+  return (
+    <div className="company-links">
+      <span className="context-label">Mirar a la empresa</span>
+      {enlaces.length ? (
+        <p>
+          {enlaces.map((enlace) => (
+            <a href={enlace.href} key={enlace.etiqueta} rel="noreferrer noopener" target="_blank">
+              {enlace.etiqueta}
+              <Icon name="arrow" size={12} />
+            </a>
+          ))}
+        </p>
+      ) : (
+        <p className="empty-inline">Sin enlaces públicos verificados.</p>
+      )}
+    </div>
   )
 }
 
@@ -230,6 +270,8 @@ function MessageCard({ prospect, message, readyToSend = false }) {
         </div>
       </div>
 
+      <EnlacesEmpresa prospect={prospect} />
+
       <div className="message-card__message">
         <span className="context-label">Mensaje tal como se enviaría</span>
         <p>{valueOrMissing(message?.texto)}</p>
@@ -249,6 +291,16 @@ function MessageCard({ prospect, message, readyToSend = false }) {
         <CopyButton label="Copiar mensaje" text={message?.texto} />
       </div>
 
+      {/* Antes esto estaba siempre desplegado y era la mitad del texto de la
+          pantalla. Pero no se lee para decidir: se lee cuando el prospecto ya
+          contesto algo. Colapsado por defecto, la ficha pasa de muro de texto a
+          una decision con su mensaje delante — y lo demas sigue a un clic. */}
+      <details className="message-card__support-toggle">
+        <summary>
+          <span>Objeciones y seguimientos</span>
+          <em>{(message?.objeciones?.length ?? 0) + (message?.seguimientos?.length ?? 0)}</em>
+          <Icon name="chevron" size={14} />
+        </summary>
       <div className="message-card__support">
         <section>
           <p className="section-label">Objeciones previstas</p>
@@ -281,6 +333,7 @@ function MessageCard({ prospect, message, readyToSend = false }) {
           ) : <p className="empty-inline">Seguimientos: {missing}</p>}
         </section>
       </div>
+      </details>
     </article>
   )
 }

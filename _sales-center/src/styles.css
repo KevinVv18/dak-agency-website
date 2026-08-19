@@ -422,3 +422,40 @@ tbody tr.is-selected { background: var(--elevada); }
   .funnel-node__measure i, .coverage-row i b { transform: scaleX(var(--measure)); }
   .funnel-connector i { transform: scaleX(1); }
 }
+
+/* ── Enlaces a la empresa ──────────────────────────────────────────────────
+   Sin cajas ni pastillas: son atajos, no acciones. Se leen como una linea de
+   texto y solo se encienden en oro al pasar por encima. */
+.company-links { margin-top: 18px; }
+.company-links p { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; }
+.company-links .empty-inline { display: block; }
+.company-links a {
+  display: inline-flex; align-items: center; gap: 5px;
+  color: var(--secondary); font-size: 14px; text-decoration: none;
+  border-bottom: 1px solid var(--linea-viva); padding-bottom: 1px;
+  transition: color var(--t-corta) var(--ease-suave), border-color var(--t-corta) var(--ease-suave);
+}
+.company-links a:hover { color: var(--oro); border-bottom-color: var(--oro); }
+.company-links a .icon { opacity: .6; transition: transform var(--t-corta) var(--ease-suave); }
+.company-links a:hover .icon { transform: translate(1px, -1px); }
+
+/* ── Objeciones y seguimientos, plegados ───────────────────────────────────
+   El detalle abierto era mitad decision y mitad archivo. Esto se lee cuando el
+   prospecto ya contesto, no para decidir si sale el mensaje. */
+.message-card__support-toggle { margin-top: 20px; border-top: 1px solid var(--linea); }
+.message-card__support-toggle > summary {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 2px; cursor: pointer; list-style: none;
+  color: var(--muted); font-size: 11px; font-weight: 500;
+  letter-spacing: .11em; text-transform: uppercase;
+  transition: color var(--t-corta) var(--ease-suave);
+}
+.message-card__support-toggle > summary::-webkit-details-marker { display: none; }
+.message-card__support-toggle > summary:hover { color: var(--secondary); }
+.message-card__support-toggle > summary em {
+  font-style: normal; font-size: 11px; letter-spacing: .04em;
+  border: 1px solid var(--linea-viva); border-radius: 999px; padding: 1px 7px;
+}
+.message-card__support-toggle > summary .icon { margin-left: auto; transition: transform var(--t-corta) var(--ease-suave); }
+.message-card__support-toggle[open] > summary .icon { transform: rotate(180deg); }
+.message-card__support-toggle[open] > summary { color: var(--secondary); }
