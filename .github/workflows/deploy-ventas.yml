@@ -1,0 +1,104 @@
+name: Deploy panel de ventas
+
+# Publica _sales-center/ en el docroot de ventas.dakagency.net
+# (/home/u567580447/domains/dakagency.net/public_html/ventas).
+#
+# Es una app Vite APARTE de la SPA principal, con su propio package.json. Por eso
+# todos los pasos llevan working-directory y no se mezcla con el build de la raiz.
+#
+# ⚠️ El panel lleva nombres de empresas prospecto, telefonos y mensajes de venta
+#    sin enviar. El muro es Basic Auth y sale del propio build: publico/.htaccess
+#    -> dist/.htaccess via `publicDir` en vite.config.js. Si alguien quita ese
+#    ajuste, el panel se publica desnudo. El paso "Comprobar que el muro viaja"
+#    de abajo esta para que eso falle el deploy en vez de pasar desapercibido.
+#
+# ⚠️ 'ventas/' DEBE seguir en deploy-protect.txt o el deploy de la SPA lo borra.
+#
+# Dispara:
+#  - manualmente (workflow_dispatch)
+#  - push a main que toque _sales-center/**
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '_sales-center/**'
+      - '.github/workflows/deploy-ventas.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: _sales-center
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: _sales-center/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Falla cerrado. Un panel con datos comerciales servido sin Basic Auth es
+      # peor que un deploy roto, asi que esto se comprueba ANTES de subir nada.
+      - name: Comprobar que el muro viaja en el build
+        run: |
+          set -euo pipefail
+          if [ ! -f dist/.htaccess ]; then
+            echo "::error::dist/.htaccess no existe. Revisa publicDir en vite.config.js."
+            exit 1
+          fi
+          for regla in AuthType AuthUserFile "Require valid-user"; do
+            if ! grep -q "$regla" dist/.htaccess; then
+              echo "::error::dist/.htaccess no contiene '$regla'. El panel se publicaria sin muro."
+              exit 1
+            fi
+          done
+          if ! grep -q "Disallow: /" dist/robots.txt; then
+            echo "::error::dist/robots.txt no bloquea a los rastreadores."
+            exit 1
+          fi
+          echo "OK: Basic Auth y robots.txt viajan en el build."
+
+      # --delete es seguro aqui: este docroot es exclusivo del panel y no tiene
+      # nada que no produzca el build. De hecho hace falta, para que se lleve el
+      # default.php que deja Hostinger al crear el subdominio.
+      - name: Subir al docroot del subdominio (rsync)
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: _sales-center/dist/
+          remote_path: /home/u567580447/domains/dakagency.net/public_html/ventas/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Comprobacion en vivo: si el panel responde 200 sin credenciales, el muro
+      # no esta puesto y hay que enterarse ahora, no por un buscador.
+      - name: Verificar que el panel pide contraseña
+        run: |
+          set -uo pipefail
+          sleep 5
+          codigo=$(curl -s -o /dev/null -w '%{http_code}' --max-time 25 https://ventas.dakagency.net/)
+          echo "GET https://ventas.dakagency.net/ -> $codigo"
+          if [ "$codigo" != "401" ]; then
+            echo "::error::El panel deberia responder 401 sin credenciales y respondio $codigo."
+            echo "Si es 200, esta EXPUESTO: revisa el .htaccess y el .htpasswd del servidor."
+            exit 1
+          fi
+          echo "OK: el panel pide autenticacion."

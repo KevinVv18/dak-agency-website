@@ -1,0 +1,3 @@
+# Las exportaciones reales de DAK LEADS MASTER llevan telefonos y nombres de
+# terceros. Se quedan en local: lo que se versiona es mock.json, ya redactado.
+muestra-*.csv
