@@ -6,13 +6,22 @@ Este archivo es el punto de entrada. Kevin te lo señala y tú empiezas por aqu�
 > hallazgos (comprobado contra un control que sí reporta 64), no desborda a 375 px y respeta el
 > contrato. Lo que falta es la **Fase 3: la pasada de diseño**.
 >
-> **Fase 3 — lee [`DISENO.md`](DISENO.md) y aplícalo.** Las fases 1 y 2 se construyeron contra una
-> instrucción de este mismo archivo que decía priorizar la lectura «por encima de animaciones», y
-> salió correcto pero plano: cuatro transiciones en toda la página, todas `160ms ease`. La
-> dirección real es **Apple dark: profundidad por luz, movimiento continuo, cero brillos**.
-> `DISENO.md` trae las curvas, las duraciones, los tres planos de superficie y la lista de lo que
-> sigue prohibido. El listón: **cero hallazgos de `impeccable` se mantiene** — todo lo que pide ese
-> documento se puede hacer sin un solo glow.
+> **Fase 3 — de documento a consola.** Abre primero
+> **[`maquetas/panorama.html`](maquetas/panorama.html)** en el navegador; es la referencia, y
+> explica más en diez segundos que cualquier párrafo. Luego lee [`DISENO.md`](DISENO.md).
+>
+> El problema de las fases 1 y 2 no es el movimiento: es que están construidas como **documento**
+> —titular de display, párrafos, scroll— cuando esto tiene que ser un **panel**. Los cuatro
+> cambios: consola de `100dvh` sin scroll de página; cifras y etiquetas de una o dos palabras en
+> vez de prosa; la explicación en el **hover**; raíl de iconos en vez de nav con texto.
+>
+> Y una vista nueva, **«Panorama»**, que pasa a ser la entrada tras el login: un poco de todo de
+> un vistazo. La maqueta es exactamente esa vista.
+>
+> El listón: **cero hallazgos de `impeccable`**. La maqueta los tiene, y por el camino enseñó dos
+> cosas que van al listón — nada de texto funcional por debajo de **11 px**, y la escala
+> tipográfica se queda en **11 px (micro en mayúsculas) / 14 px (cuerpo)** más las cifras grandes
+> por `clamp()`. Cuatro tamaños pegados entre sí no son jerarquía.
 
 ## Lee, en este orden
 

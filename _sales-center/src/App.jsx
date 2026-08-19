@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   getBaseHealth,
   getDisplayName,
@@ -67,6 +67,7 @@ function Icon({ name, size = 16 }) {
         <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
       </>
     ),
+    check: <path d="m5 12 4.2 4.2L19 6.5" />,
     retry: (
       <>
         <path d="M20 11a8 8 0 1 0 2.2 5.5" />
@@ -122,12 +123,12 @@ function CopyButton({ text, label }) {
 
   return (
     <button
-      className={`copy-button ${status === 'error' ? 'copy-button--error' : ''}`}
+      className={`copy-button ${status === 'copied' ? 'copy-button--copied' : ''} ${status === 'error' ? 'copy-button--error' : ''}`}
       disabled={!canCopy}
       onClick={copy}
       type="button"
     >
-      <Icon name="copy" size={15} />
+      <span className="copy-button__icon" aria-hidden="true"><Icon name="copy" size={15} /><Icon name="check" size={15} /></span>
       <span>{feedback}</span>
     </button>
   )
@@ -395,7 +396,7 @@ function ProspectsView({ data, prospects }) {
           </tbody></table></div>
           {!filteredProspects.length && <div className="empty-state empty-state--compact"><div><h3>Sin resultados</h3><p>Ninguna fila del mock coincide con estos filtros.</p></div></div>}
         </div>
-        <ProspectDetail data={data} prospect={selectedProspect} />
+        <ProspectDetail data={data} key={selectedProspect?.id ?? 'empty'} prospect={selectedProspect} />
       </section>
     </>
   )
@@ -450,14 +451,59 @@ function App() {
     return VIEWS.some((view) => view.id === requested) ? requested : 'hoy'
   }
   const [currentView, setCurrentView] = useState(getCurrentView)
+  const [renderedView, setRenderedView] = useState(getCurrentView)
+  const [viewPhase, setViewPhase] = useState('entered')
+  const [navIndicator, setNavIndicator] = useState({ left: 0, width: 0 })
   const [resource, setResource] = useState({ status: 'loading', data: null })
   const [requestKey, setRequestKey] = useState(0)
+  const navRef = useRef(null)
+  const exitTimerRef = useRef(null)
+  const entryFrameRef = useRef(null)
+  const renderedViewRef = useRef(renderedView)
+
+  const clearViewTransition = () => {
+    window.clearTimeout(exitTimerRef.current)
+    window.cancelAnimationFrame(entryFrameRef.current)
+  }
+
+  const transitionToView = (nextView) => {
+    clearViewTransition()
+    setCurrentView(nextView)
+
+    if (nextView === renderedViewRef.current) {
+      setViewPhase('entered')
+      return
+    }
+
+    setViewPhase('exiting')
+    exitTimerRef.current = window.setTimeout(() => {
+      renderedViewRef.current = nextView
+      setRenderedView(nextView)
+      setViewPhase('entering')
+      entryFrameRef.current = window.requestAnimationFrame(() => {
+        entryFrameRef.current = window.requestAnimationFrame(() => setViewPhase('entered'))
+      })
+    }, 240)
+  }
 
   useEffect(() => {
-    const syncView = () => setCurrentView(getCurrentView())
+    const syncView = () => transitionToView(getCurrentView())
     window.addEventListener('hashchange', syncView)
-    return () => window.removeEventListener('hashchange', syncView)
+    return () => {
+      window.removeEventListener('hashchange', syncView)
+      clearViewTransition()
+    }
   }, [])
+
+  useEffect(() => {
+    const positionIndicator = () => {
+      const activeButton = navRef.current?.querySelector(`[data-view="${currentView}"]`)
+      if (activeButton) setNavIndicator({ left: activeButton.offsetLeft, width: activeButton.offsetWidth })
+    }
+    positionIndicator()
+    window.addEventListener('resize', positionIndicator)
+    return () => window.removeEventListener('resize', positionIndicator)
+  }, [currentView])
 
   useEffect(() => {
     let cancelled = false
@@ -470,28 +516,36 @@ function App() {
     return () => { cancelled = true }
   }, [requestKey])
 
-  const selectView = (viewId) => { window.location.hash = viewId }
+  const selectView = (viewId) => {
+    if (viewId === currentView) return
+    window.location.hash = viewId
+  }
   const data = resource.data
   const todayActions = data ? getTodayActions(data) : null
   const prospects = data ? getProspects(data) : null
   const baseHealth = data ? getBaseHealth(data) : null
+  const viewContent = renderedView === 'hoy'
+    ? <TodayView todayActions={todayActions} />
+    : renderedView === 'prospectos'
+      ? <ProspectsView data={data} prospects={prospects} />
+      : renderedView === 'base'
+        ? <BaseView baseHealth={baseHealth} />
+        : <HowItWorksView />
 
   return (
     <div className="app-shell">
       <header className="app-header">
         <a className="brand" href="#hoy" onClick={() => selectView('hoy')}><span aria-hidden="true" className="brand__mark"><i /><i /><i /></span><span><strong>DAK</strong><small>Sales Control Center</small></span></a>
-        <nav aria-label="Vistas del panel" className="primary-nav">
-          {VIEWS.map((view) => <button aria-current={currentView === view.id ? 'page' : undefined} className={currentView === view.id ? 'is-active' : ''} key={view.id} onClick={() => selectView(view.id)} type="button">{view.label}</button>)}
+        <nav aria-label="Vistas del panel" className="primary-nav" ref={navRef}>
+          <span aria-hidden="true" className="primary-nav__indicator" style={{ transform: `translateX(${navIndicator.left}px)`, width: navIndicator.width }} />
+          {VIEWS.map((view) => <button aria-current={currentView === view.id ? 'page' : undefined} className={currentView === view.id ? 'is-active' : ''} data-view={view.id} key={view.id} onClick={() => selectView(view.id)} type="button">{view.label}</button>)}
         </nav>
         {data?.meta.esMock && <Badge tone="mock">Datos de ejemplo</Badge>}
       </header>
       <main className="main-content">
         {resource.status === 'loading' && <LoadingState />}
         {resource.status === 'error' && <ErrorState onRetry={() => setRequestKey((key) => key + 1)} />}
-        {resource.status === 'ready' && currentView === 'hoy' && <TodayView todayActions={todayActions} />}
-        {resource.status === 'ready' && currentView === 'prospectos' && <ProspectsView data={data} prospects={prospects} />}
-        {resource.status === 'ready' && currentView === 'base' && <BaseView baseHealth={baseHealth} />}
-        {resource.status === 'ready' && currentView === 'como-funciona' && <HowItWorksView />}
+        {resource.status === 'ready' && <div className={`view-frame view-frame--${viewPhase}`} key={renderedView}>{viewContent}</div>}
       </main>
       <footer className="app-footer"><span>Modo mock · teléfonos redactados · lectura únicamente</span><span>Fuente: DAK LEADS MASTER + inventario inbound</span></footer>
     </div>

@@ -1,26 +1,42 @@
-# Dirección de diseño — «Apple dark» para el panel de ventas
+# Dirección de diseño — consola, no documento
 
-Este documento existe porque faltaba. La Fase 2 se construyó contra una instrucción que decía
-*«priorizar lectura, filtros y estados **por encima de animaciones o decoración**»*, y salió
-exactamente eso: correcto, sobrio y **plano**. Cuatro transiciones distintas en toda la página,
-todas `160ms ease`, y un solo elemento con `backdrop-filter`.
+**Maqueta de referencia: [`maquetas/panorama.html`](maquetas/panorama.html).** Ábrela antes de
+leer nada. Este documento explica por qué es así; la maqueta es lo que hay que conseguir.
 
-La dirección real es **Apple dark: profundidad por luz, no por brillo; movimiento constante,
-nunca decorativo**. Lo que sigue son números, no adjetivos.
+## 0. El diagnóstico, y por qué la primera versión de este archivo se quedó corta
 
----
+La Fase 2 salió como un **documento**: titular enorme, párrafos explicativos, scroll para
+enterarse de qué pasa. La primera versión de este archivo culpó al movimiento y llenó tres
+páginas de curvas de animación. Se equivocaba de capa. **Ninguna curva arregla una arquitectura
+de documento.**
 
-## 1. La regla que gobierna todo lo demás
+Lo que cambia:
 
-**Apple no se ve caro por los efectos. Se ve caro por la continuidad espacial.** Nada aparece de
-la nada y nada salta: las cosas entran desde donde estaban, se elevan cuando las tocas, y el
-sistema mantiene la sensación de que hay un espacio físico detrás.
+| Antes | Ahora |
+|---|---|
+| Página que hace scroll | **Consola de `100dvh` que no hace scroll.** Lo que no cabe, no está |
+| Titular de display + párrafos | **Cifras y etiquetas de una o dos palabras** |
+| La explicación siempre visible | La explicación vive en el **hover** |
+| Nav horizontal con texto | **Raíl de iconos**; la etiqueta sale al pasar el cursor |
+| Entrada directa a «Hoy» | Entrada a **«Panorama»**: un poco de todo de un vistazo |
 
-Lo contrario —y lo que hay que evitar— es el repertorio de «UI generada»: halos de color, puntos
-que laten, bordes finos con sombras difusas enormes, franjas de color en el costado de las
-tarjetas. El detector de `impeccable` marca todos ésos, y **hoy el panel pasa con cero
-hallazgos**. Esa cifra no se negocia: se puede añadir todo el movimiento de este documento sin
-tocarla, porque nada de aquí es un glow.
+La regla que lo resume: **si algo se puede entender con una forma, no se escribe.** El embudo de
+la maqueta lleva una barra proporcional bajo cada cifra; el estrechamiento de 109 a 0 se ve sin
+leer un solo número. Eso es el listón.
+
+## 1. Qué significa «futurista» aquí, y qué no
+
+La trampa: «futurista» casi siempre acaba en neón, halos, rejillas que brillan y puntos que
+laten. Ése es el look **barato**, y además es exactamente el repertorio que marca el detector de
+`impeccable` — donde el panel hoy tiene **cero hallazgos**, y no se negocia.
+
+La versión cara de ese mismo look es lo contrario: **precisión y vacío**. Hairlines de 1 px,
+cifras tabulares en peso 200, muchísimo aire, color con cuentagotas —el morado y el teal aparecen
+en un trazo de 2 px, nunca como relleno— y una sola nota ámbar donde el sistema está roto. La
+referencia mental no es una interfaz de videojuego: es un panel de instrumentos que alguien
+diseñó para que se lea de un vistazo en una sala oscura.
+
+**Sobriedad y sofisticación son lo mismo aquí.** Nada de lo que sigue añade un brillo.
 
 ---
 
