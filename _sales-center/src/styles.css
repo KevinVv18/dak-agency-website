@@ -459,3 +459,62 @@ tbody tr.is-selected { background: var(--elevada); }
 .message-card__support-toggle > summary .icon { margin-left: auto; transition: transform var(--t-corta) var(--ease-suave); }
 .message-card__support-toggle[open] > summary .icon { transform: rotate(180deg); }
 .message-card__support-toggle[open] > summary { color: var(--secondary); }
+
+/* ── Hoy: maestro-detalle ──────────────────────────────────────────────────
+   Hoy es una consola de trabajo, no un documento: ocupa el alto disponible y
+   cada columna hace su propio scroll. La pagina no se mueve nunca. */
+.main-content--hoy { overflow: hidden; padding: 0; }
+.main-content--hoy .view-frame { height: 100%; }
+
+.work-split {
+  display: grid; grid-template-columns: minmax(268px, 324px) minmax(0, 1fr);
+  gap: 1px; height: 100%; min-height: 0; background: var(--linea);
+}
+.work-split--vacia { display: grid; grid-template-columns: 1fr; place-items: center; background: var(--fondo); }
+.work-queue, .work-detail { min-height: 0; background: var(--fondo); }
+.work-queue { overflow-y: auto; padding-bottom: 14px; }
+.work-detail { overflow-y: auto; }
+
+.work-group + .work-group { margin-top: 6px; }
+.work-group > header { display: flex; align-items: center; gap: 9px; padding: 17px 20px 7px; }
+.work-group h2 { margin: 0; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .13em; text-transform: uppercase; }
+.work-group > header span {
+  padding: 1px 8px; border: 1px solid var(--linea-viva); border-radius: 999px;
+  color: var(--secondary); font-size: 11px; font-weight: 500; line-height: 1.6;
+}
+.work-group ul { margin: 0; padding: 0 10px; list-style: none; }
+
+.work-row {
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center; gap: 10px; width: 100%; padding: 11px 12px;
+  border: 0; border-radius: 9px; background: transparent; color: inherit; text-align: left;
+  transition: background-color var(--t-corta) var(--ease-suave);
+}
+.work-row:hover { background: rgba(255, 255, 255, .035); }
+.work-row[aria-selected="true"] { background: var(--elevada); }
+/* La seleccion se marca con un filo, no con un bloque saturado: el bloque
+   compite con el propio texto que hay que leer. */
+.work-row[aria-selected="true"]::before {
+  position: absolute; top: 9px; bottom: 9px; left: 0; width: 2px;
+  border-radius: 1px; background: var(--oro); content: '';
+}
+.work-row__name { overflow: hidden; color: var(--secondary); font-size: 14px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.work-row[aria-selected="true"] .work-row__name { color: var(--text); }
+.work-row__score { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; font-weight: 500; }
+.work-row[aria-selected="true"] .work-row__score { color: var(--oro); }
+
+/* El detalle entra al cambiar de fila. Corto y sin rebote: se hace treinta
+   veces seguidas y cualquier gracia cansa a la tercera. */
+.work-detail > * { animation: detail-arrival var(--t-media) var(--ease-suave) both; }
+@keyframes detail-arrival { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Dentro de la consola la tarjeta ya no necesita marco propio. */
+.work-detail .message-card { border: 0; border-radius: 0; background: transparent; padding: 22px 26px 40px; }
+
+@media (max-width: 860px) {
+  .main-content--hoy { overflow: auto; }
+  .work-split { grid-template-columns: 1fr; height: auto; }
+  .work-queue { overflow: visible; }
+  .work-detail { overflow: visible; border-top: 1px solid var(--linea); }
+}
+@media (prefers-reduced-motion: reduce) { .work-detail > * { animation: none; } }

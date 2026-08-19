@@ -6,6 +6,24 @@ export const salesData = mock
 
 export const getDisplayName = (prospect) => prospect.empresa ?? prospect.persona ?? 'sin dato'
 
+/**
+ * El nombre para una lista compacta.
+ *
+ * La hoja guarda el nombre con una coletilla entre parentesis que le sirve al
+ * agente para desambiguar —«(Chiclayo)», «(housing project)», «(Lambayeque
+ * investment dossier)»— y que en una columna de 300px se come la mitad del
+ * ancho y encima esta en ingles. En la ficha se enseña el nombre entero; aqui
+ * solo el nombre.
+ *
+ * Se recorta unicamente el parentesis FINAL: si una empresa se llamase «(AB)
+ * Repuestos», se queda como esta.
+ */
+export const getShortName = (prospect) => {
+  const nombre = getDisplayName(prospect)
+  const corto = nombre.replace(/\s*\([^()]*\)\s*$/, '').trim()
+  return corto || nombre
+}
+
 export const getOpener = (prospectId, data = mock) =>
   data.mensajes.find(
     (message) => message.prospectoId === prospectId && message.etapa === 'OPENER',

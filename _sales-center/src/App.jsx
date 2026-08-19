@@ -5,6 +5,7 @@ import {
   getDisplayName,
   getOpener,
   getProspects,
+  getShortName,
   getTodayActions,
   loadSalesData,
 } from './lib/sales'
@@ -467,37 +468,88 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
   )
 }
 
+/**
+ * Hoy — maestro-detalle.
+ *
+ * Antes era una pila de tarjetas enormes que habia que recorrer con scroll, y
+ * cada una enseñaba todo a la vez aunque solo te interesara una. Ahora las ocho
+ * conversaciones caben de un vistazo a la izquierda —empresa y preparacion, y
+ * nada mas— y a la derecha va SOLO la elegida, entera.
+ *
+ * El texto largo no desaparece: hay que leer el mensaje antes de aprobarlo. Lo
+ * que cambia es que aparece para una fila y no para ocho.
+ */
 function TodayView({ todayActions }) {
-  const blockers = todayActions.pending.length + todayActions.readyToSend.length
+  const grupos = [
+    { id: 'aprobar', titulo: 'Por aprobar', items: todayActions.pending },
+    { id: 'enviar', titulo: 'Por enviar', items: todayActions.readyToSend, listo: true },
+    { id: 'espera', titulo: 'Esperando respuesta', items: todayActions.waitingForReply },
+  ].filter((grupo) => grupo.items.length)
+
+  const filas = grupos.flatMap((grupo) =>
+    grupo.items.map((item) => ({ ...item, grupo: grupo.id, listo: Boolean(grupo.listo) })),
+  )
+
+  const [elegido, setElegido] = useState(null)
+  const activo = filas.find((fila) => fila.prospect.id === elegido) ?? filas[0] ?? null
+
+  // El teclado mueve la seleccion, como en cualquier bandeja. Es lo que separa
+  // una lista de una consola.
+  const alTeclado = (evento) => {
+    const salto = evento.key === 'ArrowDown' ? 1 : evento.key === 'ArrowUp' ? -1 : 0
+    if (!salto || !activo) return
+    evento.preventDefault()
+    const desde = filas.findIndex((fila) => fila.prospect.id === activo.prospect.id)
+    const hasta = Math.min(Math.max(desde + salto, 0), filas.length - 1)
+    setElegido(filas[hasta].prospect.id)
+  }
+
+  if (!activo) {
+    return (
+      <div className="work-split work-split--vacia">
+        <EmptyReplyState />
+      </div>
+    )
+  }
+
   return (
-    <>
-      <PageHeading title={`${blockers} bloqueos`}>
-        <p>Vista derivada de las colas por aprobar y por enviar.</p>
-      </PageHeading>
+    <div className="work-split">
+      <div className="work-queue" onKeyDown={alTeclado}>
+        {grupos.map((grupo) => (
+          <section className="work-group" key={grupo.id}>
+            <header>
+              <h2>{grupo.titulo}</h2>
+              <span>{grupo.items.length}</span>
+            </header>
+            <ul>
+              {grupo.items.map(({ prospect }) => {
+                const seleccionada = prospect.id === activo.prospect.id
+                return (
+                  <li key={prospect.id}>
+                    <button
+                      aria-selected={seleccionada}
+                      className={`work-row ${grupo.listo ? 'work-row--listo' : ''}`}
+                      onClick={() => setElegido(prospect.id)}
+                      role="option"
+                      type="button"
+                    >
+                      <span className="work-row__name">{getShortName(prospect)}</span>
+                      <span className="work-row__score">{valueOrMissing(prospect.readiness)}</span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
 
-      <section className="queue-section" aria-labelledby="pending-heading">
-        <QueueHeader count={todayActions.pending.length} title="Por aprobar" copy="Lee el mensaje completo, su contexto y sus respuestas antes de decidir en la hoja." />
-        <div className="message-stack">
-          {todayActions.pending.map(({ prospect, message }) => <MessageCard key={prospect.id} message={message} prospect={prospect} />)}
-        </div>
-      </section>
-
-      <section className="queue-section" aria-labelledby="ready-heading">
-        <QueueHeader count={todayActions.readyToSend.length} title="Por enviar" tone="oro" copy="Ya fueron aprobados. Relee el opener y abre WhatsApp con el texto ya preparado." />
-        <div className="message-stack">
-          {todayActions.readyToSend.map(({ prospect, message }) => <MessageCard key={prospect.id} message={message} prospect={prospect} readyToSend />)}
-        </div>
-      </section>
-
-      <section className="queue-section queue-section--reply" aria-labelledby="reply-heading">
-        <QueueHeader count={todayActions.waitingForReply.length} title="Esperando respuesta" tone="neutral" copy="Seguimiento de los contactos que ya salieron y todavía no respondieron." />
-        {todayActions.waitingForReply.length ? (
-          <div className="message-stack">
-            {todayActions.waitingForReply.map(({ prospect, message }) => <MessageCard key={prospect.id} message={message} prospect={prospect} />)}
-          </div>
-        ) : <EmptyReplyState />}
-      </section>
-    </>
+      {/* La `key` fuerza el remontaje al cambiar de fila: asi el detalle entra
+          con su animacion en vez de cambiar de texto de golpe. */}
+      <div className="work-detail" key={activo.prospect.id}>
+        <MessageCard message={activo.message} prospect={activo.prospect} readyToSend={activo.listo} />
+      </div>
+    </div>
   )
 }
 
