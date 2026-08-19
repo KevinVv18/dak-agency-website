@@ -161,6 +161,32 @@ function EnlacesEmpresa({ prospect }) {
   )
 }
 
+/**
+ * Cuanto pesa el negocio, en tres muescas. HIGH tres, MEDIUM dos, SMALL una.
+ *
+ * Es el segundo eje, y hace falta: la lista se ordena por preparacion, asi que
+ * Acuña sale arriba con 94 aunque su potencial sea SMALL, mientras ARKANA —el
+ * unico HIGH del lote— queda por debajo. Sin esto, el orden miente sobre cual
+ * es la mejor conversacion.
+ *
+ * Va en hueso, nunca en oro: el oro ya significa "esto te esta esperando" y si
+ * empieza a significar tambien "esto es grande", deja de significar nada.
+ */
+function PotentialGauge({ value }) {
+  const niveles = { HIGH: 3, MEDIUM: 2, SMALL: 1 }
+  const lleno = niveles[value] ?? 0
+  if (!lleno) return null
+
+  const etiqueta = { HIGH: 'Potencial alto', MEDIUM: 'Potencial medio', SMALL: 'Potencial chico' }[value]
+  return (
+    <span aria-label={etiqueta} className="potential-gauge" role="img" title={etiqueta}>
+      {[1, 2, 3].map((paso) => (
+        <i className={paso <= lleno ? 'is-on' : ''} key={paso} />
+      ))}
+    </span>
+  )
+}
+
 function Badge({ children, tone = 'neutral' }) {
   return <span className={`badge badge--${tone}`}>{children}</span>
 }
@@ -479,6 +505,9 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
  * El texto largo no desaparece: hay que leer el mensaje antes de aprobarlo. Lo
  * que cambia es que aparece para una fila y no para ocho.
  */
+/** PRIORITY OUTREACH lo decide Twin, no el panel. Aqui solo se pinta. */
+const prioritaria = (prospect) => prospect.readinessBand === 'PRIORITY OUTREACH'
+
 function TodayView({ todayActions }) {
   const grupos = [
     { id: 'aprobar', titulo: 'Por aprobar', items: todayActions.pending },
@@ -528,13 +557,21 @@ function TodayView({ todayActions }) {
                   <li key={prospect.id}>
                     <button
                       aria-selected={seleccionada}
-                      className={`work-row ${grupo.listo ? 'work-row--listo' : ''}`}
+                      className={`work-row ${prioritaria(prospect) ? 'work-row--prioritaria' : ''}`}
                       onClick={() => setElegido(prospect.id)}
                       role="option"
                       type="button"
                     >
-                      <span className="work-row__name">{getShortName(prospect)}</span>
-                      <span className="work-row__score">{valueOrMissing(prospect.readiness)}</span>
+                      <span className="work-row__top">
+                        <span className="work-row__name">{getShortName(prospect)}</span>
+                        <PotentialGauge value={prospect.potencialNegocio} />
+                        <span className="work-row__score">{valueOrMissing(prospect.readiness)}</span>
+                      </span>
+                      {/* La barra es preparacion sobre 100, tal cual viene. En
+                          oro solo si Twin la marco PRIORITY OUTREACH. */}
+                      <span aria-hidden="true" className="work-row__meter">
+                        <i style={{ '--w': `${Math.min(prospect.readiness ?? 0, 100)}%` }} />
+                      </span>
                     </button>
                   </li>
                 )

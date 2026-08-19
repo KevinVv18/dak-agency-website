@@ -518,3 +518,60 @@ tbody tr.is-selected { background: var(--elevada); }
   .work-detail { overflow: visible; border-top: 1px solid var(--linea); }
 }
 @media (prefers-reduced-motion: reduce) { .work-detail > * { animation: none; } }
+
+/* ═══ Prioridad, peso y zonas ═══════════════════════════════════════════════
+   Tres cosas que Kevin pidio y que se resuelven con datos que ya venian en la
+   hoja: la banda de preparacion que calcula Twin y el potencial de negocio.
+   Ninguna es inventada por el panel — solo estaban sin pintar. */
+
+/* ── La fila lleva dos ejes ─────────────────────────────────────────────── */
+.work-row { display: block; }
+.work-row__top { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 9px; }
+.work-row__meter { display: block; height: 2px; margin-top: 9px; overflow: hidden; border-radius: 1px; background: rgba(255, 255, 255, .05); }
+.work-row__meter i { display: block; width: var(--w, 0%); height: 100%; border-radius: inherit; background: rgba(244, 241, 248, .3); transform: scaleX(0); transform-origin: left; animation: measure-entry var(--t-vista) var(--ease-suave) forwards; transition: background-color var(--t-corta) var(--ease-suave), opacity var(--t-corta) var(--ease-suave); }
+
+/* PRIORITY OUTREACH: la cifra y la barra en oro. Es el unico grito de la lista,
+   y por eso funciona — hoy lo llevan 5 de 8 filas, no las 8. */
+.work-row--prioritaria .work-row__score { color: var(--oro); }
+.work-row--prioritaria .work-row__meter i { background: var(--oro); opacity: .72; }
+.work-row--prioritaria:hover .work-row__meter i,
+.work-row--prioritaria[aria-selected="true"] .work-row__meter i { opacity: 1; }
+
+/* Potencial de negocio: tres muescas, en hueso. Segundo eje y voz mas baja,
+   porque el oro ya esta ocupado significando "esto te espera". */
+.potential-gauge { display: inline-flex; gap: 2px; align-items: flex-end; height: 10px; }
+.potential-gauge i { display: block; width: 3px; border-radius: 1px; background: rgba(255, 255, 255, .12); }
+.potential-gauge i:nth-child(1) { height: 4px; }
+.potential-gauge i:nth-child(2) { height: 7px; }
+.potential-gauge i:nth-child(3) { height: 10px; }
+.potential-gauge i.is-on { background: rgba(244, 241, 248, .5); }
+
+/* ── El mensaje manda ───────────────────────────────────────────────────────
+   Es lo unico que hay que leer entero antes de decidir, asi que deja de ser un
+   parrafo entre dos hairlines y pasa a ser el bloque con mas peso de la ficha:
+   cuerpo mas grande, superficie propia y un filo de oro que lo ancla. */
+.message-card__message {
+  margin-top: 20px; padding: 18px 20px;
+  border: 1px solid var(--linea);
+  border-radius: var(--radius);
+  background: var(--elevada);
+}
+.message-card__message p {
+  max-width: 66ch; color: var(--text);
+  font-size: 16px; font-weight: 300; line-height: 1.68;
+  white-space: pre-line;
+}
+.message-card__message .context-label { color: var(--muted); }
+
+/* ── Que cada zona se sepa una zona ─────────────────────────────────────────
+   Todo eran hairlines de 1px sobre el mismo fondo, asi que el ojo no separaba
+   una columna de otra. Ahora la cola de trabajo se asienta un plano por debajo
+   del detalle y cada cabecera lleva su marca. */
+.work-queue { background: var(--rail); }
+.work-group > header { position: relative; }
+.work-group > header::before {
+  position: absolute; top: 19px; left: 10px; width: 2px; height: 11px;
+  border-radius: 1px; background: var(--linea-viva); content: '';
+}
+.work-group:first-child > header::before { background: var(--oro); }
+.work-group > header { padding-left: 22px; }
