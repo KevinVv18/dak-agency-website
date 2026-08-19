@@ -72,7 +72,14 @@ Los nombres internos en inglés (Lead Hunter, Outreach Strategist) solo aparecen
 
 ## 5. Navegación **[cambio]**
 
-**Inicio · Hoy · Prospectos · Base · Cómo funciona**
+> ⚠️ **Revisado tras la Fase 0.** La hoja real dice que **0 de 12 prospectos son contactables** y
+> que **no existen las columnas de responsable, acción ni fecha**. «Hoy» no tiene de dónde sacar
+> una fila, y la vista principal pasa a ser **«Conseguir el contacto»**. El razonamiento completo,
+> con los números, está en [`data/CONTRATO.md`](data/CONTRATO.md) §1–2. Léelo antes de construir.
+
+**Inicio · Contacto · Prospectos · Base · Cómo funciona**
+
+(«Hoy» vuelve en cuanto la hoja tenga las cuatro columnas operativas de `CONTRATO.md` §4.)
 
 «Base Cámara» era una pestaña de primer nivel dedicada a **una** de cinco fuentes; envejece mal en
 cuanto Apollo, Apify e inbound tengan volumen. Se convierte en **«Base»**, agnóstica de la fuente,
@@ -84,9 +91,16 @@ Prospectos totales · de alta prioridad · acciones pendientes hoy · nuevos · 
 embudo por estado · últimos movimientos · alertas (datos incompletos, acción vencida, contacto sin
 seguimiento). Separado en inbound / outbound.
 
-### Hoy
-La cola diaria: acciones vencidas o de hoy, con empresa, contacto, motivo de prioridad, acción
-sugerida, canal recomendado, responsable y estado. Filtrable por prioridad, responsable y tipo.
+### Contacto **[nueva, y es la principal]**
+Cola de enriquecimiento, ordenada por **cuánto valor se desbloquea al conseguir el dato** — es
+decir, por los otros cuatro componentes del score, ignorando la contactabilidad. Por prospecto: qué
+falta (teléfono · decisor · redes · email), dónde buscarlo (`Website` y `Google Maps URL`, las dos
+únicas pistas que la hoja sí trae), el teléfono histórico **extraído de la prosa y etiquetado como
+sin verificar** en vez de escondido, y «abrir en la hoja» para escribir el dato donde toca.
+
+### Hoy — **pospuesta**
+La cola diaria (acciones vencidas, responsable, canal) no se construye todavía: ninguna de sus
+columnas existe en ninguna fuente. Vuelve cuando la hoja tenga las cuatro de `CONTRATO.md` §4.
 
 ### Prospectos
 Tabla principal y detalle. El detalle **no** es un volcado de columnas: es un resumen humano.
