@@ -16,19 +16,14 @@ const Services = () => {
     () => typeof window !== 'undefined' && window.innerWidth <= 768,
   )
   const [viewedServices, setViewedServices] = useState(new Set([0]))
-  const [swipeHintVisible, setSwipeHintVisible] = useState(true)
   // Es estado y no ref a proposito: tres efectos distintos dependen de si la
   // seccion se ve (reproducir, rebobinar y precargar el siguiente), y con una
   // ref ninguno se volveria a ejecutar al cambiar la visibilidad.
   const [seccionVisible, setSeccionVisible] = useState(false)
 
-  // Auto-dismiss swipe hint after 4 seconds
-  useEffect(() => {
-    if (!isMobile || !swipeHintVisible) return
-    const timer = setTimeout(() => setSwipeHintVisible(false), 4000)
-    return () => clearTimeout(timer)
-  }, [isMobile, swipeHintVisible])
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  /* El aviso de deslizar se retira: su marcado vivía dentro del bloque de la
+     barra inferior, así que al irse la barra quedaban un estado, un temporizador
+     de 4s y sus reglas CSS sin nada que pintar. */
   // Arranca PLEGADA: el vídeo es el argumento de la sección, la ficha se pide.
   const [textVisible, setTextVisible] = useState(false)
   const thumbnailsRef = useRef(null)
@@ -331,41 +326,23 @@ const Services = () => {
   const handleThumbnailClick = (index) => {
     setActiveIndex(index)
     setViewedServices(prev => new Set([...prev, index]))
-    setSwipeHintVisible(false)
   }
 
-  // Handle drawer service click (mobile) - scroll to services + change video
-  const handleDrawerServiceClick = (index) => {
-    setActiveIndex(index)
-    setViewedServices(prev => new Set([...prev, index]))
-    setDrawerOpen(false)
-
-    // Scroll to services section
-    setTimeout(() => {
-      if (servicesRef.current) {
-        servicesRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
-    }, 200)
-  }
-
-  // Toggle drawer
-  const toggleDrawer = () => {
-    setDrawerOpen(prev => !prev)
-  }
+  /* Aquí estaban handleDrawerServiceClick y toggleDrawer, del cajón del móvil.
+     Se van con él: para saltar de un servicio a otro quedan las flechas y la
+     escala de marcas del pie del panel, que ahora es pulsable. */
 
   // Navigate services (mobile arrows)
   const goNext = () => {
     const next = (activeIndex + 1) % services.length
     setActiveIndex(next)
     setViewedServices(prev => new Set([...prev, next]))
-    setSwipeHintVisible(false)
   }
 
   const goPrev = () => {
     const prev = (activeIndex - 1 + services.length) % services.length
     setActiveIndex(prev)
     setViewedServices(p => new Set([...p, prev]))
-    setSwipeHintVisible(false)
   }
 
   // Preload next video/image (según orientación del dispositivo)
@@ -682,10 +659,14 @@ const Services = () => {
               <div className="featured-progress">
                 <div className="progress-track">
                   {services.map((service, index) => (
-                    <div
+                    <button
                       key={service.id}
+                      type="button"
                       className={`progress-segment ${viewedServices.has(index) ? 'viewed' : ''} ${index === activeIndex ? 'active' : ''}`}
                       style={{ '--marca-color': service.color }}
+                      onClick={() => handleThumbnailClick(index)}
+                      aria-label={`Ver ${service.title}`}
+                      aria-current={index === activeIndex ? 'true' : undefined}
                     />
                   ))}
                 </div>
@@ -805,219 +786,20 @@ const Services = () => {
         </div>
       </section>
 
-      {/* ===== DESKTOP SIDEBAR - Icons nav lateral ===== */}
-      {!isMobile && (
-        <div className="services-sidebar">
-          <span className="sidebar-label">SERVICIOS</span>
-          <div className="sidebar-track">
-            <div className="sidebar-progress-line">
-              <motion.div
-                className="sidebar-progress-fill"
-                style={{ backgroundColor: activeService.color }}
-                animate={{ height: `${((activeIndex) / (services.length - 1)) * 100}%` }}
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              />
-            </div>
-            {services.map((service, index) => {
-              const isActive = index === activeIndex
-              const isViewed = viewedServices.has(index)
-              return (
-                <div
-                  key={service.id}
-                  className={`sidebar-item ${isActive ? 'active' : ''} ${isViewed ? 'viewed' : ''}`}
-                  onClick={() => {
-                    setActiveIndex(index)
-                    setViewedServices(prev => new Set([...prev, index]))
-                    if (servicesRef.current) {
-                      servicesRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                    }
-                  }}
-                >
-                  <motion.div
-                    className="sidebar-icon"
-                    style={{
-                      color: isActive ? service.color : isViewed ? service.color : 'rgba(255,255,255,0.3)',
-                      backgroundColor: isActive ? `${service.color}15` : 'transparent',
-                      borderColor: isActive ? `${service.color}40` : 'transparent',
-                      boxShadow: 'none'
-                    }}
-                    animate={{
-                      scale: isActive ? 1.15 : 1,
-                    }}
-                    whileHover={{ scale: 1.2 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                      <path d={service.icon} />
-                    </svg>
-                  </motion.div>
-                  <div className="sidebar-tooltip">
-                    <span className="sidebar-tooltip-title">{service.title}</span>
-                    <span className="sidebar-tooltip-price" style={{ color: service.color }}>
-                      {service.price}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-          <span className="sidebar-counter">
-            {viewedServices.size}<span className="sidebar-counter-sep">/</span>{services.length}
-          </span>
-        </div>
-      )}
+      {/* Aquí vivían el raíl fijo de escritorio y la barra inferior del móvil.
+          Eran un mando de ESTA sección clavado en position:fixed sobre toda la
+          web: aparecían en las ocho, y sobre el Estudio —el único tramo claro—
+          el rótulo del raíl daba 1,12:1 de contraste. La barra se llevaba 56px
+          de cada pantalla de móvil y encima imponía un padding-bottom al body,
+          o sea empujaba la página entera.
 
-      {/* ===== GLOBAL BOTTOM BAR - Visible siempre en móvil ===== */}
-      {isMobile && (
-        <>
-          {/* Backdrop overlay cuando drawer está abierto */}
-          <AnimatePresence>
-            {drawerOpen && (
-              <motion.div
-                className="drawer-backdrop"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setDrawerOpen(false)}
-              />
-            )}
-          </AnimatePresence>
+          Ese sitio, que es el único permanente que tiene la página junto a la
+          nav, lo ocupa ahora IndicePagina y responde algo que importa siempre:
+          en qué sección estás y cuántas quedan.
 
-          {/* Bottom Bar + Drawer */}
-          <motion.div
-            className="services-bottom-bar"
-            initial={false}
-            animate={{
-              height: drawerOpen ? '75vh' : '56px'
-            }}
-            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          >
-            {/* Bar Header - siempre visible */}
-            <div className="bottom-bar-header" onClick={toggleDrawer}>
-              <div className="bottom-bar-left">
-                <div
-                  className="bottom-bar-dot"
-                  style={{ backgroundColor: activeService.color }}
-                />
-                <span className="bottom-bar-title">Servicios</span>
-                <span className="bottom-bar-active" style={{ color: activeService.color }}>
-                  {activeService.title}
-                </span>
-              </div>
-              <div className="bottom-bar-right">
-                <span className="bottom-bar-count">
-                  {viewedServices.size}/{services.length}
-                </span>
-                <motion.svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="white"
-                  animate={{ rotate: drawerOpen ? 180 : 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
-                </motion.svg>
-              </div>
-            </div>
-
-            {/* Drawer Content - servicios grid */}
-            <AnimatePresence>
-              {drawerOpen && (
-                <motion.div
-                  className="drawer-content"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2, delay: 0.1 }}
-                >
-                  {/* Drawer Header */}
-                  <div className="drawer-header">
-                    <div className="drawer-header-left">
-                      <span className="drawer-header-title">Nuestros Servicios</span>
-                      <span className="drawer-header-badge">{services.length}</span>
-                    </div>
-                    <span className="drawer-header-hint">Toca para explorar</span>
-                  </div>
-
-                  <div className="drawer-services-grid">
-                    {services.map((service, index) => {
-                      const isActive = index === activeIndex
-                      const isViewed = viewedServices.has(index)
-                      return (
-                        <motion.div
-                          key={service.id}
-                          className={`drawer-service-card ${isActive ? 'active' : ''} ${isViewed ? 'viewed' : ''}`}
-                          onClick={() => handleDrawerServiceClick(index)}
-                          style={{
-                            '--card-color': service.color,
-                            borderColor: isActive ? service.color : 'transparent'
-                          }}
-                          whileTap={{ scale: 0.97 }}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                        >
-                          {/* Numbered label */}
-                          <span className="drawer-card-number" style={{ color: service.color }}>
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
-
-                          {/* Icon with glow */}
-                          <div
-                            className="drawer-card-icon"
-                            style={{
-                              color: service.color,
-                              backgroundColor: `${service.color}15`,
-                              boxShadow: 'none'
-                            }}
-                          >
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                              <path d={service.icon} />
-                            </svg>
-                          </div>
-
-                          {/* Info */}
-                          <div className="drawer-card-info">
-                            <h4 className="drawer-card-title">{service.title}</h4>
-                            <p className="drawer-card-tagline">{service.tagline}</p>
-                            <p className="drawer-card-description">{service.description}</p>
-                            <span className="drawer-card-price" style={{ color: service.color }}>
-                              {service.price}
-                            </span>
-                          </div>
-
-                          {/* Right side: arrow or check */}
-                          <div className="drawer-card-right">
-                            {isActive && (
-                              <motion.div
-                                className="drawer-card-active"
-                                style={{ backgroundColor: service.color }}
-                                layoutId="drawerActive"
-                              />
-                            )}
-                            {isViewed && !isActive ? (
-                              <div className="drawer-card-check">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                                  <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
-                                </svg>
-                              </div>
-                            ) : (
-                              <svg className="drawer-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="9 6 15 12 9 18" />
-                              </svg>
-                            )}
-                          </div>
-                        </motion.div>
-                      )
-                    })}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </>
-      )}
+          Aquí no se pierde nada: en escritorio siguen las siete miniaturas y
+          las flechas laterales; en móvil, las flechas y la escala de marcas del
+          pie del panel, que ahora es pulsable. */}
     </>
   )
 }

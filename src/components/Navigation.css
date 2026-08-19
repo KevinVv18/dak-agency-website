@@ -166,31 +166,38 @@
   text-shadow: 0 0 10px rgba(176, 36, 255, 0.8);
 }
 
-/* CTA Button */
+/* ── El botón de la nav ──
+   Llevaba relleno sólido, borde de 2px, resplandor de 20px, sombra de texto y
+   un salto de 2px al pasar el ratón. Ahora es el mismo instrumental que cierra
+   Taller, Estudio, Blog y Hablemos: sin radio, el acento como superficie,
+   tinta oscura y las esquineras de mira que se abren.
+
+   La tinta es OSCURA: blanco sobre #B93EFF no llega al mínimo AA para un texto
+   de este cuerpo. */
 .nav-cta-button {
-  background: #B024FF;
-  color: #ffffff;
-  padding: 0.75rem 1.75rem;
-  font-size: 0.85rem;
+  background-color: var(--color-accent-texto);
+  color: var(--superficie);
+  padding: 0.75rem 1.6rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-decoration: none;
-  transition: all var(--transition-base);
-  border: 2px solid #B024FF;
+  border: 1px solid transparent;
+  border-radius: 0;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 0 20px rgba(176, 36, 255, 0.4);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(3, 1, 6, 0.5);
+  transition: background-position 0.35s var(--ease-out-expo);
 }
 
-.nav-cta-button:hover {
-  background: #030106;
-  border-color: #B024FF;
-  transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(176, 36, 255, 0.6), 0 10px 20px rgba(0, 0, 0, 0.3);
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+.nav-cta-button:hover,
+.nav-cta-button:focus-visible {
+  background-position: var(--esq-abierta);
 }
 
 /* Hamburger Menu */
@@ -211,11 +218,10 @@
   display: block;
   width: 100%;
   height: 3px;
-  background: #B024FF;
-  border-radius: 3px;
+  background: var(--color-accent-texto);
+  border-radius: 1px;
   transition: all var(--transition-base);
   transform-origin: center;
-  box-shadow: 0 0 10px rgba(176, 36, 255, 0.5);
 }
 
 .hamburger.active span:nth-child(1) {
@@ -274,15 +280,19 @@
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  background: #B024FF;
-  color: #fff;
-  font-size: 0.9rem;
+  background-color: var(--color-accent-texto);
+  color: var(--superficie);
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   padding: 0.9rem 1rem;
-  border: 2px solid #B024FF;
-  box-shadow: 0 0 20px rgba(176, 36, 255, 0.4);
-  transition: background 0.25s ease, color 0.25s ease;
+  border: 1px solid transparent;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(3, 1, 6, 0.5);
+  transition: background-position 0.35s var(--ease-out-expo);
 }
 
 .mobile-cta:active {
@@ -295,10 +305,13 @@
   gap: 0.7rem;
 }
 
+/* Cuadros de filete, como los canales del pie y la campana. Eran los últimos
+   círculos que quedaban del instrumental. 44px y no 42: es el mínimo táctil, y
+   así no hacen falta pseudoelementos que lo estiren. */
 .mobile-social a {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 3px;
   display: grid;
   place-items: center;
   color: rgba(255, 255, 255, 0.85);
@@ -308,10 +321,11 @@
 }
 
 .mobile-social a:active,
-.mobile-social a:hover {
-  border-color: #B024FF;
-  color: #B024FF;
-  background: rgba(176, 36, 255, 0.1);
+.mobile-social a:hover,
+.mobile-social a:focus-visible {
+  border-color: var(--color-accent-texto);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* Responsive */

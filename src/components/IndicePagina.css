@@ -1,0 +1,167 @@
+/* ═══════════════════════════════════════════════════════════════
+   EL ÍNDICE DE LA PÁGINA
+
+   Siete paradas colgando de un eje vertical: el mismo recurso que el eje del
+   ensayo del hero, la escala de marcas de Servicios y las cuatro estaciones de
+   Nosotros. No es un elemento nuevo en el vocabulario — es el vocabulario.
+
+   Discreto en reposo: se ven las siete marcas y SOLO el rótulo de la activa.
+   Los otros seis aparecen al pasar el ratón o al entrar con el tabulador.
+   Siete etiquetas permanentes serían más cromo del que este rediseño retira.
+   ═══════════════════════════════════════════════════════════════ */
+
+.indice {
+  position: fixed;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* Solo capturan el puntero los botones: el hueco entre paradas no debe
+     robarle el clic a lo que hay debajo. */
+  pointer-events: none;
+
+  /* Las dos tintas. Por defecto, sobre el fondo oscuro de casi toda la web. */
+  --indice-eje: rgba(255, 255, 255, 0.14);
+  --indice-marca: rgba(255, 255, 255, 0.3);
+  --indice-texto: var(--color-texto-2);
+  --indice-activo: #ffffff;
+  --indice-acento: var(--color-accent-texto);
+}
+
+/* Y sobre el Estudio, que es el único tramo claro. Aquí estaba el fallo que
+   este rediseño viene a arreglar: el raíl anterior seguía pintando su rótulo
+   en blanco al 20% sobre #F4F1F6, o sea 1,12:1 — invisible.
+
+   Los valores son los que Estudio ya tiene medidos sobre su propio fondo (ver
+   la cabecera de Estudio.css): #030106 da 18,56:1, #5F5A66 5,97:1 y #8D1DCC
+   5,90:1. */
+.indice--claro {
+  --indice-eje: rgba(3, 1, 6, 0.18);
+  --indice-marca: rgba(3, 1, 6, 0.4);
+  --indice-texto: #5F5A66;
+  --indice-activo: #030106;
+  --indice-acento: #8D1DCC;
+}
+
+/* En pantallas estrechas no hay margen donde vivir. El progreso lo da la barra
+   de 2px que la nav ya pinta en su borde inferior, y el índice de secciones ya
+   está en el menú de la hamburguesa. */
+@media (max-width: 1100px) {
+  .indice {
+    display: none;
+  }
+}
+
+.indice-eje {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 1px;
+  display: flex;
+  flex-direction: column;
+  /* El eje: un filete de un píxel del que cuelgan las paradas. */
+  background: linear-gradient(var(--indice-eje), var(--indice-eje))
+    0 0 / 1px 100% no-repeat;
+}
+
+.indice-boton {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.6rem 0.45rem 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+
+/* La marca de la parada. La activa se distingue por LONGITUD, no por brillo:
+   una marca que sobresale es lectura de instrumento.
+
+   Mide siempre 20px y se recorta con scaleX desde su izquierda. Animar el
+   ancho de verdad recalcularía la maquetación de la fila en cada fotograma;
+   scaleX se compone en la GPU y da exactamente el mismo dibujo. */
+.indice-marca {
+  width: 20px;
+  height: 1px;
+  flex-shrink: 0;
+  background: var(--indice-marca);
+  transform: scaleX(0.5);
+  transform-origin: left;
+  transition: transform 0.3s var(--ease-out-expo), background-color 0.3s ease;
+}
+
+.indice-boton.esta .indice-marca,
+.indice-boton:hover .indice-marca,
+.indice-boton:focus-visible .indice-marca {
+  transform: scaleX(1);
+  background: var(--indice-acento);
+}
+
+.indice-nombre {
+  font-family: var(--font-mono);
+  /* 0.7rem y no 0.68: la auditoría lo cazó a 10,9px, por debajo del mínimo de
+     11px que nos exigimos. */
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--indice-texto);
+  /* Los seis inactivos están ahí para el lector de pantalla y para el
+     tabulador, pero no se pintan hasta que hacen falta. */
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.3s ease, transform 0.3s var(--ease-out-expo), color 0.3s ease;
+}
+
+.indice-boton.esta .indice-nombre {
+  opacity: 1;
+  transform: none;
+  color: var(--indice-activo);
+}
+
+.indice:hover .indice-nombre,
+.indice:focus-within .indice-nombre {
+  opacity: 1;
+  transform: none;
+}
+
+.indice-boton:hover .indice-nombre,
+.indice-boton:focus-visible .indice-nombre {
+  color: var(--indice-activo);
+}
+
+/* La lectura, con cifras tabulares para que no baile al cambiar de sección. */
+.indice-cuenta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  margin: 0;
+  padding-left: 1px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--indice-texto);
+  font-variant-numeric: tabular-nums;
+}
+
+.indice-cuenta-n {
+  color: var(--indice-acento);
+}
+
+.indice-cuenta-sep {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indice-marca,
+  .indice-nombre {
+    transition: none;
+  }
+}

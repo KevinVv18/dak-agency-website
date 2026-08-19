@@ -739,9 +739,19 @@
   .featured-progress {
     position: relative;
     bottom: auto;
-    padding: 0.75rem 1.25rem;
+    /* Sin relleno lateral: se comia 40px de los 390 de un movil y dejaba las
+       siete marcas en 43px de ancho, justo por debajo del minimo tactil de
+       44. Ahora son el selector de servicios, asi que tienen que poder
+       tocarse. */
+    padding: 0.75rem 0;
     background: transparent;
     height: auto;
+    /* Al PRINCIPIO del panel, no al pie. Medido: la burbuja del chat es fija
+       en la esquina inferior derecha con z-index 9990, y tapaba la septima
+       marca — el ultimo servicio quedaba inalcanzable con el dedo. Arriba no
+       hay nada fijo encima, y una escala en el borde superior de una lectura
+       es tan valida como al pie. */
+    order: -1;
   }
 
   .progress-track {
@@ -998,7 +1008,15 @@
 /* La marca mide siempre 7px y se recorta con scaleY desde su base. Animar la
    altura de verdad recalcula el layout de la fila en cada fotograma; scaleY se
    compone en la GPU y da exactamente el mismo dibujo. */
+/* pointer-events: auto — el contenedor los lleva a `none` para no robarle el
+   clic al vídeo, y las marcas lo heredaban: se podían pulsar por programa pero
+   NO con el dedo. Ahora son el selector directo de los siete servicios en
+   móvil, así que tienen que recibir el toque. */
 .progress-segment {
+  pointer-events: auto;
+  padding: 0;
+  border: none;
+  cursor: pointer;
   flex: 1;
   height: 7px;
   transform: scaleY(0.4285);
@@ -1061,558 +1079,25 @@
   opacity: 0.85;
 }
 
-/* =============================================
-   GLOBAL BOTTOM BAR - Mobile persistent
-   ============================================= */
+/* ═══════════════════════════════════════════════════════════════
+   Aquí vivían el RAÍL fijo de escritorio, la BARRA inferior del móvil y su
+   cajón — unas 250 líneas.
 
-.drawer-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 998;
-  backdrop-filter: blur(4px);
-}
+   Eran un mando de esta sección clavado en position:fixed sobre toda la web.
+   Medido: el raíl aparecía en las ocho secciones, y sobre el Estudio —el único
+   tramo claro— su rótulo daba 1,12:1 de contraste, o sea invisible. La barra
+   se llevaba 56px de cada pantalla de móvil (6,6%) y encima imponía
+   `body { padding-bottom: 56px }`, empujando la página entera.
 
-.services-bottom-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 999;
-  background: rgba(10, 6, 18, 0.97);
-  border-top: 1px solid rgba(176, 36, 255, 0.4);
-  backdrop-filter: blur(20px);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
-}
+   Ese sitio lo ocupa ahora IndicePagina, que responde algo que importa en
+   todas las secciones: dónde estás y cuántas quedan.
 
-/* Bar Header - always visible */
-.bottom-bar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1.25rem;
-  height: 56px;
-  min-height: 56px;
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
+   Lo que hacía la barra dentro de Servicios no se pierde: en escritorio están
+   las siete miniaturas y las flechas; en móvil, las flechas y la escala de
+   marcas del pie del panel, que ahora es pulsable.
+   ═══════════════════════════════════════════════════════════════ */
 
-.bottom-bar-left {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  overflow: hidden;
-}
 
-.bottom-bar-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.bottom-bar-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.6);
-  white-space: nowrap;
-}
-
-.bottom-bar-active {
-  font-size: 0.85rem;
-  font-weight: 800;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.bottom-bar-right {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex-shrink: 0;
-}
-
-.bottom-bar-count {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 0.2rem 0.5rem;
-  border-radius: 1rem;
-}
-
-/* Drawer Content */
-.drawer-content {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(176, 36, 255, 0.15) transparent;
-}
-
-.drawer-content::-webkit-scrollbar {
-  width: 3px;
-}
-
-.drawer-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.drawer-content::-webkit-scrollbar-thumb {
-  background: rgba(176, 36, 255, 0.2);
-  border-radius: 3px;
-}
-
-/* Drawer Header */
-.drawer-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.25rem 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  margin-bottom: 0.5rem;
-}
-
-.drawer-header-left {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.drawer-header-title {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: white;
-  letter-spacing: -0.01em;
-}
-
-.drawer-header-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #B024FF 0%, #8B1CC7 100%);
-  color: white;
-  font-size: 0.65rem;
-  font-weight: 800;
-}
-
-.drawer-header-hint {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.3);
-  font-style: italic;
-}
-
-/* Drawer Grid */
-.drawer-services-grid {
-  padding: 0.5rem 1rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-/* Drawer Card — Premium */
-.drawer-service-card {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 0.9rem 1rem;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.06);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.25s ease;
-}
-
-/* Era una franja de 3px a la izquierda de cada tarjeta: el acento lateral es el
-   tell mas reconocible de UI generada. A 1px deja de ser una pestana y pasa a
-   ser un filete, que es lo que hace el resto del sitio. */
-.drawer-service-card::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--card-color, #B024FF);
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  border-radius: 0 3px 3px 0;
-}
-
-.drawer-service-card:hover,
-.drawer-service-card.active {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border-color: var(--card-color, rgba(255, 255, 255, 0.12));
-}
-
-.drawer-service-card.active::before {
-  opacity: 1;
-}
-
-.drawer-service-card.active {
-  box-shadow: 
-    0 0 20px color-mix(in srgb, var(--card-color) 10%, transparent),
-    inset 0 0 30px color-mix(in srgb, var(--card-color) 3%, transparent);
-}
-
-/* Number label */
-.drawer-card-number {
-  position: absolute;
-  top: 0.5rem;
-  right: 2.5rem;
-  font-size: 1.6rem;
-  font-weight: 900;
-  opacity: 0.08;
-  letter-spacing: -0.05em;
-  line-height: 1;
-  pointer-events: none;
-}
-
-.drawer-service-card.active .drawer-card-number {
-  opacity: 0.15;
-}
-
-/* Icon with glow */
-.drawer-card-icon {
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: all 0.3s ease;
-}
-
-.drawer-service-card.active .drawer-card-icon {
-  border-color: color-mix(in srgb, var(--card-color) 30%, transparent);
-}
-
-/* Info */
-.drawer-card-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.drawer-card-title {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: white;
-  margin: 0;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
-
-.drawer-card-tagline {
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 0.1rem 0 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 500;
-}
-
-.drawer-card-description {
-  font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.35);
-  margin: 0.25rem 0 0;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.drawer-card-price {
-  font-size: 0.72rem;
-  font-weight: 700;
-  margin: 0.25rem 0 0;
-  display: block;
-}
-
-/* Right side container */
-.drawer-card-right {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: 28px;
-}
-
-/* Active indicator - left bar handled by ::before now */
-.drawer-card-active {
-  position: absolute;
-  left: -1rem;
-  top: 0;
-  bottom: 0;
-  width: 0;
-  border-radius: 0;
-  opacity: 0;
-}
-
-/* Arrow indicator */
-.drawer-card-arrow {
-  color: rgba(255, 255, 255, 0.2);
-  transition: all 0.25s ease;
-}
-
-.drawer-service-card:hover .drawer-card-arrow,
-.drawer-service-card.active .drawer-card-arrow {
-  color: var(--card-color, rgba(255, 255, 255, 0.5));
-  transform: translateX(2px);
-}
-
-/* Check badge */
-.drawer-card-check {
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  background: rgba(0, 180, 120, 0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 180, 120, 0.3);
-}
-
-/* =============================================
-   DESKTOP SIDEBAR - Icon nav lateral
-   ============================================= */
-
-.services-sidebar {
-  position: fixed;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 900;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* Label vertical */
-.sidebar-label {
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.2);
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  transform: rotate(180deg);
-  margin-bottom: 0.25rem;
-  user-select: none;
-}
-
-/* Track container */
-.sidebar-track {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-/* Progress line behind icons */
-.sidebar-progress-line {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 1px;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.sidebar-progress-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  border-radius: 1px;
-  opacity: 0.5;
-}
-
-/* Each icon item */
-.sidebar-item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  z-index: 1;
-}
-
-.sidebar-icon {
-  position: relative;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.6rem;
-  border: 1.5px solid transparent;
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.sidebar-icon svg {
-  position: relative;
-  z-index: 2;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-  transition: color 0.3s ease;
-}
-
-/* Glow behind active icon removed as it's directly handled by boxShadow now. */
-
-/* Hover effects */
-.sidebar-item:hover .sidebar-icon {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.sidebar-item:hover .sidebar-icon svg {
-  filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-}
-
-/* Viewed state */
-.sidebar-item.viewed .sidebar-icon {
-  opacity: 0.85;
-}
-
-/* Active state */
-.sidebar-item.active .sidebar-icon svg {
-  filter: drop-shadow(0 0 8px currentColor);
-}
-
-/* Tooltip */
-.sidebar-tooltip {
-  position: absolute;
-  left: calc(100% + 0.65rem);
-  top: 50%;
-  white-space: nowrap;
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  background: rgba(10, 6, 18, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
-  padding: 0.5rem 0.85rem;
-  border-radius: 0.6rem;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-50%) translateX(-6px);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.sidebar-item:hover .sidebar-tooltip {
-  opacity: 1;
-  transform: translateY(-50%) translateX(0);
-  pointer-events: auto;
-}
-
-.sidebar-tooltip-title {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: white;
-  letter-spacing: -0.01em;
-}
-
-.sidebar-tooltip-price {
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-/* Counter */
-.sidebar-counter {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.3);
-  margin-top: 0.25rem;
-  letter-spacing: 0.05em;
-}
-
-.sidebar-counter-sep {
-  opacity: 0.4;
-  margin: 0 1px;
-}
-
-/* Hide sidebar on mobile */
-@media (max-width: 768px) {
-  .services-sidebar {
-    display: none !important;
-  }
-}
-
-
-/* Mobile: Add body padding for bottom bar */
-@media (max-width: 768px) {
-  body {
-    padding-bottom: 56px;
-  }
-}
-
-/* Desktop: Hide bottom bar + swipe hint */
-@media (min-width: 769px) {
-
-  .services-bottom-bar,
-  .drawer-backdrop,
-  .services-swipe-hint {
-    display: none !important;
-  }
-}
-
-/* ── Swipe hint (mobile Services) ── */
-.services-swipe-hint {
-  position: absolute;
-  bottom: 4.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.3rem 0.7rem;
-  border-radius: 100px;
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: rgba(249, 237, 253, 0.5);
-  font-size: 0.65rem;
-  font-weight: 400;
-  white-space: nowrap;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.services-swipe-hint span {
-  display: flex;
-  color: rgba(176, 36, 255, 0.6);
-  font-size: 0.85rem;
-  line-height: 1;
-}
-
-.swipe-hint-text {
-  color: rgba(249, 237, 253, 0.4) !important;
-  font-size: 0.6rem !important;
-  letter-spacing: 0.05em;
-}
 
 /* ── El mando del carrusel ──
 

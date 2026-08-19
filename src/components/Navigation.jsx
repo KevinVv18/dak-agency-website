@@ -5,6 +5,7 @@ import './Navigation.css'
 import logoSvg from '../assets/logo-nav.svg'
 import { scrollToSection } from '../utils/scrollToSection'
 import NotificationBell from './NotificationBell'
+import IndicePagina, { ESTACIONES } from './IndicePagina'
 
 // 'taller' se deja FUERA a proposito. El spy marca la ultima seccion cuyo tope
 // paso el corte, y el menu resalta el enlace que coincide. Como Taller no tiene
@@ -13,10 +14,15 @@ import NotificationBell from './NotificationBell'
 // es su vecino de arriba y donde el visitante cree estar.
 const SPY_IDS = ['services', 'demos', 'gallery', 'blog', 'about', 'contact']
 
+/* El índice lateral SÍ lista Taller: allí es una parada como las demás. Son dos
+   listas y una sola pasada de scroll — no dos observadores. */
+const IDS_INDICE = ESTACIONES.map((e) => e.id)
+
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeAnchor, setActiveAnchor] = useState('')
+  const [estacion, setEstacion] = useState('')
   const progressRef = useRef(null)
   const location = useLocation()
   const navigate = useNavigate()
@@ -45,6 +51,17 @@ const Navigation = () => {
         if (el && el.getBoundingClientRect().top <= cut) current = id
       }
       setActiveAnchor(current)
+
+      /* La misma pasada, para el índice lateral. Se recorre su propia lista
+         —que incluye Taller— en vez de reutilizar `current`: si Taller entrara
+         en SPY_IDS, el menú se quedaría sin enlace que encender durante toda
+         esa sección, que es justo lo que el comentario de arriba evita. */
+      let parada = ''
+      for (const id of IDS_INDICE) {
+        const el = document.getElementById(id)
+        if (el && el.getBoundingClientRect().top <= cut) parada = id
+      }
+      setEstacion(parada)
     }
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
     update()
@@ -126,6 +143,7 @@ const Navigation = () => {
   }
 
   return (
+    <>
     <motion.nav
       className={`navigation ${scrolled ? 'scrolled' : ''}`}
       initial={{ y: -100 }}
@@ -228,7 +246,14 @@ const Navigation = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+      </motion.nav>
+
+      {/* El índice de la página. Lo monta la nav, y no App, para que se alimente
+          de la MISMA pasada de scroll: un solo listener para toda la página.
+          Solo en la portada — en /gallery y en las legales no hay secciones que
+          indexar. */}
+      {isHome && <IndicePagina activa={estacion} />}
+    </>
   )
 }
 
