@@ -167,6 +167,21 @@
   will-change: transform;
 }
 
+/* En MÓVIL la aguja no se pinta.
+   En una columna estrecha el titular se parte en cinco o seis renglones muy
+   juntos, y un filete horizontal cruzándolos no se lee como el borde de una
+   lectura: se lee como una raya encima del texto. Lo que sí sobrevive es el
+   SUBRAYADO de las tres palabras clave (.hover-word::after), que es lo que de
+   verdad marca por dónde va el encendido.
+
+   En escritorio, con las tres filas separadas y anchas, la aguja sí tiene
+   sitio y se queda. */
+@media (max-width: 768px) {
+  .cta-barrido {
+    display: none;
+  }
+}
+
 .cta-barrido-linea {
   position: absolute;
   inset: auto 0;

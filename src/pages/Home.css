@@ -81,15 +81,14 @@
   background: linear-gradient(to bottom, transparent 0%, var(--superficie) 100%);
 }
 
-@media (max-width: 768px) {
-  .tunel > .campo {
-    height: 92svh;
-  }
+/* Aquí el lienzo medía 92svh en móvil, y el hero compensaba con -92svh.
+   Ese 8% que faltaba estaba reservado para la barra fija de Servicios, que
+   ocupaba 56px del borde inferior. Al retirarse la barra dejó de tapar nada y
+   se convirtió en una banda negra: medido en un iPhone 15 Pro Max, 75px de
+   pantalla muerta debajo de la corriente, con el fondo cortado en seco.
 
-  .tunel > .hero {
-    margin-top: -92svh;
-  }
-}
+   Sin la barra no hay nada que esquivar, así que el móvil usa el mismo 100svh
+   que el escritorio y la regla sobra entera. */
 
 /* ── Sin movimiento ──
    Se cae el plano continuo: el campo vuelve a ser el fondo del hero y nada
