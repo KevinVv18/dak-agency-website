@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, lazy, Suspense } from 'react'
+import React, { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Navigation from './components/Navigation'
 import Footer from './components/Footer'
@@ -10,37 +10,30 @@ import Home from './pages/Home'
 const GalleryPage = lazy(() => import('./pages/GalleryPage'))
 const LegalPage = lazy(() => import('./pages/LegalPage'))
 
+/*
+ * La rejilla que seguía al cursor se retiró.
+ *
+ * Era un elemento fijo a pantalla completa, a z-index 9999, con una rejilla
+ * morada de 60×60 px revelada en un círculo de 180 px alrededor del ratón. Dos
+ * motivos para quitarla, y ninguno es de gusto:
+ *
+ * 1. Se veía como un fallo. Sobre el túnel, donde todo son trazos orgánicos,
+ *    una línea recta de rejilla no se lee como decoración: se lee como una
+ *    grieta. Kevin la señaló como tal en una captura.
+ *
+ * 2. Competía con el campo. El campo de flujo YA responde al puntero, y esa es
+ *    la interacción que demuestra que está vivo. Dos sistemas moviéndose con el
+ *    mismo gesto es ruido — el mismo motivo por el que se retiró el paralaje de
+ *    los orbes del CTA.
+ *
+ * Y de paso: escribía dos variables CSS y forzaba el repintado de una capa
+ * enmascarada del tamaño de la ventana en CADA movimiento del ratón.
+ */
 function App() {
-  const gridRef = useRef(null)
-
-  useEffect(() => {
-    const el = gridRef.current
-    if (!el) return
-
-    const onMove = (e) => {
-      el.style.setProperty('--mx', `${e.clientX}px`)
-      el.style.setProperty('--my', `${e.clientY}px`)
-      el.style.opacity = '1'
-    }
-
-    const onLeave = () => {
-      el.style.opacity = '0'
-    }
-
-    window.addEventListener('mousemove', onMove)
-    document.addEventListener('mouseleave', onLeave)
-    return () => {
-      window.removeEventListener('mousemove', onMove)
-      document.removeEventListener('mouseleave', onLeave)
-    }
-  }, [])
-
   return (
     <BrowserRouter>
       <ErrorBoundary>
         <div className="app">
-          {/* Cursor grid reveal */}
-          <div ref={gridRef} className="cursor-grid-reveal" />
           <Navigation />
           <main>
             <Suspense fallback={null}>

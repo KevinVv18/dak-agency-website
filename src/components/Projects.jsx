@@ -1,102 +1,107 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion'
+/* `useScroll`, `useTransform` y `AnimatePresence` se han ido con las cuatro
+   maquetaciones a medida: eran los carruseles automáticos que rotaban la pieza
+   cada 3,5-4 segundos dentro de cada bloque de cliente. */
+import { motion, useInView } from 'framer-motion'
 import { portfolioData } from '../data/portfolioData'
-import imgCartera from '../assets/demos/cartera.webp'
-import imgPeriodico from '../assets/demos/periodico.webp'
-import imgRobot from '../assets/demos/robot.webp'
-import imgInmobiliaria from '../assets/demos/inmobiliaria.webp'
+/* Capturas de los productos EN VIVO, generadas por `npm run demos:capturas`.
+   Los recortes que había antes —cartera.webp, periodico.webp, robot.webp,
+   inmobiliaria.webp— siguen en el repo por si hiciera falta volver. */
+import capTienda from '../assets/demos/vivo-tienda.webp'
+import capTiendaSm from '../assets/demos/vivo-tienda-sm.webp'
+import capBlog from '../assets/demos/vivo-blog.webp'
+import capBlogSm from '../assets/demos/vivo-blog-sm.webp'
+import capAsistente from '../assets/demos/vivo-asistente.webp'
+import capAsistenteSm from '../assets/demos/vivo-asistente-sm.webp'
+import capInmo from '../assets/demos/vivo-inmobiliaria.webp'
+import capInmoSm from '../assets/demos/vivo-inmobiliaria-sm.webp'
 import './Projects.css'
 
-/* Proyectos destacados: un cliente por estilo de preview.
-   El resto del trabajo vive en la galería completa (/gallery). */
-const FEATURED = [
-  { id: 'berseline', layout: 'hero' },
-  { id: 'jeny-dr', layout: 'minimal' },
-  { id: 'pardo', layout: 'filmstrip' },
-  { id: 'spa-kreativos', layout: 'scattered' },
-]
+/* ── El reparto entre Taller y la galería ──
+ *
+ * Gallery filtra POR CATEGORÍA (Todo · Social Media · Branding · Campañas) y
+ * enseña las veinte piezas. Taller agrupa POR CLIENTE. Ahí está el reparto
+ * natural, y dice qué tiene que hacer cada una:
+ *
+ *   Gallery es el archivo de piezas. Taller es el padrón de marcas.
+ *
+ * Por eso Taller enseña hasta TRES piezas por cliente y no todas: dieciocho de
+ * veinte sería la galería otra vez, en la portada y peor.
+ *
+ * Aquí vivía FEATURED, que asignaba a mano qué cliente llevaba cuál de las
+ * cuatro maquetaciones a medida. Se va con ellas: ahora los seis clientes se
+ * enseñan igual, en su propio orden. */
+const POR_CLIENTE = 3
 
-const getFeatured = (clients) =>
-  FEATURED
-    .map(f => ({ client: clients.find(c => c.id === f.id), layout: f.layout }))
-    .filter(f => f.client)
-
-/* ── Demos en vivo: productos reales que el visitante puede probar ──
-   Diseño "apartado de proyectos": cuadrícula 2×2 con separadores en cruz
-   y recortes flotando sobre el fondo. */
+/* ── Demos en vivo ──
+ *
+ * Cuatro productos reales que se abren y se usan. Lo que se enseñaba de cada
+ * uno era un RECORTE: un bolso, un periódico, un robot 3D y un colgador de
+ * puerta, flotando sobre el fondo. Ninguno era el producto — la metáfora ocupaba
+ * el sitio de la prueba, y la prueba está a un clic.
+ *
+ * Ahora la imagen es el producto: capturas de los cuatro sitios funcionando,
+ * generadas por `npm run demos:capturas`. Se regeneran con un comando cuando
+ * alguno cambie, que era la única pega real de enseñar capturas.
+ *
+ * Los cuatro colores por sector —naranja, verde, morado y teal— se van al
+ * morado de marca, igual que los siete de Servicios. Lo que distingue un demo
+ * de otro es su número y su captura, no un color inventado.
+ */
 const DEMOS = [
   {
     id: 'av',
-    pos: 'tl',
-    label: 'E-commerce',
-    sub: 'American Vault · Catálogo',
-    color: '#F39C12',
-    img: imgCartera,
-    alt: 'Cartera del catálogo en vivo de American Vault',
+    n: '01',
+    label: 'Tienda',
+    prueba: 'Catálogo con stock real y pedido por WhatsApp',
+    dominio: 'american-vault.com',
+    img: capTienda,
+    imgSm: capTiendaSm,
+    alt: 'Catálogo en vivo de American Vault: rejilla de carteras con marca, precio y disponibilidad',
     liveUrl: 'https://american-vault.com/',
-    liveLabel: 'Ver la tienda',
+    liveLabel: 'Abrir la tienda',
     wa: 'Hola DAK, vi el catálogo de American Vault y quiero una web así para mi negocio',
   },
   {
     id: 'seo',
-    pos: 'tr',
-    label: 'SEO',
-    sub: 'Blog · Comunidad',
-    color: '#2ECC71',
-    img: imgPeriodico,
-    alt: 'Periódico de DAK Agency: nuestro blog posicionando en Google',
+    n: '02',
+    label: 'Blog',
+    prueba: 'Artículos propios que nos traen clientes desde Google',
+    dominio: 'dakagency.net/blog',
+    img: capBlog,
+    imgSm: capBlogSm,
+    alt: 'Portada del blog de DAK Agency con sus artículos publicados',
     liveUrl: 'https://dakagency.net/blog/',
-    liveLabel: 'Ver el blog',
+    liveLabel: 'Abrir el blog',
     wa: 'Hola DAK, quiero posicionar mi negocio en Google como lo hacen ustedes',
   },
   {
     id: 'bot',
-    pos: 'bl',
-    label: 'Automatización',
-    sub: 'Asistente IA',
-    color: '#9B59B6',
-    img: imgRobot,
-    alt: 'Robot del asistente IA de DAK que cotiza y agenda solo',
+    n: '03',
+    label: 'Asistente',
+    prueba: 'Responde, entiende el negocio y guarda el contacto solo',
+    dominio: 'admin.dakagency.net',
+    img: capAsistente,
+    imgSm: capAsistenteSm,
+    alt: 'El asistente de DAK conversando y rellenando la ficha del contacto en tiempo real',
     liveUrl: 'https://admin.dakagency.net/simulator/',
-    liveLabel: 'Probar el chatbot',
+    liveLabel: 'Probar el asistente',
     wa: 'Hola DAK, probé el chatbot de su web y quiero uno para mi negocio',
   },
   {
     id: 'inmo',
-    pos: 'br',
-    label: 'Website',
-    sub: 'Página de inmobiliaria',
-    color: '#4ECDC4',
-    img: imgInmobiliaria,
-    alt: 'Colgador de puerta del demo inmobiliario de DAK',
+    n: '04',
+    label: 'Inmobiliaria',
+    prueba: 'Un mostrador de propiedades, en dos direcciones de diseño',
+    dominio: 'inmobiliaria.dakagency.net',
+    img: capInmo,
+    imgSm: capInmoSm,
+    alt: 'Demo inmobiliario NORVIA de DAK, con sus dos direcciones de diseño',
     liveUrl: 'https://inmobiliaria.dakagency.net/',
-    liveLabel: 'Ver el demo',
+    liveLabel: 'Abrir el demo',
     wa: 'Hola DAK, vi su demo de web inmobiliaria y quiero una así para mi negocio',
   },
 ]
-
-const DemoLinks = ({ d, onLive }) => (
-  <div className="demo-links">
-    <a
-      className="demo-try"
-      href={d.liveUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={onLive}
-    >
-      <span className="demo-live-dot" />
-      {d.liveLabel}
-    </a>
-    <a
-      className="demo-wa"
-      href={`https://wa.me/51906765040?text=${encodeURIComponent(d.wa)}`}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Quiero uno así
-    </a>
-  </div>
-)
 
 // Aqui vivia DemoChips: dos cuadrados redondeados de 36px al lado de cada
 // demo, aria-hidden, sin significado ninguno. Uno se pintaba del color del
@@ -104,45 +109,85 @@ const DemoLinks = ({ d, onLive }) => (
 // Geometria de relleno: ocupaba sitio junto al recorte del producto —que es
 // lo que de verdad hay que mirar— sin decir nada de el.
 
-const DemoCell = ({ d, index, inView, onLive }) => {
-  const isTop = d.pos === 'tl' || d.pos === 'tr'
-
-  const head = (
-    <header className="demo-head">
-      <h3 className="demo-name">{d.label}</h3>
-      <p className="demo-sub">{d.sub}</p>
-    </header>
-  )
-
-  const visual = (
-    <div className="demo-visual">
-      <a
-        className="demo-img-link"
-        href={d.liveUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`${d.label} — ${d.liveLabel}`}
-        onClick={onLive}
-      >
-        <img className="demo-img" src={d.img} alt={d.alt} loading="lazy" />
-      </a>
-    </div>
-  )
-
-  return (
-    <motion.article
-      className={`demo-cell demo-cell--${d.pos}`}
-      style={{ '--demo-color': d.color }}
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.55, delay: index * 0.1 }}
+/* Una celda = una ventana con la captura + su lectura debajo.
+ *
+ * Antes las cuatro alternaban el orden —las de arriba con el rótulo encima y
+ * las de abajo debajo— alrededor de una cruz de ejes, con 5rem de relleno
+ * hacia el centro. Esa geometría hacía trabajar a la maquetación sin decir
+ * nada de los demos. Ahora las cuatro son iguales, que es lo que son: cuatro
+ * cosas del mismo tipo que puedes abrir.
+ */
+const DemoCell = ({ d, index, inView, onLive }) => (
+  <motion.article
+    className="demo-cell"
+    initial={{ opacity: 0, y: 24 }}
+    animate={inView ? { opacity: 1, y: 0 } : {}}
+    transition={{ duration: 0.5, delay: index * 0.08 }}
+  >
+    <a
+      className="demo-ventana"
+      href={d.liveUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${d.label} — ${d.liveLabel}`}
+      onClick={onLive}
     >
-      {isTop ? head : visual}
-      {isTop ? visual : head}
-      <DemoLinks d={d} onLive={onLive} />
-    </motion.article>
-  )
-}
+      <img
+        className="demo-img"
+        src={d.img}
+        srcSet={`${d.imgSm} 500w, ${d.img} 1000w`}
+        sizes="(max-width: 768px) 92vw, 46vw"
+        alt={d.alt}
+        width="1000"
+        height="625"
+        loading="lazy"
+        decoding="async"
+        /* Medido: con `lazy` a secas Chrome se las trae igualmente en el
+           primer medio segundo, con la sección a 3.300px del viewport. No es
+           un fallo del atributo — el umbral de precarga de Chrome depende de
+           la conexión y CRECE en las lentas, justo donde más duele. Lo que sí
+           se puede hacer es que no compitan: con prioridad baja el navegador
+           las pone detrás de todo lo que se ve de entrada. */
+        fetchPriority="low"
+      />
+    </a>
+
+    <div className="demo-lectura">
+      <h3 className="demo-name">
+        <span className="demo-n">{d.n}</span>
+        {d.label}
+      </h3>
+      <p className="demo-prueba">{d.prueba}</p>
+      {/* El dominio real. Es lo que convierte esto en una prueba y no en una
+          maqueta: se puede escribir en la barra del navegador y comprobarlo. */}
+      <span className="demo-dominio">{d.dominio}</span>
+
+      <div className="demo-links">
+        <a
+          className="demo-try"
+          href={d.liveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={onLive}
+        >
+          {d.liveLabel}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </a>
+        <a
+          className="demo-wa"
+          href={`https://wa.me/51906765040?text=${encodeURIComponent(d.wa)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Quiero uno así
+        </a>
+      </div>
+    </div>
+  </motion.article>
+)
 
 const LiveDemos = () => {
   const ref = useRef(null)
@@ -154,6 +199,15 @@ const LiveDemos = () => {
     return () => { document.body.style.overflow = '' }
   }, [botOpen])
 
+  /* Escape cierra. Faltaba: el modal se traga el scroll de la página y su
+     única salida era acertarle a la ✕ o al fondo. */
+  useEffect(() => {
+    if (!botOpen) return
+    const alPulsar = (e) => { if (e.key === 'Escape') setBotOpen(false) }
+    window.addEventListener('keydown', alPulsar)
+    return () => window.removeEventListener('keydown', alPulsar)
+  }, [botOpen])
+
   const openBot = (e) => { e.preventDefault(); setBotOpen(true) }
 
   return (
@@ -163,10 +217,11 @@ const LiveDemos = () => {
           mas arriba ("No te lo contamos: pruébalo. Cuatro trabajos nuestros,
           en vivo y funcionando."). Decirlo dos veces seguidas no lo hace mas
           creible; lo hace sonar a relleno. */}
+      {/* La cruz de ejes que iba aquí se retira con la maquetación que la
+          necesitaba: existía para separar cuatro recortes que flotaban sobre
+          el fondo. Ahora cada demo tiene su propia ventana con filete, así que
+          los límites ya están dibujados por lo que hay dentro. */}
       <div className="demo-stage">
-        <span className="demo-axis demo-axis--v" aria-hidden="true" />
-        <span className="demo-axis demo-axis--h" aria-hidden="true" />
-
         {DEMOS.map((d, i) => (
           <DemoCell
             key={d.id}
@@ -183,8 +238,8 @@ const LiveDemos = () => {
           <div className="demo-modal" onClick={(e) => e.stopPropagation()}>
             <div className="demo-modal-head">
               <span className="demo-modal-title">
-                <span className="demo-live-dot" style={{ '--demo-color': '#9B59B6', background: '#9B59B6' }} />
-                Demo en vivo — Asistente IA de DAK
+                <span className="demo-live-dot" />
+                Demo en vivo — Asistente de DAK
               </span>
               <div className="demo-modal-actions">
                 <a href="https://admin.dakagency.net/simulator/" target="_blank" rel="noopener noreferrer">
@@ -208,18 +263,13 @@ const LiveDemos = () => {
 }
 
 const Projects = () => {
-  const [isMobile, setIsMobile] = useState(false)
   const { clients } = portfolioData
-  const featured = getFeatured(clients)
 
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-
-  if (isMobile) return <MobileProjects featured={featured} />
+  /* Ya no hace falta saber si es un móvil.
+     Existía porque Taller tenía SIETE maquetaciones —cuatro de escritorio y
+     tres de móvil— y había que elegir árbol entero según el ancho. Con una sola
+     fila, de eso se encarga el CSS, que es donde va. De paso desaparece el
+     listener de `resize` y el doble render del arranque. */
 
   // Dos secciones, no una. Antes los 4 demos y el trabajo de clientes iban
   // seguidos bajo el mismo titulo, y el subtitulo tenia que explicar las dos
@@ -241,23 +291,97 @@ const Projects = () => {
             en escalas menores. */}
         <SectionHeader
           titulo="Taller"
-          subtitulo="Piezas que hemos producido para marcas de Chiclayo y Lambayeque."
+          subtitulo="Las marcas de Chiclayo y Lambayeque para las que producimos."
           escala="grande"
         />
-        <div className="projects-flow">
-          {featured.map(({ client, layout }, i) => (
-            <ProjectBlock
-              key={client.id}
-              client={client}
-              index={i}
-              total={featured.length}
-              layout={layout}
-            />
+        <div className="taller-padron">
+          {clients.map((client, i) => (
+            <FilaCliente key={client.id} client={client} index={i} />
           ))}
         </div>
         <GalleryCTA />
       </section>
     </>
+  )
+}
+
+/**
+ * Fuentes de una pieza del Taller.
+ *
+ * Los archivos son de 1080px y aquí se pintan a 240. Medido en su día en la
+ * portada en vivo, hasta 4,9× más grandes de lo necesario.
+ * `npm run taller:variantes` genera un gemelo de 700px y esto deja que el
+ * navegador elija según el ancho real y la densidad de la pantalla.
+ *
+ * `medida` tiene que ser el ancho al que se pinta DE VERDAD: si mientes ahí, el
+ * navegador elige mal. Ahora hay una sola maquetación para las dos pantallas,
+ * así que la medida lleva su consulta de medios en vez de un píxel fijo — antes
+ * podía ir fijo porque el árbol de escritorio no se renderizaba en móvil.
+ *
+ * Sin gemelo —Berse Line no tiene variantes generadas— no devuelve nada y la
+ * etiqueta se queda con su src de siempre.
+ */
+const fuentes = (img, medida) =>
+  img.srcSm ? { srcSet: `${img.srcSm} 700w, ${img.src} 1080w`, sizes: medida } : {}
+
+/* ── Una fila por cliente ──
+ *
+ * Sustituye a las cuatro maquetaciones a medida (hero, minimal, filmstrip,
+ * scattered) y a las tres de móvil. No era riqueza: era de donde salían los
+ * fallos. La dispersa pintaba sus cartas 134px por debajo de su propia caja y
+ * tapaba 86px del botón de la galería; la hero enterraba la pieza bajo un velo
+ * casi opaco —en la sección que se llama Taller—; la minimal le daba 758px de
+ * alto a una sola imagen.
+ *
+ * La variedad la pone el TRABAJO, que ya es distinto en cada fila. No la caja.
+ */
+const FilaCliente = ({ client, index }) => {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const piezas = client.imagenes.slice(0, POR_CLIENTE)
+
+  return (
+    <motion.article
+      ref={ref}
+      className="tal-fila"
+      initial={{ opacity: 0, y: 24 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, delay: Math.min(index, 3) * 0.07 }}
+    >
+      <div className="tal-lectura">
+        <span className="tal-n">{String(index + 1).padStart(2, '0')}</span>
+        <div className="tal-marca">
+          <span className="tal-logo">
+            <img src={client.logo} alt="" loading="lazy" />
+          </span>
+          <h3 className="tal-nombre">{client.nombre}</h3>
+        </div>
+        <p className="tal-sector">{client.categoria}</p>
+        <p className="tal-servicios">{client.servicios.join(' · ')}</p>
+        {/* El recuento es el real, no el de lo que se enseña: Manuel Pardo tiene
+            cinco piezas y aquí caben tres. Decir «5 piezas» y enseñar tres es
+            honesto y además explica para qué está el botón de la galería. */}
+        <span className="tal-cuenta">
+          {client.imagenes.length} {client.imagenes.length === 1 ? 'pieza' : 'piezas'}
+        </span>
+      </div>
+
+      <div className="tal-tira">
+        {piezas.map((img, i) => (
+          <div className="tal-pieza" key={i}>
+            <img
+              src={img.src}
+              {...fuentes(img, '(max-width: 768px) 42vw, 240px')}
+              alt={img.alt}
+              loading="lazy"
+              decoding="async"
+              fetchPriority="low"
+            />
+            {img.tipo && <span className="tal-tipo">{img.tipo}</span>}
+          </div>
+        ))}
+      </div>
+    </motion.article>
   )
 }
 
@@ -312,397 +436,5 @@ const SectionHeader = ({ titulo, subtitulo, escala = 'medio' }) => {
   )
 }
 
-/* ── Router: picks the right layout for each block ── */
-const ProjectBlock = ({ client, index, total, layout }) => {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-100px' })
-
-  const props = { client, index, total, inView }
-
-  return (
-    <div ref={ref} className={`proj-block proj-block--${layout}`}>
-      {layout === 'hero' && <HeroLayout {...props} />}
-      {layout === 'minimal' && <MinimalLayout {...props} />}
-      {layout === 'filmstrip' && <FilmstripLayout {...props} />}
-      {layout === 'scattered' && <ScatteredLayout {...props} />}
-    </div>
-  )
-}
-
-/**
- * Fuentes de una pieza del Taller.
- *
- * Los archivos son de 1080px y aquí casi nunca se pintan a más de 420: en la
- * tira son 220px y en la desordenada 256. Medido en la portada en vivo, hasta
- * 4.9x más grandes de lo necesario. `npm run taller:variantes` genera un
- * gemelo de 700px y esto deja que el navegador elija según el ancho real y la
- * densidad de la pantalla.
- *
- * `medida` tiene que ser el ancho al que se pinta de verdad: si mientes ahí,
- * el navegador elige mal. Las maquetaciones de escritorio no se renderizan en
- * móvil (ahí entra MobileProjects), así que pueden ir en píxeles fijos.
- *
- * Sin gemelo —las piezas del bloque hero, que sí se ven a tamaño real— no
- * devuelve nada y la etiqueta se queda con su src de siempre.
- */
-const fuentes = (img, medida) =>
-  img.srcSm ? { srcSet: `${img.srcSm} 700w, ${img.src} 1080w`, sizes: medida } : {}
-
-/* ── Client Info Badge (shared) ── */
-const ClientBadge = ({ client, variant = 'default' }) => (
-  <div className={`client-badge client-badge--${variant}`}>
-    <div className="client-badge-logo">
-      <img src={client.logo} alt={client.nombre} loading="lazy" />
-    </div>
-    <div className="client-badge-text">
-      <h3 className="client-badge-name">{client.nombre}</h3>
-      <span className="client-badge-cat" style={{ color: client.color }}>{client.categoria}</span>
-    </div>
-  </div>
-)
-
-const ServiceTags = ({ client }) => (
-  <div className="proj-services">
-    {client.servicios.map((s, i) => (
-      <span key={i} className="proj-service-tag" style={{ borderColor: `${client.color}30` }}>{s}</span>
-    ))}
-  </div>
-)
-
-/* ═══════════════════════════════════════
-   LAYOUT 1: HERO — full-width cinematic
-   ═══════════════════════════════════════ */
-const HeroLayout = ({ client, index, inView }) => {
-  const [imgIdx, setImgIdx] = useState(0)
-
-  useEffect(() => {
-    if (client.imagenes.length <= 1) return
-    const t = setInterval(() => setImgIdx(p => (p + 1) % client.imagenes.length), 4000)
-    return () => clearInterval(t)
-  }, [client.imagenes.length])
-
-  return (
-    <motion.div
-      className="hero-layout"
-      initial={{ opacity: 0, y: 60 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7 }}
-    >
-      <div className="hero-layout-img">
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={imgIdx}
-            src={client.imagenes[imgIdx].src}
-            alt={client.imagenes[imgIdx].alt}
-            initial={{ opacity: 0, scale: 1.08 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-          />
-        </AnimatePresence>
-        <div className="hero-layout-overlay" />
-        <span className="hero-number" style={{ color: `${client.color}20` }}>
-          {String(index + 1).padStart(2, '0')}
-        </span>
-      </div>
-      <div className="hero-layout-info">
-        <ClientBadge client={client} variant="light" />
-        <ServiceTags client={client} />
-        {client.imagenes.length > 1 && (
-          <div className="hero-dots">
-            {client.imagenes.map((_, i) => (
-              <button key={i} className={`hdot ${i === imgIdx ? 'active' : ''}`}
-                onClick={() => setImgIdx(i)}
-                style={{ backgroundColor: i === imgIdx ? client.color : 'rgba(255,255,255,0.2)' }} />
-            ))}
-          </div>
-        )}
-      </div>
-    </motion.div>
-  )
-}
-
-/* ═══════════════════════════════════════
-   LAYOUT 2: MINIMAL — centered showcase
-   ═══════════════════════════════════════ */
-const MinimalLayout = ({ client, index, inView }) => {
-  const [imgIdx, setImgIdx] = useState(0)
-
-  useEffect(() => {
-    if (client.imagenes.length <= 1) return
-    const t = setInterval(() => setImgIdx(p => (p + 1) % client.imagenes.length), 3500)
-    return () => clearInterval(t)
-  }, [client.imagenes.length])
-
-  return (
-    <motion.div
-      className="minimal-layout"
-      initial={{ opacity: 0, y: 40 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="minimal-top">
-        <span className="minimal-idx" style={{ color: client.color }}>
-          {String(index + 1).padStart(2, '0')}
-        </span>
-        <h3 className="minimal-name">{client.nombre}</h3>
-        <span className="minimal-cat" style={{ color: `${client.color}90` }}>{client.categoria}</span>
-      </div>
-      <div className="minimal-img-wrap">
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={imgIdx}
-            src={client.imagenes[imgIdx].src}
-            {...fuentes(client.imagenes[imgIdx], '420px')}
-            alt={client.imagenes[imgIdx].alt}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          />
-        </AnimatePresence>
-      </div>
-      <div className="minimal-bottom">
-        <ServiceTags client={client} />
-        {client.imagenes.length > 1 && (
-          <div className="minimal-dots">
-            {client.imagenes.map((_, i) => (
-              <div key={i} className={`mdot ${i === imgIdx ? 'active' : ''}`}
-                style={{ backgroundColor: i === imgIdx ? client.color : 'rgba(255,255,255,0.15)' }} />
-            ))}
-          </div>
-        )}
-      </div>
-    </motion.div>
-  )
-}
-
-/* ═══════════════════════════════════════
-   LAYOUT 3: FILMSTRIP — horizontal images
-   ═══════════════════════════════════════ */
-const FilmstripLayout = ({ client, index, inView }) => (
-  <motion.div
-    className="film-layout"
-    initial={{ opacity: 0, y: 50 }}
-    animate={inView ? { opacity: 1, y: 0 } : {}}
-    transition={{ duration: 0.6 }}
-  >
-    {/* Sin el "03" translucido que iba aqui: numerar los clientes no dice
-        nada —no hay un orden que signifique algo— y a esa opacidad no llegaba
-        al contraste minimo. Es el mismo numeral que ya salio de Destacados y
-        de Servicios. */}
-    <div className="film-header">
-      <ClientBadge client={client} />
-    </div>
-    <div className="film-strip">
-      {client.imagenes.map((img, i) => (
-        <motion.div
-          key={i}
-          className="film-frame"
-          initial={{ opacity: 0, x: 40 }}
-          animate={inView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.4, delay: 0.12 * i }}
-        >
-          <img src={img.src} {...fuentes(img, '220px')} alt={img.alt} loading="lazy" />
-          <span className="film-tipo">{img.tipo}</span>
-        </motion.div>
-      ))}
-    </div>
-    <ServiceTags client={client} />
-  </motion.div>
-)
-
-/* ═══════════════════════════════════════
-   LAYOUT 4: SCATTERED — overlapping cards
-   ═══════════════════════════════════════ */
-const ScatteredLayout = ({ client, index, inView }) => {
-  const offsets = [
-    { top: '0%', left: '5%', rotate: -3, z: 3 },
-    { top: '8%', left: '45%', rotate: 2, z: 2 },
-    { top: '35%', left: '20%', rotate: -1, z: 1 },
-  ]
-
-  return (
-    <motion.div
-      className="scattered-layout"
-      initial={{ opacity: 0, y: 50 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="scattered-imgs">
-        {client.imagenes.slice(0, 3).map((img, i) => (
-          <motion.div
-            key={i}
-            className="scattered-card"
-            style={{
-              top: offsets[i].top,
-              left: offsets[i].left,
-              zIndex: offsets[i].z,
-            }}
-            initial={{ opacity: 0, rotate: offsets[i].rotate, scale: 0.8 }}
-            animate={inView ? { opacity: 1, rotate: offsets[i].rotate, scale: 1 } : {}}
-            transition={{ duration: 0.5, delay: 0.15 * i }}
-            whileHover={{ scale: 1.05, zIndex: 10, rotate: 0 }}
-          >
-            <img src={img.src} {...fuentes(img, '256px')} alt={img.alt} loading="lazy" />
-          </motion.div>
-        ))}
-      </div>
-      <div className="scattered-info">
-        <ClientBadge client={client} />
-        <ServiceTags client={client} />
-      </div>
-    </motion.div>
-  )
-}
-
-/* ═══════════════════════════════════════
-   MOBILE
-   ═══════════════════════════════════════ */
-const MobileProjects = ({ featured }) => {
-  const headerRef = useRef(null)
-  const headerInView = useInView(headerRef, { once: true, margin: '-60px' })
-
-  const mobileLayouts = ['mHero', 'mCard', 'mMosaic', 'mCard']
-  const total = featured.length
-
-  return (
-    <>
-      <section className="projects-mobile demos-section" id="demos">
-        <div className="pm-header" ref={headerRef}>
-          <motion.div
-            className="section-head"
-            initial={{ opacity: 0, y: 20 }}
-            animate={headerInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-          >
-            {/* La misma escala que en escritorio. Antes era .proj-title, que no
-                tenia CSS propio: caia al h2 global y Demos y Taller pesaban
-                igual, justo lo que la jerarquia intenta evitar. */}
-            <h2 className="section-title section-title--medio">Demos</h2>
-            <p className="pm-subtitle">Cuatro trabajos nuestros, en vivo y funcionando.</p>
-          </motion.div>
-        </div>
-
-        <LiveDemos />
-      </section>
-
-      <section className="projects-mobile taller-section" id="taller">
-        <div className="pm-header">
-          <motion.div
-            className="section-head"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="section-title section-title--grande">Taller</h2>
-            <p className="pm-subtitle">Piezas producidas para marcas de Chiclayo y Lambayeque.</p>
-          </motion.div>
-        </div>
-
-        <div className="pm-cards">
-          {featured.map(({ client }, i) => {
-            const layout = mobileLayouts[i % mobileLayouts.length]
-            if (layout === 'mHero') return <MobileHeroCard key={client.id} client={client} index={i} total={total} />
-            if (layout === 'mMosaic') return <MobileMosaicCard key={client.id} client={client} index={i} total={total} />
-            return <MobileSimpleCard key={client.id} client={client} index={i} total={total} />
-          })}
-        </div>
-
-        <GalleryCTA />
-      </section>
-    </>
-  )
-}
-
-const MobileHeroCard = ({ client, index }) => {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-40px' })
-  const [imgIdx, setImgIdx] = useState(0)
-
-  useEffect(() => {
-    if (client.imagenes.length <= 1) return
-    const t = setInterval(() => setImgIdx(p => (p + 1) % client.imagenes.length), 4000)
-    return () => clearInterval(t)
-  }, [client.imagenes.length])
-
-  return (
-    <motion.div ref={ref} className="pm-hero"
-      initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }}>
-      <div className="pm-hero-img">
-        <AnimatePresence mode="wait">
-          <motion.img key={imgIdx} src={client.imagenes[imgIdx].src} {...fuentes(client.imagenes[imgIdx], '91vw')} alt={client.imagenes[imgIdx].alt} loading="lazy"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} />
-        </AnimatePresence>
-        <div className="pm-hero-overlay" />
-        <div className="pm-hero-content">
-          <div className="pm-hero-logo"><img src={client.logo} alt={client.nombre} loading="lazy" /></div>
-          <h3>{client.nombre}</h3>
-          <span style={{ color: client.color }}>{client.categoria}</span>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-const MobileMosaicCard = ({ client, index }) => {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-40px' })
-
-  return (
-    <motion.div ref={ref} className="pm-mosaic"
-      initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }}>
-      <div className="pm-mosaic-head">
-        <div className="pm-mosaic-logo"><img src={client.logo} alt={client.nombre} loading="lazy" /></div>
-        <div>
-          <h3 className="pm-mosaic-name">{client.nombre}</h3>
-          <span className="pm-mosaic-cat" style={{ color: client.color }}>{client.categoria}</span>
-        </div>
-      </div>
-      <div className={`pm-mosaic-grid pm-mosaic-grid--${Math.min(client.imagenes.length, 3)}`}>
-        {client.imagenes.slice(0, 3).map((img, i) => (
-          <motion.div key={i} className="pm-mosaic-cell"
-            initial={{ opacity: 0, scale: 0.9 }} animate={inView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.4, delay: 0.08 * i }}>
-            <img src={img.src} {...fuentes(img, '45vw')} alt={img.alt} loading="lazy" />
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  )
-}
-
-const MobileSimpleCard = ({ client, index, total }) => {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-40px' })
-  const [imgIdx, setImgIdx] = useState(0)
-
-  useEffect(() => {
-    if (client.imagenes.length <= 1) return
-    const t = setInterval(() => setImgIdx(p => (p + 1) % client.imagenes.length), 3800)
-    return () => clearInterval(t)
-  }, [client.imagenes.length])
-
-  return (
-    <motion.div ref={ref} className="pm-simple"
-      initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }}>
-      <div className="pm-simple-img">
-        <AnimatePresence mode="wait">
-          <motion.img key={imgIdx} src={client.imagenes[imgIdx].src} {...fuentes(client.imagenes[imgIdx], '45vw')} alt={client.imagenes[imgIdx].alt} loading="lazy"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} />
-        </AnimatePresence>
-      </div>
-      <div className="pm-simple-info">
-        <div className="pm-simple-logo"><img src={client.logo} alt={client.nombre} loading="lazy" /></div>
-        <div>
-          <h3>{client.nombre}</h3>
-          <span style={{ color: client.color }}>{client.categoria}</span>
-        </div>
-        <span className="pm-simple-counter" style={{ color: `${client.color}50` }}>{index + 1}/{total}</span>
-      </div>
-    </motion.div>
-  )
-}
 
 export default Projects

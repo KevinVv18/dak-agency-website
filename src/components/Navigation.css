@@ -1,15 +1,22 @@
+/* ── La barra ──
+   Antes era una losa negra con un filo de neón de 3 px y un resplandor de 20:
+   sobre el túnel de viento del hero eso lo guillotinaba por arriba, y el
+   conjunto se leía como dos páginas distintas apiladas. Ahora es un filete de
+   un píxel y el fondo solo aparece cuando hace falta — al desplazarse, cuando
+   debajo ya hay contenido que separar. Sobre el hero, el aire pasa por detrás. */
 .navigation {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: var(--z-navigation);
-  background: #030106;
+  background: transparent;
   padding: 1.25rem 0;
-  transition: all var(--transition-base);
-  border-bottom: 3px solid #B024FF;
-  box-shadow: 0 0 20px rgba(176, 36, 255, 0.5);
+  transition: background var(--transition-base), border-color var(--transition-base),
+    backdrop-filter var(--transition-base);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
+
 
 /* Subtle grid texture (like footer but ultra-faint) */
 .navigation::before {
@@ -24,46 +31,25 @@
   transition: opacity 0.6s ease;
 }
 
-/* Soft traveling light reflection */
-.navigation::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(176, 36, 255, 0.03) 30%,
-    rgba(255, 255, 255, 0.02) 50%,
-    rgba(176, 36, 255, 0.03) 70%,
-    transparent 100%
-  );
-  pointer-events: none;
-  animation: navLightSweep 10s ease-in-out infinite;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
+/* El reflejo que recorría la barra en bucle cada 10 s se ha retirado: era
+   movimiento sin causa, y aquí lo único que se mueve por sí solo es el índice
+   del ensayo, que sí mide algo. */
 
-@keyframes navLightSweep {
-  0%   { left: -60%; }
-  100% { left: 160%; }
-}
-
-/* Show texture + light only when scrolled */
+/* La textura sutil aparece solo al desplazar, cuando ya hay fondo. */
 .navigation.scrolled::before {
   opacity: 1;
 }
 
-.navigation.scrolled::after {
-  opacity: 1;
-}
-
+/* Al desplazar aparece el fondo, porque debajo ya hay contenido que separar.
+   Sin resplandor: los dos halos morados de 20 y 30 px eran los que dejaban una
+   franja difusa flotando bajo la barra, y sobre el túnel eso vuelve a partir la
+   página en dos. La separación la da el filete y el fondo, no un aura. */
 .navigation.scrolled {
-  box-shadow: 0 5px 30px rgba(176, 36, 255, 0.4), 0 0 20px rgba(176, 36, 255, 0.5);
   padding: 1rem 0;
-  background: rgba(3, 1, 6, 0.98);
-  backdrop-filter: blur(10px);
+  background: rgba(3, 1, 6, 0.86);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  border-bottom-color: rgba(255, 255, 255, 0.12);
 }
 
 .nav-container {
@@ -157,14 +143,18 @@
 }
 
 /* Barra de progreso de lectura bajo el nav */
+/* La barra de progreso es la costura entre el cromo y el túnel, así que va en
+   el morado de marca a secas. El degradado a teal que tenía introducía justo
+   ahí el tercer color que se retiró del campo de flujo. (El teal sigue vivo en
+   Servicios, CTA, categorías del blog y el pie: allí es un secundario del
+   sistema, no un invento.) */
 .nav-progress {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -2px;
+  bottom: -1px;
   height: 2px;
-  background: linear-gradient(90deg, #B024FF, #00C8C8);
-  box-shadow: 0 0 10px rgba(176, 36, 255, 0.6);
+  background: #B024FF;
   transform: scaleX(0);
   transform-origin: left;
   pointer-events: none;
@@ -176,31 +166,38 @@
   text-shadow: 0 0 10px rgba(176, 36, 255, 0.8);
 }
 
-/* CTA Button */
+/* ── El botón de la nav ──
+   Llevaba relleno sólido, borde de 2px, resplandor de 20px, sombra de texto y
+   un salto de 2px al pasar el ratón. Ahora es el mismo instrumental que cierra
+   Taller, Estudio, Blog y Hablemos: sin radio, el acento como superficie,
+   tinta oscura y las esquineras de mira que se abren.
+
+   La tinta es OSCURA: blanco sobre #B93EFF no llega al mínimo AA para un texto
+   de este cuerpo. */
 .nav-cta-button {
-  background: #B024FF;
-  color: #ffffff;
-  padding: 0.75rem 1.75rem;
-  font-size: 0.85rem;
+  background-color: var(--color-accent-texto);
+  color: var(--superficie);
+  padding: 0.75rem 1.6rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-decoration: none;
-  transition: all var(--transition-base);
-  border: 2px solid #B024FF;
+  border: 1px solid transparent;
+  border-radius: 0;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 0 20px rgba(176, 36, 255, 0.4);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(3, 1, 6, 0.5);
+  transition: background-position 0.35s var(--ease-out-expo);
 }
 
-.nav-cta-button:hover {
-  background: #030106;
-  border-color: #B024FF;
-  transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(176, 36, 255, 0.6), 0 10px 20px rgba(0, 0, 0, 0.3);
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+.nav-cta-button:hover,
+.nav-cta-button:focus-visible {
+  background-position: var(--esq-abierta);
 }
 
 /* Hamburger Menu */
@@ -221,11 +218,10 @@
   display: block;
   width: 100%;
   height: 3px;
-  background: #B024FF;
-  border-radius: 3px;
+  background: var(--color-accent-texto);
+  border-radius: 1px;
   transition: all var(--transition-base);
   transform-origin: center;
-  box-shadow: 0 0 10px rgba(176, 36, 255, 0.5);
 }
 
 .hamburger.active span:nth-child(1) {
@@ -284,15 +280,19 @@
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  background: #B024FF;
-  color: #fff;
-  font-size: 0.9rem;
+  background-color: var(--color-accent-texto);
+  color: var(--superficie);
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   padding: 0.9rem 1rem;
-  border: 2px solid #B024FF;
-  box-shadow: 0 0 20px rgba(176, 36, 255, 0.4);
-  transition: background 0.25s ease, color 0.25s ease;
+  border: 1px solid transparent;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(3, 1, 6, 0.5);
+  transition: background-position 0.35s var(--ease-out-expo);
 }
 
 .mobile-cta:active {
@@ -305,10 +305,13 @@
   gap: 0.7rem;
 }
 
+/* Cuadros de filete, como los canales del pie y la campana. Eran los últimos
+   círculos que quedaban del instrumental. 44px y no 42: es el mínimo táctil, y
+   así no hacen falta pseudoelementos que lo estiren. */
 .mobile-social a {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 3px;
   display: grid;
   place-items: center;
   color: rgba(255, 255, 255, 0.85);
@@ -318,10 +321,11 @@
 }
 
 .mobile-social a:active,
-.mobile-social a:hover {
-  border-color: #B024FF;
-  color: #B024FF;
-  background: rgba(176, 36, 255, 0.1);
+.mobile-social a:hover,
+.mobile-social a:focus-visible {
+  border-color: var(--color-accent-texto);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* Responsive */

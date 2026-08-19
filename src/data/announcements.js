@@ -64,11 +64,25 @@ export const announcements = [
 ]
 
 /* ── helpers compartidos ── */
+/* Un solo acento, el de la casa.
+ *
+ * Eran cuatro colores por tipo de aviso: morado, teal, otro morado y verde. Es
+ * el mismo arcoíris que ya salió de Servicios (siete), Demos (cuatro), Taller
+ * (seis) y Blog (catorce): color inventado por categoría en una web de un solo
+ * acento. Lo que distingue un aviso de otro es su ETIQUETA, que además es lo
+ * único de las dos cosas que se puede leer.
+ *
+ * Se conserva el mapa —y no una constante— porque el ticker y la campana lo
+ * consultan por tipo, y porque es donde vive el porqué.
+ *
+ * El tono es #B93EFF y no el #B024FF de marca: sobre el fondo oscuro del panel
+ * el morado sin aclarar se queda en 4.49:1 y falla AA por una centésima. Es el
+ * mismo aclarado que --color-accent-texto define en index.css. */
 export const typeColor = {
-  demo: '#B024FF',
-  web: '#4ECDC4',
-  bot: '#9B59B6',
-  blog: '#2ECC71',
+  demo: '#B93EFF',
+  web: '#B93EFF',
+  bot: '#B93EFF',
+  blog: '#B93EFF',
 }
 
 export function relativeDate(iso) {

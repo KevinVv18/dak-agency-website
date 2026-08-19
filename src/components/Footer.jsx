@@ -1,18 +1,80 @@
 import React from 'react'
-import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import './Footer.css'
-import logoSvg from '../assets/logo-nav.svg'
-import LiquidLogo from './LiquidLogo'
+/* La marca, en crudo. FORMAS son los cinco polígonos que el campo de flujo del
+   hero usa como OBSTÁCULO; aquí se pintan como trazo. No es una copia del
+   logo: es literalmente la misma geometría con la que abre la página. */
+import { CAJA, FORMAS } from '../data/marca'
 import { scrollToSection } from '../utils/scrollToSection'
+
+/* ═══════════════════════════════════════════════════════════════
+   EL PIE — la placa del instrumento
+
+   La página abre con un túnel de viento que construye la marca como huecos en
+   una corriente, y todo lo que viene después es instrumental: filete,
+   esquineras, lecturas y una estela que se apaga sección a sección.
+
+   AQUÍ SE DETIENE. Por eso el pie no lleva textura de fondo —es la única
+   sección sin ella— y por eso no es un cajón de enlaces sino la placa de
+   características que va atornillada al fondo de una máquina: qué es esto,
+   dónde está, cuándo funciona, por dónde se le habla y la letra pequeña.
+
+   Lo que había: un filete superior con un arcoíris de cuatro colores y un
+   resplandor de 40px, dos animaciones en bucle infinito (una rejilla que
+   pulsaba cada 8s y un marquee de 30s), cuatro iconos sociales que al pasar el
+   ratón se pintaban con el azul de Facebook, el degradado de Instagram, el
+   cian de TikTok y el verde de WhatsApp, y un iframe de Google Maps que costaba
+   31 peticiones y medio mega.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Los siete servicios, quietos y pulsables. Antes desfilaban en bucle dentro
+   de un marquee con aria-hidden: siete palabras que nadie podía pulsar ni leer
+   con lector de pantalla. */
+const SERVICIOS = [
+  'Branding', 'Fotografía', 'Video', 'Social Media',
+  'Diseño Web', 'SEO & Ads', 'Automatización',
+]
+
+/* La posición, como lectura. Estas coordenadas están verificadas contra
+   OpenStreetMap para «Condominio Los Parques de San Gabriel, Chiclayo» y DEBEN
+   coincidir con el geo del JSON-LD de index.html. Cuatro decimales (~11 m):
+   más sería precisión fingida para el centroide de un condominio.
+
+   La dirección es la vigente desde el 07-ago-2026. Si cambia, cambia TAMBIÉN
+   en src/pages/LegalPage.jsx y en el JSON-LD de index.html. */
+const SEDE = {
+  lat: -6.7744,
+  lon: -79.8747,
+  calle: 'Av. Víctor Andrés Belaunde 101',
+  zona: 'Los Parques de San Gabriel, Chiclayo',
+}
+
+const grados = ({ lat, lon }) =>
+  `${Math.abs(lat).toFixed(4)}° ${lat < 0 ? 'S' : 'N'} · ${Math.abs(lon).toFixed(4)}° ${lon < 0 ? 'O' : 'E'}`
+
+/* La marca en trazo, construida con los mismos polígonos del túnel. */
+const MarcaEnReposo = () => (
+  <svg
+    className="pie-marca"
+    viewBox={`0 0 ${CAJA.ancho} ${CAJA.alto}`}
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    {FORMAS.map((puntos, i) => (
+      <polygon
+        key={i}
+        points={puntos.join(',')}
+        stroke="currentColor"
+        strokeWidth="2"
+        vectorEffect="non-scaling-stroke"
+      />
+    ))}
+  </svg>
+)
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
-
-  const marqueeItems = [
-    'BRANDING', 'FOTOGRAFÍA', 'VIDEO', 'SOCIAL MEDIA',
-    'DISEÑO WEB', 'SEO & ADS', 'AUTOMATIZACIÓN', 'MARKETING DIGITAL'
-  ]
 
   const footerLinks = [
     { name: 'Servicios', href: '#services' },
@@ -78,170 +140,146 @@ const Footer = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const marqueeText = marqueeItems.map(item => `${item} ✦`).join('  ')
-
   return (
-    <footer className="footer">
-      {/* Neon grid background */}
-      <div className="footer-neon-grid" />
+    <footer className="pie">
+      {/* ── La cinta de servicios ──
+          Vuelve a desfilar, que es como funcionaba y como debe verse, pero
+          construida de otra manera: el marquee original era un <span> con
+          aria-hidden y el texto pegado con «✦», o sea siete palabras que nadie
+          podía pulsar ni oír con lector de pantalla.
 
-      {/* Marquee Ticker */}
-      <div className="footer-marquee" aria-hidden="true">
-        <div className="marquee-track">
-          <span className="marquee-content">{marqueeText}</span>
-          <span className="marquee-content">{marqueeText}</span>
-          <span className="marquee-content">{marqueeText}</span>
+          Aquí la PRIMERA copia es una lista de enlaces de verdad —van a
+          #services— y solo la segunda, la que existe para que la vuelta sea
+          continua, lleva aria-hidden. Se detiene al pasar el ratón o al entrar
+          con el tabulador, y no arranca si el visitante pidió no ver
+          movimiento. */}
+      <div className="pie-cinta">
+        <div className="pie-cinta-riel">
+          {[0, 1].map((copia) => (
+            <nav
+              key={copia}
+              className="pie-cinta-grupo"
+              aria-label={copia === 0 ? 'Servicios' : undefined}
+              aria-hidden={copia === 1 ? 'true' : undefined}
+            >
+              {SERVICIOS.map((nombre, i) => (
+                <a
+                  key={nombre}
+                  href="#services"
+                  className="pie-cinta-item"
+                  tabIndex={copia === 1 ? -1 : undefined}
+                  onClick={(e) => handleLinkClick(e, '#services')}
+                >
+                  <span className="pie-cinta-n">{String(i + 1).padStart(2, '0')}</span>
+                  {nombre}
+                </a>
+              ))}
+            </nav>
+          ))}
         </div>
       </div>
 
-      <div className="footer-container">
-        {/* Main 3-column grid */}
-        <div className="footer-main">
-          {/* Column 1: Brand */}
-          <div className="footer-brand">
-            <motion.div
-              className="footer-logo"
-              whileHover={{ scale: 1.05 }}
-              onClick={scrollToTop}
-            >
-              <LiquidLogo src={logoSvg} alt="DAK Agency Logo" className="footer-logo-img" />
-            </motion.div>
-            <p className="footer-tagline">Digital Acceleration Key</p>
-            <p className="footer-description">
-              Tu socio estratégico en marketing digital.
-              Transformamos ideas en resultados medibles
-              a través de estrategias innovadoras, diseño
-              creativo y tecnología de vanguardia.
-            </p>
+      {/* La marca, de fondo. Ya no es un bloque propio al final: vive detrás de
+          toda la placa, muy tenue, como el grabado de una chapa. */}
+      <div className="pie-fondo" aria-hidden="true">
+        <MarcaEnReposo />
+      </div>
 
-            <div className="footer-social">
-              <div className="social-links">
-                {socialLinks.map((social) => (
-                  <motion.a
-                    key={social.name}
-                    href={social.href}
-                    className={`social-link social-${social.name.toLowerCase()}`}
-                    title={social.name}
-                    /* title ya da nombre accesible, pero es el ultimo recurso del
-                       algoritmo y los lectores de pantalla lo tratan de forma
-                       desigual. aria-label lo fija, como ya hace Navigation. */
-                    aria-label={social.name}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.15, y: -5 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <span className="social-icon">{social.icon}</span>
-                    <span className="social-glow" />
-                  </motion.a>
-                ))}
-              </div>
-            </div>
+      <div className="pie-placa">
+        {/* ── Fila 1: qué es y por dónde se le habla ── */}
+        <div className="pie-col pie-col--marca">
+          <p className="pie-rotulo">Equipo</p>
+          <p className="pie-nombre">DAK Agency</p>
+          <p className="pie-dato">Digital Acceleration Key</p>
+          <p className="pie-dato">Chiclayo · Lambayeque · Perú</p>
+
+          <div className="pie-canales">
+            {socialLinks.map((red) => (
+              <a
+                key={red.name}
+                href={red.href}
+                className="pie-canal"
+                aria-label={red.name}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {red.icon}
+              </a>
+            ))}
           </div>
+        </div>
 
-          {/* Column 2: Navigation */}
-          <div className="footer-links">
-            <h2 className="footer-col-title">
-              <span className="title-decorator" />
-              Navega
-            </h2>
-            <ul className="footer-nav">
-              {footerLinks.map((link, index) => (
-                <motion.li
-                  key={link.name}
-                  whileHover={{ x: 8 }}
-                  transition={{ duration: 0.2 }}
+        {/* ── Fila 2: la navegación ── */}
+        <div className="pie-col">
+          <p className="pie-rotulo">Índice</p>
+          <ul className="pie-nav">
+            {footerLinks.map((link) => (
+              <li key={link.name}>
+                <a
+                  href={link.href}
+                  onClick={(e) => !link.external && handleLinkClick(e, link.href)}
+                  {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 >
-                  <a
-                    href={link.href}
-                    onClick={(e) => !link.external && handleLinkClick(e, link.href)}
-                    {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  >
-                    <span className="nav-arrow">{link.external ? '📅' : '→'}</span>
-                    {link.name}
-                  </a>
-                </motion.li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3: Location & Map */}
-          <div className="footer-location">
-            <h2 className="footer-col-title">
-              <span className="title-decorator" />
-              Ubicación
-            </h2>
-            <div className="footer-map-wrapper">
-              {/* Hasta el 06-ago-2026 este pin apuntaba a 8°06'43.2"S 79°02'40.8"W,
-                  a unos 147 km al sur: en La Libertad, no en Lambayeque. Todo el
-                  sitio se posiciona en Chiclayo, asi que la unica coordenada que
-                  publicaba contradecia al resto.
-                  Coordenadas actuales verificadas contra OpenStreetMap para
-                  "Condominio Los Parques de San Gabriel, Chiclayo". Se usan 4
-                  decimales (~11 m): mas seria precision fingida para el centroide
-                  de un condominio. Deben coincidir con el geo del JSON-LD de
-                  index.html. */}
-              <iframe
-                className="footer-map"
-                src="https://maps.google.com/maps?q=-6.7744,-79.8747&hl=es&z=16&output=embed"
-                allowFullScreen=""
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Ubicación de DAK Agency en Chiclayo"
-              />
-              <div className="map-overlay" />
-            </div>
-            <div className="location-info">
-              <div className="location-pin">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-                </svg>
-                <div>
-                  {/* Direccion vigente desde 07-ago-2026. La anterior
-                      (Av. Antenor Orrego, La Victoria) ya no es la sede. Si
-                      cambia, cambia TAMBIEN en src/pages/LegalPage.jsx, en el
-                      JSON-LD de index.html y en las coordenadas del iframe del
-                      mapa, unas lineas mas abajo. */}
-                  <p className="location-address">Av. Víctor Andrés Belaunde 101</p>
-                  <p className="location-city">Los Parques de San Gabriel, Chiclayo</p>
-                </div>
-              </div>
-              <div className="location-hours">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                  <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
-                </svg>
-                <span>Lun - Vie: 9:00am - 6:00pm</span>
-              </div>
-            </div>
-          </div>
+                  {link.name}
+                  {link.external && (
+                    <svg className="pie-fuera" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M7 17 17 7M9 7h8v8" />
+                    </svg>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Bottom bar */}
-        <div className="footer-bottom">
-          <div className="footer-divider" />
-          <div className="footer-copyright">
-            <p>© {currentYear} DAK Agency. Todos los Derechos Reservados.</p>
-            <motion.button
-              className="back-to-top"
-              onClick={scrollToTop}
-              whileHover={{ y: -3, scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              title="Volver arriba"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-                <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z" />
-              </svg>
-              <span>TOP</span>
-            </motion.button>
-            <div className="footer-legal">
-              <Link to="/privacidad">Política de Privacidad</Link>
-              <span className="separator">·</span>
-              <Link to="/eliminacion-de-datos">Eliminación de datos</Link>
-              <span className="separator">·</span>
-              <Link to="/terminos">Términos de Servicio</Link>
-            </div>
-          </div>
+        {/* ── Fila 3: dónde está y cuándo funciona ──
+            Aquí iba un iframe de Google Maps: 31 peticiones y ~520 KB, con la
+            interfaz de Google dentro de la página de DAK —su logo, «Datos del
+            mapa ©2026», los negocios vecinos—. Un instrumento no incrusta la
+            pantalla de otro: REPORTA SU POSICIÓN. Y el enlace, en un móvil,
+            abre la app de Maps de verdad con indicaciones, que es lo que quiere
+            quien busca una dirección. */}
+        <div className="pie-col">
+          <p className="pie-rotulo">Posición</p>
+          <p className="pie-coords">{grados(SEDE)}</p>
+          <p className="pie-dato">{SEDE.calle}</p>
+          <p className="pie-dato">{SEDE.zona}</p>
+          <a
+            className="pie-enlace"
+            href={`https://www.google.com/maps/search/?api=1&query=${SEDE.lat},${SEDE.lon}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Abrir en Maps
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M7 17 17 7M9 7h8v8" />
+            </svg>
+          </a>
+
+          <p className="pie-rotulo pie-rotulo--seg">Horario</p>
+          <p className="pie-dato">Lun a Vie · 9:00 – 18:00</p>
         </div>
+      </div>
+
+      <div className="pie-legal">
+        <p className="pie-copy">© {currentYear} DAK Agency</p>
+
+        {/* El volver-arriba vivía en la marca gigante. Al pasar la marca al
+            fondo hacía falta un control de verdad, y este es el sitio donde se
+            busca al llegar al final. */}
+        <button className="pie-arriba" onClick={scrollToTop}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M12 19V5M5 12l7-7 7 7" />
+          </svg>
+          Volver arriba
+        </button>
+        <p className="pie-terminos">
+          <Link to="/privacidad">Privacidad</Link>
+          <span aria-hidden="true">·</span>
+          <Link to="/eliminacion-de-datos">Eliminación de datos</Link>
+          <span aria-hidden="true">·</span>
+          <Link to="/terminos">Términos</Link>
+        </p>
       </div>
     </footer>
   )

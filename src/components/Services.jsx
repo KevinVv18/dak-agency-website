@@ -16,25 +16,20 @@ const Services = () => {
     () => typeof window !== 'undefined' && window.innerWidth <= 768,
   )
   const [viewedServices, setViewedServices] = useState(new Set([0]))
-  const [swipeHintVisible, setSwipeHintVisible] = useState(true)
   // Es estado y no ref a proposito: tres efectos distintos dependen de si la
   // seccion se ve (reproducir, rebobinar y precargar el siguiente), y con una
   // ref ninguno se volveria a ejecutar al cambiar la visibilidad.
   const [seccionVisible, setSeccionVisible] = useState(false)
 
-  // Auto-dismiss swipe hint after 4 seconds
-  useEffect(() => {
-    if (!isMobile || !swipeHintVisible) return
-    const timer = setTimeout(() => setSwipeHintVisible(false), 4000)
-    return () => clearTimeout(timer)
-  }, [isMobile, swipeHintVisible])
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [textVisible, setTextVisible] = useState(true) // Fase 2: auto-ocultar texto en reposo
+  /* El aviso de deslizar se retira: su marcado vivía dentro del bloque de la
+     barra inferior, así que al irse la barra quedaban un estado, un temporizador
+     de 4s y sus reglas CSS sin nada que pintar. */
+  // Arranca PLEGADA: el vídeo es el argumento de la sección, la ficha se pide.
+  const [textVisible, setTextVisible] = useState(false)
   const thumbnailsRef = useRef(null)
   const videoRef = useRef(null)
   const preloadRef = useRef(null)
   const servicesRef = useRef(null)
-  const idleTimerRef = useRef(null)        // Fase 2: timer de inactividad
   const reducedMotionRef = useRef(false)   // respeta prefers-reduced-motion
   const contentFocusedRef = useRef(false)  // no ocultar si un boton tiene foco
   const hoveringRef = useRef(false)        // no ocultar mientras el mouse esta encima
@@ -55,11 +50,19 @@ const Services = () => {
     {
       id: 1,
       title: 'Branding',
-      tagline: 'Tu marca, inolvidable',
-      description: 'Tu identidad, imposible de ignorar. Diseñamos logo, colores y un sistema de marca completo para que destaques y conectes con tu cliente desde el primer segundo.',
+      tagline: 'Logo · Paleta · Tipografía · Sistema de marca',
+      description: 'Diseñamos logo, colores y un sistema de marca completo para que destaques y conectes con tu cliente desde el primer segundo.',
       category: 'IDENTIDAD',
-      // #B024FF daba 4.34:1 como texto sobre la barra inferior; este es el
-      // mismo tono con un 9% de blanco y llega a 4.79:1.
+      /* Los siete llevan EL MISMO morado. Primero fueron siete colores
+         distintos —un arcoíris en una web de dos colores—, luego dos alternando
+         con el teal, y ahora uno solo: el de la marca.
+         (#B024FF daba 4.34:1 como texto sobre la barra inferior; este es el
+         mismo tono con un 9% de blanco y llega a 4.79:1.)
+
+         El campo se conserva por servicio aunque hoy todos valgan igual: es lo
+         que alimenta --acento-servicio, y así queda un único sitio donde
+         cambiarlo si algún día uno necesita separarse. Lo que distingue un
+         servicio de otro es su NÚMERO, 01 a 07, no su color. */
       color: '#B738FF',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/5_Branding_gs86zn.mp4', // HORIZONTAL (16:9)
       videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318150/v4_branding_z4upbs.mp4',  // VERTICAL (9:16)
@@ -71,10 +74,10 @@ const Services = () => {
     {
       id: 2,
       title: 'Fotografía',
-      tagline: 'Imágenes que venden por ti',
-      description: 'Imágenes que venden antes de decir una palabra. Fotografía profesional de producto, marca y equipo que transmite calidad y despierta las ganas de comprar.',
+      tagline: 'Producto · Marca · Equipo',
+      description: 'Fotografía profesional de producto, marca y equipo que transmite calidad y despierta las ganas de comprar.',
       category: 'VISUAL',
-      color: '#00C8C8',
+      color: '#B738FF',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/1_Fotografia_wzigdo.mp4', // HORIZONTAL (16:9)
       videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318151/v2_fotografia_g9fidq.mp4',  // VERTICAL (9:16)
       videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763852525/12810774_2160_3840_30fps_srdrpp.mp4', // stock (fallback)
@@ -85,10 +88,10 @@ const Services = () => {
     {
       id: 3,
       title: 'Video',
-      tagline: 'Historias que conectan',
-      description: 'Historias en movimiento que enganchan y venden. Producción audiovisual para redes, anuncios y marca que detiene el scroll y se queda en la memoria.',
+      tagline: 'Redes · Anuncios · Marca',
+      description: 'Producción audiovisual para redes, anuncios y marca que detiene el scroll y se queda en la memoria.',
       category: 'PRODUCCIÓN',
-      color: '#00B478',
+      color: '#B738FF',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318081/3_Audiovisual_ereexn.mp4', // HORIZONTAL (16:9)
       videoMobile: '',  // sin vertical aún → usa videoSrc (stock)
       videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763854544/8906351-hd_1080_1920_24fps_axwmvp.mp4', // stock (fallback)
@@ -99,10 +102,10 @@ const Services = () => {
     {
       id: 4,
       title: 'Social Media',
-      tagline: 'Convierte seguidores en clientes',
-      description: 'Redes que construyen comunidad y traen clientes, no solo likes. Contenido y gestión con estrategia, enfocados en resultados de negocio reales.',
+      tagline: 'Contenido · Gestión · Estrategia',
+      description: 'Contenido y gestión con estrategia, enfocados en resultados de negocio reales.',
       category: 'REDES',
-      color: '#D4A574',
+      color: '#B738FF',
       videoDesktop: '', // sin horizontal aún → usa videoSrc (stock)
       videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318150/v7_meta_ads_anezlx.mp4',  // VERTICAL (9:16)
       videoSrc: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1763858866/6003991-uhd_2160_3840_30fps_mnavuh.mp4', // stock (fallback)
@@ -113,10 +116,10 @@ const Services = () => {
     {
       id: 5,
       title: 'Diseño Web',
-      tagline: 'Tu mejor vendedor 24/7',
-      description: 'Tu vendedor que nunca duerme. Webs rápidas y modernas, pensadas para convertir visitas en clientes y verse perfectas en cualquier pantalla.',
+      tagline: 'Rápida · Responsive · Orientada a convertir',
+      description: 'Webs rápidas y modernas, pensadas para convertir visitas en clientes y verse perfectas en cualquier pantalla.',
       category: 'DESARROLLO',
-      color: '#FF6B35',
+      color: '#B738FF',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318082/2_Web_pxlanb.mp4', // HORIZONTAL (16:9)
       videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318150/v3_pagina_web_ashwff.mp4',  // VERTICAL (9:16)
       imageSrc: '/images/web_design.webp', // imagen actual (fallback si no hay video)
@@ -127,10 +130,10 @@ const Services = () => {
     {
       id: 6,
       title: 'SEO & Ads',
-      tagline: 'Aparece primero, vende más',
-      description: 'Aparece justo donde tu cliente te busca. Posicionamiento y campañas que aprovechan cada sol invertido y te traen contactos listos para comprar.',
+      tagline: 'Posicionamiento · Campañas · Contactos',
+      description: 'Posicionamiento y campañas que aprovechan cada sol invertido y te traen contactos listos para comprar.',
       category: 'MARKETING',
-      color: '#4A90E2',
+      color: '#B738FF',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318081/8_Seo_y_Sem_syktwr.mp4', // HORIZONTAL (16:9)
       videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318150/v6_seo_y_sem_f7zfh9.mp4',  // VERTICAL (9:16)
       imageSrc: '/images/seo_ads.webp', // imagen actual (fallback si no hay video)
@@ -141,11 +144,11 @@ const Services = () => {
     {
       id: 7,
       title: 'Automatización',
-      tagline: 'Trabaja menos, logra más',
-      description: 'Vende y atiende en piloto automático. CRM, correos y flujos que responden, hacen seguimiento y cierran ventas mientras tú te enfocas en crecer.',
+      tagline: 'CRM · Correos · Flujos de seguimiento',
+      description: 'CRM, correos y flujos que responden, hacen seguimiento y cierran ventas mientras tú te enfocas en crecer.',
       category: 'CRM',
       // #9B59B6 daba 4.29:1 como texto; +6% de blanco lo sube a 4.78:1.
-      color: '#A163BA',
+      color: '#B738FF',
       videoDesktop: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318081/6_Automatizacion_vcbtoi.mp4', // HORIZONTAL (16:9)
       videoMobile: 'https://res.cloudinary.com/dm4ijuzmi/video/upload/v1782318151/v5_automatizacion_hba6se.mp4',  // VERTICAL (9:16)
       imageSrc: '/images/automation.webp', // imagen actual (fallback si no hay video)
@@ -249,40 +252,69 @@ const Services = () => {
     if (nodo && visibleRef.current) nodo.play().catch(() => { })
   }, [])
 
-  // ── Fase 2: mostrar / ocultar el texto por inactividad ──
-  const IDLE_MS = 3500
-
+  /* ── La placa: el vídeo manda, el texto se pide ──
+   *
+   * Antes esto era un temporizador de inactividad y el disparador de hover
+   * estaba en `.featured-service`: el PANEL ENTERO, vídeo incluido. Como el
+   * ratón está justo encima del panel mientras miras el vídeo, `hoveringRef`
+   * se quedaba en true, el temporizador salía por la puerta de atrás sin
+   * armarse y el texto NO SE CONTRAÍA NUNCA. La placa tapaba el vídeo de forma
+   * permanente, que es lo contrario de lo que hace falta en una sección cuyo
+   * argumento es enseñar trabajo.
+   *
+   * Ahora el disparador está en la placa de texto y solo en ella:
+   *   - en reposo, plegada — se ve el vídeo;
+   *   - el ratón sobre la placa la abre; sacarlo hacia el vídeo la cierra;
+   *   - nunca se abre sola, ni al llegar ni al cambiar de servicio.
+   *
+   * El temporizador entero (IDLE_MS, armIdle, clearIdle) se retiró: sin nada
+   * que auto-ocultar, no tenía trabajo.
+   */
   useEffect(() => {
     reducedMotionRef.current =
       typeof window !== 'undefined' && window.matchMedia
         ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
         : false
+    // Sin movimiento la placa se queda abierta y fija: el plegado es una
+    // animación, y quien lo ha desactivado no debería tener que buscar el
+    // precio pasando el ratón.
+    if (reducedMotionRef.current) setTextVisible(true)
   }, [])
 
-  const clearIdle = () => {
-    if (idleTimerRef.current) { clearTimeout(idleTimerRef.current); idleTimerRef.current = null }
+  const handlePanelEnter = () => { if (isMobile) return; hoveringRef.current = true; setTextVisible(true) }
+  const handlePanelLeave = () => {
+    if (isMobile) return
+    hoveringRef.current = false
+    // El foco de teclado manda sobre el ratón: si hay un botón enfocado dentro,
+    // sacar el ratón no puede plegar lo que se está usando.
+    if (!contentFocusedRef.current && !reducedMotionRef.current) setTextVisible(false)
   }
-  const armIdle = () => {
-    clearIdle()
-    if (reducedMotionRef.current || contentFocusedRef.current || hoveringRef.current) return
-    idleTimerRef.current = setTimeout(() => setTextVisible(false), IDLE_MS)
+  /* Con teclado no hay hover, y `.featured-extra` va con pointer-events a none
+     al estar plegada: tabular hasta dentro es lo que la abre. Sin esto, los
+     botones quedarían fuera de alcance para quien navega sin ratón. */
+  const handleContentFocus = () => { contentFocusedRef.current = true; setTextVisible(true) }
+  const handleContentBlur = () => {
+    contentFocusedRef.current = false
+    if (!hoveringRef.current && !reducedMotionRef.current) setTextVisible(false)
   }
-  const wakeText = () => { setTextVisible(true); armIdle() }
-
-  const handlePanelEnter = () => { if (isMobile) return; hoveringRef.current = true; clearIdle(); setTextVisible(true) }
-  const handlePanelLeave = () => { if (isMobile) return; hoveringRef.current = false; armIdle() }
-  const handleContentFocus = () => { contentFocusedRef.current = true; clearIdle(); setTextVisible(true) }
-  const handleContentBlur = () => { contentFocusedRef.current = false; armIdle() }
+  /* En móvil no hay hover, así que el equivalente es el toque: sobre la placa
+     la abre, sobre el vídeo la cierra. Los clics que nacen dentro de la ficha
+     desplegada se dejan pasar — si no, pulsar «Cotizar paquetes» plegaría la
+     placa por el camino. */
   const handleVideoTap = () => {
-    if (!isMobile) return
-    setTextVisible((v) => { const next = !v; if (next) armIdle(); return next })
+    if (!isMobile || reducedMotionRef.current) return
+    setTextVisible((v) => !v)
+  }
+  const handlePlacaTap = (e) => {
+    if (!isMobile || reducedMotionRef.current) return
+    if (e.target.closest && e.target.closest('.featured-extra')) return
+    setTextVisible((v) => !v)
   }
 
-  // Al cambiar de servicio: mostrar todo y re-armar el temporizador
+  // Al cambiar de servicio se vuelve a plegar: cada uno se presenta con su
+  // vídeo, no con su ficha.
   useEffect(() => {
-    wakeText()
-    return clearIdle
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!reducedMotionRef.current) setTextVisible(false)
   }, [activeIndex, isMobile])
 
   const handleScrollToContact = (e) => {
@@ -294,41 +326,23 @@ const Services = () => {
   const handleThumbnailClick = (index) => {
     setActiveIndex(index)
     setViewedServices(prev => new Set([...prev, index]))
-    setSwipeHintVisible(false)
   }
 
-  // Handle drawer service click (mobile) - scroll to services + change video
-  const handleDrawerServiceClick = (index) => {
-    setActiveIndex(index)
-    setViewedServices(prev => new Set([...prev, index]))
-    setDrawerOpen(false)
-
-    // Scroll to services section
-    setTimeout(() => {
-      if (servicesRef.current) {
-        servicesRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
-    }, 200)
-  }
-
-  // Toggle drawer
-  const toggleDrawer = () => {
-    setDrawerOpen(prev => !prev)
-  }
+  /* Aquí estaban handleDrawerServiceClick y toggleDrawer, del cajón del móvil.
+     Se van con él: para saltar de un servicio a otro quedan las flechas y la
+     escala de marcas del pie del panel, que ahora es pulsable. */
 
   // Navigate services (mobile arrows)
   const goNext = () => {
     const next = (activeIndex + 1) % services.length
     setActiveIndex(next)
     setViewedServices(prev => new Set([...prev, next]))
-    setSwipeHintVisible(false)
   }
 
   const goPrev = () => {
     const prev = (activeIndex - 1 + services.length) % services.length
     setActiveIndex(prev)
     setViewedServices(p => new Set([...p, prev]))
-    setSwipeHintVisible(false)
   }
 
   // Preload next video/image (según orientación del dispositivo)
@@ -386,15 +400,30 @@ const Services = () => {
             <h2 className="section-title section-title--medio">
               <span className="title-bold">Servicios</span>
             </h2>
+            {/* «Soluciones digitales que impulsan tu negocio» era una frase que
+                podría estar en la web de cualquier agencia del mundo. Esta dice
+                lo que hay en la pantalla y lo que hay que hacer con ello. */}
             <p className="section-subtitle">
-              Soluciones digitales que impulsan tu negocio
+              Siete servicios. Cada uno con su muestra de trabajo.
             </p>
           </motion.div>
 
           {/* Showcase Layout */}
           <div className="showcase-layout">
             {/* Panel principal - Servicio destacado */}
-            <div className="featured-service" onMouseEnter={handlePanelEnter} onMouseLeave={handlePanelLeave}>
+            {/* El acento del servicio activo baja por herencia: el CSS lo lee
+                de --acento-servicio y no hace falta pintar cada hijo con un
+                estilo en línea, que era como estaba y por lo que había siete
+                colores repartidos por todo el árbol. */}
+            {/* El hover ya no vive aquí. Estaba en el panel entero —vídeo
+                incluido—, y como el ratón está encima del panel justo mientras
+                miras el vídeo, la placa no se plegaba nunca. Ahora el
+                disparador está en `.featured-content`, que es la zona de texto
+                y solo ella. */}
+            <div
+              className="featured-service"
+              style={{ '--acento-servicio': activeService.color }}
+            >
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeService.id}
@@ -441,36 +470,50 @@ const Services = () => {
                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                     />
                   )}
-                  <div
-                    className="featured-overlay"
-                    onClick={handleVideoTap}
-                    style={{
-                      background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 18%, rgba(0,0,0,0.12) 36%, transparent 55%), radial-gradient(130% 80% at 50% 100%, ${activeService.color}14 0%, transparent 60%)`
-                    }}
-                  />
+                  {/* El velo ya no se pinta en línea. Iba de negro 0.85 abajo a
+                      transparente al 55% de la altura, y el bloque de texto es
+                      más alto que eso: con un vídeo claro —los de WhatsApp son
+                      pantallas blancas— el título quedaba ILEGIBLE. Ahora el
+                      velo solo suaviza el pie del vídeo y quien garantiza la
+                      lectura es la placa de .featured-content, que mide
+                      exactamente lo que mide el texto. */}
+                  <div className="featured-overlay" onClick={handleVideoTap} />
                 </motion.div>
               </AnimatePresence>
 
-              {/* Mobile navigation arrows + swipe hint */}
-              {isMobile && (
-                <>
-                  <button className="nav-arrow nav-arrow-left" onClick={goPrev} aria-label="Anterior">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="15 18 9 12 15 6" />
-                    </svg>
-                  </button>
-                  <button className="nav-arrow nav-arrow-right" onClick={goNext} aria-label="Siguiente">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="9 6 15 12 9 18" />
-                    </svg>
-                  </button>
-                </>
-              )}
+              {/* ── El mando, una flecha a cada lado ──
+                  Antes eran dos pastillas redondas pegadas la una a la otra en
+                  la esquina superior derecha, y solo en móvil.
+
+                  Van dentro de una banda que es un HERMANO EN FLEX de la placa
+                  de texto, no un absoluto con un porcentaje a ojo. Como la
+                  placa lleva `margin-top: auto`, esta banda ocupa exactamente
+                  el hueco que queda por encima: las flechas quedan centradas en
+                  el vídeo que se ve, y cuando la placa se abre suben solas para
+                  no meterse debajo. Sin números mágicos y sin JS.
+
+                  La banda no intercepta el puntero —así el clic para plegar y
+                  desplegar sigue llegando al vídeo—; solo lo hacen los botones. */}
+              <div className="nav-banda">
+                <button className="nav-arrow nav-arrow-left" onClick={goPrev} aria-label="Servicio anterior">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </button>
+                <button className="nav-arrow nav-arrow-right" onClick={goNext} aria-label="Servicio siguiente">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 6 15 12 9 18" />
+                  </svg>
+                </button>
+              </div>
 
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeService.id}
                   className={`featured-content ${textVisible ? '' : 'is-idle'}`}
+                  onMouseEnter={handlePanelEnter}
+                  onMouseLeave={handlePanelLeave}
+                  onClick={handlePlacaTap}
                   onFocusCapture={handleContentFocus}
                   onBlurCapture={handleContentBlur}
                   initial={{ opacity: 0, y: 15 }}
@@ -478,42 +521,50 @@ const Services = () => {
                   exit={{ opacity: 0, y: -15 }}
                   transition={{ duration: 0.4, ease: 'easeOut' }}
                 >
-                  <div className="featured-header-info">
-                    {/* Aqui iba un "01" de 4rem al 15% de opacidad, detras de
-                        la etiqueta. El mismo numeral fantasma que ya quitamos
-                        de Destacados: no informa de nada —la posicion real ya
-                        la da el contador "01 / 07" del panel— y el lector de
-                        pantalla lo leia como si fuera contenido. */}
-                    <span
-                      className="featured-category"
-                      style={{
-                        color: activeService.color,
-                        backgroundColor: `${activeService.color}20`
-                      }}
-                    >
+                  {/* El galón: en móvil no hay hover que descubra que hay más
+                      debajo, y sin esta señal el precio y los botones quedarían
+                      escondidos tras un gesto que nadie adivina. Gira al abrir,
+                      igual que el de la barra inferior. */}
+                  {isMobile && (
+                    <span className="featured-galon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+                      </svg>
+                    </span>
+                  )}
+
+                  {/* Distintivo, icono y título COMPARTEN RENGLÓN.
+
+                      Apilados sumaban 78px de los 213 que medía la placa
+                      plegada, y en un panel que ahora mide 375px de alto eso es
+                      un quinto de la pantalla gastado en dos líneas cortas. En
+                      un renglón dicen lo mismo y ocupan 44px. Envuelve solo si
+                      no cabe, que es lo que pasa en móvil.
+
+                      El "01" delante de la categoría no es adorno: es lo que
+                      distingue un servicio de otro ahora que los siete
+                      comparten el mismo morado. (Aquí hubo un "01" de 4rem al
+                      15% de opacidad de fondo; ese sí era decoración, y además
+                      el lector de pantalla lo leía como contenido.) */}
+                  <div className="featured-titular">
+                    <span className="featured-category">
+                      <span className="featured-indice">
+                        {String(activeIndex + 1).padStart(2, '0')}
+                      </span>
                       {activeService.category}
                     </span>
+
+                    {/* El icono llevaba tres decoraciones encima: entraba
+                        girando media vuelta desde escala 0 con un muelle,
+                        flotaba en bucle infinito y tenía resplandor propio.
+                        Ahora es una marca quieta a tamaño de mayúscula. */}
+                    <span className="featured-icon" aria-hidden="true">
+                      <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                        <path d={activeService.icon} />
+                      </svg>
+                    </span>
+                    <h3 className="featured-title">{activeService.title}</h3>
                   </div>
-
-                  <motion.div
-                    className="featured-icon"
-                    style={{ color: activeService.color }}
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2, type: 'spring' }}
-                  >
-                    <svg
-                      width="48"
-                      height="48"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="service-icon"
-                    >
-                      <path d={activeService.icon} />
-                    </svg>
-                  </motion.div>
-
-                  <h3 className="featured-title">{activeService.title}</h3>
                   <p className="featured-tagline">{activeService.tagline}</p>
                   {/* El envoltorio interno lo necesita el plegado por
                       grid-template-rows: el contenedor pasa de 1fr a 0fr y el
@@ -523,27 +574,38 @@ const Services = () => {
                   <div className="featured-extra-inner">
                   <p className="featured-description">{activeService.description}</p>
 
+                  {/* Dos píldoras con su iconito pasan a dos lecturas: rótulo
+                      arriba, cifra abajo, el mismo instrumento que las medidas
+                      del CTA.
+
+                      Y se va el «+» de «6+ clientes». Un más sobre un número de
+                      una cifra resta en vez de sumar —el mismo criterio que
+                      retiró el «98% satisfechos» de cifras.js—; y en el peor
+                      caso decía «2+ clientes», que es leer en voz alta que son
+                      dos. Un 06 en un cuadro de lectura no promete nada: mide. */}
                   <div className="featured-stats">
-                    <span className="stat-badge">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-                      </svg>
-                      {activeService.clients}+ clientes
+                    <span className="medida-servicio">
+                      <span className="medida-rotulo">Clientes</span>
+                      <span className="medida-cifra">
+                        {String(activeService.clients).padStart(2, '0')}
+                      </span>
                     </span>
-                    <span className="stat-badge price-badge">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
-                      </svg>
-                      {activeService.price}
+                    <span className="medida-servicio">
+                      <span className="medida-rotulo">Desde</span>
+                      <span className="medida-cifra medida-cifra--precio">
+                        {activeService.price.replace(/^Desde\s+/i, '')}
+                      </span>
                     </span>
                   </div>
 
+                  {/* Los tres botones iban pintados en línea con el color del
+                      servicio: relleno sólido el primero, borde y texto de color
+                      los otros dos. Con el acento heredado ya no hace falta —y
+                      además así el CSS puede darles las esquineras de mira que
+                      llevan los del CTA, que es lo que los ata a esta web y no a
+                      cualquier plantilla. */}
                   <div className="featured-actions">
-                    <button
-                      className="featured-cta"
-                      onClick={handleScrollToContact}
-                      style={{ backgroundColor: activeService.color, '--btn-color': activeService.color }}
-                    >
+                    <button className="featured-cta" onClick={handleScrollToContact}>
                       Hablemos de tu proyecto
                       <svg className="featured-cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="5" y1="12" x2="19" y2="12" />
@@ -556,17 +618,11 @@ const Services = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="featured-calc-btn"
-                      style={{
-                        '--btn-color': activeService.color,
-                        borderColor: activeService.color,
-                        color: activeService.color,
-                        boxShadow: `0 0 15px ${activeService.color}30`
-                      }}
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-6 16H6v-6h7v6zm8-2h-3v-2h3v2zm0-4h-3v-2h3v2zm0-4h-3V7h3v2zM6 11V7h11v4H6z" />
                       </svg>
-                      Cotizar Paquetes
+                      Cotizar paquetes
                     </a>
 
                     {activeService.demoUrl && (
@@ -575,14 +631,8 @@ const Services = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="featured-calc-btn"
-                        style={{
-                          '--btn-color': activeService.color,
-                          borderColor: activeService.color,
-                          color: activeService.color,
-                          boxShadow: `0 0 15px ${activeService.color}30`
-                        }}
                       >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M8 5v14l11-7z" />
                         </svg>
                         {activeService.demoLabel || 'Probar demo en vivo'}
@@ -594,26 +644,32 @@ const Services = () => {
                 </motion.div>
               </AnimatePresence>
 
-              {/* Progress indicator */}
+              {/* Escala de marcas: siete divisiones de un instrumento, no siete
+                  pastillas. La activa se distingue por altura.
+
+                  Iba con un `motion.div` por segmento que entraba escalando en
+                  X con retardo escalonado — una animación de entrada sobre una
+                  barra de progreso, siete nodos de framer-motion para siete
+                  rectángulos que no se mueven nunca más.
+
+                  Y desaparece «N de 7 servicios vistos»: el contenedor mide 3px
+                  con overflow oculto, así que ese texto NUNCA se vio; solo lo
+                  leían los lectores de pantalla. Lo que dice ya está, y visible,
+                  en el «01 / 07» de la cabecera de miniaturas. */}
               <div className="featured-progress">
                 <div className="progress-track">
                   {services.map((service, index) => (
-                    <motion.div
+                    <button
                       key={service.id}
+                      type="button"
                       className={`progress-segment ${viewedServices.has(index) ? 'viewed' : ''} ${index === activeIndex ? 'active' : ''}`}
-                      style={{
-                        backgroundColor: viewedServices.has(index) ? service.color : 'rgba(255,255,255,0.1)',
-                        flex: 1
-                      }}
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      style={{ '--marca-color': service.color }}
+                      onClick={() => handleThumbnailClick(index)}
+                      aria-label={`Ver ${service.title}`}
+                      aria-current={index === activeIndex ? 'true' : undefined}
                     />
                   ))}
                 </div>
-                <span className="progress-text">
-                  {viewedServices.size} de {services.length} servicios vistos
-                </span>
               </div>
 
               {/* Preload next video */}
@@ -730,219 +786,20 @@ const Services = () => {
         </div>
       </section>
 
-      {/* ===== DESKTOP SIDEBAR - Icons nav lateral ===== */}
-      {!isMobile && (
-        <div className="services-sidebar">
-          <span className="sidebar-label">SERVICIOS</span>
-          <div className="sidebar-track">
-            <div className="sidebar-progress-line">
-              <motion.div
-                className="sidebar-progress-fill"
-                style={{ backgroundColor: activeService.color }}
-                animate={{ height: `${((activeIndex) / (services.length - 1)) * 100}%` }}
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              />
-            </div>
-            {services.map((service, index) => {
-              const isActive = index === activeIndex
-              const isViewed = viewedServices.has(index)
-              return (
-                <div
-                  key={service.id}
-                  className={`sidebar-item ${isActive ? 'active' : ''} ${isViewed ? 'viewed' : ''}`}
-                  onClick={() => {
-                    setActiveIndex(index)
-                    setViewedServices(prev => new Set([...prev, index]))
-                    if (servicesRef.current) {
-                      servicesRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                    }
-                  }}
-                >
-                  <motion.div
-                    className="sidebar-icon"
-                    style={{
-                      color: isActive ? service.color : isViewed ? service.color : 'rgba(255,255,255,0.3)',
-                      backgroundColor: isActive ? `${service.color}15` : 'transparent',
-                      borderColor: isActive ? `${service.color}40` : 'transparent',
-                      boxShadow: isActive ? `0 0 16px ${service.color}50` : 'none'
-                    }}
-                    animate={{
-                      scale: isActive ? 1.15 : 1,
-                    }}
-                    whileHover={{ scale: 1.2 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                      <path d={service.icon} />
-                    </svg>
-                  </motion.div>
-                  <div className="sidebar-tooltip">
-                    <span className="sidebar-tooltip-title">{service.title}</span>
-                    <span className="sidebar-tooltip-price" style={{ color: service.color }}>
-                      {service.price}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-          <span className="sidebar-counter">
-            {viewedServices.size}<span className="sidebar-counter-sep">/</span>{services.length}
-          </span>
-        </div>
-      )}
+      {/* Aquí vivían el raíl fijo de escritorio y la barra inferior del móvil.
+          Eran un mando de ESTA sección clavado en position:fixed sobre toda la
+          web: aparecían en las ocho, y sobre el Estudio —el único tramo claro—
+          el rótulo del raíl daba 1,12:1 de contraste. La barra se llevaba 56px
+          de cada pantalla de móvil y encima imponía un padding-bottom al body,
+          o sea empujaba la página entera.
 
-      {/* ===== GLOBAL BOTTOM BAR - Visible siempre en móvil ===== */}
-      {isMobile && (
-        <>
-          {/* Backdrop overlay cuando drawer está abierto */}
-          <AnimatePresence>
-            {drawerOpen && (
-              <motion.div
-                className="drawer-backdrop"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setDrawerOpen(false)}
-              />
-            )}
-          </AnimatePresence>
+          Ese sitio, que es el único permanente que tiene la página junto a la
+          nav, lo ocupa ahora IndicePagina y responde algo que importa siempre:
+          en qué sección estás y cuántas quedan.
 
-          {/* Bottom Bar + Drawer */}
-          <motion.div
-            className="services-bottom-bar"
-            initial={false}
-            animate={{
-              height: drawerOpen ? '75vh' : '56px'
-            }}
-            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          >
-            {/* Bar Header - siempre visible */}
-            <div className="bottom-bar-header" onClick={toggleDrawer}>
-              <div className="bottom-bar-left">
-                <div
-                  className="bottom-bar-dot"
-                  style={{ backgroundColor: activeService.color }}
-                />
-                <span className="bottom-bar-title">Servicios</span>
-                <span className="bottom-bar-active" style={{ color: activeService.color }}>
-                  {activeService.title}
-                </span>
-              </div>
-              <div className="bottom-bar-right">
-                <span className="bottom-bar-count">
-                  {viewedServices.size}/{services.length}
-                </span>
-                <motion.svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="white"
-                  animate={{ rotate: drawerOpen ? 180 : 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
-                </motion.svg>
-              </div>
-            </div>
-
-            {/* Drawer Content - servicios grid */}
-            <AnimatePresence>
-              {drawerOpen && (
-                <motion.div
-                  className="drawer-content"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2, delay: 0.1 }}
-                >
-                  {/* Drawer Header */}
-                  <div className="drawer-header">
-                    <div className="drawer-header-left">
-                      <span className="drawer-header-title">Nuestros Servicios</span>
-                      <span className="drawer-header-badge">{services.length}</span>
-                    </div>
-                    <span className="drawer-header-hint">Toca para explorar</span>
-                  </div>
-
-                  <div className="drawer-services-grid">
-                    {services.map((service, index) => {
-                      const isActive = index === activeIndex
-                      const isViewed = viewedServices.has(index)
-                      return (
-                        <motion.div
-                          key={service.id}
-                          className={`drawer-service-card ${isActive ? 'active' : ''} ${isViewed ? 'viewed' : ''}`}
-                          onClick={() => handleDrawerServiceClick(index)}
-                          style={{
-                            '--card-color': service.color,
-                            borderColor: isActive ? service.color : 'transparent'
-                          }}
-                          whileTap={{ scale: 0.97 }}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                        >
-                          {/* Numbered label */}
-                          <span className="drawer-card-number" style={{ color: service.color }}>
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
-
-                          {/* Icon with glow */}
-                          <div
-                            className="drawer-card-icon"
-                            style={{
-                              color: service.color,
-                              backgroundColor: `${service.color}15`,
-                              boxShadow: isActive ? `0 0 20px ${service.color}30` : 'none'
-                            }}
-                          >
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                              <path d={service.icon} />
-                            </svg>
-                          </div>
-
-                          {/* Info */}
-                          <div className="drawer-card-info">
-                            <h4 className="drawer-card-title">{service.title}</h4>
-                            <p className="drawer-card-tagline">{service.tagline}</p>
-                            <p className="drawer-card-description">{service.description}</p>
-                            <span className="drawer-card-price" style={{ color: service.color }}>
-                              {service.price}
-                            </span>
-                          </div>
-
-                          {/* Right side: arrow or check */}
-                          <div className="drawer-card-right">
-                            {isActive && (
-                              <motion.div
-                                className="drawer-card-active"
-                                style={{ backgroundColor: service.color }}
-                                layoutId="drawerActive"
-                              />
-                            )}
-                            {isViewed && !isActive ? (
-                              <div className="drawer-card-check">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                                  <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
-                                </svg>
-                              </div>
-                            ) : (
-                              <svg className="drawer-card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="9 6 15 12 9 18" />
-                              </svg>
-                            )}
-                          </div>
-                        </motion.div>
-                      )
-                    })}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </>
-      )}
+          Aquí no se pierde nada: en escritorio siguen las siete miniaturas y
+          las flechas laterales; en móvil, las flechas y la escala de marcas del
+          pie del panel, que ahora es pulsable. */}
     </>
   )
 }

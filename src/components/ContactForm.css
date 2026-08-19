@@ -8,9 +8,13 @@
    titulo: salian dos rayas a pocos pixeles una de otra, sin la misma anchura
    ni el mismo origen. Ahora el limite de seccion lo marca solo esa regla. */
 
+/* El último tramo de la página, en el mismo ritmo de superficies que Blog y
+   Nosotros: --superficie con la estela tenue. Iba sobre --superficie-alta, que
+   es lo que dejaba un escalón de color justo antes del pie. */
 .contact-section {
-  /* El fondo lo pone el ritmo de superficies de index.css. */
-  padding: 6rem 3rem;
+  background-color: var(--superficie);
+  background-image: var(--estela-tenue);
+  padding: 6rem 3rem 4rem;
   position: relative;
   overflow: hidden;
 }
@@ -42,13 +46,16 @@
   margin-bottom: 0.5rem;
 }
 
+/* En VERSALES, como SERVICIOS, DEMOS, TALLER, ESTUDIO, BLOG y NOSOTROS. Era el
+   único rótulo de sección que quedaba en redonda junto con el de Blog. */
 .contact-title {
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 900;
   color: #ffffff;
   margin: 0 0 1rem;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   line-height: 1;
+  text-transform: uppercase;
 }
 
 .contact-desc {
@@ -67,39 +74,33 @@
   margin-bottom: 2.5rem;
 }
 
+/* Los cuatro canales, como lecturas de un instrumento: filete de un píxel a la
+   izquierda, sin caja redondeada y sin desplazarse al pasar el ratón.
+   El filete se enciende en el acento; eso es la respuesta. */
 .contact-item {
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.9rem;
   text-decoration: none;
-  padding: 0.85rem 1rem;
-  border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
+  padding: 0.75rem 0 0.75rem 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  transition: border-color 0.25s ease, color 0.25s ease;
 }
 
 a.contact-item:hover {
-  background: rgba(176, 36, 255, 0.06);
-  border-color: rgba(176, 36, 255, 0.2);
-  transform: translateX(4px);
+  border-left-color: var(--color-accent-texto);
 }
 
+/* El icono, a pelo. Iba dentro de un cuadrado redondeado con fondo de color;
+   uno de ellos —el de WhatsApp— con el VERDE de WhatsApp, el único verde de
+   toda la web. La marca de un tercero no es un acento de esta página. */
 .contact-item-icon {
-  width: 40px;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.6rem;
-  background: rgba(176, 36, 255, 0.1);
-  color: #B024FF;
+  color: var(--color-accent-texto);
   flex-shrink: 0;
-}
-
-.contact-item-icon.whatsapp {
-  background: rgba(37, 211, 102, 0.12);
-  color: #25D366;
+  opacity: 0.85;
 }
 
 .contact-item-text {
@@ -132,11 +133,19 @@ a.contact-item:hover {
    RIGHT - Form Panel
    ============================================= */
 
+/* Consola, no tarjeta: filete de un píxel, radio corto y las esquineras de
+   mira de la casa. Llevaba un borde de 1,5px en morado al 20% y 1,25rem de
+   radio, que es la caja del mundo anterior. */
 .contact-form-panel {
-  background: rgba(8, 4, 18, 0.6);
-  border: 1.5px solid rgba(176, 36, 255, 0.2);
-  border-radius: 1.25rem;
-  padding: 2.5rem;
+  background-color: rgba(8, 4, 18, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  padding: 2.25rem;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(255, 255, 255, 0.3);
 }
 
 .contact-form {
@@ -165,9 +174,9 @@ a.contact-item:hover {
   font-family: inherit;
   color: #ffffff;
   background: rgba(255, 255, 255, 0.03);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.65rem;
-  transition: all 0.25s ease;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 3px;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
   outline: none;
 }
 
@@ -175,10 +184,12 @@ a.contact-item:hover {
   color: rgba(255, 255, 255, 0.25);
 }
 
+/* Al enfocar, el campo se ilumina por el BORDE, no con un halo de 3px
+   alrededor. Un anillo difuso de color es lo que llevaba; un filete que cambia
+   de color dice lo mismo y no ensucia el vecino. */
 .form-input:focus {
-  border-color: #B024FF;
-  background: rgba(176, 36, 255, 0.04);
-  box-shadow: 0 0 0 3px rgba(176, 36, 255, 0.1);
+  border-color: var(--color-accent-texto);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .form-input.error {
@@ -213,28 +224,37 @@ textarea.form-input {
 }
 
 /* Submit Button */
+/* El mismo botón que cierra Taller, Estudio y Blog: sin radio, el acento como
+   superficie, tinta oscura y las esquineras que se abren. La tinta es oscura
+   porque blanco sobre #B93EFF no llega al mínimo AA. */
 .form-submit {
   width: 100%;
   padding: 1rem 2rem;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #ffffff;
-  background: #B024FF;
-  border: none;
-  border-radius: 0.65rem;
+  text-transform: uppercase;
+  color: var(--superficie);
+  background-color: var(--color-accent-texto);
+  border: 1px solid transparent;
+  border-radius: 0;
   cursor: pointer;
-  letter-spacing: 0.02em;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(176, 36, 255, 0.35);
+  letter-spacing: 0.1em;
   margin-top: 0.5rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(3, 1, 6, 0.5);
+  transition: background-position 0.35s var(--ease-out-expo);
 }
 
-.form-submit:hover:not(:disabled) {
-  box-shadow: 0 8px 30px rgba(176, 36, 255, 0.5);
+.form-submit:hover:not(:disabled),
+.form-submit:focus-visible:not(:disabled) {
+  background-position: var(--esq-abierta);
 }
 
 .form-submit:disabled {
@@ -374,7 +394,9 @@ textarea.form-input {
 
   .contact-form-panel {
     padding: 1.5rem 1.25rem;
-    border-radius: 1rem;
+    /* El mismo radio corto que en escritorio: aqui volvia a 1rem y la consola
+       se redondeaba solo en movil. */
+    border-radius: 4px;
   }
 
   .form-input {

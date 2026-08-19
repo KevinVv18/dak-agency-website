@@ -244,8 +244,12 @@ section {
   .btn-schedule-hero,
   .ann-pill,
   .back-to-top,
-  .footer-nav a,
-  .footer-legal a,
+  .pie-nav a,
+  .pie-terminos a,
+  .pie-arriba,
+  .progress-segment,
+  .pie-enlace,
+  .pie-indice-item,
   .filter-pill,
   .floating-nav-btn,
   .banner-arrow {
@@ -266,8 +270,11 @@ section {
   .btn-schedule-hero::after,
   .ann-pill::after,
   .back-to-top::after,
-  .footer-nav a::after,
-  .footer-legal a::after,
+  .pie-nav a::after,
+  .pie-terminos a::after,
+  .pie-arriba::after,
+  .progress-segment::after,
+  .pie-enlace::after,
   .filter-pill::after,
   .floating-nav-btn::after,
   .banner-arrow::after {
@@ -281,13 +288,19 @@ section {
     /* Sin fondo ni borde: existe solo para el dedo. */
   }
 
-  /* Los puntos del ticker miden 14x3 px. El alto ya lo cubre la regla de
-     arriba; aqui se les da los 24px de ancho que pide WCAG 2.5.8, que caben
-     ahora que .ann-dots separa 0.65rem. */
+  /* Las marcas del ticker miden 2x8 px. El alto ya lo cubre la regla de
+     arriba; aqui se les da el ancho.
+
+     Antes eran 24px, el minimo de WCAG 2.5.8, porque a mas se habrian invadido
+     entre ellas. Ahora .ann-dots separa las marcas con un paso de 44px justo
+     para permitir el area completa, asi que caben los 44 sin solaparse. Si
+     alguna vez se aprieta esa separacion, este ancho tiene que bajar con ella:
+     objetivos de 44px que se pisan son peores que objetivos pequenos, porque el
+     toque se lo lleva el ultimo del DOM en vez de la marca que se toco. */
   .ann-step::after {
     left: 50%;
     right: auto;
-    width: 24px;
+    width: 44px;
     transform: translate(-50%, -50%);
   }
 
@@ -582,31 +595,84 @@ section {
       rgba(0, 200, 200, 0.11) 0%,
       rgba(0, 200, 200, 0.035) 38%,
       transparent 68%);
+
+  /* ═══════════════════════════════════════════
+     LA ESTELA — el sistema de fondos que hereda del túnel
+     ═══════════════════════════════════════════
+
+     Después de la tobera el aire ha salido del túnel. Lo que queda aguas abajo
+     es su ESTELA: trazos casi horizontales, tenues y ESTÁTICOS —cero JS, un
+     solo pintado—, que pierden fuerza con la distancia hasta llegar limpio al
+     Estudio, que es claro y contrasta como ancla.
+
+     El mapa previsto, para que cada rediseño lo siga:
+
+       Servicios  →  --estela-fuerte
+       Demos      →  --estela-media
+       Taller     →  --estela-tenue
+       ESTUDIO    →  claro; el ancla. No se toca.
+       Blog / Nosotros / Contacto / Pie → estela tenue o calma, cuando les
+       llegue su rediseño — retirando entonces su --luz-seccion, que es el
+       lenguaje del mundo anterior (resplandor radial).
+
+     HOY NINGUNA SECCIÓN LOS CONSUME. Se definen para que el sistema exista y
+     los rediseños los adopten uno a uno; aplicarlos a secciones aún no
+     pensadas sería vestir dos veces el mismo cuerpo. */
+  --estela-fuerte:
+    repeating-linear-gradient(2deg,
+      rgba(255, 255, 255, 0.042) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(358.5deg,
+      rgba(176, 36, 255, 0.028) 0 1px, transparent 1px 15px);
+  --estela-media:
+    repeating-linear-gradient(2deg,
+      rgba(255, 255, 255, 0.026) 0 1px, transparent 1px 11px),
+    repeating-linear-gradient(358.5deg,
+      rgba(176, 36, 255, 0.016) 0 1px, transparent 1px 17px);
+  --estela-tenue:
+    repeating-linear-gradient(2deg,
+      rgba(255, 255, 255, 0.013) 0 1px, transparent 1px 13px);
+
+  /* ═══════════════════════════════════════════
+     ESQUINERAS — las marcas de esquina del instrumental
+     ═══════════════════════════════════════════
+
+     Las cuatro marcas de una mira o un registro de imprenta, en filete de un
+     píxel. Las usan los botones del CTA y las ventanas de lectura (ticker,
+     distintivo). Ocho capas: dos trazos por esquina.
+
+     Quien las consume declara su --esq-color y pinta:
+       background-image: var(--esq-img);
+       background-size: var(--esq-tam);
+       background-position: var(--esq-reposo);   ← y --esq-abierta al hover
+       background-repeat: no-repeat;
+     El «abrirse» al hover es solo background-position: se anima únicamente
+     mientras el puntero está encima, nada corre en bucle. */
+  --esq-color: rgba(255, 255, 255, 0.4);
+  --esq-img:
+    linear-gradient(var(--esq-color), var(--esq-color)),
+    linear-gradient(var(--esq-color), var(--esq-color)),
+    linear-gradient(var(--esq-color), var(--esq-color)),
+    linear-gradient(var(--esq-color), var(--esq-color)),
+    linear-gradient(var(--esq-color), var(--esq-color)),
+    linear-gradient(var(--esq-color), var(--esq-color)),
+    linear-gradient(var(--esq-color), var(--esq-color)),
+    linear-gradient(var(--esq-color), var(--esq-color));
+  --esq-tam: 9px 1px, 1px 9px, 9px 1px, 1px 9px, 9px 1px, 1px 9px, 9px 1px, 1px 9px;
+  --esq-reposo:
+    6px 6px, 6px 6px,
+    calc(100% - 6px) 6px, calc(100% - 6px) 6px,
+    6px calc(100% - 6px), 6px calc(100% - 6px),
+    calc(100% - 6px) calc(100% - 6px), calc(100% - 6px) calc(100% - 6px);
+  --esq-abierta:
+    2px 2px, 2px 2px,
+    calc(100% - 2px) 2px, calc(100% - 2px) 2px,
+    2px calc(100% - 2px), 2px calc(100% - 2px),
+    calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) calc(100% - 2px);
 }
 
-/* =============================================
-   CURSOR GRID REVEAL - Global
-   ============================================= */
-.cursor-grid-reveal {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  background-image:
-    linear-gradient(rgba(176, 36, 255, 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(176, 36, 255, 0.12) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(circle 180px at var(--mx, -200px) var(--my, -200px), rgba(0,0,0,0.7) 0%, transparent 100%);
-  -webkit-mask-image: radial-gradient(circle 180px at var(--mx, -200px) var(--my, -200px), rgba(0,0,0,0.7) 0%, transparent 100%);
-}
-
-@media (max-width: 768px) {
-  .cursor-grid-reveal {
-    display: none;
-  }
-}
+/* La rejilla que seguía al cursor se retiró; el porqué está en src/App.jsx.
+   Resumen: sobre el túnel una línea recta de rejilla se leía como una grieta, y
+   competía con el campo de flujo, que ya responde al puntero. */
 
 
 /* ===================================
@@ -767,14 +833,17 @@ section {
    página.
    ═══════════════════════════════════════════ */
 
-.cta-section,
 .demos-section,
 .blog,
 .contact-section {
   background: var(--superficie-alta);
 }
 
-.hero,
+/* El túnel arranca el ritmo. Dentro de él, el hero y el titular NO llevan
+   fondo propio: el suyo es la corriente que corre por detrás de los dos, y
+   pintarlos la taparía. Por eso salen de las dos listas de arriba y el color
+   lo sostiene el envoltorio. */
+.tunel,
 .services,
 .taller-section,
 .about,

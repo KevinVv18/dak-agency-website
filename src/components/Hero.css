@@ -1,716 +1,496 @@
+/* ═══════════════════════════════════════════
+   HERO — TÚNEL DE VIENTO
+
+   Archivo reescrito. Lo anterior era el mundo descartado: marco de neón de
+   3px, dos bloques con degradado propio, franja de clientes encajonada entre
+   bordes morados con un brillo recorriéndola en bucle, y un logo centrado con
+   márgenes. Nada de eso sobrevive, porque pulir el aspecto descartado era
+   justamente el error que se estaba repitiendo.
+
+   Aquí el campo de flujo ES la superficie. Encima solo va texto: rótulos
+   técnicos, el raíl de clientes y una acción. Sin cajas.
+   ═══════════════════════════════════════════ */
+
+/* ── El compás ──
+   El hero mide más de una pantalla y lo que hay dentro queda fijo: ese sobrante
+   es el recorrido del ensayo. --ensayo va de 0 (la marca obstruye, el flujo
+   entra revuelto) a 1 (la marca se ha soltado, el flujo va laminar), y lo
+   escribe el bucle del campo una vez por fotograma.
+
+   Nada de overflow: hidden aquí. Un ancestro con overflow oculto se convierte
+   en contenedor de desplazamiento y deja clavado a cualquier hijo fijado —
+   sería el compás entero sin funcionar, y sin dar ningún error. */
 .hero {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  min-height: 180svh;
+  /* OJO: --ensayo NO se declara aquí. La escribe el bucle del campo sobre
+     .tunel y baja por herencia; declararla también aquí, aunque fuera solo
+     como valor de partida, la CONGELA en ese valor para todo el hero — una
+     declaración propia gana siempre sobre lo heredado. Estuvo así y el eje y
+     los rótulos se quedaron mudos sin dar ningún error. El valor de partida
+     vive en pages/Home.css, junto a .tunel. */
+
+  /* A sangre. La regla global `section { padding: var(--spacing-3xl) 0 }` de
+     index.css mete 96 px arriba y abajo; mientras el campo era absoluto no se
+     notaba, porque el posicionamiento absoluto se salta el relleno. En cuanto
+     pasa a estar en flujo, ese relleno lo empuja fuera de cuadro y el raíl de
+     clientes se va por debajo del borde. El túnel llega hasta el filo. */
+  padding: 0;
   /* El fondo lo pone el ritmo de superficies de index.css. */
-  position: relative;
-  overflow: hidden;
-  padding-top: 80px;
-  padding-bottom: 0px;
 }
 
-/* Neon border surrounding hero section */
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 3px solid transparent;
-  border-image: linear-gradient(180deg, #B024FF 0%, rgba(176, 36, 255, 0.6) 50%, #B024FF 100%) 1;
-  box-shadow: 
-    inset 0 0 15px rgba(176, 36, 255, 0.3),
-    0 0 15px rgba(176, 36, 255, 0.3);
-  pointer-events: none;
-  z-index: 10;
-}
+/* El campo y su fijado viven en pages/Home.css: la corriente es la superficie
+   del hero Y del titular que viene después, así que no puede pertenecer a uno
+   de los dos. */
 
-/* Additional glow effect on corners */
-.hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 3px solid rgba(176, 36, 255, 0.5);
-  box-shadow: 
-    0 0 20px rgba(176, 36, 255, 0.4),
-    inset 0 0 20px rgba(176, 36, 255, 0.1);
-  pointer-events: none;
-  z-index: 10;
-}
-
-.hero-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: relative;
-  z-index: 1;
-}
-
-/* MASSIVE title section */
-.hero-title-section {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 0;
-  min-height: 50vh;
-}
-
-.hero-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 100%;
-}
-
-
-.hero-logo-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  position: relative;
+/* ── La capa de contenido ──
+   Encima del campo, sin fondo propio: lo que se ve entre las letras es la
+   corriente, no una caja. */
+.hero-capa {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  /* Se sube encima del campo en vez de superponerse con posición absoluta:
+     dos hermanos fijados se sostienen solos, uno absoluto dentro de otro
+     fijado no. */
+  margin-top: -100svh;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  /* El hueco de abajo no es aire: es el sitio del chat, que va fijo en la
+     esquina (x 1192–1252, y 712–772 a 1280×800). Con el relleno anterior el
+     pie llegaba a 772 y «Comenzar proyecto» quedaba debajo del globo. */
+  padding: 0 0 6rem;
+  pointer-events: none;
 }
 
-
-.hero-title {
-  font-size: clamp(6rem, 20vw, 18rem);
-  font-weight: 900;
-  letter-spacing: -0.06em;
-  line-height: 0.85;
-  color: var(--color-primary);
-  margin: 0;
-  text-align: center;
+.hero-capa a,
+.hero-capa button {
+  pointer-events: auto;
 }
 
-/* Subtitle strip - Client Wall */
-.hero-subtitle-strip {
-  width: 100%;
-  background: linear-gradient(90deg, 
-    rgba(3, 1, 6, 0.95) 0%, 
-    rgba(15, 8, 25, 0.9) 50%, 
-    rgba(3, 1, 6, 0.95) 100%);
-  padding: 0.4rem 1rem;
-  border-top: 1px solid rgba(176, 36, 255, 0.6);
-  border-bottom: 1px solid rgba(176, 36, 255, 0.6);
+/* ── Los rótulos ──
+   Anclados a la zona del campo que describen: RUIDO donde la corriente entra
+   revuelta, IMPACTO donde sale ordenada. Son etiquetas de un diagrama, no un
+   titular: por eso van en versalitas espaciadas y a cuerpo contenido. Que el
+   lema sea de la casa es lo que le permite hacer este trabajo. */
+/* ── El eje del ensayo ──
+   Los dos rótulos ya no van sueltos en posiciones absolutas: forman una fila
+   con el eje en medio. Calculando huecos a ojo, la escala acababa chocando con
+   «+ IMPACTO» en cuanto cambiaba el cuerpo de letra; repartido en una fila, el
+   eje ocupa lo que sobra y no puede solaparse a ningún tamaño. */
+.hero-medida {
+  position: absolute;
+  left: 3.5vw;
+  right: 3.5vw;
+  top: 62%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0;
-  box-shadow: 0 0 20px rgba(176, 36, 255, 0.2);
-  position: relative;
-  overflow: hidden;
-  min-height: 50px;
+  gap: 1.6rem;
 }
 
-.hero-subtitle-strip::before {
-  content: '';
+/* El eje mide lo que mide el ÍNDICE, no lo que miden las marcas.
+
+   El carro abarca todo el eje y se desplaza otro tanto, así que su caja sale
+   por la derecha e inventa scroll horizontal —medido: 1.266 px— si no se
+   recorta. Y recortando un eje de la altura de las marcas, el recorte se comía
+   el índice, que es más alto a propósito. Con el eje a la altura del índice,
+   el recorte corta lo que sobra y no toca lo que se ve. */
+.hero-eje {
+  position: relative;
+  flex: 1;
+  min-width: 40px;
+  height: 18px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.17))
+      0 calc(100% - 4px) / 100% 1px no-repeat,
+    repeating-linear-gradient(to right,
+      rgba(255, 255, 255, 0.17) 0 1px,
+      transparent 1px 15px)
+      0 calc(100% - 4px) / 100% 5px no-repeat;
+}
+
+/* El tramo ya medido. Es lo que de verdad hace legible el avance: escala con
+   scaleX, que va en el compositor y no toca la maquetación. */
+.hero-eje-recorrido {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 1px;
+  background: var(--color-accent-texto);
+  box-shadow: 0 0 6px rgba(176, 36, 255, 0.55);
+  transform: scaleX(var(--ensayo));
+  transform-origin: left center;
+  will-change: transform;
+}
+
+/* El índice, en la cabeza del tramo medido.
+
+   Se mueve el CARRO, no el índice, y con transform en vez de con `left`.
+   Colocándolo con `left`, cada fotograma del scroll obligaba a recalcular la
+   maquetación: medido, eran 189 maquetaciones en cuatro segundos frente a 11
+   desplazándose por cualquier otra parte de la página.
+
+   El recorrido es `100% − ancho del índice`, no `100%` a secas: así el índice
+   nunca sale del eje. Antes salía un píxel por la izquierda y había que
+   recortar el eje para que el carro no asomara por la derecha — y ese recorte
+   se comía justo la mitad del índice en el arranque, que es por lo que parecía
+   que la línea había desaparecido. */
+.hero-eje-carro {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%);
-  animation: shimmer 5s infinite;
-  z-index: 0;
+  width: 100%;
+  transform: translateX(calc(var(--ensayo) * (100% - 3px)));
+  will-change: transform;
 }
 
-@keyframes shimmer {
-  0%, 100% { transform: translateX(-100%); }
-  50% { transform: translateX(100%); }
+.hero-eje-indice {
+  position: absolute;
+  inset: 0 auto;
+  left: 0;
+  width: 3px;
+  background: var(--color-accent-texto);
+  box-shadow: 0 0 10px rgba(176, 36, 255, 0.9), 0 0 3px rgba(255, 255, 255, 0.6);
 }
 
-/* Client logos - sides */
-.client-logos-side {
+/* La lectura de régimen —«TURBULENTO / LAMINAR» bajo el eje— se retiró: era el
+   único texto que este rediseño añadía, y el encargo era no añadir texto. El
+   eje con su índice cuenta lo mismo sin palabras. */
+
+.hero-rotulo {
+  margin: 0;
+  font-size: clamp(0.78rem, 1.05vw, 0.95rem);
+  font-weight: 700;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.hero-signo {
+  display: inline-block;
+  margin-right: 0.35em;
+  font-weight: 800;
+}
+
+/* ── Las palabras hacen lo que dicen ──
+
+   Ninguna de las dos usa font-size, left ni letter-spacing: todo va con
+   transform y opacity, que se resuelven en el compositor. Es lo que permite
+   que esto no cueste ni una maquetación por fotograma mientras se desplaza. */
+
+/* RUIDO: la palabra queda QUIETA —la caja no se mueve, así el par con IMPACTO
+   sigue siendo un diagrama simétrico— y el ruido son dos copias fantasma
+   desfasadas en direcciones opuestas, como una señal mal sintonizada. Se
+   disipan conforme el índice recorre el eje.
+
+   Hubo una versión con cada letra desplazada por su cuenta: hacía lo que
+   decía, pero desequilibraba el par. El fantasma ensucia sin mover nada.
+
+   --q es lo que queda de ruido. Solo transform y opacity: compositor puro,
+   nada que recalcular por fotograma. */
+.hero-fantasma {
+  --q: calc(1 - var(--ensayo));
+  position: relative;
+  display: inline-block;
+}
+
+.hero-fantasma::before,
+.hero-fantasma::after {
+  content: attr(data-t);
+  position: absolute;
+  left: 0;
+  top: 0;
+  /* Heredan letra y espaciado del rótulo; solo cambian sitio y peso. */
+  filter: blur(0.5px);
+  will-change: transform, opacity;
+}
+
+.hero-fantasma::before {
+  transform: translate(calc(var(--q) * 0.14em), calc(var(--q) * -0.11em));
+  opacity: calc(var(--q) * 0.55);
+}
+
+.hero-fantasma::after {
+  transform: translate(calc(var(--q) * -0.12em), calc(var(--q) * 0.13em));
+  opacity: calc(var(--q) * 0.4);
+}
+
+/* IMPACTO: empieza contenido y gana firmeza. El crecimiento es moderado
+   (1.12, no 1.34) para que el par no se desequilibre hacia el otro lado:
+   el diagrama pesa lo mismo en los dos extremos del eje. Anclado a la
+   derecha para crecer hacia dentro. */
+.hero-crece {
+  display: inline-block;
+  transform: scale(calc(1 + var(--ensayo) * 0.12));
+  transform-origin: right center;
+}
+
+/* El énfasis se intercambia con el ensayo en vez de alternarse: si uno
+   desapareciera se perdería la lectura de diagrama, que es lo que sostiene la
+   pareja. Ninguno de los dos baja de 0.62 de alfa, que es donde se midió el
+   contraste AA — atenuar no es excusa para dejar de leerse. */
+.hero-rotulo--ruido {
+  color: rgba(255, 255, 255, calc(0.95 - var(--ensayo) * 0.33));
+}
+
+/* El signo va más apagado que su palabra —es un operador, no la etiqueta—,
+   pero no por debajo de AA: a 0.4 daba 3.68 contra la superficie y hace falta
+   4.5. Atenuar un carácter no es excusa para dejarlo ilegible. */
+.hero-rotulo--ruido .hero-signo {
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.hero-rotulo--impacto {
+  color: rgba(255, 255, 255, calc(0.62 + var(--ensayo) * 0.38));
+}
+
+.hero-rotulo--impacto .hero-signo {
+  color: var(--color-accent-texto);
+}
+
+/* ── El pie ──
+   Raíl de clientes y una sola acción, repartidos en una línea de base. */
+.hero-pie {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  gap: 2rem 3rem;
+  flex-wrap: wrap;
+  padding: 0 3.5vw;
+  margin-top: auto;
+}
+
+/* ── El banco de clientes ──
+   Antes eran seis logos flotando sobre el vacío. Ahora los doce se APOYAN en
+   una regla con marcas —la misma receta que el eje del ensayo— y derivan muy
+   despacio, como muestras pasando por el conducto. Con doce ya no caben
+   quietos, así que la deriva resuelve el sitio y el anclaje a la vez. */
+.hero-banco {
+  position: relative;
   flex: 1;
-  z-index: 1;
+  min-width: 0;
+  max-width: 64%;
+  padding-bottom: 12px;
+  /* La regla sobre la que se apoyan. */
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))
+      0 100% / 100% 1px no-repeat,
+    repeating-linear-gradient(to right,
+      rgba(255, 255, 255, 0.15) 0 1px,
+      transparent 1px 15px)
+      0 100% / 100% 4px no-repeat;
+  /* Recorta la pista, que mide el doble del contenedor. */
+  overflow: hidden;
+  /* Se desvanece por los extremos para que no aparezcan y desaparezcan de
+     golpe: las muestras entran y salen del conducto, no se cortan. */
+  mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
 }
 
-.client-logos-side.left {
-  padding-right: 1.25rem;
-}
-
-.client-logos-side.right {
-  padding-left: 1.25rem;
-}
-
-/* Each logo gets a fixed-size box for visual consistency */
-.logo-item {
-  flex: 1;
+.hero-banco-pista {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 10px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 140px;
+  align-items: flex-end;
+  /* Ancho fijo por hueco: es lo que hace que la mitad exacta de la pista mida
+     lo mismo que la otra mitad y el bucle no tenga costura. */
+  gap: clamp(1.75rem, 3vw, 3rem);
+  width: max-content;
+  animation: derivaBanco 64s linear infinite;
+  will-change: transform;
+}
+
+@keyframes derivaBanco {
+  from { transform: translateX(0); }
+  /* Justo la mitad: ahí empieza la segunda copia, idéntica a la primera. */
+  to { transform: translateX(-50%); }
+}
+
+.hero-banco-item {
+  display: flex;
+  align-items: flex-end;
+  flex-shrink: 0;
 }
 
 .logo-image {
-  height: 32px;
+  height: 26px;
   width: auto;
-  max-width: 100%;
+  max-width: 108px;
   object-fit: contain;
-  opacity: 0.35;
-  transition: all 0.4s ease;
-  filter: brightness(0.9) grayscale(0.2);
+  opacity: 0.5;
+  filter: grayscale(1);
+  transition: opacity 0.35s var(--ease-out-expo), filter 0.35s var(--ease-out-expo);
 }
 
-.logo-image:hover {
-  opacity: 0.9;
-  filter: 
-    brightness(1.2)
-    grayscale(0)
-    drop-shadow(0 0 8px rgba(176, 36, 255, 0.4));
-  transform: scale(1.08);
+/* Tinta oscura: sin invertir quedan por debajo de 50 de luminancia media sobre
+   un fondo casi negro, o sea invisibles. Invertir CONSERVA la estructura
+   interna del logo; aplanarlos a silueta blanca la destruía. */
+.logo-image.invertir {
+  filter: grayscale(1) invert(1);
 }
 
-/* Per-logo size adjustments */
-.logo-image.logo-go {
-  height: 60px;
+.logo-image:hover,
+.logo-image.invertir:hover {
+  opacity: 0.95;
+  filter: grayscale(0);
 }
 
-.logo-image.logo-berse {
-  height: 44px;
-}
+/* Los logos vienen a tamaños muy distintos; estos necesitan su ajuste para
+   pesar lo mismo ópticamente que el resto. */
+.logo-image.logo-go { height: 42px; }
+.logo-image.logo-berse { height: 34px; }
+.logo-image.logo-spa { height: 32px; }
+.logo-image.logo-vault { height: 34px; }
+.logo-image.logo-rosita { height: 34px; }
+.logo-image.logo-oasis { height: 30px; }
+.logo-image.logo-urban { height: 32px; }
+.logo-image.logo-bhouse { height: 30px; }
 
-.logo-image.logo-spa {
-  height: 42px;
-}
-
-/* Center text */
-.hero-subtitle {
-  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
-  font-weight: 800;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  margin: 0;
-  text-align: center;
-  white-space: nowrap;
-  position: relative;
-  z-index: 2;
-  flex-shrink: 0;
-  padding: 0.4rem 1.5rem;
-  font-family: var(--font-sans);
-  color: rgba(255, 255, 255, 0.6);
-  border-left: 1px solid rgba(176, 36, 255, 0.35);
-  border-right: 1px solid rgba(176, 36, 255, 0.35);
-  text-shadow: 0 0 12px rgba(176, 36, 255, 0.25);
-}
-
-/* Bottom section with asymmetric blocks */
-.hero-bottom-section {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  flex: 1;
-  min-height: 45vh;
-}
-
-/* Left block - CTA (Purple) */
-.hero-cta-block {
-  background: linear-gradient(145deg, #1a0a2e 0%, #0d0318 40%, #030106 100%);
-  padding: 4rem 3rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1.25rem;
-  position: relative;
-  /* Era 3px: a ese grosor un borde de color en un lado lee como pestana de
-     acento. A 1px separa los dos bloques del hero sin ese efecto. */
-  border-right: 1px solid var(--color-accent);
-  box-shadow: inset 0 0 80px rgba(176, 36, 255, 0.12), 0 0 30px rgba(176, 36, 255, 0.3);
-  overflow: hidden;
-}
-
-/* Ambient purple glow — top-left corner only */
-.hero-cta-block::before {
-  content: '';
-  position: absolute;
-  top: -30%;
-  left: -30%;
-  width: 80%;
-  height: 80%;
-  background: radial-gradient(circle, rgba(176, 36, 255, 0.25) 0%, transparent 70%);
-  animation: pulse 5s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.4; }
-  50% { transform: scale(1.15); opacity: 0.6; }
-}
-
-.cta-text-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  position: relative;
-  z-index: 1;
-}
-
-.cta-small-text {
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  /* Explicito porque este elemento dejo de ser <h3>: la regla h1..h6 de
-     index.css le daba este line-height y como <p> heredaria el del body. */
-  line-height: 1.2;
-  margin: 0;
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.35);
-  -webkit-text-fill-color: transparent;
-  text-shadow: none;
-  opacity: 0.7;
-}
-
-.cta-large-text {
-  font-size: clamp(2.5rem, 6vw, 5.5rem);
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  margin: 0;
-  line-height: 1;
-  /* Era un degradado de cinco paradas con brillo animado en bucle y un halo
-     morado sin desplazamiento. Tres cosas que el enunciado no necesitaba: a
-     5.5rem y peso 900, el enfasis ya lo dan el tamano y el peso.
-     El halo se sustituye por una sombra con desplazamiento y desenfoque, que
-     es profundidad; un resplandor centrado en el propio texto es adorno. */
-  color: #ffffff;
-  text-shadow: 0 2px 24px rgba(3, 1, 6, 0.9);
-}
-
-/* Accent line between text and button */
-.cta-accent-line {
-  height: 2px;
-  background: linear-gradient(90deg, #B024FF, #00C8C8);
-  border-radius: 2px;
-  position: relative;
-  z-index: 1;
-  box-shadow: 0 0 10px rgba(176, 36, 255, 0.5), 0 0 25px rgba(0, 200, 200, 0.2);
-}
-
-/* Tagline */
-.cta-tagline {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.75);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin: 0;
-  position: relative;
-  z-index: 1;
-  text-shadow: 0 0 20px rgba(176, 36, 255, 0.3);
-}
-
-/* CTA Hero Button */
-.btn-cta-hero {
+/* ── La acción ──
+   Presente, no protagonista: sin relleno, sin resplandor. Un filete que se
+   completa al pasar por encima. */
+.hero-accion {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1.1rem 2.2rem;
-  font-size: 0.95rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  gap: 0.6rem;
+  padding: 0.7rem 0.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   color: #ffffff;
-  background: rgba(176, 36, 255, 0.12);
-  border: 2px solid transparent;
-  border-image: linear-gradient(90deg, #B024FF, #00C8C8) 1;
-  cursor: pointer;
-  position: relative;
-  z-index: 2;
-  text-decoration: none;
-  transition: all 0.35s ease;
-  overflow: hidden;
-  backdrop-filter: blur(4px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+  transition: color 0.3s var(--ease-out-expo), border-color 0.3s var(--ease-out-expo);
 }
 
-.btn-cta-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(176, 36, 255, 0.25), rgba(0, 200, 200, 0.15));
-  opacity: 0;
-  transition: opacity 0.35s ease;
+.hero-accion svg {
+  transition: transform 0.3s var(--ease-out-expo);
 }
 
-.btn-cta-hero:hover::before {
-  opacity: 1;
+.hero-accion:hover {
+  color: var(--color-accent-texto);
+  border-color: var(--color-accent-texto);
 }
 
-.btn-cta-hero:hover {
-  box-shadow:
-    0 0 25px rgba(176, 36, 255, 0.5),
-    0 0 50px rgba(0, 200, 200, 0.2),
-    inset 0 0 20px rgba(176, 36, 255, 0.1);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-.btn-cta-hero span {
-  position: relative;
-  z-index: 1;
-}
-
-.btn-arrow {
-  position: relative;
-  z-index: 1;
-  transition: transform 0.3s ease;
-}
-
-.btn-cta-hero:hover .btn-arrow {
+.hero-accion:hover svg {
   transform: translateX(5px);
 }
 
-
-/* Schedule Button (Hero) */
-.btn-schedule-hero {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.4rem;
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.65);
-  background: transparent;
-  border: 1px solid rgba(176, 36, 255, 0.2);
-  border-radius: 8px;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 2;
-  margin-top: 0.5rem;
+.hero-accion:focus-visible {
+  outline: 2px solid var(--color-accent-texto);
+  outline-offset: 6px;
+  border-radius: 2px;
 }
 
-.btn-schedule-hero svg {
-  color: rgba(176, 36, 255, 0.6);
-  transition: color 0.2s;
-}
-
-.btn-schedule-hero:hover {
-  color: #fff;
-  border-color: rgba(176, 36, 255, 0.5);
-  background: rgba(176, 36, 255, 0.08);
-  box-shadow: 0 4px 16px rgba(176, 36, 255, 0.15);
-}
-
-.btn-schedule-hero:hover svg {
-  color: #B024FF;
-}
-
-@media (max-width: 480px) {
-  .btn-schedule-hero {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-
-
-@keyframes sweep {
-  0% { left: -100%; }
-  100% { left: 200%; }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .hero-bottom-section {
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
-
-  .hero-cta-block,
-
-  .hero-cta-block {
-    border-right: none;
-    border-bottom: 3px solid #B024FF;
-    box-shadow: 0 3px 20px rgba(176, 36, 255, 0.5);
-  }
-
-  .hero-title {
-    font-size: clamp(5rem, 15vw, 12rem);
-  }
-
-  .hero-logo-container {
-    max-width: 900px;
-    padding: 1.5rem 2rem;
-  }
-}
-
+/* ── Móvil ──
+   El campo se conserva entero: es lo que hay que demostrar. Lo que cambia es
+   el encuadre del texto, porque a 375px los dos rótulos no caben enfrentados
+   en la misma línea. */
 @media (max-width: 768px) {
   .hero {
-    padding: 70px 0 0 0;
-    min-height: auto;
-    overflow: visible;
-    /* Direct border approach - cleaner for mobile */
-    border: 3px solid #B024FF;
-    box-shadow: 
-      inset 0 0 20px rgba(176, 36, 255, 0.2),
-      0 0 20px rgba(176, 36, 255, 0.3);
-  }
-  
-  /* Hide pseudo-element borders on mobile - use direct border instead */
-  .hero::before,
-  .hero::after {
-    display: none;
+    min-height: 168svh;
   }
 
-  .hero-container {
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
+  .hero-capa {
+    height: 92svh;
+    margin-top: -92svh;
+    padding-bottom: 5.5rem;
   }
 
-  .hero-title-section {
-    min-height: 35vh;
-    padding: 1.5rem 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-  }
-  
-  .hero-content {
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
+  .campo {
+    height: 92svh;
   }
 
-  .hero-title {
-    font-size: clamp(4rem, 12vw, 8rem);
+  .hero-rotulo {
+    letter-spacing: 0.34em;
   }
 
-
-  .hero-logo-container {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding: 1rem 0 !important;
-    margin: 0 !important;
-  }
-
-  .hero-subtitle-strip {
-    padding: 0.8rem 1rem !important;
-    min-height: 60px;
-    width: 100% !important;
-    margin: 0 !important;
-  }
-
-  .client-logos-side {
-    display: none;
-  }
-
-  .hero-subtitle {
-    /* El minimo del clamp era 0.6rem = 9.6px, bajo el piso de 11px. */
-    font-size: clamp(var(--texto-minimo), 2vw, 0.8rem);
-    letter-spacing: 0.2em;
-  }
-
-  .hero-subtitle::before,
-  .hero-subtitle::after {
-    display: none;
-  }
-  
-  .client-logos-side {
-    display: none;
-  }
-
-  .hero-subtitle {
-    /* El minimo del clamp era 0.6rem = 9.6px, bajo el piso de 11px. */
-    font-size: clamp(var(--texto-minimo), 2vw, 0.8rem);
-    letter-spacing: 0.2em;
-  }
-
-  .hero-subtitle::before,
-  .hero-subtitle::after {
-    display: none;
-  }
-
-  .hero-bottom-section {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    display: flex;
+  /* A 375px los dos rótulos no caben enfrentados, así que la fila se apila y
+     el eje pasa a ser una barra corta bajo la pareja. Sigue siendo la misma
+     escala con el mismo índice: cambia el encuadre, no el instrumento. */
+  .hero-medida {
+    left: 6vw;
+    right: 6vw;
+    top: 55%;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
   }
 
-  .hero-cta-block,
-
-
-  .cta-small-text {
-    font-size: clamp(1.2rem, 2.5vw, 2rem);
+  .hero-eje {
+    order: 3;
+    flex: none;
+    width: min(62vw, 260px);
+    margin-top: 0.35rem;
   }
 
-  .cta-large-text {
-    font-size: clamp(2rem, 5vw, 4rem);
+  .hero-rotulo--impacto {
+    order: 2;
   }
 
-  .cta-tagline {
-    font-size: 0.75rem;
+  /* En móvil los rótulos van alineados a la izquierda, así que IMPACTO tiene
+     que crecer hacia la derecha: anclado a la derecha se saldría por el borde
+     izquierdo del encuadre. */
+  .hero-crece {
+    transform-origin: left center;
   }
 
-  .btn-cta-hero {
-    padding: 0.875rem 1.75rem;
-    font-size: 0.9rem;
-  }
-
-  .hero-image-placeholder {
-    max-width: 350px;
-  }
-
-
-}
-
-@media (max-width: 480px) {
-  .hero {
-    padding-left: 3px;
-    padding-right: 3px;
-  }
-
-  .hero-title-section {
-    min-height: 28vh;
-    padding: 1rem 0;
-  }
-
-  .hero-title {
-    font-size: 3.5rem;
-  }
-
-  .hero-logo-container {
-    max-width: 100%;
-    padding: 0.5rem;
-  }
-
-  .hero-subtitle-strip {
-    padding: 0.75rem 1rem;
-    min-height: 50px;
-  }
-
-  .hero-cta-block,
-
-
-  .cta-text-group {
-    text-align: center;
-    align-items: center;
-    padding: 0 1rem;
-  }
-
-  .cta-accent-line {
-    margin: 0 auto;
-  }
-
-  .cta-tagline {
-    text-align: center;
-    font-size: 0.7rem;
-  }
-
-  .btn-cta-hero {
-    padding: 0.875rem 1.75rem;
-    font-size: 0.85rem;
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* ═══════════════════════════════════════════
-   REDISEÑO DEL HERO — ajustes de composición
-
-   El problema medido: el hero ocupaba 1,44 pantallas en 1280x800 y los dos
-   botones propios caían FUERA (933px y 1025px) mientras los cuatro iconos de
-   Meta y TikTok sí se veían (692px). No era casualidad: .hero-title-section
-   pedía min-height 50vh y .hero-bottom-section otro 45vh, así que sumando la
-   franja de clientes y el ticker no cabía por construcción.
-
-   Estas reglas van al final del archivo a propósito: pisan a las de arriba sin
-   tener que reescribirlas, y así se lee de un vistazo qué cambió el rediseño y
-   qué venía de antes.
-   ═══════════════════════════════════════════ */
-
-/* El wordmark manda, pero deja de empujar. 38vh en vez de 50vh: sigue siendo
-   la pieza dominante y ahora el resto entra en pantalla. */
-.hero-title-section {
-  /* El ticker va en position:absolute con z-index 20 sobre la cabecera del
-     hero: ocupa de 96px a 150px. Sin este hueco arriba se comía 38px del
-     wordmark, medido. El min-height baja de 38vh a 32vh para compensar el
-     hueco y que el conjunto siga cabiendo en una pantalla. */
-  min-height: 32vh;
-  padding: 4rem 0 0.5rem;
-}
-
-.hero-logo-container {
-  padding: 1rem 1rem 0.5rem;
-}
-
-/* Al irse el bloque social, el inferior deja de ser dos columnas. El lema y la
-   acción se reparten la anchura en una línea de base, como un pie de cartel. */
-.hero-bottom-section {
-  grid-template-columns: 1fr;
-  min-height: 0;
-}
-
-.hero-cta-block {
-  /* Sin el degradado de caja: era la mitad izquierda de un díptico que ya no
-     existe, y una caja con degradado dentro de una sección con degradado es
-     ruido sobre ruido. Con él se van los otros restos del díptico: el borde
-     que lo separaba del bloque social y la sombra que lo despegaba del fondo. */
-  background: none;
-  border-right: none;
-  box-shadow: none;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem 3rem;
-  flex-wrap: wrap;
-  padding: 1.75rem 3rem 2rem;
-}
-
-/* La línea de acento se va: con el lema a todo tamaño y sin la caja que lo
-   encerraba, era un adorno separando cosas que ya no están separadas. */
-.cta-accent-line {
-  display: none;
-}
-
-.hero-acciones {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.9rem;
-}
-
-.hero-acciones .cta-tagline {
-  margin: 0;
-  text-align: right;
-}
-
-@media (max-width: 900px) {
-  .hero-cta-block {
+  .hero-pie {
     flex-direction: column;
     align-items: flex-start;
     gap: 1.5rem;
-    padding: 2rem 1.5rem 2.5rem;
+    padding: 0 6vw;
   }
 
-  .hero-acciones {
-    align-items: flex-start;
+  .hero-banco {
+    max-width: 100%;
     width: 100%;
   }
 
-  .hero-acciones .cta-tagline {
-    text-align: left;
+  .hero-banco-pista {
+    gap: 1.6rem;
+    /* Menos ancho por delante: a la misma velocidad la deriva se vería el doble
+       de rápida en un móvil, porque recorre mucho menos para dar la vuelta. */
+    animation-duration: 42s;
   }
+
+  .logo-image { height: 22px; max-width: 84px; }
+  .logo-image.logo-go { height: 34px; }
+  .logo-image.logo-berse { height: 28px; }
+  .logo-image.logo-spa { height: 26px; }
+  .logo-image.logo-vault { height: 28px; }
+  .logo-image.logo-rosita { height: 28px; }
+  .logo-image.logo-oasis { height: 25px; }
+  .logo-image.logo-urban { height: 27px; }
+  .logo-image.logo-bhouse { height: 25px; }
 }
 
-/* El resplandor que latía en la esquina del bloque de CTA. Era
-   `animation: pulse 5s infinite` animando scale y opacity para siempre — otra
-   animación perpetua, y encima pertenecía a la caja del díptico que ya no
-   está. El hero se queda con lo que se mueve una vez (la construcción de la
-   marca) y lo que se mueve porque el visitante hace scroll. */
-.hero-cta-block::before {
-  display: none;
+/* ── Sin movimiento ──
+   Se cae el compás entero: el hero vuelve a medir una pantalla y el campo queda
+   en su lámina fija, con la marca puesta. Se pierde el segundo tiempo, que es
+   justo lo que aquí sobra; no se pierde ni la marca ni el lema. El bucle del
+   campo mantiene --ensayo en 0, así que el índice queda al principio de la
+   escala y el régimen marca turbulento, que es lo que se está viendo. */
+@media (prefers-reduced-motion: reduce) {
+  .hero {
+    min-height: 100svh;
+  }
+
+  .hero-capa {
+    position: relative;
+    top: auto;
+    height: auto;
+    min-height: 100svh;
+    margin-top: 0;
+  }
+
+  /* El banco se queda quieto mostrando los primeros. La regla y el apoyo se
+     conservan: lo que sobra aquí es la deriva, no el anclaje. */
+  .hero-banco-pista {
+    animation: none;
+  }
 }

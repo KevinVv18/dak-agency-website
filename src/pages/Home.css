@@ -1,0 +1,112 @@
+/* ═══════════════════════════════════════════
+   EL TÚNEL
+
+   Un solo plano para los dos primeros actos. El campo de flujo queda fijo y
+   por encima pasan, en orden: la marca —que se suelta— y después el titular,
+   que llega cuando el aire ya está en calma.
+
+   Antes eran dos secciones: un hero que era un instrumento de precisión y,
+   justo debajo, orbes desenfocados flotando con paralaje. La página se partía
+   en dos. Unirlas bajo la misma corriente no es un efecto de transición: es
+   dejar de tener dos mundos.
+   ═══════════════════════════════════════════ */
+
+.tunel {
+  position: relative;
+  /* El color de superficie lo pone el ritmo de index.css. */
+
+  /* El avance del ensayo, de 0 a 1. Lo escribe aquí el bucle del campo, una
+     vez por fotograma, y baja por herencia a los dos actos. Estos valores de
+     partida son para el primer fotograma y para cuando no hay movimiento.
+
+     Se declaran AQUÍ y en ningún sitio más: una declaración propia en un
+     descendiente gana sobre lo heredado y lo dejaría congelado. */
+  --ensayo: 0;
+  --entrega: 0;
+}
+
+/* ── El campo ──
+   Fijo durante el hero Y el titular, y se despega al final del segundo. */
+.tunel > .campo {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  z-index: 0;
+}
+
+.campo-lienzo {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* El primer hermano de contenido se monta sobre el lienzo. Con posición
+   absoluta no valdría: el lienzo está fijado, y un absoluto dentro de un
+   fijado no se sostiene solo. */
+.tunel > .hero {
+  margin-top: -100svh;
+  position: relative;
+  z-index: 2;
+}
+
+/* El titular sube por encima de la corriente, no sobre un fondo propio. */
+.tunel > .cta-section {
+  position: relative;
+  z-index: 2;
+  background: transparent;
+}
+
+/* ── El final del túnel ──
+   El lienzo se acaba justo donde empieza Servicios, y hasta ahora las
+   partículas llegaban a su última fila a pleno brillo: un filo recto de lado a
+   lado. Medido en el empalme, la luminancia media caía de 12,9 a 2,65 en una
+   sola fila de píxeles.
+
+   Esto no es un parche de degradado: es el remate que le faltaba a la idea. El
+   aire sale del túnel y la corriente se disuelve en la superficie, en vez de
+   que alguien apague el ventilador de golpe.
+
+   Va en z-index 1 —encima del lienzo, debajo del hero y del titular— así que
+   difumina la corriente sin tocar el texto. Es un degradado estático: se pinta
+   una vez y no cuesta nada por fotograma. */
+.tunel::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 220px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 0%, var(--superficie) 100%);
+}
+
+/* Aquí el lienzo medía 92svh en móvil, y el hero compensaba con -92svh.
+   Ese 8% que faltaba estaba reservado para la barra fija de Servicios, que
+   ocupaba 56px del borde inferior. Al retirarse la barra dejó de tapar nada y
+   se convirtió en una banda negra: medido en un iPhone 15 Pro Max, 75px de
+   pantalla muerta debajo de la corriente, con el fondo cortado en seco.
+
+   Sin la barra no hay nada que esquivar, así que el móvil usa el mismo 100svh
+   que el escritorio y la regla sobra entera. */
+
+/* ── Sin movimiento ──
+   Se cae el plano continuo: el campo vuelve a ser el fondo del hero y nada
+   más, y el titular recupera su superficie propia. Se pierde el enlace entre
+   actos, que es justo lo que aquí sobra; no se pierde ni la marca ni el
+   contenido. */
+@media (prefers-reduced-motion: reduce) {
+  .tunel > .campo {
+    position: absolute;
+    inset: 0;
+    height: 100svh;
+  }
+
+  .tunel > .hero {
+    margin-top: 0;
+  }
+
+  .tunel > .cta-section {
+    background: var(--superficie-alta);
+  }
+}

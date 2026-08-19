@@ -118,7 +118,7 @@ const About = () => {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="section-title section-title--menor">
+        <h2 className="section-title section-title--medio">
           <span className="title-bold">Nosotros</span>
         </h2>
       </motion.div>
@@ -130,11 +130,19 @@ const About = () => {
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.7, delay: 0.15 }}
       >
+        {/* Una palabra en color, no tres.
+            Iban resaltadas «llave» en morado, «estrategia» en teal y
+            «tecnología» en naranja, con el color escrito a mano en cada una. Ni
+            el teal ni el naranja existen ya en ninguna otra parte de la web, y
+            sobre todo: si se subrayan tres palabras de una frase de trece, no
+            se está subrayando nada.
+
+            La que se queda es LLAVE, y no por gusto — DAK es Digital
+            Acceleration Key. Es la única de las tres que dice algo que el
+            lector no sabía. */}
         <h3 className="about-statement">
-          Somos la <span className="about-hl" style={{ '--hl': '#B024FF' }}>llave</span> que
-          acelera negocios: <span className="about-hl" style={{ '--hl': '#00C8C8' }}>estrategia</span>,
-          diseño y <span className="about-hl" style={{ '--hl': '#FF6B35' }}>tecnología</span> desde
-          Chiclayo para el mundo.
+          Somos la <span className="about-hl">llave</span> que acelera negocios:
+          estrategia, diseño y tecnología desde Chiclayo para el mundo.
         </h3>
         <p className="about-sub">
           DAK significa <b>Digital Acceleration Key</b>. Nacimos en La Victoria, Chiclayo,

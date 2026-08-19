@@ -172,25 +172,40 @@
   text-align: center;
 }
 
+/* La misma caja que los botones del resto de la web —sin radio, filete de un
+   píxel y esquineras de mira que se abren— pero EN CLARO: era una cápsula de
+   3rem que se levantaba al pasar el ratón.
+
+   Las esquineras se declaran oscuras. Su color por defecto es blanco al 40%,
+   que sobre este fondo claro no existiría: los tokens `--esq-*` están hechos
+   justo para esto, cada consumidor pone el suyo. */
 .estudio-enlace {
   display: inline-flex;
   align-items: center;
   gap: 0.7rem;
-  padding: 1rem 2.25rem;
-  font-size: 0.95rem;
+  padding: 0.95rem 2.25rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
   color: var(--claro);
-  background: var(--tinta);
-  border-radius: 3rem;
-  transition: background 0.3s var(--ease-out-expo), transform 0.3s var(--ease-out-expo);
+  background-color: var(--tinta);
+  border: 1px solid transparent;
+  border-radius: 0;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(244, 241, 246, 0.55);
+  transition: background-color 0.3s var(--ease-out-expo),
+    background-position 0.35s var(--ease-out-expo);
 }
 
-.estudio-enlace:hover {
-  background: var(--acento-claro);
-  transform: translateY(-2px);
+.estudio-enlace:hover,
+.estudio-enlace:focus-visible {
+  background-color: var(--acento-claro);
+  background-position: var(--esq-abierta);
 }
 
 .estudio-enlace svg {
