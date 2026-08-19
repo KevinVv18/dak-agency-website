@@ -111,9 +111,33 @@ p, h1, h2, h3 { margin-top: 0; }
 .funnel-node__survival { display: none; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .08em; }
 .funnel-node__measure { display: block; height: 3px; margin-top: 14px; overflow: hidden; border-radius: 2px; background: rgba(255, 255, 255, .05); }
 .funnel-node__measure i, .coverage-row i b { display: block; width: 100%; height: 100%; border-radius: inherit; background: var(--teal); opacity: .58; transform: scaleX(0); transform-origin: left; animation: measure-entry var(--t-vista) var(--ease-suave) forwards; }
-.funnel-node__note { position: absolute; top: calc(100% - 8px); left: 4px; z-index: 5; display: block; max-width: 22ch; padding: 6px 8px; border: 1px solid var(--linea-viva); border-radius: 8px; background: var(--elevada); color: var(--secondary); font-size: 14px; line-height: 1.45; opacity: 0; pointer-events: none; transform: translateY(-3px); transition: opacity var(--t-corta) var(--ease-suave), transform var(--t-corta) var(--ease-suave); }
-.funnel-node:focus-visible .funnel-node__note { opacity: 1; transform: translateY(0); }
+/* La explicacion de cada etapa NO es un globo flotante sobre el nodo. Un
+   recuadro con borde y fondo colgando de la cifra tapa el nodo siguiente, se
+   sale de la rejilla y se lee como un tooltip de sistema operativo pegado
+   encima del diseño.
+   En su lugar hay UNA linea de estado compartida, siempre en el mismo sitio
+   bajo el embudo, que cambia de contenido segun donde estes. Es como se
+   comporta un panel de instrumentos: la aguja se mueve, la caratula no.
+   En reposo muestra la etapa rota, en gris, porque es el dato que hay que ver
+   aunque nadie mueva el raton. */
+.funnel-readout { padding: 0 26px 16px; }
+.funnel-readout > span {
+  display: block; max-width: 62ch; min-height: 2.9em;
+  color: var(--secondary); font-size: 14px; line-height: 1.45;
+  opacity: .4; transform: translateY(2px);
+  transition: opacity var(--t-corta) var(--ease-suave), transform var(--t-corta) var(--ease-suave), color var(--t-corta) var(--ease-suave);
+}
+.funnel-readout > span.is-on { opacity: 1; transform: none; color: var(--text); }
+/* El nodo activo: la cifra sube a blanco pleno, la etiqueta se despierta y la
+   barra coge color. Tres cambios de color, ni un pixel de movimiento — asi la
+   fila de cifras no baila mientras recorres el embudo. */
+.funnel-node > strong, .funnel-node__label { transition: color var(--t-corta) var(--ease-suave); }
+.funnel-node.is-active > strong { color: #fff; }
+.funnel-node.is-active .funnel-node__label { color: var(--secondary); }
+.funnel-node.is-active .funnel-node__measure i { opacity: .96; }
+
 .funnel-node--warning > strong, .funnel-node--warning .funnel-node__label { color: var(--amber); }
+.funnel-node--warning.is-active > strong { color: var(--amber); }
 .funnel-node--warning .funnel-node__measure i { background: var(--amber); }
 .funnel-connector { flex: none; width: clamp(38px, 5.5vw, 84px); padding-top: 6px; text-align: center; }
 .funnel-connector span { display: block; margin-bottom: 7px; color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; font-weight: 500; letter-spacing: .08em; }
@@ -275,9 +299,11 @@ tbody tr.is-selected { background: var(--elevada); }
   .brand:hover, .rail-actions button:hover { background: rgba(255, 255, 255, .04); color: var(--secondary); }
   .rail-actions button:hover > span { opacity: 1; transform: translateX(0); }
   .rail-actions button:focus-visible > span { opacity: 1; transform: translateX(0); }
-  .funnel-node:hover { background: rgba(255, 255, 255, .025); }
-  .funnel-node:hover .funnel-node__note { opacity: 1; transform: translateY(0); }
-  .funnel-node:hover .funnel-node__measure i, .coverage-row:hover i b { opacity: .96; }
+  /* Nada de rectangulo de fondo al pasar por encima: en una rejilla de cifras
+     grandes, un bloque relleno detras de un numero se lee como un fallo de
+     alineacion, no como un estado. Lo que marca donde estas es la propia
+     cifra encendiendose y su barra ganando color. */
+  .coverage-row:hover i b { opacity: .96; }
   .decision-row:hover { border-color: var(--linea-viva); background: var(--superficie); }
   .decision-row:hover .icon { opacity: 1; transform: translateX(0); }
   .message-card:hover, .prospect-detail:hover, .source-card:hover, .scope-note:hover { border-color: var(--linea-viva); background: var(--elevada); }
@@ -319,7 +345,10 @@ tbody tr.is-selected { background: var(--elevada); }
   .funnel-node__survival { display: block; margin-bottom: 5px; }
   .funnel-node__label { min-height: 29px; margin-top: 7px; overflow-wrap: anywhere; font-size: 11px; letter-spacing: .04em; }
   .funnel-node__measure { margin-top: 8px; }
-  .funnel-node__note, .funnel-connector { display: none; }
+  /* En movil el embudo pasa a rejilla y cada nodo lleva su propio porcentaje,
+     asi que el conector sobra. La linea de estado tambien: sin raton no hay
+     nada que señalar, y el aria-label de cada nodo ya lleva la explicacion. */
+  .funnel-connector, .funnel-readout { display: none; }
   .panorama-lower { grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1.05fr) minmax(0, .95fr); }
   .decision-zone { grid-column: 1 / 3; }
   .inbound-zone { grid-column: auto; }

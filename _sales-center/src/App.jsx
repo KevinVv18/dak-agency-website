@@ -309,6 +309,9 @@ function getSnapshotDate(data) {
 }
 
 function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView }) {
+  // Que etapa del embudo se esta señalando. Vive aqui y no en cada nodo porque
+  // la linea de estado es UNA sola y compartida.
+  const [activeStage, setActiveStage] = useState(null)
   const processed = baseHealth.length && baseHealth.every((source) => source.procesadas !== null)
     ? baseHealth.reduce((total, source) => total + source.procesadas, 0)
     : null
@@ -339,15 +342,21 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
     <section aria-label="Panorama comercial" className="panorama-console">
       <section className="console-zone panorama-funnel" aria-labelledby="panorama-funnel-title">
         <header className="zone-heading"><h2 id="panorama-funnel-title">Recorrido</h2><span>Vista derivada</span></header>
-        <div className="funnel-route">
+        <div className="funnel-route" onMouseLeave={() => setActiveStage(null)}>
           {funnel.map((stage, index) => (
             <React.Fragment key={stage.label}>
-              <div aria-label={`${valueOrMissing(stage.value)} ${stage.label}. ${stage.note}`} className={`funnel-node ${stage.warning ? 'funnel-node--warning' : ''}`} tabIndex="0">
+              <div
+                aria-label={`${valueOrMissing(stage.value)} ${stage.label}. ${stage.note}`}
+                className={`funnel-node ${stage.warning ? 'funnel-node--warning' : ''} ${activeStage === index ? 'is-active' : ''}`}
+                onBlur={() => setActiveStage(null)}
+                onFocus={() => setActiveStage(index)}
+                onMouseEnter={() => setActiveStage(index)}
+                tabIndex="0"
+              >
                 <span className="funnel-node__survival">{index ? wholePercent(stage.value, funnel[index - 1].value) : stage.value === null ? missing : '100 %'}</span>
                 <strong>{valueOrMissing(stage.value)}</strong>
                 <span className="funnel-node__label">{stage.label}</span>
                 <span className="funnel-node__measure"><i style={{ '--measure': Math.max((stage.value ?? 0) / maxFunnel, 0) }} /></span>
-                <span className="funnel-node__note">{stage.note}</span>
               </div>
               {index < funnel.length - 1 && (
                 <div className={`funnel-connector ${funnel[index + 1].warning ? 'funnel-connector--warning' : ''}`} aria-label={`${wholePercent(funnel[index + 1].value, stage.value)} continúa`}>
@@ -358,6 +367,14 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
             </React.Fragment>
           ))}
         </div>
+        {/* Una sola linea, siempre en el mismo sitio. En reposo enseña la etapa
+            rota en gris; al recorrer el embudo cambia de contenido sin mover
+            nada. La caratula no se mueve, solo la aguja. */}
+        <p className="funnel-readout">
+          <span className={activeStage === null ? '' : 'is-on'}>
+            {(activeStage === null ? funnel.find((stage) => stage.warning) ?? funnel[0] : funnel[activeStage]).note}
+          </span>
+        </p>
       </section>
 
       <div className="panorama-lower">
