@@ -11,12 +11,25 @@
 DirectoryIndex index.html
 
 # ── Muro ────────────────────────────────────────────────────────────────────
-# El .htpasswd vive FUERA de todo docroot. Si estuviera aqui dentro, lo unico
-# que lo separaria de internet seria una regla de este mismo archivo — y ya
-# pasamos por eso en agosto con los tarballs del panel.
+# El .htpasswd vive FUERA de todo docroot: en domains/dakagency.net/, un nivel
+# por encima de public_html. Nada de ahi se sirve por web (comprobado: esa URL
+# devuelve el index.html de la SPA por el fallback, no el fichero).
+#
+# Estuvo en /home/u567580447/ventas-auth/ con chmod 700, que era mas estricto
+# sobre el papel y NO FUNCIONABA: el servidor web corre en el grupo `apache` y
+# esa carpeta era del grupo o1007743637, asi que no podia ni entrar. El sintoma
+# era un 401 con la contraseña correcta, indistinguible de equivocarse de clave.
+# `chgrp apache` esta prohibido en el shared, asi que la solucion es un
+# directorio que el servidor ya puede leer. Sigue sin ser alcanzable desde
+# internet, y otros usuarios de la maquina tampoco llegan: /home/u567580447 es
+# drwx--x--- y no da permiso a `otros`.
+#
+# ⚠️ El hash tiene que ser apr1 (`openssl passwd -apr1`). Los bcrypt que genera
+#    PHP con PASSWORD_BCRYPT ($2y$...) este servidor NO los acepta: devuelve 401
+#    aunque la contraseña sea correcta.
 AuthType Basic
 AuthName "DAK · Centro de Ventas"
-AuthUserFile /home/u567580447/ventas-auth/.htpasswd
+AuthUserFile /home/u567580447/domains/dakagency.net/.ventas-htpasswd
 Require valid-user
 
 <IfModule mod_headers.c>
