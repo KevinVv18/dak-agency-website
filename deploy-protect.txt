@@ -22,6 +22,7 @@ inmobiliaria/
 analisis/
 guias/
 agro/
+ventas/
 .builds/
 
 # Backups automaticos que crea el panel de Hostinger (tarballs del WordPress).
