@@ -388,10 +388,15 @@ section{scroll-margin-top:3.6rem}
    repartidos por decenas) se corrigen solos, sin tocar una sola línea de HTML
    ni ahora ni en los informes futuros.
    Sobre negro, el rojo y el verde de marca se quedan en 3,9:1; estas versiones
-   aclaradas superan el 4,5:1 que necesita el texto pequeño. */
-.dark{--red:#FF6B85;--green:#3FD49B;--amber:#FFC15E;--purpd:#D08BFF}
+   aclaradas superan el 4,5:1 que necesita el texto pequeño.
+
+   --tx entra en la misma lista y por la misma razón: es el negro del cuerpo en
+   modo claro, así que un style="color:var(--tx)" dentro de una sección oscura
+   quedaba en 1,02:1, es decir invisible. Ocurrió en el informe de DOMEXIA y no
+   se detectó hasta ampliar el selector del auditor a .card p b. */
+.dark{--red:#FF6B85;--green:#3FD49B;--amber:#FFC15E;--purpd:#D08BFF;--tx:#FFFFFF}
 /* …salvo dentro de la tabla, que es una isla clara y necesita los originales */
-.dark .tw{--red:#D4123F;--green:#0A7A55;--amber:#8F5A00;--purpd:#7A1FB8}
+.dark .tw{--red:#D4123F;--green:#0A7A55;--amber:#8F5A00;--purpd:#7A1FB8;--tx:#141416}
 .attrib{color:var(--purpl)}
 /* El kicker es minúsculo (0,74rem): el púrpura de marca se queda en 4,49:1
    sobre negro, a una centésima del mínimo. Sobre oscuro va una versión clara. */

@@ -32,9 +32,15 @@
     return (px >= 24 || (negrita && px >= 18.66)) ? 3 : 4.5;
   }
 
+  // El selector tiene que llegar al texto en LINEA (.card p b, .lede b, .thesis b):
+  // ahi es donde viven los style='color:var(--algo)' escritos a mano, que son
+  // justo los que fallan. Con el selector estrecho, DOMEXIA publico durante dias
+  // un parrafo invisible (1,02:1) sin que la auditoria lo viera.
   var SEL = 'td,td b,th,.tnote,.tier p,.tier .per,.tier h3,.tier .amt,.step p,.step .when,' +
-            '.vs li,.vs li b,.card p,.lede,.src,.stat-l,.stat,.dl span,.dl b,.bval,.attrib,' +
-            '.quote,.thesis,.lab,.kick,h1,h2,h3,.foot small,.foot .soc a,.pill,.hero .meta,.hero .date';
+            '.vs li,.vs li b,.card p,.card p b,.card h3,.lede,.lede b,.lede em,.src,' +
+            '.stat-l,.stat,.dl span,.dl b,.bval,.brow span,.attrib,.quote,.thesis,' +
+            '.thesis b,.thesis em,.lab,.kick,h1,h2,h3,.foot small,.foot .soc a,.pill,' +
+            '.hero .meta,.hero .date,.badge';
 
   var fallos = [], peor = { margen: 99 }, n = 0;
   document.querySelectorAll(SEL).forEach(function (e) {
