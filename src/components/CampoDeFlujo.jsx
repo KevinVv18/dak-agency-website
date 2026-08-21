@@ -249,6 +249,22 @@ const CampoDeFlujo = ({ className = '' }) => {
          nítidas pero el brillo del borde solo tocaba a un par de celdas, así
          que casi ninguna partícula se encendía; ancha encendía el contorno
          pero emborronaba la tipografía. Son dos trabajos distintos. */
+      /* OJO con el cero.
+
+         La suma deslizante suma por delante y resta por detrás. Los sumandos
+         son Float32 y la resta no deshace exactamente la suma, así que cuando
+         la ventana ya ha dejado atrás la marca el acumulador no vuelve a 0
+         limpio: se queda en ±1e-17. Un promedio de números no negativos no
+         puede ser negativo — ese signo es ruido de redondeo, y el cero es la
+         respuesta más próxima a la verdad.
+
+         No es quisquillosería: rapidez[] hace la RAÍZ de esta rampa, y la raíz
+         de −1e-17 es NaN. Un NaN aquí envenena la velocidad de la partícula
+         que lo toque, y con ella su posición; deja de dibujarse y deja de
+         contar. Medido antes de esta línea: 173 celdas NaN en dos columnas
+         (u=0,813 y u=0,823) y el 6% de las partículas muertas a la vez. Eso
+         era la barra vertical del hero — la que se persiguió durante sesiones
+         como si fuera un problema de fluidos. Ver docs/brecha-hero.md. */
       const difuminar = (origen, radio, pasadas) => {
         const a = Float32Array.from(origen)
         const b = new Float32Array(GW * GH)
@@ -261,7 +277,7 @@ const CampoDeFlujo = ({ className = '' }) => {
             let n = 0
             for (let x = 0; x <= radio && x < GW; x++) { suma += a[f + x]; n++ }
             for (let x = 0; x < GW; x++) {
-              b[f + x] = suma / n
+              b[f + x] = suma > 0 ? suma / n : 0
               const entra = x + radio + 1
               const sale = x - radio
               if (entra < GW) { suma += a[f + entra]; n++ }
@@ -274,7 +290,7 @@ const CampoDeFlujo = ({ className = '' }) => {
             let n = 0
             for (let y = 0; y <= radio && y < GH; y++) { suma += b[y * GW + x]; n++ }
             for (let y = 0; y < GH; y++) {
-              a[y * GW + x] = suma / n
+              a[y * GW + x] = suma > 0 ? suma / n : 0
               const entra = y + radio + 1
               const sale = y - radio
               if (entra < GH) { suma += b[entra * GW + x]; n++ }
@@ -745,7 +761,13 @@ const CampoDeFlujo = ({ className = '' }) => {
         // entrar corriente. Resultado, la A y la K no se revelaban. Sembrando
         // por todo el campo cada región mantiene su densidad y las tres letras
         // se leen. La vida corta evita que se acumulen en los remansos.
-        if (x < -20 || x > ancho + 20 || y < -20 || y > alto + 20 || particulas[b + 4] < 0) {
+        /* En positivo, y no en negativo, a propósito: así un NaN cae del lado
+           de «fuera de juego» y la partícula renace en el acto. Con la
+           condición al revés, cualquier comparación contra NaN da falso y la
+           partícula se quedaba muerta —sin pintarse y sin contar— hasta que se
+           le agotaba la vida, hasta 200 fotogramas después. */
+        const enJuego = x > -20 && x < ancho + 20 && y > -20 && y < alto + 20
+        if (!enJuego || particulas[b + 4] < 0) {
           sembrarUna(b, 70 + Math.random() * 130)
           continue
         }

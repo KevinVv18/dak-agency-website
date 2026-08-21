@@ -1,7 +1,83 @@
-# La brecha del hero — fallo abierto
+# La brecha del hero — RESUELTO
 
-**Estado: SIN RESOLVER.** Documento de traspaso. Escrito tras una sesión larga de
-intentos fallidos, para que quien lo retome no repita el mismo camino.
+**Estado: CERRADO.** No era fluidodinámica. Era `Math.sqrt` de un número
+negativo.
+
+## La causa
+
+`difuminar()` es un desenfoque de caja por suma deslizante: suma el valor que
+entra por delante y resta el que sale por detrás. Los sumandos son `Float32` y
+la resta no deshace exactamente la suma, así que cuando la ventana ya ha dejado
+atrás la marca el acumulador no vuelve a cero limpio — se queda en ±1e-17.
+
+`rapidez[]` hace la RAÍZ de esa rampa. `Math.sqrt(-1.2e-17)` es **NaN**.
+
+Medido a 1280×900, antes del arreglo:
+
+- **173 celdas NaN** en `rapidez`, repartidas en **dos columnas de rejilla**:
+  u=0,8131 y u=0,8232. Justo donde Kevin veía la barra.
+- Toda partícula que muestreaba esas celdas salía con `vel` NaN, y con ella su
+  posición. Dejaba de dibujarse y dejaba de contar. **El 6,1% de las partículas
+  estaban muertas** en cualquier instante.
+- El guardián de renacimiento estaba escrito en negativo
+  (`x < -20 || x > ancho + 20 || …`), y **toda comparación contra NaN es falsa**,
+  así que la partícula no renacía hasta que se le agotaba la vida: hasta 200
+  fotogramas de cadáver.
+- En pantalla: una tira de 4-6px donde el lienzo valía exactamente `[3, 1, 6]`
+  —el color del fondo, sin un solo trazo encima— y todo lo que quedaba a su
+  derecha, hambriento, recuperándose a lo largo de unos 100px.
+
+Eso explica cada síntoma que había: **por qué seguía al viewport** (el lienzo es
+`sticky`), **por qué era independiente del cursor**, **por qué estaba dentro del
+lienzo y no encima**, **por qué desaparecía al encoger la ventana** (la rejilla
+cambia con la proporción y la cancelación deja de cruzar el cero) y **por qué
+cambiar el color de fondo la hacía desaparecer**: la tira ES el fondo.
+
+## El arreglo
+
+1. `difuminar()` recorta la salida a cero: `suma > 0 ? suma / n : 0`. Un
+   promedio de números no negativos no puede ser negativo; ese signo era ruido
+   de redondeo y el cero es la respuesta más próxima a la verdad.
+2. El guardián de renacimiento pasa a positivo (`enJuego`), así un NaN cae del
+   lado de «fuera de juego» y la partícula renace en el acto.
+
+## Verificado
+
+- `rapidez` NaN = **0** y `rampaAncha` negativos = **0** a 1200, 1280, 1440,
+  1600 y 1920. Partículas NaN: **0,00%**.
+- El filo, medido como salto de densidad entre bloques contiguos con su racha de
+  filas coherentes:
+
+  | ancho | antes | después |
+  |---|---|---|
+  | 1200 | −57,6% (38 filas) | −0,0% (4) |
+  | 1280 | −45,2% (35) | −1,2% (5) |
+  | 1366 | −38,2% (32) | +0,2% (5) |
+  | 1440 | −28,4% (30) | −0,3% (6) |
+  | 1600 | −93,4% (57) | +0,8% (6) |
+  | 1920 | −31,8% (20) | +4,3% (6) |
+
+  Rachas de 4-6 filas es el suelo de ruido del detector.
+- Coste: sin diferencia medible. Con la CPU 4× más lenta, alternando las dos
+  versiones en la misma sesión, las tres tomas del «antes» difieren entre sí
+  (6,47 / 5,61 / 5,08 ms por fotograma) más de lo que difieren los dos grupos.
+- `npm run auditar:movil` en cero.
+
+## Lo que queda como aviso
+
+El resto de este documento es el historial de la caza y se conserva a propósito:
+ocho intentos de arreglo, todos sobre hipótesis de fluidos, todos medidos, y
+ninguno tocó la causa. La lección está en su sección «Cómo medirlo»: el mapa de
+densidad del lienzo en bloques con realce gamma enseñó la tira de un vistazo, y
+leer el ESTADO del motor —contar NaN en el campo y en las partículas— la explicó
+en un intento. Los perfiles por columna no la vieron nunca.
+
+---
+
+# Historial de la caza (se conserva)
+
+Escrito cuando el fallo seguía abierto, tras una sesión larga de intentos
+fallidos, para que quien lo retomara no repitiera el mismo camino.
 
 ---
 

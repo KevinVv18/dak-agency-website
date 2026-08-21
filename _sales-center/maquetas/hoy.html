@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>DAK · Hoy — maqueta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ───────────────────────────────────────────────────────────────────────────
+   HOY — maqueta de direccion.
+
+   El problema de la version actual: es una pila de tarjetas enormes que hay que
+   recorrer con scroll, y cada una enseña TODO a la vez —mensaje, objeciones,
+   seguimientos— aunque solo te interese una.
+
+   Esto es un maestro-detalle, que es lo que hace un panel de trabajo:
+
+   - Izquierda: las ocho conversaciones como filas compactas. Empresa,
+     preparacion y estado. Nada mas. Se ven las ocho de un vistazo, sin scroll.
+   - Derecha: SOLO la seleccionada, entera. El mensaje tal cual se enviaria, sus
+     objeciones y sus seguimientos.
+
+   Asi el texto largo existe —es vital, hay que leerlo antes de aprobar— pero
+   solo aparece para UNA fila, la que elegiste. Es exactamente "poco texto salvo
+   interaccion directa".
+   ─────────────────────────────────────────────────────────────────────────── */
+
+:root{
+  --fondo:#030106; --sup:#080510; --sup-alta:#0E0918;
+  --linea:rgba(255,255,255,.06); --linea-viva:rgba(255,255,255,.14);
+  --tx:#F4F1F8; --tx-2:rgba(244,241,248,.62); --tx-3:rgba(244,241,248,.34);
+  --morado:#B024FF; --teal:#00C8C8; --ambar:#E0A33E;
+  --ease:cubic-bezier(.32,.72,0,1);
+  --t-micro:140ms; --t-corta:240ms; --t-media:380ms;
+  --rail:60px; --barra:52px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--fondo);color:var(--tx);
+  font-family:Poppins,system-ui,sans-serif;font-size:14px;
+  font-variant-numeric:tabular-nums;overflow:hidden;-webkit-font-smoothing:antialiased;
+}
+.consola{display:grid;grid-template-columns:var(--rail) 1fr;grid-template-rows:var(--barra) 1fr;height:100dvh}
+
+/* ── raíl y barra: identicos a Panorama. En el producto esto es un layout
+      compartido, no CSS copiado en cada vista. ─────────────────────────────── */
+.rail{grid-row:1/3;border-right:1px solid var(--linea);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:6px;background:var(--sup)}
+.marca{width:22px;height:22px;margin-bottom:20px;flex:none}
+.marca i{display:block;width:4px;height:100%;float:left;margin-right:2px;border-radius:1px;background:var(--morado)}
+.marca i:nth-child(1){height:52%;margin-top:48%;opacity:.55}
+.marca i:nth-child(2){height:78%;margin-top:22%;opacity:.8}
+.marca i:nth-child(3){height:100%;background:var(--teal)}
+.rail button{position:relative;width:38px;height:38px;border:0;border-radius:9px;background:transparent;color:var(--tx-3);cursor:pointer;display:grid;place-items:center;transition:color var(--t-corta) var(--ease),background var(--t-corta) var(--ease)}
+.rail button:hover{color:var(--tx-2);background:rgba(255,255,255,.04)}
+.rail button[aria-current]{color:var(--tx)}
+.rail button[aria-current]::before{content:"";position:absolute;left:-13px;top:11px;width:2px;height:16px;border-radius:1px;background:var(--morado)}
+.rail button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.4}
+.rail button span{position:absolute;left:46px;white-space:nowrap;font-size:14px;color:var(--tx-2);background:var(--sup-alta);border:1px solid var(--linea-viva);padding:5px 9px;border-radius:7px;opacity:0;transform:translateX(-4px);pointer-events:none;z-index:5;transition:opacity var(--t-corta) var(--ease),transform var(--t-corta) var(--ease)}
+.rail button:hover span{opacity:1;transform:translateX(0)}
+
+.barra{display:flex;align-items:center;gap:16px;padding:0 22px;border-bottom:1px solid var(--linea);background:rgba(3,1,6,.72);backdrop-filter:saturate(180%) blur(20px)}
+.barra h1{font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase}
+.barra .sep{flex:1}
+.micro{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tx-3);font-weight:500}
+.chip{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;padding:5px 10px;border-radius:20px;border:1px solid var(--linea-viva);color:var(--tx-2)}
+
+/* ── maestro-detalle ───────────────────────────────────────────────────────── */
+.trabajo{display:grid;grid-template-columns:minmax(280px,332px) minmax(0,1fr);gap:1px;background:var(--linea);min-height:0}
+.cola,.detalle{background:var(--fondo);min-height:0;display:flex;flex-direction:column}
+
+.grupo{padding:16px 18px 6px;display:flex;align-items:center;gap:9px}
+.grupo h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-3);font-weight:500}
+.cuenta{font-size:11px;font-weight:500;color:var(--tx-2);border:1px solid var(--linea-viva);border-radius:20px;padding:2px 8px;line-height:1.5}
+.grupo--morado .cuenta{color:var(--morado);border-color:rgba(176,36,255,.35)}
+.grupo--teal .cuenta{color:var(--teal);border-color:rgba(0,200,200,.3)}
+
+.lista{list-style:none;padding:0 10px;overflow-y:auto;min-height:0}
+.lista::-webkit-scrollbar{width:8px}
+.lista::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:4px}
+
+.fila{
+  position:relative;width:100%;text-align:left;border:0;background:transparent;color:inherit;
+  display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;
+  padding:11px 12px;border-radius:9px;cursor:pointer;font:inherit;
+  transition:background var(--t-corta) var(--ease);
+}
+.fila:hover{background:rgba(255,255,255,.035)}
+.fila:active{transform:scale(.995)}
+.fila[aria-selected="true"]{background:var(--sup-alta)}
+/* La seleccion se marca con un filo, no con un bloque de color: el bloque
+   compite con el texto que hay que leer. */
+.fila[aria-selected="true"]::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:2px;border-radius:1px;background:var(--morado)}
+.fila--enviar[aria-selected="true"]::before{background:var(--teal)}
+.fila .nom{font-size:14px;color:var(--tx);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fila .prep{font-size:14px;color:var(--tx-3);font-weight:500}
+.fila[aria-selected="true"] .prep{color:var(--tx-2)}
+
+/* ── detalle ──────────────────────────────────────────────────────────────── */
+.detalle{overflow-y:auto}
+.detalle::-webkit-scrollbar{width:9px}
+.detalle::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:5px}
+.dcab{padding:20px 26px 0;display:flex;flex-direction:column;gap:11px}
+.tags{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;color:var(--tx-3)}
+.tag--vivo{color:var(--morado)}
+.dcab h2{font-size:clamp(1.35rem,2.3vw,1.85rem);font-weight:300;letter-spacing:-.015em;line-height:1.2}
+
+.rejilla{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--linea);margin:18px 26px 0;border-radius:10px;overflow:hidden}
+.dato{background:var(--sup);padding:13px 15px}
+.dato dt{font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--tx-3);font-weight:500;margin-bottom:6px}
+.dato dd{font-size:14px;color:var(--tx-2);line-height:1.5}
+.dato dd b{color:var(--tx);font-weight:500}
+
+/* El mensaje es lo unico que se lee entero, asi que se le trata como el
+   protagonista: caja propia, medida de lectura y un filo teal a la izquierda. */
+.mensaje{margin:18px 26px 0;padding:16px 18px;border-left:2px solid var(--teal);background:var(--sup);border-radius:0 10px 10px 0}
+.mensaje p{font-size:14px;line-height:1.65;color:var(--tx);max-width:68ch}
+.acciones{display:flex;gap:9px;margin:16px 26px 0;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 15px;border-radius:10px;font:inherit;font-size:14px;font-weight:500;cursor:pointer;border:1px solid var(--linea-viva);background:transparent;color:var(--tx-2);transition:background var(--t-corta) var(--ease),border-color var(--t-corta) var(--ease),color var(--t-corta) var(--ease)}
+.btn:hover{background:rgba(255,255,255,.05);color:var(--tx)}
+.btn:active{transform:scale(.98)}
+.btn--primario{background:var(--teal);border-color:var(--teal);color:#04191a;font-weight:600}
+.btn--primario:hover{background:#22d9d9;border-color:#22d9d9;color:#04191a}
+.btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;transition:transform var(--t-corta) var(--ease)}
+.btn--primario:hover svg{transform:translateX(2px)}
+
+.doble{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin:24px 26px 26px}
+.bloque h3{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--tx-3);font-weight:500;margin-bottom:12px}
+.obj{padding:12px 0;border-top:1px solid var(--linea)}
+.obj p:first-child{font-size:14px;color:var(--tx);line-height:1.5;margin-bottom:6px}
+.obj p:last-child{font-size:14px;color:var(--tx-2);line-height:1.55}
+.seg{padding:12px 0;border-top:1px solid var(--linea)}
+.seg .cuando{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-3);font-weight:500;margin-bottom:6px}
+.seg p{font-size:14px;color:var(--tx-2);line-height:1.55}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media (max-width:980px){.doble{grid-template-columns:1fr;gap:20px}.rejilla{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="consola">
+
+  <nav class="rail" aria-label="Secciones">
+    <div class="marca" aria-hidden="true"><i></i><i></i><i></i></div>
+    <button><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Panorama</span></button>
+    <button aria-current="page"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg><span>Hoy</span></button>
+    <button><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M4 10h16M10 10v9"/></svg><span>Prospectos</span></button>
+    <button><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg><span>Base</span></button>
+    <button><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg><span>Cómo funciona</span></button>
+  </nav>
+
+  <header class="barra">
+    <h1>Hoy</h1><span class="micro">8 detenidas</span>
+    <span class="sep"></span><span class="chip">Datos de ejemplo</span>
+  </header>
+
+  <main class="trabajo">
+
+    <div class="cola">
+      <div class="grupo grupo--morado"><h2>Por aprobar</h2><span class="cuenta">5</span></div>
+      <ul class="lista">
+        <li><button class="fila" aria-selected="true"><span class="nom">Acuña Inmobiliaria</span><span class="prep">94</span></button></li>
+        <li><button class="fila"><span class="nom">Menorca · San Antonio 3</span><span class="prep">85</span></button></li>
+        <li><button class="fila"><span class="nom">Los Portales · Valles</span><span class="prep">79</span></button></li>
+        <li><button class="fila"><span class="nom">Marverde · Villa Refugio</span><span class="prep">79</span></button></li>
+        <li><button class="fila"><span class="nom">BM Clínica Mendoza</span><span class="prep">70</span></button></li>
+      </ul>
+
+      <div class="grupo grupo--teal"><h2>Por enviar</h2><span class="cuenta">3</span></div>
+      <ul class="lista">
+        <li><button class="fila fila--enviar"><span class="nom">ARKANA Inmobiliaria</span><span class="prep">86</span></button></li>
+        <li><button class="fila fila--enviar"><span class="nom">JCH Motos</span><span class="prep">85</span></button></li>
+        <li><button class="fila fila--enviar"><span class="nom">Delcrosa</span><span class="prep">80</span></button></li>
+      </ul>
+    </div>
+
+    <article class="detalle">
+      <div class="dcab">
+        <div class="tags">
+          <span class="tag tag--vivo">Revisión pendiente</span>
+          <span class="tag">Preparación 94</span>
+          <span class="tag">Lambayeque · Inmobiliaria</span>
+        </div>
+        <h2>Acuña Inmobiliaria</h2>
+      </div>
+
+      <dl class="rejilla">
+        <div class="dato"><dt>Señal de compra</dt><dd>Publicó su <b>Dossier de Inversión Lambayeque 2026</b> promocionando Juliano Park y los lotes comerciales Costanera de Eten.</dd></div>
+        <div class="dato"><dt>Canal y momento</dt><dd><b>WhatsApp</b> — martes a jueves, 9:30–11:30 o 15:30–17:30. Evitar primeras horas y almuerzo.</dd></div>
+      </dl>
+
+      <div class="mensaje">
+        <p>Hola, buenos días. Le escribe Diana Muro, de DAK. Vimos el Dossier de Inversión Lambayeque 2026 de Acuña Inmobiliaria, donde presentan Juliano Park y los lotes comerciales Costanera de Eten. En DAK podemos apoyar con foto, video y campañas en Meta para llevar esos proyectos a piezas y consultas digitales. ¿Le parece si le compartimos una idea breve para cada proyecto?</p>
+      </div>
+
+      <div class="acciones">
+        <button class="btn btn--primario">Abrir en la hoja para aprobar <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button class="btn"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Copiar mensaje</button>
+        <button class="btn"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg> Copiar ficha</button>
+      </div>
+
+      <div class="doble">
+        <div class="bloque">
+          <h3>Si responde esto</h3>
+          <div class="obj">
+            <p>«Ya tenemos material y lo estamos difundiendo por nuestra cuenta.»</p>
+            <p>Podemos complementar sin reemplazar: revisar una pieza o campaña puntual y sugerir mejoras concretas para la etapa actual.</p>
+          </div>
+          <div class="obj">
+            <p>«Preferimos verlo más adelante.»</p>
+            <p>Dejamos una propuesta breve por proyecto para que la evalúen cuando decidan activar la campaña.</p>
+          </div>
+        </div>
+        <div class="bloque">
+          <h3>Seguimientos redactados</h3>
+          <div class="seg">
+            <p class="cuando">2 a 4 días hábiles</p>
+            <p>Continuidad del dossier con piezas distintas por público: video corto, banco fotográfico y contenidos para inversionistas o compradores de lotes.</p>
+          </div>
+          <div class="seg">
+            <p class="cuando">5 a 8 días hábiles</p>
+            <p>Revisar el recorrido desde el anuncio hasta WhatsApp e identificar qué información recibe primero quien llega por cada proyecto.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>DAK · Panorama — maqueta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ───────────────────────────────────────────────────────────────────────────
+   PANORAMA — maqueta de direccion, no codigo de produccion.
+
+   Tres decisiones que la separan de lo que hay hoy:
+
+   1. Es una CONSOLA, no una pagina. 100dvh, sin scroll de pagina. Lo que no
+      cabe, no esta. Eso obliga a decidir que importa.
+   2. Casi no hay texto. Numeros y etiquetas de una o dos palabras. La frase
+      que explica cada cosa existe, pero vive en el hover.
+   3. "Futurista" aqui es precision y vacio, NO neon. Hairlines, cifras
+      tabulares, muchisimo aire y el color usado con cuentagotas. El brillo es
+      la version barata de este look y ademas es lo que marca el detector.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+:root{
+  --fondo:#030106;
+  --sup:#080510;
+  --sup-alta:#0E0918;
+
+  --linea:rgba(255,255,255,.06);
+  --linea-viva:rgba(255,255,255,.14);
+
+  --tx:#F4F1F8;
+  --tx-2:rgba(244,241,248,.62);
+  --tx-3:rgba(244,241,248,.34);
+
+  --morado:#B024FF;
+  --teal:#00C8C8;
+  --ambar:#E0A33E;
+
+  --ease:cubic-bezier(.32,.72,0,1);
+  --t-micro:140ms; --t-corta:240ms; --t-media:380ms;
+
+  --rail:60px; --barra:52px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--fondo); color:var(--tx);
+  font-family:Poppins,system-ui,sans-serif;
+  font-variant-numeric:tabular-nums; font-size:14px;
+  overflow:hidden;                    /* la consola no hace scroll */
+  -webkit-font-smoothing:antialiased;
+}
+
+.consola{
+  display:grid;
+  grid-template-columns:var(--rail) 1fr;
+  grid-template-rows:var(--barra) 1fr;
+  height:100dvh;
+}
+
+/* ── raíl izquierdo: iconos, la etiqueta sale al pasar el cursor ───────── */
+.rail{
+  grid-row:1/3;
+  border-right:1px solid var(--linea);
+  display:flex; flex-direction:column; align-items:center;
+  padding:14px 0; gap:6px; background:var(--sup);
+}
+.marca{width:22px;height:22px;margin-bottom:20px;flex:none}
+.marca i{display:block;width:4px;height:100%;float:left;margin-right:2px;border-radius:1px;background:var(--morado)}
+.marca i:nth-child(1){height:52%;margin-top:48%;opacity:.55}
+.marca i:nth-child(2){height:78%;margin-top:22%;opacity:.8}
+.marca i:nth-child(3){height:100%;background:var(--teal)}
+
+.rail button{
+  position:relative; width:38px; height:38px; border:0; border-radius:9px;
+  background:transparent; color:var(--tx-3); cursor:pointer;
+  display:grid; place-items:center;
+  transition:color var(--t-corta) var(--ease), background var(--t-corta) var(--ease);
+}
+.rail button:hover{color:var(--tx-2); background:rgba(255,255,255,.04)}
+.rail button[aria-current]{color:var(--tx)}
+.rail button[aria-current]::before{
+  content:""; position:absolute; left:-13px; top:11px; width:2px; height:16px;
+  border-radius:1px; background:var(--morado);
+}
+.rail button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.4}
+/* la etiqueta no ocupa sitio: es absoluta */
+.rail button span{
+  position:absolute; left:46px; white-space:nowrap;
+  font-size:14px; color:var(--tx-2);
+  background:var(--sup-alta); border:1px solid var(--linea-viva);
+  padding:5px 9px; border-radius:7px;
+  opacity:0; transform:translateX(-4px); pointer-events:none; z-index:5;
+  transition:opacity var(--t-corta) var(--ease), transform var(--t-corta) var(--ease);
+}
+.rail button:hover span{opacity:1; transform:translateX(0)}
+
+/* ── barra superior ────────────────────────────────────────────────────── */
+.barra{
+  display:flex; align-items:center; gap:16px;
+  padding:0 22px; border-bottom:1px solid var(--linea);
+  background:rgba(3,1,6,.72); backdrop-filter:saturate(180%) blur(20px);
+}
+.barra h1{font-size:14px;font-weight:500;letter-spacing:.16em;text-transform:uppercase}
+.barra .sep{flex:1}
+.micro{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tx-3);font-weight:500}
+.chip{
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;
+  padding:5px 10px;border-radius:20px;border:1px solid var(--linea-viva);color:var(--tx-2);
+}
+
+/* ── lienzo ────────────────────────────────────────────────────────────── */
+.lienzo{
+  display:grid; grid-template-rows:minmax(0,.82fr) minmax(0,1fr);
+  gap:1px; background:var(--linea); min-height:0;
+}
+.zona{background:var(--fondo); min-height:0; display:flex; flex-direction:column}
+.abajo{display:grid; grid-template-columns:1.15fr 1fr 1fr; gap:1px; background:var(--linea)}
+
+.cab{display:flex;align-items:baseline;gap:12px;padding:18px 26px 0}
+.cab h2{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx-3);font-weight:500}
+
+/* ── el embudo: la vista entera en un vistazo ──────────────────────────── */
+.embudo{flex:1;display:flex;align-items:center;padding:0 26px 14px;min-height:0}
+.via{display:flex;align-items:stretch;width:100%;gap:0}
+.nodo{
+  flex:1; position:relative; padding:16px 4px;
+  border-radius:10px; cursor:default;
+  transition:background var(--t-corta) var(--ease);
+  opacity:0; transform:translateY(10px);
+  animation:entra var(--t-media) var(--ease) forwards;
+}
+.nodo:hover{background:rgba(255,255,255,.025)}
+.nodo:nth-child(1){animation-delay:60ms}
+.nodo:nth-child(3){animation-delay:105ms}
+.nodo:nth-child(5){animation-delay:150ms}
+.nodo:nth-child(7){animation-delay:195ms}
+.nodo:nth-child(9){animation-delay:240ms}
+@keyframes entra{to{opacity:1;transform:none}}
+
+.nodo .n{
+  display:block; font-size:clamp(2.8rem,5.4vw,5rem); font-weight:200;
+  line-height:.94; letter-spacing:-.035em;
+}
+.nodo .et{display:block;margin-top:11px;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--tx-3);font-weight:500}
+
+/* La barra proporcional. Es lo que convierte cinco cifras sueltas en un
+   embudo: el estrechamiento se VE, sin leer un solo numero. Va sobre escala
+   lineal contra 109 a proposito — una escala logaritmica maquillaria
+   justamente la caida que hay que enseñar. */
+.nodo .medida{display:block;margin-top:14px;height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+.nodo .medida i{
+  display:block;height:100%;background:var(--teal);opacity:.55;border-radius:2px;
+  transform:scaleX(0);transform-origin:left;
+  animation:crece 760ms var(--ease) forwards;
+  transition:opacity var(--t-corta) var(--ease);
+}
+.nodo:hover .medida i{opacity:.95}
+.nodo--muerto .medida i{background:var(--ambar)}
+/* la explicacion solo aparece al pasar el cursor */
+.nodo .pista{
+  display:block; margin-top:7px; font-size:14px; color:var(--tx-2); line-height:1.45;
+  max-width:20ch; opacity:0; transform:translateY(-3px);
+  transition:opacity var(--t-corta) var(--ease), transform var(--t-corta) var(--ease);
+}
+.nodo:hover .pista{opacity:1;transform:none}
+
+.nodo--muerto .n{color:var(--ambar)}
+.nodo--muerto .et{color:var(--ambar);opacity:.85}
+
+/* conector: una linea que se dibuja sola */
+/* El conector lleva el porcentaje que sobrevive al salto. Es un numero, no
+   una frase, y convierte el embudo en un diagnostico: se ve DONDE se cae. */
+.tramo{flex:none;width:clamp(38px,5.5vw,84px);display:flex;flex-direction:column;align-items:center;gap:7px;padding-top:6px}
+.tramo .pct{font-size:14px;letter-spacing:.08em;color:var(--tx-3);font-weight:500}
+.tramo--roto .pct{color:var(--ambar)}
+.tramo svg{width:100%;height:12px;overflow:visible}
+.tramo path{
+  stroke:var(--linea-viva); stroke-width:1; fill:none;
+  stroke-dasharray:var(--largo,120); stroke-dashoffset:var(--largo,120);
+  animation:traza 620ms var(--ease) forwards;
+}
+.tramo:nth-of-type(2) path{animation-delay:110ms}
+.tramo:nth-of-type(4) path{animation-delay:155ms}
+.tramo:nth-of-type(6) path{animation-delay:200ms}
+.tramo--roto path{stroke:var(--ambar);stroke-dasharray:3 4;animation:none;stroke-dashoffset:0;opacity:.75}
+@keyframes traza{to{stroke-dashoffset:0}}
+
+/* ── requiere tu decisión ──────────────────────────────────────────────── */
+.decision{display:flex;flex-direction:column;flex:1;min-height:0}
+.pilas{display:flex;flex-direction:column;flex:1;padding:10px 26px 20px;gap:1px;min-height:0}
+.pila{
+  flex:1; display:flex; align-items:center; gap:18px; padding:14px 16px;
+  border-radius:11px; border:1px solid transparent; cursor:pointer; min-height:0;
+  transition:border-color var(--t-corta) var(--ease), background var(--t-corta) var(--ease);
+}
+.pila:hover{background:var(--sup); border-color:var(--linea-viva)}
+.pila:active{transform:scale(.99)}
+.pila .n{font-size:clamp(2rem,3.4vw,3rem);font-weight:200;line-height:1;min-width:1.6ch}
+.pila .txt{flex:1;min-width:0}
+.pila .et{font-size:14px;letter-spacing:.11em;text-transform:uppercase;color:var(--tx-2);font-weight:500}
+.pila .top{
+  display:block;margin-top:5px;font-size:14px;color:var(--tx-3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.pila .flecha{color:var(--tx-3);opacity:0;transform:translateX(-4px);transition:opacity var(--t-corta) var(--ease),transform var(--t-corta) var(--ease)}
+.pila:hover .flecha{opacity:1;transform:none}
+.pila--morado .n{color:var(--morado)}
+.pila--teal  .n{color:var(--teal)}
+
+/* ── barras de cobertura: sin etiquetas hasta el hover ─────────────────── */
+.barritas{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:10px 26px 22px}
+.fila{display:grid;grid-template-columns:1fr auto;align-items:center;gap:14px;cursor:default}
+.fila .pista{grid-column:1/3;height:2px;background:rgba(255,255,255,.05);border-radius:1px;overflow:hidden;order:2}
+.fila .relleno{display:block;height:100%;background:var(--teal);opacity:.5;transform-origin:left;transform:scaleX(0);animation:crece 700ms var(--ease) forwards;transition:opacity var(--t-corta) var(--ease)}
+.fila:hover .relleno{opacity:.95}
+.fila .nom{font-size:14px;color:var(--tx-2);order:1}
+.fila .val{font-size:14px;color:var(--tx-3);order:1;font-weight:500}
+@keyframes crece{to{transform:scaleX(1)}}
+
+/* ── panel de una sola cifra ───────────────────────────────────────────── */
+.solo{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 26px 22px;gap:2px}
+.solo .n{font-size:clamp(2.2rem,3.8vw,3.2rem);font-weight:200;line-height:1;letter-spacing:-.02em}
+.solo .sub{font-size:14px;color:var(--tx-3);margin-top:8px;line-height:1.5;max-width:26ch}
+.aviso{display:inline-flex;align-items:center;gap:7px;margin-top:14px;font-size:14px;color:var(--ambar)}
+.aviso b{width:5px;height:5px;border-radius:50%;background:var(--ambar);flex:none}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .nodo{opacity:1;transform:none}
+  .tramo path{stroke-dashoffset:0}
+  .fila .relleno{transform:scaleX(1)}
+}
+@media (max-width:1100px){ .abajo{grid-template-columns:1fr 1fr} .abajo>.zona:last-child{grid-column:1/3} }
+</style>
+</head>
+<body>
+<div class="consola">
+
+  <nav class="rail" aria-label="Secciones">
+    <div class="marca" aria-hidden="true"><i></i><i></i><i></i></div>
+    <button aria-current="page"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Panorama</span></button>
+    <button><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg><span>Hoy</span></button>
+    <button><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M4 10h16M10 10v9"/></svg><span>Prospectos</span></button>
+    <button><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg><span>Base</span></button>
+    <button><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg><span>Cómo funciona</span></button>
+  </nav>
+
+  <header class="barra">
+    <h1>Panorama</h1>
+    <span class="micro">19 ago 2026</span>
+    <span class="sep"></span>
+    <span class="chip">Datos de ejemplo</span>
+  </header>
+
+  <main class="lienzo">
+
+    <!-- EL EMBUDO: la historia entera sin una sola frase -->
+    <section class="zona">
+      <div class="cab"><h2>Recorrido</h2></div>
+      <div class="embudo">
+        <div class="via">
+
+          <div class="nodo">
+            <span class="n">109</span><span class="et">Minadas</span>
+            <span class="medida"><i style="width:100%;animation-delay:60ms"></i></span>
+            <span class="pista">Padrón de la Cámara procesado por reactivación.</span>
+          </div>
+
+          <div class="tramo"><span class="pct">11 %</span><svg viewBox="0 0 100 12" preserveAspectRatio="none"><path style="--largo:100" d="M0 6 H100"/></svg></div>
+
+          <div class="nodo">
+            <span class="n">12</span><span class="et">Investigadas</span>
+            <span class="medida"><i style="width:11%;animation-delay:105ms"></i></span>
+            <span class="pista">Con señal de compra verificada y ángulo de venta.</span>
+          </div>
+
+          <div class="tramo"><span class="pct">67 %</span><svg viewBox="0 0 100 12" preserveAspectRatio="none"><path style="--largo:100" d="M0 6 H100"/></svg></div>
+
+          <div class="nodo">
+            <span class="n">8</span><span class="et">Con mensaje</span>
+            <span class="medida"><i style="width:7.3%;animation-delay:150ms"></i></span>
+            <span class="pista">Teléfono verificado y mensaje redactado.</span>
+          </div>
+
+          <div class="tramo"><span class="pct">38 %</span><svg viewBox="0 0 100 12" preserveAspectRatio="none"><path style="--largo:100" d="M0 6 H100"/></svg></div>
+
+          <div class="nodo">
+            <span class="n">3</span><span class="et">Aprobadas</span>
+            <span class="medida"><i style="width:2.8%;animation-delay:195ms"></i></span>
+            <span class="pista">Listas para salir. Enlace de WhatsApp armado.</span>
+          </div>
+
+          <div class="tramo tramo--roto"><span class="pct">0 %</span><svg viewBox="0 0 100 12" preserveAspectRatio="none"><path d="M0 6 H100"/></svg></div>
+
+          <div class="nodo nodo--muerto">
+            <span class="n">0</span><span class="et">Enviadas</span>
+            <span class="medida"><i style="width:0%;animation-delay:240ms"></i></span>
+            <span class="pista">Nada ha salido. El sistema se para aquí.</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <div class="abajo">
+
+      <!-- LA ÚNICA LLAMADA A LA ACCIÓN -->
+      <section class="zona decision">
+        <div class="cab"><h2>Requiere tu decisión</h2></div>
+        <div class="pilas">
+          <div class="pila pila--morado" role="button" tabindex="0">
+            <span class="n">5</span>
+            <span class="txt"><span class="et">Por aprobar</span><span class="top">Acuña Inmobiliaria · preparación 94</span></span>
+            <svg class="flecha" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+          <div class="pila pila--teal" role="button" tabindex="0">
+            <span class="n">3</span>
+            <span class="txt"><span class="et">Por enviar</span><span class="top">ARKANA · JCH Motos · Delcrosa</span></span>
+            <svg class="flecha" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- COBERTURA -->
+      <section class="zona">
+        <div class="cab"><h2>Dónde están</h2></div>
+        <div class="barritas">
+          <div class="fila"><span class="nom">Chiclayo</span><span class="val">8</span><span class="pista"><i class="relleno" style="width:100%;animation-delay:80ms"></i></span></div>
+          <div class="fila"><span class="nom">Lambayeque</span><span class="val">3</span><span class="pista"><i class="relleno" style="width:37.5%;animation-delay:130ms"></i></span></div>
+          <div class="fila"><span class="nom">Olmos</span><span class="val">1</span><span class="pista"><i class="relleno" style="width:12.5%;animation-delay:180ms"></i></span></div>
+        </div>
+      </section>
+
+      <!-- ENTRADA DIRECTA -->
+      <section class="zona">
+        <div class="cab"><h2>Vinieron solos</h2></div>
+        <div class="solo">
+          <span class="n">3</span>
+          <span class="sub">Leads entrantes del chat y WhatsApp.</span>
+          <span class="aviso"><b></b>Uno del 17 ago sigue sin respuesta</span>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>
