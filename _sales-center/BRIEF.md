@@ -85,10 +85,9 @@ cuanto Apollo, Apify e inbound tengan volumen. Se convierte en **«Base»**, agn
 que responde una sola pregunta: *¿qué parte de nuestra base está lista para vender y qué parte
 todavía no?* — con la fuente como filtro.
 
-### Inicio
-Prospectos totales · de alta prioridad · acciones pendientes hoy · nuevos · sin responsable ·
-embudo por estado · últimos movimientos · alertas (datos incompletos, acción vencida, contacto sin
-seguimiento). Separado en inbound / outbound.
+### Panorama — la entrada tras el login
+El embudo de las cuatro etapas con el porcentaje que sobrevive a cada salto, las dos colas que
+requieren decisión, la cobertura por ciudad y los leads que llegaron solos. Un vistazo, sin scroll.
 
 ### Hoy — **es la vista principal, y hoy tiene 8 filas reales**
 
@@ -137,9 +136,9 @@ un endpoint que actualiza una sola celda. Nada más.
 
 ## 7. Contrato de datos
 
-> **Estado: borrador.** Se congela en la Fase 0, derivándolo de una exportación real de DAK LEADS
-> MASTER. **[cambio]** El borrador anterior inventaba el modelo; si la UI se diseña contra un modelo
-> inventado, el «mapper» de la fase de integración no es un mapper, es reescribir los componentes.
+> **Congelado, y vive en [`data/CONTRATO.md`](data/CONTRATO.md) §3.** Se derivó de las cuatro
+> pestañas reales de la hoja. Lo que queda abajo es el borrador original, que se conserva solo para
+> que se vea qué cambió y por qué: **no lo uses como referencia.**
 
 ```ts
 type SalesProspect = {

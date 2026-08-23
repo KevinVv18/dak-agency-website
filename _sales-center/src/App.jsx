@@ -508,6 +508,39 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
 /** PRIORITY OUTREACH lo decide Twin, no el panel. Aqui solo se pinta. */
 const prioritaria = (prospect) => prospect.readinessBand === 'PRIORITY OUTREACH'
 
+/**
+ * La fila de una cola. La comparten Hoy y Prospectos a proposito: si cada vista
+ * dibujase su propia fila, en dos semanas tendrian tres pesos de tipografia y
+ * dos formas de marcar la seleccion. La coherencia se consigue reusando el
+ * componente, no copiando el CSS.
+ *
+ * `metric` deja que cada vista elija que cifra pesa: en Hoy es la preparacion
+ * para contactar, en Prospectos la oportunidad. La barra siempre representa la
+ * cifra que se muestra.
+ */
+function WorkRow({ prospect, selected, onSelect, metric = 'readiness' }) {
+  const valor = metric === 'score' ? prospect.score : prospect.readiness
+
+  return (
+    <button
+      aria-selected={selected}
+      className={`work-row ${prioritaria(prospect) ? 'work-row--prioritaria' : ''}`}
+      onClick={() => onSelect(prospect.id)}
+      role="option"
+      type="button"
+    >
+      <span className="work-row__top">
+        <span className="work-row__name">{getShortName(prospect)}</span>
+        <PotentialGauge value={prospect.potencialNegocio} />
+        <span className="work-row__score">{valueOrMissing(valor)}</span>
+      </span>
+      <span aria-hidden="true" className="work-row__meter">
+        <i style={{ '--w': `${Math.min(valor ?? 0, 100)}%` }} />
+      </span>
+    </button>
+  )
+}
+
 function TodayView({ todayActions }) {
   const grupos = [
     { id: 'aprobar', titulo: 'Por aprobar', items: todayActions.pending },
@@ -555,24 +588,7 @@ function TodayView({ todayActions }) {
                 const seleccionada = prospect.id === activo.prospect.id
                 return (
                   <li key={prospect.id}>
-                    <button
-                      aria-selected={seleccionada}
-                      className={`work-row ${prioritaria(prospect) ? 'work-row--prioritaria' : ''}`}
-                      onClick={() => setElegido(prospect.id)}
-                      role="option"
-                      type="button"
-                    >
-                      <span className="work-row__top">
-                        <span className="work-row__name">{getShortName(prospect)}</span>
-                        <PotentialGauge value={prospect.potencialNegocio} />
-                        <span className="work-row__score">{valueOrMissing(prospect.readiness)}</span>
-                      </span>
-                      {/* La barra es preparacion sobre 100, tal cual viene. En
-                          oro solo si Twin la marco PRIORITY OUTREACH. */}
-                      <span aria-hidden="true" className="work-row__meter">
-                        <i style={{ '--w': `${Math.min(prospect.readiness ?? 0, 100)}%` }} />
-                      </span>
-                    </button>
+                    <WorkRow onSelect={setElegido} prospect={prospect} selected={seleccionada} />
                   </li>
                 )
               })}
@@ -669,41 +685,140 @@ function ProspectsView({ data, prospects }) {
   }, [origin, prospects, query, stage])
   const selectedProspect = filteredProspects.find((prospect) => prospect.id === selectedId) ?? filteredProspects[0] ?? null
 
+  // Las quince filas se agrupan por etapa del embudo. Una lista plana de quince
+  // nombres no dice nada; agrupada, la forma del embudo se lee en la propia
+  // columna sin mirar Panorama.
+  const porEtapa = Object.entries(stages)
+    .map(([clave, titulo]) => ({ clave, titulo, items: filteredProspects.filter((p) => p.etapa === clave) }))
+    .filter((grupo) => grupo.items.length)
+
+  const alTeclado = (evento) => {
+    const salto = evento.key === 'ArrowDown' ? 1 : evento.key === 'ArrowUp' ? -1 : 0
+    if (!salto || !selectedProspect) return
+    evento.preventDefault()
+    const desde = filteredProspects.findIndex((p) => p.id === selectedProspect.id)
+    const hasta = Math.min(Math.max(desde + salto, 0), filteredProspects.length - 1)
+    setSelectedId(filteredProspects[hasta].id)
+  }
+
   return (
-    <>
-      <PageHeading title={`${prospects.length} prospectos`}><p>Vista derivada · selecciona una fila para abrir su contexto.</p></PageHeading>
-      <section className="prospect-workbench">
-        <div className="prospect-list">
-          <div className="filter-bar">
-            <label className="search-field"><span>Buscar</span><input onChange={(event) => setQuery(event.target.value)} placeholder="Empresa, persona, fuente…" type="search" value={query} /></label>
-            <label><span>Origen</span><select onChange={(event) => setOrigin(event.target.value)} value={origin}><option value="todos">Todos</option><option value="outbound">Búsqueda activa</option><option value="inbound">Llegaron solos</option></select></label>
-            <label><span>Etapa</span><select onChange={(event) => setStage(event.target.value)} value={stage}><option value="todas">Todas</option>{Object.entries(stages).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-          </div>
-          <p className="derived-note prospect-list__count">{filteredProspects.length} filas encontradas · vista derivada del mock.</p>
-          <div className="table-wrap"><table><thead><tr><th scope="col">Prospecto</th><th scope="col">Origen</th><th scope="col">Etapa</th><th scope="col">Score</th><th scope="col">Contacto</th></tr></thead><tbody>
-            {filteredProspects.map((prospect) => <tr className={selectedProspect?.id === prospect.id ? 'is-selected' : ''} key={prospect.id}><td><button aria-pressed={selectedProspect?.id === prospect.id} className="table-select" onClick={() => setSelectedId(prospect.id)} type="button"><span>{getDisplayName(prospect)}</span><small>{valueOrMissing(prospect.fuente)}</small></button></td><td>{prospect.origen === 'inbound' ? 'Llegó solo' : 'Búsqueda activa'}</td><td>{valueOrMissing(stages[prospect.etapa])}</td><td>{valueOrMissing(prospect.score)}</td><td>{valueOrMissing(prospect.contacto?.handle)}</td></tr>)}
-          </tbody></table></div>
-          {!filteredProspects.length && <div className="empty-state empty-state--compact"><div><h3>Sin resultados</h3><p>Ninguna fila del mock coincide con estos filtros.</p></div></div>}
+    <div className="work-split">
+      <div className="work-queue" onKeyDown={alTeclado}>
+        <div className="filter-bar">
+          <label className="search-field">
+            <span>Buscar</span>
+            <input onChange={(event) => setQuery(event.target.value)} placeholder="Empresa, fuente, ciudad…" type="search" value={query} />
+          </label>
+          <label>
+            <span>Origen</span>
+            <select onChange={(event) => setOrigin(event.target.value)} value={origin}>
+              <option value="todos">Todos</option>
+              <option value="outbound">Búsqueda activa</option>
+              <option value="inbound">Llegaron solos</option>
+            </select>
+          </label>
+          <label>
+            <span>Etapa</span>
+            <select onChange={(event) => setStage(event.target.value)} value={stage}>
+              <option value="todas">Todas</option>
+              {Object.entries(stages).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </label>
         </div>
-        <ProspectDetail data={data} key={selectedProspect?.id ?? 'empty'} prospect={selectedProspect} />
-      </section>
-    </>
+
+        {porEtapa.map((grupo) => (
+          <section className="work-group" key={grupo.clave}>
+            <header><h2>{grupo.titulo}</h2><span>{grupo.items.length}</span></header>
+            <ul>
+              {grupo.items.map((prospect) => (
+                <li key={prospect.id}>
+                  <WorkRow
+                    metric="score"
+                    onSelect={setSelectedId}
+                    prospect={prospect}
+                    selected={selectedProspect?.id === prospect.id}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+
+        {!filteredProspects.length && (
+          <div className="empty-state empty-state--compact">
+            <div><h3>Sin resultados</h3><p>Ninguna fila del mock coincide con estos filtros.</p></div>
+          </div>
+        )}
+      </div>
+
+      <div className="work-detail" key={selectedProspect?.id ?? 'empty'}>
+        <ProspectDetail data={data} prospect={selectedProspect} />
+      </div>
+    </div>
   )
 }
 
+/**
+ * Base — cuanto rinde cada fuente.
+ *
+ * No es una lista de las 109 empresas minadas: es la respuesta a «¿vale la pena
+ * seguir minando esto?». Y hoy la respuesta se ve sola — 2 aceptadas de 109 y
+ * cero telefonos validados.
+ *
+ * Mismo lenguaje que Panorama: cifras grandes en peso 200, una barra
+ * proporcional debajo y la explicacion en una linea, no en un parrafo.
+ */
 function BaseView({ baseHealth }) {
   return (
-    <>
-      <PageHeading title={`${baseHealth.length} ${baseHealth.length === 1 ? 'fuente' : 'fuentes'}`}><p>Rendimiento reportado · vista derivada.</p></PageHeading>
-      <section className="base-grid">
-        {baseHealth.map((source) => <article className="source-card" key={source.fuente}>
-          <div className="source-card__heading"><div><span className="detail-kicker">Fuente · vista derivada</span><h2>{source.fuente}</h2></div></div>
-          <div className="source-metrics"><div><span>Procesadas</span><strong>{valueOrMissing(source.procesadas)}</strong></div><div><span>Aceptadas</span><strong>{valueOrMissing(source.aceptadas)}</strong></div><div><span>Rendimiento reportado</span><strong>{formatPercent(source.rendimiento)}</strong></div><div><span>Contactos validados</span><strong>{valueOrMissing(source.contactosValidados)}</strong></div></div>
-          <div className="source-card__decision"><p className="section-label">Lectura para decidir</p><p>La fuente reporta {formatPercent(source.rendimiento)} de aceptación y {valueOrMissing(source.contactosValidados)} contactos validados. La decisión de continuar o pausar requiere comparar este rendimiento con las demás fuentes cuando haya datos.</p></div>
-          <div className="source-card__notes"><p className="section-label">Nota de la fuente</p><p>{valueOrMissing(source.notas)}</p></div>
-        </article>)}
-      </section>
-    </>
+    <div className="base-console">
+      {baseHealth.map((source) => {
+        const desglose = Object.entries(source.desglose ?? {})
+        const total = source.procesadas || 1
+        const rinde = (source.aceptadas ?? 0) / total
+
+        return (
+          <section className="source-panel" key={source.fuente}>
+            <header className="zone-heading">
+              <h2>{source.fuente}</h2>
+              <span>Vista derivada</span>
+            </header>
+
+            <div className="source-figures">
+              {[
+                { etiqueta: 'Procesadas', valor: valueOrMissing(source.procesadas) },
+                { etiqueta: 'Aceptadas', valor: valueOrMissing(source.aceptadas) },
+                { etiqueta: 'Rendimiento', valor: formatPercent(source.rendimiento), alerta: rinde < 0.05 },
+                { etiqueta: 'Contactos validados', valor: valueOrMissing(source.contactosValidados), alerta: !source.contactosValidados },
+              ].map((cifra) => (
+                <div className={`source-figure ${cifra.alerta ? 'source-figure--alerta' : ''}`} key={cifra.etiqueta}>
+                  <strong>{cifra.valor}</strong>
+                  <span>{cifra.etiqueta}</span>
+                </div>
+              ))}
+            </div>
+
+            {desglose.length > 0 && (
+              <div className="source-split">
+                <p className="section-label">En qué acabó cada empresa</p>
+                <ul>
+                  {desglose.sort((a, b) => b[1] - a[1]).map(([estado, cuantas]) => (
+                    <li key={estado}>
+                      <span className="source-split__name">{estado}</span>
+                      <span className="source-split__count">{cuantas}</span>
+                      <span aria-hidden="true" className="source-split__meter">
+                        <i style={{ '--w': `${(cuantas / total) * 100}%` }} />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {source.notas && <p className="source-note">{source.notas}</p>}
+          </section>
+        )
+      })}
+    </div>
   )
 }
 
@@ -714,15 +829,48 @@ const flow = [
   { number: '04', title: 'Decisión y contacto', copy: 'Una persona aprueba en la hoja y envía desde WhatsApp. La respuesta y el seguimiento se registran en la fuente de verdad.', agent: 'Decisión humana' },
 ]
 
+/**
+ * Como funciona — las cuatro etapas en horizontal, como el embudo de Panorama.
+ *
+ * Antes eran cuatro tarjetas apiladas con su parrafo desplegado. Aqui la
+ * explicacion vive en el hover, igual que en el embudo: se ven las cuatro
+ * etapas de golpe y el texto aparece donde estas mirando.
+ */
 function HowItWorksView() {
+  const [activa, setActiva] = useState(null)
+  const mostrada = activa === null ? flow.length - 1 : activa
+
   return (
-    <>
-      <PageHeading title={`${flow.length} etapas`}><p>Twin y DAK LEADS MASTER mantienen la operación.</p></PageHeading>
-      <section aria-label="Embudo comercial de cuatro etapas" className="flow-diagram">
-        {flow.map((step, index) => <article className="flow-step" key={step.number}><span className="flow-step__number">{step.number}</span><div><p className="section-label">Etapa {index + 1}</p><h2>{step.title}</h2><p>{step.copy}</p><Badge tone={index === 3 ? 'oro' : 'outline'}>{step.agent}</Badge></div></article>)}
-      </section>
-      <aside className="scope-note"><p className="section-label">Límite de esta fase</p><p>No se escribe ningún dato desde este sitio. Aprobar sigue ocurriendo en la hoja; enviar abre WhatsApp con el texto preparado. El panel no reemplaza a Twin ni a DAK LEADS MASTER.</p></aside>
-    </>
+    <div className="flow-console">
+      <header className="zone-heading"><h2>Recorrido del sistema</h2><span>Cuatro etapas</span></header>
+
+      <div className="flow-track" onMouseLeave={() => setActiva(null)}>
+        {flow.map((step, index) => (
+          <button
+            aria-label={`${step.title}. ${step.copy}`}
+            className={`flow-node ${index === mostrada ? 'is-active' : ''} ${index === flow.length - 1 ? 'flow-node--humana' : ''}`}
+            key={step.number}
+            onBlur={() => setActiva(null)}
+            onFocus={() => setActiva(index)}
+            onMouseEnter={() => setActiva(index)}
+            type="button"
+          >
+            <span className="flow-node__number">{step.number}</span>
+            <span className="flow-node__title">{step.title}</span>
+            <span className="flow-node__agent">{step.agent}</span>
+          </button>
+        ))}
+      </div>
+
+      <p className="flow-readout">
+        <span className={activa === null ? '' : 'is-on'}>{flow[mostrada].copy}</span>
+      </p>
+
+      <aside className="scope-note">
+        <p className="section-label">Límite de esta fase</p>
+        <p>No se escribe ningún dato desde aquí. Aprobar sigue ocurriendo en la hoja; enviar abre WhatsApp con el texto preparado. El panel no reemplaza a Twin ni a DAK LEADS MASTER.</p>
+      </aside>
+    </div>
   )
 }
 
@@ -763,13 +911,23 @@ function App() {
     }
 
     if (document.startViewTransition) {
-      document.startViewTransition(() => {
+      // Si se cambia de vista antes de que termine la transicion anterior, el
+      // navegador la aborta y rechaza `finished`. No es un fallo —el cambio se
+      // aplica igual— pero sin capturarla llena la consola de
+      // InvalidStateError. Se ignora a proposito: no hay nada que hacer con ella.
+      const transicion = document.startViewTransition(() => {
         flushSync(() => {
           renderedViewRef.current = nextView
           setRenderedView(nextView)
           setViewPhase('entered')
         })
       })
+      // Las tres promesas, no solo `finished`: al abortar tambien rechazan
+      // `ready` y `updateCallbackDone`, y basta con que quede una sin capturar
+      // para que el error salga igual.
+      transicion.finished?.catch(() => {})
+      transicion.ready?.catch(() => {})
+      transicion.updateCallbackDone?.catch(() => {})
       return
     }
 
