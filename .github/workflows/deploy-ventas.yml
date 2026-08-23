@@ -50,8 +50,16 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      # Sin estos dos secretos el panel compila igual y funciona: se queda en
+      # solo lectura y los botones de escritura no aparecen. Es a proposito —
+      # una compilacion sin secretos tiene que dar un panel que sirve, no uno
+      # roto. Para activar la escritura desde CI hay que crearlos en
+      # Settings > Secrets > Actions.
       - name: Build
         run: npm run build
+        env:
+          VITE_SHEETS_URL: ${{ secrets.VITE_SHEETS_URL }}
+          VITE_SHEETS_TOKEN: ${{ secrets.VITE_SHEETS_TOKEN }}
 
       # Falla cerrado. Un panel con datos comerciales servido sin Basic Auth es
       # peor que un deploy roto, asi que esto se comprueba ANTES de subir nada.

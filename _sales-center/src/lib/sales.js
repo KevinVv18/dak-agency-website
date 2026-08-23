@@ -136,3 +136,49 @@ export const loadSalesData = () =>
   new Promise((resolve) => {
     window.setTimeout(() => resolve(mock), 260)
   })
+
+/* ── Escritura hacia la hoja ────────────────────────────────────────────────
+   El puente es un Apps Script publicado (ver apps-script/Codigo.gs) que solo
+   sabe cambiar UNA celda de las dos columnas que tiene en su lista blanca.
+
+   Si faltan las variables de entorno, `puedeEscribir` es false y el panel se
+   comporta exactamente como antes: solo lectura, con el enlace a la hoja. Es a
+   proposito — una compilacion sin secretos tiene que dar un panel que funciona,
+   no uno roto. */
+
+const PUENTE = import.meta.env.VITE_SHEETS_URL ?? ''
+const LLAVE = import.meta.env.VITE_SHEETS_TOKEN ?? ''
+
+export const puedeEscribir = Boolean(PUENTE && LLAVE)
+
+/**
+ * Cambia una celda en DAK LEADS MASTER.
+ *
+ * `accion` es 'aprobar' o 'enviar'; el script decide en que pestaña y columna
+ * cae cada una. El panel no conoce nombres de pestañas ni de columnas, igual
+ * que no los conoce para leer.
+ *
+ * Va con Content-Type text/plain a proposito: con application/json el navegador
+ * manda antes una peticion OPTIONS de sondeo, y Apps Script no la contesta. Es
+ * el rodeo clasico y no tiene mas misterio.
+ */
+export const escribirEnHoja = async ({ accion, empresa, valor }) => {
+  if (!puedeEscribir) {
+    return { ok: false, error: 'El puente de escritura no está configurado.' }
+  }
+
+  try {
+    const respuesta = await fetch(PUENTE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ token: LLAVE, accion, empresa, valor }),
+      redirect: 'follow',
+    })
+    const cuerpo = await respuesta.json()
+    return cuerpo
+  } catch (error) {
+    // Se distingue del error del script a proposito: si la hoja dice que no,
+    // hay que enseñar su motivo; si no hubo ni conexion, hay que decir eso.
+    return { ok: false, error: 'No se pudo contactar con la hoja. Revisa la conexión.' }
+  }
+}

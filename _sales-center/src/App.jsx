@@ -9,6 +9,8 @@ import {
   diasDesde,
   estaEstancado,
   resumenAntiguedad,
+  puedeEscribir,
+  escribirEnHoja,
   getTodayActions,
   loadSalesData,
 } from './lib/sales'
@@ -190,6 +192,70 @@ function PotentialGauge({ value }) {
   )
 }
 
+/**
+ * Los botones que escriben en la hoja.
+ *
+ * Es la unica parte del panel que no es de solo lectura, y esta deliberadamente
+ * acotada: dos acciones, sobre dos columnas, con el resultado dicho en la misma
+ * fila donde se pulso.
+ *
+ * No hay optimismo aqui. Hasta que la hoja no confirma, no se dice que se hizo:
+ * un panel que da por buena una escritura que fallo es peor que uno de solo
+ * lectura, porque te hace creer que el trabajo ya esta registrado.
+ *
+ * Si el puente no esta configurado, este bloque no existe y la ficha se queda
+ * con el enlace a la hoja de siempre.
+ */
+function AccionesHoja({ prospect, readyToSend }) {
+  const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
+
+  if (!puedeEscribir || !prospect.empresa) return null
+
+  const lanzar = async (accion, valor, etiquetaHecho) => {
+    setEstado({ fase: 'enviando', mensaje: null })
+    const resultado = await escribirEnHoja({ accion, empresa: prospect.empresa, valor })
+    setEstado(
+      resultado.ok
+        ? { fase: 'hecho', mensaje: `${etiquetaHecho} · la hoja tenía «${resultado.anterior || 'vacío'}»` }
+        : { fase: 'fallo', mensaje: resultado.error ?? 'La hoja rechazó el cambio.' },
+    )
+  }
+
+  const trabajando = estado.fase === 'enviando'
+
+  return (
+    <div className="sheet-actions">
+      <span className="context-label">Registrar en la hoja</span>
+      <div className="sheet-actions__row">
+        {readyToSend ? (
+          <button className="sheet-button sheet-button--principal" disabled={trabajando} onClick={() => lanzar('enviar', 'SENT', 'Marcado como enviado')} type="button">
+            {trabajando ? 'Guardando…' : 'Marcar como enviado'}
+          </button>
+        ) : (
+          <>
+            <button className="sheet-button sheet-button--principal" disabled={trabajando} onClick={() => lanzar('aprobar', 'APPROVED', 'Aprobado')} type="button">
+              {trabajando ? 'Guardando…' : 'Aprobar'}
+            </button>
+            <button className="sheet-button" disabled={trabajando} onClick={() => lanzar('aprobar', 'REJECTED', 'Rechazado')} type="button">
+              Rechazar
+            </button>
+          </>
+        )}
+      </div>
+      {estado.mensaje && (
+        <p aria-live="polite" className={`sheet-actions__result ${estado.fase === 'fallo' ? 'is-fallo' : ''}`}>
+          {estado.mensaje}
+        </p>
+      )}
+      {estado.fase === 'hecho' && (
+        <p className="sheet-actions__note">
+          El panel sigue mostrando los datos de ejemplo hasta la próxima lectura de la hoja.
+        </p>
+      )}
+    </div>
+  )
+}
+
 function Badge({ children, tone = 'neutral' }) {
   return <span className={`badge badge--${tone}`}>{children}</span>
 }
@@ -299,6 +365,8 @@ function MessageCard({ prospect, message, readyToSend = false }) {
           <Field label="Responsable" value={prospect.responsable} />
         </div>
       </div>
+
+      <AccionesHoja prospect={prospect} readyToSend={readyToSend} />
 
       <EnlacesEmpresa prospect={prospect} />
 

@@ -695,3 +695,21 @@ PLACEHOLDER
   color: var(--secondary); font-size: 14px; line-height: 1.5;
 }
 .queue-alarm b { color: var(--oro); font-weight: 500; }
+
+/* ── Registrar en la hoja ───────────────────────────────────────────────────
+   La unica parte del panel que escribe. Se separa del resto con su propio
+   bloque para que no se confunda con las acciones que solo copian o abren. */
+.sheet-actions { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--linea); }
+.sheet-actions__row { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 10px; }
+.sheet-button {
+  padding: 10px 16px; border: 1px solid var(--linea-viva); border-radius: 10px;
+  background: transparent; color: var(--secondary); font-size: 14px; font-weight: 500;
+  transition: background-color var(--t-corta) var(--ease-suave), border-color var(--t-corta) var(--ease-suave), color var(--t-corta) var(--ease-suave);
+}
+.sheet-button:hover:not(:disabled) { border-color: var(--oro); color: var(--oro); }
+.sheet-button--principal { border-color: var(--oro); background: var(--oro); color: #241803; font-weight: 600; }
+.sheet-button--principal:hover:not(:disabled) { background: #F2C77C; border-color: #F2C77C; color: #241803; }
+.sheet-button:disabled { opacity: .5; }
+.sheet-actions__result { margin: 12px 0 0; color: var(--oro); font-size: 14px; line-height: 1.5; }
+.sheet-actions__result.is-fallo { color: var(--danger); }
+.sheet-actions__note { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
