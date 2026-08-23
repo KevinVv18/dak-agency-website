@@ -61,26 +61,45 @@ jobs:
           VITE_SHEETS_URL: ${{ secrets.VITE_SHEETS_URL }}
           VITE_SHEETS_TOKEN: ${{ secrets.VITE_SHEETS_TOKEN }}
 
-      # Falla cerrado. Un panel con datos comerciales servido sin Basic Auth es
-      # peor que un deploy roto, asi que esto se comprueba ANTES de subir nada.
-      - name: Comprobar que el muro viaja en el build
+      # El docroot se arma aqui: la puerta PHP en la raiz y el build DENTRO de
+      # app/, que el .htaccess bloquea. Asi el unico camino hacia el HTML y el
+      # JavaScript pasa por la comprobacion de sesion.
+      - name: Armar el docroot (puerta + app)
         run: |
           set -euo pipefail
-          if [ ! -f dist/.htaccess ]; then
-            echo "::error::dist/.htaccess no existe. Revisa publicDir en vite.config.js."
-            exit 1
+          rm -rf publicar && mkdir -p publicar
+          cp -r gate/. publicar/
+          mkdir -p publicar/app
+          cp -r dist/. publicar/app/
+          # El CLIENT_ID no es secreto —viaja en el HTML por diseño— pero se
+          # inyecta desde el entorno para no tener que tocar codigo al rotarlo.
+          if [ -n "${DAK_GOOGLE_CLIENT_ID:-}" ]; then
+            sed -i "s#PENDIENTE.apps.googleusercontent.com#${DAK_GOOGLE_CLIENT_ID}#" publicar/config.php
           fi
-          for regla in AuthType AuthUserFile "Require valid-user"; do
-            if ! grep -q "$regla" dist/.htaccess; then
-              echo "::error::dist/.htaccess no contiene '$regla'. El panel se publicaria sin muro."
-              exit 1
-            fi
+          find publicar -maxdepth 2 -type f | sort
+        env:
+          DAK_GOOGLE_CLIENT_ID: ${{ secrets.DAK_GOOGLE_CLIENT_ID }}
+
+      # Falla cerrado. Un panel con datos comerciales servido sin puerta es peor
+      # que un deploy roto, asi que se comprueba ANTES de subir nada.
+      - name: Comprobar que la puerta viaja armada
+        run: |
+          set -euo pipefail
+          for archivo in publicar/index.php publicar/acceso.php publicar/config.php publicar/.htaccess publicar/app/index.html; do
+            [ -f "$archivo" ] || { echo "::error::Falta $archivo"; exit 1; }
           done
-          if ! grep -q "Disallow: /" dist/robots.txt; then
-            echo "::error::dist/robots.txt no bloquea a los rastreadores."
+          grep -q 'RewriteRule \^app(/|\$) - \[F,L\]' publicar/.htaccess \
+            || { echo "::error::El .htaccess no bloquea app/. El build quedaria accesible sin sesion."; exit 1; }
+          grep -q 'verificarConGoogle' publicar/index.php \
+            || { echo "::error::index.php no verifica el token contra Google."; exit 1; }
+          grep -q "DOMINIO_PERMITIDO" publicar/index.php \
+            || { echo "::error::index.php no restringe por dominio."; exit 1; }
+          if grep -q 'PENDIENTE.apps.googleusercontent.com' publicar/config.php; then
+            echo "::error::Falta el secreto DAK_GOOGLE_CLIENT_ID. Nadie podria entrar."
             exit 1
           fi
-          echo "OK: Basic Auth y robots.txt viajan en el build."
+          grep -q "Disallow: /" publicar/robots.txt || { echo "::error::robots.txt no bloquea a los rastreadores."; exit 1; }
+          echo "OK: puerta armada, app/ bloqueada y dominio restringido."
 
       # --delete es seguro aqui: este docroot es exclusivo del panel y no tiene
       # nada que no produzca el build. De hecho hace falta, para que se lleve el
@@ -89,24 +108,36 @@ jobs:
         uses: burnett01/rsync-deployments@7.0.1
         with:
           switches: -avz --delete
-          path: _sales-center/dist/
+          path: _sales-center/publicar/
           remote_path: /home/u567580447/domains/dakagency.net/public_html/ventas/
           remote_host: 89.116.115.11
           remote_port: 65002
           remote_user: u567580447
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Comprobacion en vivo: si el panel responde 200 sin credenciales, el muro
-      # no esta puesto y hay que enterarse ahora, no por un buscador.
-      - name: Verificar que el panel pide contraseña
+      # Comprobacion en vivo. No basta con que la raiz pida acceso: lo que hay
+      # que demostrar es que el BUILD no se alcanza por ningun camino sin sesion.
+      - name: Verificar en vivo que nada se sirve sin sesion
         run: |
           set -uo pipefail
           sleep 5
-          codigo=$(curl -s -o /dev/null -w '%{http_code}' --max-time 25 https://ventas.dakagency.net/)
-          echo "GET https://ventas.dakagency.net/ -> $codigo"
-          if [ "$codigo" != "401" ]; then
-            echo "::error::El panel deberia responder 401 sin credenciales y respondio $codigo."
-            echo "Si es 200, esta EXPUESTO: revisa el .htaccess y el .htpasswd del servidor."
-            exit 1
-          fi
-          echo "OK: el panel pide autenticacion."
+          fallos=0
+
+          raiz=$(curl -s -o /tmp/raiz.html -w '%{http_code}' --max-time 25 https://ventas.dakagency.net/)
+          echo "GET / -> $raiz"
+          [ "$raiz" = "401" ] || { echo "::error::/ deberia dar 401 y dio $raiz"; fallos=1; }
+          grep -q "accounts.google.com/gsi/client" /tmp/raiz.html \
+            || { echo "::error::La raiz no sirve la pantalla de acceso de Google."; fallos=1; }
+
+          # Lo importante: el panel no debe aparecer por ninguna de estas rutas.
+          for ruta in /app/index.html /app/ /inicio /prospectos /assets/; do
+            codigo=$(curl -s -o /tmp/x -w '%{http_code}' --max-time 25 "https://ventas.dakagency.net${ruta}")
+            echo "GET $ruta -> $codigo"
+            if grep -qs 'id="root"' /tmp/x; then
+              echo "::error::${ruta} sirvio el panel SIN sesion. Esta expuesto."
+              fallos=1
+            fi
+          done
+
+          [ "$fallos" = "0" ] || exit 1
+          echo "OK: sin sesion no se sirve ni el panel ni sus assets."

@@ -1,0 +1,5 @@
+# ventas.dakagency.net es un panel comercial interno.
+# Detras de Basic Auth, ningun rastreador deberia llegar aqui — pero si llega,
+# que sea explicito.
+User-agent: *
+Disallow: /
