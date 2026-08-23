@@ -6,6 +6,9 @@ import {
   getOpener,
   getProspects,
   getShortName,
+  diasDesde,
+  estaEstancado,
+  resumenAntiguedad,
   getTodayActions,
   loadSalesData,
 } from './lib/sales'
@@ -382,10 +385,20 @@ function wholePercent(value, previous) {
   return `${Math.round((value / previous) * 100)} %`
 }
 
+/**
+ * De cuando son los datos, y cuanto hace de eso.
+ *
+ * Con mock da igual. Con la hoja de verdad no: mirar cifras de hace tres dias
+ * creyendo que son de hoy es peor que no mirarlas. La antiguedad va pegada a la
+ * fecha para que no haya forma de leer una sin la otra.
+ */
 function getSnapshotDate(data) {
   const source = data.meta?.fuentes?.outbound ?? ''
   const date = source.match(/\d{4}-\d{2}-\d{2}/)?.[0]
-  return formatDate(date)
+  if (!date) return missing
+  const dias = diasDesde(date)
+  const antiguedad = dias === null ? '' : dias === 0 ? ' · hoy' : dias === 1 ? ' · hace 1 día' : ` · hace ${dias} días`
+  return `${formatDate(date)}${antiguedad}`
 }
 
 function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView }) {
@@ -547,6 +560,8 @@ const prioritaria = (prospect) => prospect.readinessBand === 'PRIORITY OUTREACH'
  */
 function WorkRow({ prospect, selected, onSelect, metric = 'readiness' }) {
   const valor = metric === 'score' ? prospect.score : prospect.readiness
+  const dias = diasDesde(prospect.fechaDeteccion)
+  const estancado = estaEstancado(prospect)
 
   return (
     <button
@@ -564,6 +579,14 @@ function WorkRow({ prospect, selected, onSelect, metric = 'readiness' }) {
       <span aria-hidden="true" className="work-row__meter">
         <i style={{ '--w': `${Math.min(valor ?? 0, 100)}%` }} />
       </span>
+      {/* La antiguedad se ve siempre, en hueso: es informacion y sirve para
+          comparar filas de un vistazo. Solo sube a oro cuando cruza el umbral
+          de abandono — si la llevaran todas, no seria un aviso. */}
+      {dias !== null && (
+        <span className={`work-row__age ${estancado ? 'is-alerta' : ''}`}>
+          {dias === 0 ? 'hoy' : dias === 1 ? '1 día' : `${dias} días`}
+        </span>
+      )}
     </button>
   )
 }
@@ -573,6 +596,7 @@ function TodayView({ todayActions }) {
     { id: 'aprobar', titulo: 'Por aprobar', items: todayActions.pending },
     { id: 'enviar', titulo: 'Por enviar', items: todayActions.readyToSend, listo: true },
     { id: 'espera', titulo: 'Esperando respuesta', items: todayActions.waitingForReply },
+    { id: 'inbound', titulo: 'Vinieron solos, sin atender', items: todayActions.inboundSinAtender },
   ].filter((grupo) => grupo.items.length)
 
   const filas = grupos.flatMap((grupo) =>
@@ -601,9 +625,22 @@ function TodayView({ todayActions }) {
     )
   }
 
+  // Que TODO lleve parado no es un problema de fila, es un problema de
+  // conjunto. Por eso se dice una vez aqui arriba en lugar de repetir el mismo
+  // aviso once veces en la columna, que es como se pierde un aviso.
+  const antiguedad = resumenAntiguedad(filas)
+
   return (
     <div className="work-split">
       <div className="work-queue" onKeyDown={alTeclado}>
+        {antiguedad && antiguedad.min >= 1 && (
+          <p className="queue-alarm">
+            <b>Nada se ha movido.</b>{' '}
+            {antiguedad.min === antiguedad.max
+              ? `Las ${antiguedad.cuantas} llevan ${antiguedad.max} días paradas.`
+              : `Las ${antiguedad.cuantas} llevan entre ${antiguedad.min} y ${antiguedad.max} días paradas.`}
+          </p>
+        )}
         {grupos.map((grupo) => (
           <section className="work-group" key={grupo.id}>
             <header>

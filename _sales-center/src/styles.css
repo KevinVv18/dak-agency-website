@@ -674,3 +674,24 @@ tbody tr.is-selected { background: var(--elevada); }
 .decision-row--espera > strong { color: var(--secondary); }
 .decision-row--vacia { opacity: .45; }
 .decision-row--vacia > strong { color: var(--muted); }
+
+/* ── Antigüedad: el panel se entera de que el tiempo pasa ──────────────────
+   Solo aparece cuando ya molesta (3 días o más). En las quince filas seria una
+   columna que nadie mira; en las que llevan paradas, es un aviso. */
+PLACEHOLDER
+
+/* El grupo de inbound cierra un agujero: un lead entrante no tiene mensaje
+   redactado, asi que no caia en ninguna cola y no aparecia en Hoy. */
+.work-group:last-child > header::before { background: var(--oro); }
+
+/* Antigüedad en hueso por defecto; oro solo al cruzar el umbral de abandono. */
+.work-row__age { color: var(--muted); }
+.work-row__age.is-alerta { color: var(--oro); }
+
+/* La alarma de conjunto: una sola, arriba, en vez de once iguales abajo. */
+.queue-alarm {
+  margin: 0; padding: 14px 20px;
+  border-bottom: 1px solid var(--linea);
+  color: var(--secondary); font-size: 14px; line-height: 1.5;
+}
+.queue-alarm b { color: var(--oro); font-weight: 500; }
