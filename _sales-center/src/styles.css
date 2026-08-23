@@ -653,3 +653,24 @@ tbody tr.is-selected { background: var(--elevada); }
   .flow-track { grid-template-columns: 1fr 1fr; }
   .flow-console .scope-note { margin-top: 26px; }
 }
+
+/* ── Todo lo que es una cifra, se puede abrir ───────────────────────────────
+   Una cifra que no lleva a ningun sitio obliga a buscarla a mano, y entonces el
+   panel no ahorra nada. El nodo del embudo, la ciudad y el bloque de inbound
+   pasan a ser botones; se comportan como el resto y no cambian de aspecto. */
+.funnel-node, .coverage-row, .inbound-signal {
+  width: 100%; border: 0; background: transparent; color: inherit;
+  font: inherit; text-align: left; cursor: pointer;
+  border-radius: 10px;
+  transition: background-color var(--t-corta) var(--ease-suave);
+}
+.funnel-node:hover, .coverage-row:hover, .inbound-signal:hover { background: rgba(255, 255, 255, .03); }
+.coverage-row { padding: 2px 6px; margin: 0 -6px; }
+.inbound-signal { padding: 10px 26px 22px; margin: 0; }
+
+/* La tercera cola de decision. Cuando esta a cero se apaga en vez de
+   desaparecer: un hueco explicito informa, y una fila que aparece de la nada el
+   dia que hay datos, no. */
+.decision-row--espera > strong { color: var(--secondary); }
+.decision-row--vacia { opacity: .45; }
+.decision-row--vacia > strong { color: var(--muted); }

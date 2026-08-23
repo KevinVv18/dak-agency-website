@@ -395,12 +395,15 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
   const processed = baseHealth.length && baseHealth.every((source) => source.procesadas !== null)
     ? baseHealth.reduce((total, source) => total + source.procesadas, 0)
     : null
+  // `destino` son los argumentos de selectView: cada cifra lleva a la vista y al
+  // recorte que la explica. Una cifra que no se puede abrir es una cifra que
+  // obliga a buscarla a mano, y entonces el panel no ahorra nada.
   const funnel = [
-    { label: 'Minadas', value: processed, note: 'Base procesada por las fuentes disponibles.' },
-    { label: 'Investigadas', value: data.meta?.totales?.outbound, note: 'Prospectos outbound con investigación comercial.' },
-    { label: 'Con mensaje', value: data.meta?.totales?.mensajes, note: 'Contacto verificado y mensaje redactado.' },
-    { label: 'Aprobadas', value: data.meta?.embudo?.porEnviar, note: 'Listas para salir por WhatsApp.' },
-    { label: 'Enviadas', value: data.meta?.embudo?.enviados, note: 'Contactos registrados como enviados.', warning: true },
+    { label: 'Minadas', value: processed, note: 'Base procesada por las fuentes disponibles.', destino: ['base'] },
+    { label: 'Investigadas', value: data.meta?.totales?.outbound, note: 'Prospectos outbound con investigación comercial.', destino: ['prospectos', { origen: 'outbound' }] },
+    { label: 'Con mensaje', value: data.meta?.totales?.mensajes, note: 'Contacto verificado y mensaje redactado.', destino: ['hoy'] },
+    { label: 'Aprobadas', value: data.meta?.embudo?.porEnviar, note: 'Listas para salir por WhatsApp.', destino: ['prospectos', { etapa: 'por-enviar' }] },
+    { label: 'Enviadas', value: data.meta?.embudo?.enviados, note: 'Contactos registrados como enviados.', warning: true, destino: ['prospectos', { etapa: 'enviado' }] },
   ]
   const maxFunnel = funnel[0].value || 1
   const cities = Object.entries(
@@ -425,19 +428,20 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
         <div className="funnel-route" onMouseLeave={() => setActiveStage(null)}>
           {funnel.map((stage, index) => (
             <React.Fragment key={stage.label}>
-              <div
-                aria-label={`${valueOrMissing(stage.value)} ${stage.label}. ${stage.note}`}
+              <button
+                aria-label={`${valueOrMissing(stage.value)} ${stage.label}. ${stage.note}. Abrir esta etapa.`}
                 className={`funnel-node ${stage.warning ? 'funnel-node--warning' : ''} ${activeStage === index ? 'is-active' : ''}`}
                 onBlur={() => setActiveStage(null)}
+                onClick={() => onSelectView(...(stage.destino ?? ['prospectos']))}
                 onFocus={() => setActiveStage(index)}
                 onMouseEnter={() => setActiveStage(index)}
-                tabIndex="0"
+                type="button"
               >
                 <span className="funnel-node__survival">{index ? wholePercent(stage.value, funnel[index - 1].value) : stage.value === null ? missing : '100 %'}</span>
                 <strong>{valueOrMissing(stage.value)}</strong>
                 <span className="funnel-node__label">{stage.label}</span>
                 <span className="funnel-node__measure"><i style={{ '--measure': Math.max((stage.value ?? 0) / maxFunnel, 0) }} /></span>
-              </div>
+              </button>
               {index < funnel.length - 1 && (
                 <div className={`funnel-connector ${funnel[index + 1].warning ? 'funnel-connector--warning' : ''}`} aria-label={`${wholePercent(funnel[index + 1].value, stage.value)} continúa`}>
                   <span>{wholePercent(funnel[index + 1].value, stage.value)}</span>
@@ -471,23 +475,46 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
               <span><b>Por enviar</b><small>{readyNames || missing}</small></span>
               <Icon name="arrow" size={15} />
             </button>
+            {/* Tercera cola: lo que ya salio y todavia no contesta. Hoy es cero
+                porque no se ha enviado nada; en cuanto salga el primer mensaje,
+                esta fila es la que avisa de quien no responde. Se pinta aunque
+                este vacia: un hueco explicito informa, y una fila que aparece
+                de la nada el dia que hay datos, no. */}
+            <button
+              className={`decision-row decision-row--espera ${todayActions.waitingForReply.length ? '' : 'decision-row--vacia'}`}
+              onClick={() => onSelectView('prospectos', { etapa: 'enviado' })}
+              type="button"
+            >
+              <strong>{todayActions.waitingForReply.length}</strong>
+              <span>
+                <b>Sin respuesta</b>
+                <small>{todayActions.waitingForReply.length
+                  ? todayActions.waitingForReply.map(({ prospect }) => getShortName(prospect)).join(' · ')
+                  : 'Nada enviado todavía'}</small>
+              </span>
+              <Icon name="arrow" size={15} />
+            </button>
           </div>
         </section>
 
         <section className="console-zone coverage-zone" aria-labelledby="coverage-title">
           <header className="zone-heading"><h2 id="coverage-title">Dónde están</h2><span>Outbound · derivado</span></header>
           <div className="coverage-list">
-            {cities.map(([city, count]) => <div className="coverage-row" key={city}><span>{city}</span><strong>{count}</strong><i><b style={{ '--measure': count / maxCity }} /></i></div>)}
+            {cities.map(([city, count]) => (
+              <button className="coverage-row" key={city} onClick={() => onSelectView('prospectos', { buscar: city })} type="button">
+                <span>{city}</span><strong>{count}</strong><i><b style={{ '--measure': count / maxCity }} /></i>
+              </button>
+            ))}
           </div>
         </section>
 
         <section className="console-zone inbound-zone" aria-labelledby="inbound-title">
           <header className="zone-heading"><h2 id="inbound-title">Vinieron solos</h2></header>
-          <div className="inbound-signal">
+          <button className="inbound-signal" onClick={() => onSelectView('prospectos', { origen: 'inbound' })} type="button">
             <strong>{valueOrMissing(data.meta?.totales?.inbound)}</strong>
             <span>Chat y WhatsApp</span>
             <p>{newestInbound ? `Uno del ${formatDate(newestInbound.fechaDeteccion).replace(/\s+\d{4}$/, '')} sigue sin responsable` : `Último ingreso: ${missing}`}</p>
-          </div>
+          </button>
         </section>
       </div>
     </section>
@@ -671,10 +698,10 @@ function ProspectDetail({ data, prospect }) {
   )
 }
 
-function ProspectsView({ data, prospects }) {
-  const [query, setQuery] = useState('')
-  const [origin, setOrigin] = useState('todos')
-  const [stage, setStage] = useState('todas')
+function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
+  const [query, setQuery] = useState(filtrosIniciales.buscar ?? '')
+  const [origin, setOrigin] = useState(filtrosIniciales.origen ?? 'todos')
+  const [stage, setStage] = useState(filtrosIniciales.etapa ?? 'todas')
   const [selectedId, setSelectedId] = useState(prospects[0]?.id ?? null)
   const filteredProspects = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('es')
@@ -883,10 +910,15 @@ function ErrorState({ onRetry }) {
 }
 
 function App() {
-  const getCurrentView = () => {
-    const requested = window.location.hash.replace('#', '')
-    return VIEWS.some((view) => view.id === requested) ? requested : 'panorama'
+  const leerHash = () => {
+    const crudo = window.location.hash.replace('#', '')
+    const [vista, consulta = ''] = crudo.split('?')
+    return {
+      vista: VIEWS.some((view) => view.id === vista) ? vista : 'panorama',
+      filtros: Object.fromEntries(new URLSearchParams(consulta)),
+    }
   }
+  const getCurrentView = () => leerHash().vista
   const [currentView, setCurrentView] = useState(getCurrentView)
   const [renderedView, setRenderedView] = useState(getCurrentView)
   const [viewPhase, setViewPhase] = useState('entered')
@@ -962,9 +994,15 @@ function App() {
     return () => { cancelled = true }
   }, [requestKey])
 
-  const selectView = (viewId) => {
-    if (viewId === currentView) return
-    window.location.hash = viewId
+  // Segundo argumento opcional: el recorte con el que abrir la vista.
+  // Segundo argumento opcional: el recorte con el que abrir la vista. Va en el
+  // hash y no en estado de React a proposito — asi el enlace se puede pegar en
+  // un chat y abre exactamente lo mismo que estaba viendo quien lo mando.
+  const selectView = (viewId, filtros) => {
+    const consulta = filtros ? `?${new URLSearchParams(filtros)}` : ''
+    const destino = `${viewId}${consulta}`
+    if (destino === window.location.hash.replace('#', '')) return
+    window.location.hash = destino
   }
   const data = resource.data
   const todayActions = data ? getTodayActions(data) : null
@@ -976,7 +1014,7 @@ function App() {
     : renderedView === 'hoy'
       ? <TodayView todayActions={todayActions} />
       : renderedView === 'prospectos'
-        ? <ProspectsView data={data} prospects={prospects} />
+        ? <ProspectsView data={data} filtrosIniciales={leerHash().filtros} key={window.location.hash} prospects={prospects} />
         : renderedView === 'base'
           ? <BaseView baseHealth={baseHealth} />
           : <HowItWorksView />
