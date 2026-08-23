@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
+import Intro, { tocaIntro } from './Intro'
 import {
   getBaseHealth,
   getDisplayName,
@@ -16,7 +17,7 @@ import {
 } from './lib/sales'
 
 const VIEWS = [
-  { id: 'panorama', label: 'Panorama', icon: 'panorama' },
+  { id: 'inicio', label: 'Inicio', icon: 'panorama' },
   { id: 'hoy', label: 'Hoy', icon: 'today' },
   { id: 'prospectos', label: 'Prospectos', icon: 'prospects' },
   { id: 'base', label: 'Base', icon: 'database' },
@@ -1015,20 +1016,31 @@ function ErrorState({ onRetry }) {
 }
 
 function App() {
-  const leerHash = () => {
-    const crudo = window.location.hash.replace('#', '')
-    const [vista, consulta = ''] = crudo.split('?')
+  // URLs de verdad: /inicio, /prospectos?etapa=por-enviar. Sin almohadilla.
+  //
+  // Que esto funcione al recargar depende de dos cosas fuera de este archivo, y
+  // las dos son faciles de romper sin darse cuenta:
+  //   · vite.config.js tiene que tener `base: '/'`. Con './' un asset pedido
+  //     desde /prospectos se busca en /prospectos/assets/ y sale pantalla blanca.
+  //   · publico/.htaccess necesita el fallback a index.html.
+  const leerRuta = () => {
+    const camino = window.location.pathname.replace(/^\/+|\/+$/g, '')
     return {
-      vista: VIEWS.some((view) => view.id === vista) ? vista : 'panorama',
-      filtros: Object.fromEntries(new URLSearchParams(consulta)),
+      vista: VIEWS.some((view) => view.id === camino) ? camino : VIEWS[0].id,
+      filtros: Object.fromEntries(new URLSearchParams(window.location.search)),
     }
   }
-  const getCurrentView = () => leerHash().vista
+  const getCurrentView = () => leerRuta().vista
   const [currentView, setCurrentView] = useState(getCurrentView)
   const [renderedView, setRenderedView] = useState(getCurrentView)
   const [viewPhase, setViewPhase] = useState('entered')
   const [resource, setResource] = useState({ status: 'loading', data: null })
   const [requestKey, setRequestKey] = useState(0)
+  // 'corriendo' mientras se ve la intro, 'fuera' despues. `vieneDeIntro` deja
+  // que el chasis se dibuje solo cuando de verdad hubo intro; si se entro
+  // directo, la consola ya estaba ahi y animarla seria un parpadeo gratis.
+  const [faseIntro, setFaseIntro] = useState(() => (tocaIntro() ? 'corriendo' : 'fuera'))
+  const vieneDeIntro = useRef(tocaIntro()).current
   const exitTimerRef = useRef(null)
   const entryFrameRef = useRef(null)
   const renderedViewRef = useRef(renderedView)
@@ -1081,9 +1093,9 @@ function App() {
 
   useEffect(() => {
     const syncView = () => transitionToView(getCurrentView())
-    window.addEventListener('hashchange', syncView)
+    window.addEventListener('popstate', syncView)
     return () => {
-      window.removeEventListener('hashchange', syncView)
+      window.removeEventListener('popstate', syncView)
       clearViewTransition()
     }
   }, [])
@@ -1105,29 +1117,51 @@ function App() {
   // un chat y abre exactamente lo mismo que estaba viendo quien lo mando.
   const selectView = (viewId, filtros) => {
     const consulta = filtros ? `?${new URLSearchParams(filtros)}` : ''
-    const destino = `${viewId}${consulta}`
-    if (destino === window.location.hash.replace('#', '')) return
-    window.location.hash = destino
+    const destino = `/${viewId}${consulta}`
+    if (destino === window.location.pathname + window.location.search) return
+    // pushState no dispara popstate, asi que la transicion se lanza a mano. El
+    // listener de popstate se queda para el boton de atras del navegador.
+    window.history.pushState(null, '', destino)
+    transitionToView(viewId)
   }
   const data = resource.data
   const todayActions = data ? getTodayActions(data) : null
   const prospects = data ? getProspects(data) : null
   const baseHealth = data ? getBaseHealth(data) : null
   const activeView = VIEWS.find((view) => view.id === currentView) ?? VIEWS[0]
-  const viewContent = renderedView === 'panorama'
+  const viewContent = renderedView === 'inicio'
     ? <PanoramaView baseHealth={baseHealth} data={data} onSelectView={selectView} prospects={prospects} todayActions={todayActions} />
     : renderedView === 'hoy'
       ? <TodayView todayActions={todayActions} />
       : renderedView === 'prospectos'
-        ? <ProspectsView data={data} filtrosIniciales={leerHash().filtros} key={window.location.hash} prospects={prospects} />
+        ? <ProspectsView data={data} filtrosIniciales={leerRuta().filtros} key={window.location.pathname + window.location.search} prospects={prospects} />
         : renderedView === 'base'
           ? <BaseView baseHealth={baseHealth} />
           : <HowItWorksView />
 
   return (
-    <div className="app-shell">
+    <>
+      {/* El chasis se monta desde el primer frame aunque no se vea: la intro
+          necesita medir donde esta la marca del rail para aterrizar ahi. */}
+      {faseIntro !== 'fuera' && (
+        <Intro datosListos={resource.status === 'ready'} onTerminada={() => setFaseIntro('fuera')} />
+      )}
+    <div className={`app-shell ${faseIntro === 'corriendo' ? 'app-shell--entrando' : ''} ${faseIntro === 'fuera' && vieneDeIntro ? 'app-shell--montando' : ''}`}>
       <nav aria-label="Vistas del panel" className="app-rail">
-        <a aria-label="Ir a Panorama" className="brand" href="#panorama" onClick={() => selectView('panorama')}><span aria-hidden="true" className="brand__mark"><i /><i /><i /></span></a>
+        <a
+          aria-label="Ir al inicio"
+          className="brand"
+          href="/inicio"
+          onClick={(evento) => { evento.preventDefault(); selectView('inicio') }}
+        >
+          {/* La D del logo de verdad. Es el mismo glifo en el que aterriza la
+              intro, por eso el salto no necesita ningun disimulo. */}
+          <span aria-hidden="true" className="brand__mark">
+            <svg viewBox="0 0 521.16 420.36" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="521.16 123.61 398.75 420.36 49.35 420.36 49.87 419.85 0 419.85 76.23 236.93 200.97 236.93 174.41 300.63 316.74 300.63 391.92 119.75 133.8 119.75 26.6 0 441.69 0 521.16 123.61" />
+            </svg>
+          </span>
+        </a>
         <div className="rail-actions">
           {VIEWS.map((view) => <button aria-current={currentView === view.id ? 'page' : undefined} aria-label={view.label} className={currentView === view.id ? 'is-active' : ''} data-view={view.id} key={view.id} onClick={() => selectView(view.id)} type="button"><Icon name={view.icon} size={17} /><span aria-hidden="true">{view.label}</span></button>)}
         </div>
@@ -1144,6 +1178,7 @@ function App() {
         {resource.status === 'ready' && <div className={`view-frame view-frame--${viewPhase}`} key={renderedView}>{viewContent}</div>}
       </main>
     </div>
+    </>
   )
 }
 

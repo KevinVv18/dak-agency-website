@@ -300,7 +300,7 @@ tbody tr.is-selected { background: var(--elevada); }
 
 @keyframes turn { to { transform: rotate(1turn); } }
 @keyframes content-arrival { from { opacity: 0; transform: translateY(10px); } }
-@keyframes detail-arrival { from { opacity: 0; transform: translateX(16px); } }
+/* (la definicion util vive mas abajo; esta estaba duplicada y la pisaba) */
 @keyframes funnel-entry { to { opacity: 1; transform: translateY(0); } }
 @keyframes measure-entry { to { transform: scaleX(var(--measure)); } }
 @keyframes connector-entry { to { transform: scaleX(1); } }
@@ -713,3 +713,70 @@ PLACEHOLDER
 .sheet-actions__result { margin: 12px 0 0; color: var(--oro); font-size: 14px; line-height: 1.5; }
 .sheet-actions__result.is-fallo { color: var(--danger); }
 .sheet-actions__note { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+/* ═══ Intro ═════════════════════════════════════════════════════════════════
+   El logo se dibuja, la D viaja al rail y el contenido entra con la animacion
+   escalonada que ya existia. Ver src/Intro.jsx para la coreografia. */
+
+.intro {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: center;
+  background: var(--fondo);
+  transition: opacity var(--t-corta) var(--ease-salida);
+}
+.intro--saltando { opacity: 1; }
+
+.intro__marca {
+  width: min(46vw, 420px);
+  transition: transform 450ms var(--ease-suave);
+  will-change: transform;
+}
+.intro__marca svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* Los contornos se dibujan. pathLength="1" en el poligono deja el dasharray en
+   una unidad exacta, sin medir perimetros a mano. */
+.intro__trazo {
+  fill: none; stroke: var(--text); stroke-width: 10; stroke-linejoin: miter;
+}
+.intro__relleno { fill: var(--text); fill-opacity: 0; }
+.intro__relleno--morado { fill: var(--purple); }
+
+.intro--telon .intro__letra { opacity: 0; }
+
+/* El dibujado y el relleno los dirige la Web Animations API desde Intro.jsx,
+   no CSS: stroke-dashoffset es a la vez atributo de presentacion y propiedad
+   CSS, y las reglas por fase no se resolvian de forma fiable. Aqui solo queda
+   el estado de partida; el movimiento vive en el componente. */
+
+/* Al saltar, la A y la K se retiran y dejan sola a la D, que es la que aterriza
+   en el rail. El trazo se apaga a la vez que el relleno se queda: en pequeño,
+   una linea de 10 unidades taparia el glifo entero. */
+.intro--saltando .intro__letra--a,
+.intro--saltando .intro__letra--k {
+  opacity: 0; transition: opacity 260ms var(--ease-salida);
+}
+.intro--saltando .intro__trazo {
+  opacity: 0; transition: opacity 200ms var(--ease-salida);
+}
+
+/* El chasis se dibuja mientras la marca viaja: las dos lineas del rail y del
+   topbar crecen desde su origen. Es la consola montandose. */
+.app-shell--entrando { opacity: 0; }
+.app-shell--montando { animation: intro-aparecer 350ms var(--ease-suave) forwards; }
+.app-shell--montando .app-rail { animation: intro-linea-vertical 350ms var(--ease-suave) both; }
+.app-shell--montando .app-header { animation: intro-linea-horizontal 350ms var(--ease-suave) both; }
+@keyframes intro-aparecer { from { opacity: 0; } to { opacity: 1; } }
+@keyframes intro-linea-vertical { from { border-right-color: transparent; } }
+@keyframes intro-linea-horizontal { from { border-bottom-color: transparent; } }
+
+/* La marca del rail es la D de verdad, no tres barritas: por eso el salto puede
+   aterrizar en ella sin disimulos. */
+.brand__mark { display: block; width: 22px; height: 18px; }
+.brand__mark svg { display: block; width: 100%; height: 100%; }
+.brand__mark polygon { fill: var(--text); transition: fill var(--t-corta) var(--ease-suave); }
+.brand:hover .brand__mark polygon { fill: var(--oro); }
+
+@media (prefers-reduced-motion: reduce) {
+  .intro { display: none; }
+  .app-shell--entrando, .app-shell--montando { opacity: 1; animation: none; }
+}

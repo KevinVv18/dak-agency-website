@@ -1,10 +1,13 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  // Rutas relativas. El panel se sirve en la raiz de su subdominio, asi que
-  // funciona igual con base absoluta o relativa — pero con la relativa el
-  // dist/ tambien se puede abrir a doble clic para revisarlo sin levantar nada.
-  base: './',
+  // ⚠️ Tiene que ser '/' absoluta, y no es cosmetico.
+  //
+  // Estuvo en './' para poder abrir el dist/ a doble clic. Con las URLs limpias
+  // eso rompe el sitio: desde /prospectos, un './assets/x.js' se resuelve a
+  // /prospectos/assets/x.js, que no existe, y sale pantalla en blanco. Solo se
+  // nota al recargar en una ruta profunda, que es justo lo que nadie prueba.
+  base: '/',
 
   // El .htaccess con el Basic Auth y el robots.txt viven en publico/ y Vite los
   // copia a dist/ en cada build.
