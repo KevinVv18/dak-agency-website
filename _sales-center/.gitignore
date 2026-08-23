@@ -1,3 +1,6 @@
 
 # El token del puente de escritura. Nunca al repo.
 .env.local
+
+# Docroot armado por el despliegue (puerta + build). Artefacto, no fuente.
+publicar
