@@ -355,12 +355,25 @@ tbody tr.is-selected { background: var(--elevada); }
   .panorama-console { grid-template-rows: minmax(0, .92fr) minmax(0, 1.18fr); }
   .zone-heading { gap: 8px; padding: 12px 12px 0; }
   .zone-heading span { display: none; }
-  .funnel-route { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center; gap: 3px; padding: 2px 10px 8px; }
-  .funnel-node { align-self: center; padding: 7px 2px; }
-  .funnel-node > strong { font-size: clamp(1.5rem, 8vw, 2rem); }
-  .funnel-node__survival { display: block; margin-bottom: 5px; }
-  .funnel-node__label { min-height: 29px; margin-top: 7px; overflow-wrap: anywhere; font-size: 11px; letter-spacing: .04em; }
-  .funnel-node__measure { margin-top: 8px; }
+  /* El embudo en movil pasa de rejilla de cinco columnas a lista vertical.
+     Cinco columnas en 375 px dejan 63 px por celda, y ahi «INVESTIGADAS» se
+     partia por la mitad. En vertical cada etapa tiene el ancho entero: no se
+     corta ninguna palabra y de paso se llena el hueco que sobraba arriba. */
+  .funnel-route { display: grid; grid-template-columns: 1fr; align-items: stretch; gap: 0; padding: 4px 12px 10px; }
+  .funnel-node {
+    display: grid; grid-template-columns: 2.6em minmax(0, 1fr) auto;
+    align-items: center; gap: 0 14px; padding: 10px 6px;
+    border-top: 1px solid var(--linea); border-radius: 0;
+  }
+  .funnel-node:first-of-type { border-top: 0; }
+  .funnel-node > strong { grid-row: 1 / 3; font-size: 1.7rem; text-align: right; }
+  .funnel-node__label {
+    grid-column: 2; margin: 0; font-size: 11px; letter-spacing: .1em;
+    /* Sin overflow-wrap:anywhere. Era exactamente lo que partia INVESTIG-ADAS. */
+    overflow-wrap: normal; word-break: keep-all;
+  }
+  .funnel-node__survival { grid-column: 3; grid-row: 1; display: block; margin: 0; }
+  .funnel-node__measure { grid-column: 2 / 4; margin-top: 7px; }
   /* En movil el embudo pasa a rejilla y cada nodo lleva su propio porcentaje,
      asi que el conector sobra. La linea de estado tambien: sin raton no hay
      nada que señalar, y el aria-label de cada nodo ya lleva la explicacion. */
@@ -511,11 +524,38 @@ tbody tr.is-selected { background: var(--elevada); }
 /* Dentro de la consola la tarjeta ya no necesita marco propio. */
 .work-detail .message-card { border: 0; border-radius: 0; background: transparent; padding: 22px 26px 40px; }
 
+/* El boton de volver solo existe en movil: en escritorio la lista nunca
+   desaparece, asi que no hay a donde volver. */
+.volver { display: none; }
+
 @media (max-width: 860px) {
-  .main-content--hoy { overflow: auto; }
-  .work-split { grid-template-columns: 1fr; height: auto; }
-  .work-queue { overflow: visible; }
-  .work-detail { overflow: visible; border-top: 1px solid var(--linea); }
+  .work-split { grid-template-columns: 1fr; }
+
+  /* Se enseña UNA de las dos, nunca las dos apiladas. Apiladas, tocar una fila
+     no parecia hacer nada: la ficha se dibujaba fuera de pantalla y habia que
+     adivinar que tocaba bajar. Con dos pantallas el gesto es el de cualquier
+     bandeja de correo — entras y vuelves. */
+  .work-split--lista .work-detail { display: none; }
+  .work-split--detalle .work-queue { display: none; }
+
+  .volver {
+    position: sticky; top: 0; z-index: 3;
+    display: flex; align-items: center; gap: 9px; width: 100%;
+    min-height: 46px; padding: 12px 16px;
+    border: 0; border-bottom: 1px solid var(--linea);
+    background: rgba(3, 1, 6, .82); backdrop-filter: saturate(180%) blur(18px);
+    color: var(--secondary); font-size: 14px; text-align: left;
+  }
+  .volver span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .volver svg { flex: none; }
+  .volver:active { color: var(--text); }
+
+  /* Entra desde la derecha: deja claro que has ido a otro sitio y que se vuelve. */
+  .work-split--detalle .work-detail { animation: detalle-movil 300ms var(--ease-suave) both; }
+}
+@keyframes detalle-movil { from { opacity: 0; transform: translateX(14px); } }
+@media (prefers-reduced-motion: reduce) {
+  .work-split--detalle .work-detail { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) { .work-detail > * { animation: none; } }
 
@@ -651,6 +691,11 @@ tbody tr.is-selected { background: var(--elevada); }
 @media (max-width: 860px) {
   .main-content--prospectos, .main-content--base, .main-content--como-funciona { overflow: auto; }
   .flow-track { grid-template-columns: 1fr 1fr; }
+}
+/* En un telefono, dos columnas dejan 200px por etapa y los nombres de los
+   agentes van justos. Una sola columna se lee mejor y no cuesta nada. */
+@media (max-width: 560px) {
+  .flow-track { grid-template-columns: 1fr; }
   .flow-console .scope-note { margin-top: 26px; }
 }
 

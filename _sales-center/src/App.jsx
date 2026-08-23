@@ -257,6 +257,25 @@ function AccionesHoja({ prospect, readyToSend }) {
   )
 }
 
+/**
+ * Volver a la lista. Solo existe en movil.
+ *
+ * En el telefono la lista y la ficha son dos pantallas, no una encima de otra.
+ * Apiladas, tocar una fila no parecia hacer nada: la ficha se dibujaba fuera de
+ * pantalla y habia que adivinar que tocaba bajar. Con dos pantallas el gesto es
+ * el de cualquier bandeja de correo — entras y vuelves.
+ */
+function BotonVolver({ onClick, titulo }) {
+  return (
+    <button className="volver" onClick={onClick} type="button">
+      <svg aria-hidden="true" fill="none" height="16" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24" width="16">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+      <span>{titulo}</span>
+    </button>
+  )
+}
+
 function Badge({ children, tone = 'neutral' }) {
   return <span className={`badge badge--${tone}`}>{children}</span>
 }
@@ -673,6 +692,11 @@ function TodayView({ todayActions }) {
   )
 
   const [elegido, setElegido] = useState(null)
+  // En movil la lista y la ficha son DOS PANTALLAS, no una encima de otra:
+  // apilarlas hacia que tocar una fila no pareciera hacer nada, porque la ficha
+  // quedaba fuera de pantalla. En escritorio esto no cambia nada.
+  const [enDetalle, setEnDetalle] = useState(false)
+  const abrir = (id) => { setElegido(id); setEnDetalle(true) }
   const activo = filas.find((fila) => fila.prospect.id === elegido) ?? filas[0] ?? null
 
   // El teclado mueve la seleccion, como en cualquier bandeja. Es lo que separa
@@ -700,7 +724,7 @@ function TodayView({ todayActions }) {
   const antiguedad = resumenAntiguedad(filas)
 
   return (
-    <div className="work-split">
+    <div className={`work-split ${enDetalle ? 'work-split--detalle' : 'work-split--lista'}`}>
       <div className="work-queue" onKeyDown={alTeclado}>
         {antiguedad && antiguedad.min >= 1 && (
           <p className="queue-alarm">
@@ -721,7 +745,7 @@ function TodayView({ todayActions }) {
                 const seleccionada = prospect.id === activo.prospect.id
                 return (
                   <li key={prospect.id}>
-                    <WorkRow onSelect={setElegido} prospect={prospect} selected={seleccionada} />
+                    <WorkRow onSelect={abrir} prospect={prospect} selected={seleccionada} />
                   </li>
                 )
               })}
@@ -733,6 +757,7 @@ function TodayView({ todayActions }) {
       {/* La `key` fuerza el remontaje al cambiar de fila: asi el detalle entra
           con su animacion en vez de cambiar de texto de golpe. */}
       <div className="work-detail" key={activo.prospect.id}>
+        <BotonVolver onClick={() => setEnDetalle(false)} titulo={getShortName(activo.prospect)} />
         <MessageCard message={activo.message} prospect={activo.prospect} readyToSend={activo.listo} />
       </div>
     </div>
@@ -809,6 +834,8 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
   const [origin, setOrigin] = useState(filtrosIniciales.origen ?? 'todos')
   const [stage, setStage] = useState(filtrosIniciales.etapa ?? 'todas')
   const [selectedId, setSelectedId] = useState(prospects[0]?.id ?? null)
+  const [enDetalle, setEnDetalle] = useState(false)
+  const abrir = (id) => { setSelectedId(id); setEnDetalle(true) }
   const filteredProspects = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('es')
     return prospects.filter((prospect) => {
@@ -835,7 +862,7 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
   }
 
   return (
-    <div className="work-split">
+    <div className={`work-split ${enDetalle ? 'work-split--detalle' : 'work-split--lista'}`}>
       <div className="work-queue" onKeyDown={alTeclado}>
         <div className="filter-bar">
           <label className="search-field">
@@ -867,7 +894,7 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
                 <li key={prospect.id}>
                   <WorkRow
                     metric="score"
-                    onSelect={setSelectedId}
+                    onSelect={abrir}
                     prospect={prospect}
                     selected={selectedProspect?.id === prospect.id}
                   />
@@ -885,6 +912,7 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
       </div>
 
       <div className="work-detail" key={selectedProspect?.id ?? 'empty'}>
+        {selectedProspect && <BotonVolver onClick={() => setEnDetalle(false)} titulo={getShortName(selectedProspect)} />}
         <ProspectDetail data={data} prospect={selectedProspect} />
       </div>
     </div>
