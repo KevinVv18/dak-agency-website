@@ -35,9 +35,17 @@
    el ratón o al entrar con el tabulador, y no se mueve si el visitante pidió
    no ver movimiento.
 
-   El desplazamiento es -50% del riel, que contiene exactamente DOS copias: al
-   llegar a la mitad, la segunda copia está justo donde estaba la primera y el
-   salto no se ve. Es transform, así que se compone en la GPU. */
+   El riel lleva CUATRO copias y se desplaza -25%, o sea exactamente una copia:
+   al llegar ahí, la segunda está justo donde arrancó la primera y el salto no
+   se ve. Antes eran dos copias y -50%, que también empalmaba — pero el grupo de
+   siete servicios no llega a mil píxeles, así que en una pantalla ancha se veía
+   UNA hilera cruzando y el resto del riel vacío. Con cuatro, lo que queda a la
+   vista tras el desplazamiento son tres grupos seguidos: no hay hueco a ningún
+   ancho. Es transform, así que se compone en la GPU, y el coste de las dos
+   copias de más es marcado inerte, no pintado por fotograma.
+
+   La duración no se toca: 42s seguían siendo 42s por copia, así que la cinta
+   desfila exactamente a la misma velocidad que antes. */
 .pie-cinta {
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -61,7 +69,7 @@
 }
 
 @keyframes pie-desfile {
-  to { transform: translateX(-50%); }
+  to { transform: translateX(-25%); }
 }
 
 .pie-cinta-grupo {
@@ -106,9 +114,67 @@
   bottom: 2.5rem;
   transform: translateX(-50%);
   width: min(1100px, 88%);
-  color: rgba(255, 255, 255, 0.055);
+  /* El tinte va en `opacity` y no en el alfa del color: así el encendido se
+     anima en el compositor —una propiedad, sin repintar los cinco polígonos— y
+     en reposo se ve exactamente igual que cuando era rgba(255,255,255,0.055). */
+  color: #ffffff;
+  opacity: 0.055;
   pointer-events: none;
   z-index: 0;
+}
+
+/* ── El grabado se enciende ──
+
+   Dos maneras de encenderse, porque son dos cosas distintas:
+
+   `--tubo` es el evento automático: arranca TRABADO, como un fluorescente que
+   no prende a la primera, se queda constante unos tres segundos y se apaga
+   solo. Es lo que hace que el pie no esté muerto.
+
+   `--roce` es la respuesta al ratón, y NO trabaja: si parpadease cada vez que
+   el puntero cruza un trazo, el pie tendría un tic. Sube limpio, aguanta los
+   mismos segundos y se apaga igual. La misma luz, dos maneras de llegar a ella.
+
+   Las dos animan solo `opacity`, así que no hay maquetación ni repintado por
+   fotograma; y ninguna corre en bucle: se ponen por clase y se quitan solas al
+   terminar. */
+@keyframes pie-marca-tubo {
+  0%, 4%    { opacity: 0.055; }
+  5%        { opacity: 0.34; }
+  7%        { opacity: 0.06; }
+  9%        { opacity: 0.42; }
+  10.5%     { opacity: 0.055; }
+  13%       { opacity: 0.26; }
+  14.5%     { opacity: 0.07; }
+  18%       { opacity: 0.46; }
+  20%       { opacity: 0.30; }
+  24%, 74%  { opacity: 0.46; }
+  100%      { opacity: 0.055; }
+}
+
+@keyframes pie-marca-roce {
+  0%        { opacity: 0.055; }
+  10%, 74%  { opacity: 0.46; }
+  100%      { opacity: 0.055; }
+}
+
+.pie-fondo--tubo { animation: pie-marca-tubo 6.5s linear; }
+.pie-fondo--roce { animation: pie-marca-roce 6.5s ease-out; }
+
+/* La copia de trazo grueso con la que se comprueba si el puntero cruza la
+   marca. No se pinta —va en transparente— y no captura eventos: se consulta
+   por geometría con isPointInStroke, así que da igual que la placa del pie
+   esté por delante. Existe porque el trazo visible mide 2px y acertarle con el
+   ratón sería un juego de puntería, no un roce. */
+.pie-marca-tacto {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pie-fondo--tubo,
+  .pie-fondo--roce {
+    animation: none;
+  }
 }
 
 .pie-marca {

@@ -224,8 +224,44 @@ a {
   transition: color var(--transition-base);
 }
 
-a:hover {
-  color: var(--color-secondary);
+/* ── AQUÍ HABÍA UNA REGLA DE LA PLANTILLA: a:hover { color: #B024FF } ──
+
+   Repintaba de morado CUALQUIER enlace de la web al pasar el ratón. Medido en
+   la home: de 64 enlaces, 21 dependían SOLO de ella, y ninguno era texto
+   corrido — todos son piezas con diseño propio. O sea que no daba nada y sí
+   rompía: en los cuatro botones que están SOBRE el morado, el rótulo pasaba de
+   #030106 a #B024FF sobre un fondo #B93EFF. Eso es 1,08:1: la etiqueta
+   desaparecía al pasar el ratón. Es el fallo de la captura de Kevin.
+
+   Se retira, y cada pieza declara su propio hover en su componente. */
+
+/* ── Los botones llenos ──
+   El hover se NOTA y además mejora la lectura, que es lo contrario de lo que
+   hacía antes: la placa se aclara a #CB6BFF y la tinta oscura pasa de 5,04:1 a
+   6,93:1. Las esquineras siguen abriéndose por su cuenta en cada componente.
+
+   Van cualificados con `a` a propósito: así ganan por especificidad a la regla
+   base del componente sin depender del orden en que se empaqueten los CSS. */
+a.blog-boton,
+a.projects-cta-btn,
+a.nav-cta-button,
+a.demo-try {
+  transition:
+    background-color 0.28s var(--ease-out-expo),
+    color 0.28s var(--ease-out-expo),
+    background-position 0.35s var(--ease-out-expo);
+}
+
+a.blog-boton:hover,
+a.blog-boton:focus-visible,
+a.projects-cta-btn:hover,
+a.projects-cta-btn:focus-visible,
+a.nav-cta-button:hover,
+a.nav-cta-button:focus-visible,
+a.demo-try:hover,
+a.demo-try:focus-visible {
+  color: var(--superficie);
+  background-color: #CB6BFF;
 }
 
 /* ===================================

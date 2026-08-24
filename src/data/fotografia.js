@@ -163,9 +163,13 @@ export const sesiones = [
     alt: 'Cantante en vivo durante un evento en La Cocina de Rosita',
   },
   {
-    id: 'bersa-medic-01', w: 900, h: 1200, cliente: 'Bersa Medic', sector: 'Salud',
+    /* El id conserva el nombre del archivo original; el cliente es Prosadis,
+       corregido por Kevin. El sector se queda en Salud porque describe ESTA
+       foto —un retrato clinico—, no el giro de la empresa: la otra foto de
+       Prosadis, la de la fachada, sigue en Distribucion. */
+    id: 'bersa-medic-01', w: 900, h: 1200, cliente: 'Prosadis', sector: 'Salud',
     linea: 'comercial', publicado: true,
-    alt: 'Retrato del Dr. Enrique, de Bersa Medic, con bata blanca',
+    alt: 'Retrato del doctor de Prosadis, con bata blanca',
   },
   {
     id: 'casa-club-01', w: 900, h: 600, cliente: 'Casa Club T&G', sector: 'Inmobiliario',
