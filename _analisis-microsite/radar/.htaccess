@@ -1,0 +1,23 @@
+# EXCEPCIÓN DELIBERADA al noindex del subdominio.
+#
+# analisis.dakagency.net entero está bloqueado (ver ../.htaccess y ../robots.txt)
+# porque aloja los informes de marca de prospectos reales: nombres propios junto a
+# sus puntos débiles. Eso NUNCA debe indexarse.
+#
+# /radar/ es lo contrario: un estudio agregado y anónimo, escrito para ser público.
+# No nombra a ninguna marca auditada. Solo cita a anunciantes cuya pauta ya es
+# pública en la biblioteca de Meta. Por eso, y solo aquí, se levanta el bloqueo.
+#
+# `Header set` reemplaza la cabecera heredada del directorio padre; el `unset`
+# previo es un cinturón extra por si el orden de mezcla cambia.
+#
+# ⚠️ Al tocar esto, verificar SIEMPRE las dos direcciones:
+#     curl -sI https://analisis.dakagency.net/radar/ | grep -i x-robots   -> index
+#     curl -sI https://analisis.dakagency.net/jetc/  | grep -i x-robots   -> noindex
+#    Que /radar/ se indexe es deseable. Que un informe de cliente se indexe es un
+#    incidente.
+
+<IfModule mod_headers.c>
+  Header unset X-Robots-Tag
+  Header set X-Robots-Tag "index, follow, max-image-preview:large, max-snippet:-1"
+</IfModule>
