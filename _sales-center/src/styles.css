@@ -880,3 +880,12 @@ PLACEHOLDER
 }
 .message-editor:focus { border-color: var(--oro); outline: none; }
 .message-editor__acciones { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 12px; }
+
+/* Los enlaces que FALTAN se enseñan apagados y sin enlace. El hueco es el dato
+   accionable: dice exactamente qué pedirle al agente que rellena la hoja. */
+.company-links__falta {
+  display: inline-flex; align-items: center;
+  color: var(--muted); font-size: 14px; opacity: .5;
+  border-bottom: 1px dashed var(--linea-viva); padding-bottom: 1px;
+}
+.company-links__nota { margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }

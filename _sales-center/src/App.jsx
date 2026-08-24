@@ -131,37 +131,47 @@ function Icon({ name, size = 16 }) {
 /**
  * Adonde ir para mirar a la empresa por tu cuenta antes de decidir.
  *
- * Falta a proposito el hueco de "sin dato" por cada red: la hoja no trae ni una
- * sola red social rellena, asi que enseñar cinco huecos vacios seria ruido con
- * forma de dato. Se pintan solo los enlaces que existen, y si no hay ninguno se
- * dice en una linea. Web sale en 7 de 12 y Maps en 9 de 12; las redes se
- * pintaran solas el dia que el pipeline las traiga.
+ * Los huecos SE ENSEÑAN, y eso cambio a proposito. Antes se ocultaban por no
+ * meter ruido, pero resulta que el hueco es el dato accionable: dice exactamente
+ * que pedirle al agente que rellena la hoja. Un Instagram que falta no es un
+ * espacio en blanco, es una tarea.
  */
 function EnlacesEmpresa({ prospect }) {
   const redes = prospect.contacto?.redes ?? {}
-  const enlaces = [
+  const todos = [
     { etiqueta: 'Web', href: getHref(prospect.web) },
     { etiqueta: 'Google Maps', href: getHref(prospect.mapsUrl) },
     { etiqueta: 'Instagram', href: getHref(redes.instagram) },
     { etiqueta: 'Facebook', href: getHref(redes.facebook) },
-    { etiqueta: 'LinkedIn', href: getHref(redes.linkedin) },
     { etiqueta: 'TikTok', href: getHref(redes.tiktok) },
-  ].filter((enlace) => enlace.href)
+    { etiqueta: 'LinkedIn', href: getHref(redes.linkedin) },
+  ]
+  const hay = todos.filter((e) => e.href)
+  const faltan = todos.filter((e) => !e.href).map((e) => e.etiqueta)
 
   return (
     <div className="company-links">
       <span className="context-label">Mirar a la empresa</span>
-      {enlaces.length ? (
-        <p>
-          {enlaces.map((enlace) => (
-            <a href={enlace.href} key={enlace.etiqueta} rel="noreferrer noopener" target="_blank">
-              {enlace.etiqueta}
-              <Icon name="arrow" size={12} />
-            </a>
-          ))}
+      <p>
+        {hay.map((enlace) => (
+          <a href={enlace.href} key={enlace.etiqueta} rel="noreferrer noopener" target="_blank">
+            {enlace.etiqueta}
+            <Icon name="arrow" size={12} />
+          </a>
+        ))}
+        {/* Los huecos se enseñan a proposito. Antes se ocultaban por no meter
+            ruido, pero el hueco ES el dato accionable: dice exactamente que
+            pedirle al agente que rellena la hoja. Van apagados, sin enlace. */}
+        {faltan.map((etiqueta) => (
+          <span className="company-links__falta" key={etiqueta}>{etiqueta}</span>
+        ))}
+      </p>
+      {faltan.length > 0 && (
+        <p className="company-links__nota">
+          {faltan.length === todos.length
+            ? 'Ningún enlace en la hoja. El agente puede buscarlos y rellenarlos.'
+            : `Faltan en la hoja: ${faltan.join(', ')}.`}
         </p>
-      ) : (
-        <p className="empty-inline">Sin enlaces públicos verificados.</p>
       )}
     </div>
   )
@@ -1373,7 +1383,9 @@ function App() {
         <h1>{activeView.label}</h1>
         {data && <span className="header-meta">{getSnapshotDate(data)}</span>}
         <span className="header-spacer" />
-        {data?.meta.esMock && <Badge tone="mock">Datos de ejemplo</Badge>}
+        {data?.meta.esMock
+          ? <Badge tone="mock" title={data.meta.motivoMock ?? undefined}>Datos de ejemplo</Badge>
+          : <Badge tone="oro">En vivo</Badge>}
       </header>
       <main className={`main-content main-content--${renderedView}`}>
         {resource.status === 'loading' && <LoadingState />}

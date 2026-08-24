@@ -1,4 +1,13 @@
 import mock from '../../data/mock.json'
+import traducciones from '../../data/traducciones.json'
+import { construir } from './construir'
+
+// El puente con la hoja. Se declaran arriba porque los usan tanto la lectura
+// en vivo como la escritura, y leerlos al final obliga a saltar el archivo entero.
+const PUENTE = import.meta.env.VITE_SHEETS_URL ?? ''
+const LLAVE = import.meta.env.VITE_SHEETS_TOKEN ?? ''
+
+export const puedeEscribir = Boolean(PUENTE && LLAVE)
 
 const byReadiness = (left, right) => (right.readiness ?? -1) - (left.readiness ?? -1)
 
@@ -132,10 +141,57 @@ export const getBaseHealth = (data = mock) => [...data.fuentes]
 export const getProspectById = (id, data = mock) =>
   data.prospectos.find((prospect) => prospect.id === id) ?? null
 
-export const loadSalesData = () =>
-  new Promise((resolve) => {
-    window.setTimeout(() => resolve(mock), 260)
-  })
+/**
+ * Carga los datos. Primero la hoja EN VIVO; si no se puede, el mock.
+ *
+ * La red de seguridad no es cosmetica: si Google esta caido o el token caduca,
+ * un panel con datos de ejemplo y un aviso claro sirve mas que una pantalla de
+ * error. Lo que NO puede pasar es que enseñe datos viejos haciendolos pasar por
+ * frescos — por eso el motivo viaja en `meta.motivoMock` y la cabecera lo dice.
+ */
+export const loadSalesData = async () => {
+  if (!puedeEscribir) {
+    return { ...mock, meta: { ...mock.meta, motivoMock: 'El puente con la hoja no está configurado.' } }
+  }
+
+  try {
+    const respuesta = await fetch(PUENTE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ token: LLAVE, accion: 'leer' }),
+      redirect: 'follow',
+    })
+    const cuerpo = await respuesta.json()
+    if (!cuerpo.ok) throw new Error(cuerpo.error ?? 'La hoja no devolvió datos.')
+
+    const comoHoja = (filas) => ({
+      cab: filas?.[0] ?? [],
+      datos: (filas ?? []).slice(1).filter((f) => f.some((c) => c && String(c).trim())),
+    })
+
+    const datos = construir({
+      leads: comoHoja(cuerpo.pestanas.Leads),
+      queue: comoHoja(cuerpo.pestanas['DAK OUTREACH QUEUE']),
+      daily: comoHoja(cuerpo.pestanas['DAK DAILY OUTREACH']),
+      camara: comoHoja(cuerpo.pestanas['CAMARA REACTIVATION LOG']),
+      // El inbound del MySQL todavia no tiene puente propio: se arrastra del
+      // mock para no perder esa mitad del embudo mientras tanto.
+      inbound: mock.prospectos.filter((p) => p.origen === 'inbound'),
+      traducciones,
+      // En vivo NO se redacta. La redaccion existe porque mock.json se versiona;
+      // aqui el panel necesita el telefono de verdad para poder llamar.
+      redactar: false,
+      fuentes: {
+        outbound: `DAK LEADS MASTER, lectura en vivo del ${cuerpo.leidoEn}`,
+        inbound: 'MySQL (arrastrado del mock)',
+      },
+    })
+
+    return { ...datos, meta: { ...datos.meta, esMock: false, leidoEn: cuerpo.leidoEn } }
+  } catch (error) {
+    return { ...mock, meta: { ...mock.meta, motivoMock: `No se pudo leer la hoja: ${error.message}` } }
+  }
+}
 
 /* ── Escritura hacia la hoja ────────────────────────────────────────────────
    El puente es un Apps Script publicado (ver apps-script/Codigo.gs) que solo
@@ -146,10 +202,6 @@ export const loadSalesData = () =>
    proposito — una compilacion sin secretos tiene que dar un panel que funciona,
    no uno roto. */
 
-const PUENTE = import.meta.env.VITE_SHEETS_URL ?? ''
-const LLAVE = import.meta.env.VITE_SHEETS_TOKEN ?? ''
-
-export const puedeEscribir = Boolean(PUENTE && LLAVE)
 
 /**
  * Cambia una celda en DAK LEADS MASTER.

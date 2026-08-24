@@ -65,12 +65,40 @@ const PERMITIDO = {
 // La columna por la que se busca la fila. Es la que comparten las dos pestañas.
 const COLUMNA_CLAVE = 'Business Name';
 
+// Las pestañas que el panel puede LEER. Igual que la lista blanca de escritura:
+// aunque alguien tuviera el token, no puede pedir una pestaña que no este aqui.
+const LEGIBLES = [
+  'Leads',
+  'DAK OUTREACH QUEUE',
+  'DAK DAILY OUTREACH',
+  'CAMARA REACTIVATION LOG',
+];
+
 function doPost(e) {
   try {
     const peticion = JSON.parse(e.postData.contents);
 
     if (peticion.token !== TOKEN) {
       return responder(403, { ok: false, error: 'Token invalido.' });
+    }
+
+    // ── Lectura en vivo ──────────────────────────────────────────────────────
+    // Devuelve las filas EN CRUDO, sin interpretar. Es deliberado: toda la
+    // normalizacion vive en el panel (src/lib/construir.js), asi que cambiar
+    // como se leen los datos no obliga a volver a publicar este script. Y
+    // publicar este script es la parte cara: hay que hacerla a mano.
+    if (peticion.accion === 'leer') {
+      const libro = SpreadsheetApp.getActiveSpreadsheet();
+      const salida = {};
+      for (var i = 0; i < LEGIBLES.length; i++) {
+        var hoja = libro.getSheetByName(LEGIBLES[i]);
+        salida[LEGIBLES[i]] = hoja ? hoja.getDataRange().getDisplayValues() : [];
+      }
+      return responder(200, {
+        ok: true,
+        leidoEn: Utilities.formatDate(new Date(), 'America/Lima', "yyyy-MM-dd'T'HH:mm"),
+        pestanas: salida,
+      });
     }
 
     const regla = PERMITIDO[peticion.accion];

@@ -1,12 +1,11 @@
 {
   "meta": {
-    "generado": "node normalizar.mjs",
-    "fuentes": {
-      "outbound": "DAK LEADS MASTER, 4 pestañas, exportacion del 2026-08-19",
-      "inbound": "MySQL u567580447_dakagency_db, lectura del 2026-08-19"
-    },
     "esMock": true,
     "telefonosRedactados": true,
+    "fuentes": {
+      "outbound": "DAK LEADS MASTER, 4 pestañas, exportación del 2026-08-19",
+      "inbound": "MySQL u567580447_dakagency_db, lectura del 2026-08-19"
+    },
     "embudo": {
       "investigados": 7,
       "porAprobar": 5,
@@ -49,7 +48,12 @@
         "motivoCanal": null,
         "canal": null,
         "mejorMomento": null,
-        "verificado": false
+        "verificado": false,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": null,
+        "redes": {}
       },
       "oportunidad": "Launch marketing for a new residential housing project",
       "senalCompra": "Señal pública verificada: Sol de Lambayeque II es un proyecto residencial nuevo, listado como «en construcción» en 2026 y comercializado activamente en el portal de proyectos del BCP.",
@@ -103,7 +107,12 @@
         "motivoCanal": "Teléfono comercial público verificado: es el contacto directo disponible del negocio y admite contacto por WhatsApp Business sobre ese número.",
         "canal": "WHATSAPP",
         "mejorMomento": "Martes a jueves, 9:00-11:00 a. m. o 3:00-5:00 p. m., en horario de oficina y evitando primeras horas de coordinación operativa.",
-        "verificado": true
+        "verificado": true,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": null,
+        "redes": {}
       },
       "oportunidad": "Chiclayo branch-launch demand generation",
       "senalCompra": "Delcrosa anunció públicamente la apertura de una nueva sucursal en Chiclayo en 2026 — expansión activa hacia el norte, que necesita visibilidad y demanda local de inmediato.",
@@ -157,7 +166,12 @@
         "motivoCanal": "WhatsApp comercial público verificado en su propia web: permite llegar directamente al área comercial del negocio.",
         "canal": "WHATSAPP",
         "mejorMomento": "Martes a jueves, 10:00-11:30 a. m. o 4:00-5:30 p. m., evitando horas de mayor atención en tienda.",
-        "verificado": true
+        "verificado": true,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": null,
+        "redes": {}
       },
       "oportunidad": "New location launch marketing for motorcycle retailer",
       "senalCompra": "JCH Motos abrió un local nuevo en Chiclayo como parte de su plan declarado de crecimiento sostenible (blog de la empresa, 2026).",
@@ -211,7 +225,12 @@
         "motivoCanal": null,
         "canal": null,
         "mejorMomento": null,
-        "verificado": false
+        "verificado": false,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": null,
+        "redes": {}
       },
       "oportunidad": "New plant launch positioning and B2B communications",
       "senalCompra": "La nueva planta de fruta congelada de Westfalia Fruit Perú en Chiclayo estaba prevista para arrancar en junio de 2026; la empresa proyecta un crecimiento del 10-15 % impulsado por la planta (Gestión).",
@@ -265,7 +284,12 @@
         "motivoCanal": "WhatsApp comercial público verificado en su propia web: permite llegar directamente al área comercial del negocio.",
         "canal": "WHATSAPP",
         "mejorMomento": "Martes a jueves, de 9:30 a.m. a 11:30 a.m., evitando primeras horas de atención y el cierre de jornada comercial.",
-        "verificado": true
+        "verificado": true,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": null,
+        "redes": {}
       },
       "oportunidad": "Launch marketing for new residential project",
       "senalCompra": "San Antonio Chiclayo 3 es un lanzamiento residencial reciente en Chiclayo; la desarrolladora Menorca anunció más proyectos en Chiclayo para 2026 (construir.com.pe, enero de 2026).",
@@ -319,7 +343,12 @@
         "motivoCanal": null,
         "canal": null,
         "mejorMomento": null,
-        "verificado": false
+        "verificado": false,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": null,
+        "redes": {}
       },
       "oportunidad": "New restaurant location launch marketing",
       "senalCompra": "Shimaya Ramen abrió un local en Chiclayo en enero de 2026, dentro de un plan de expansión acelerada con aperturas en provincias (Gestión).",
@@ -373,7 +402,12 @@
         "motivoCanal": "Teléfono comercial público verificado: es el contacto directo disponible del negocio y admite contacto por WhatsApp Business sobre ese número.",
         "canal": "WHATSAPP",
         "mejorMomento": "Martes a jueves, de 9:30 a.m. a 11:30 a.m. o de 3:30 p.m. a 5:00 p.m., evitando primeras horas y cierre de jornada comercial.",
-        "verificado": true
+        "verificado": true,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": null,
+        "redes": {}
       },
       "oportunidad": "Launch marketing for new housing project",
       "senalCompra": "Valles de Lambayeque, un proyecto de vivienda nuevo de Los Portales (segmento Techo Propio), se promocionó activamente en julio de 2026.",
@@ -427,7 +461,12 @@
         "motivoCanal": null,
         "canal": null,
         "mejorMomento": null,
-        "verificado": false
+        "verificado": false,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": null,
+        "redes": {}
       },
       "oportunidad": "Demand generation for megaproject land/housing sales",
       "senalCompra": "Charles Sutton es la ciudad de vivienda social planificada más grande del norte del Perú; su primera subasta de terrenos (2 de febrero de 2026) quedó desierta — un problema comercial verificado que necesita generación de demanda.",
@@ -481,7 +520,12 @@
         "motivoCanal": "Teléfono comercial público verificado: es el contacto directo disponible del negocio y admite contacto por WhatsApp Business sobre ese número.",
         "canal": "WHATSAPP",
         "mejorMomento": "Martes a jueves, 10:00-11:30 a. m. o 4:00-5:30 p. m., cuando el equipo comercial puede revisar consultas sin coincidir con visitas al proyecto.",
-        "verificado": true
+        "verificado": true,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": null,
+        "redes": {}
       },
       "oportunidad": "Real-estate project marketing and lead generation",
       "senalCompra": "Marverde se presenta como desarrolladora inmobiliaria con un proyecto residencial activo en Chiclayo (Villa Refugio del Sol) comercializado desde su web.",
@@ -535,7 +579,12 @@
         "motivoCanal": "WhatsApp comercial público verificado en su propia web: permite llegar directamente al área comercial del negocio.",
         "canal": "WHATSAPP",
         "mejorMomento": "Martes a jueves, 9:30-11:30 a. m. o 3:30-5:30 p. m., evitando primeras horas y horario de almuerzo.",
-        "verificado": true
+        "verificado": true,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": null,
+        "redes": {}
       },
       "oportunidad": "Investor and buyer-facing project marketing",
       "senalCompra": "Acuña Inmobiliaria publicó un «Dossier de Inversión Lambayeque 2026» promocionando activamente desarrollos como Juliano Park y los lotes comerciales de Costanera de Eten.",
@@ -589,7 +638,12 @@
         "motivoCanal": "WhatsApp verificado en su web oficial; permite contactar de forma directa al equipo comercial y plantear una reunión breve sobre la captación por proyecto.",
         "canal": "WHATSAPP",
         "mejorMomento": "Contactar por WhatsApp de martes a jueves, entre 10:00 a. m. y 12:00 p. m.; realizar seguimiento 48 horas después si no hay respuesta.",
-        "verificado": true
+        "verificado": true,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": "MARíA ISABEL BARRUETO SAMAME (UNVERIFIED LEGACY CONTACT)",
+        "redes": {}
       },
       "oportunidad": "Captación sostenida de prospectos calificados para los tres proyectos inmobiliarios, conectando campañas de pauta con seguimiento comercial rápido y medible.",
       "senalCompra": "Web activa verificada que comercializa tres proyectos de vivienda en Chiclayo y Pimentel (Residencial San Felipe, Santa María del Mar y Santa Catalina) y promociona el Bono Techo Propio de S/46 545. Indica necesidad activa de captación de compradores, aunque no se verificó ningún anuncio fechado de lanzamiento o campaña.",
@@ -643,7 +697,12 @@
         "motivoCanal": "WhatsApp es el canal verificado en el sitio web oficial y ya está habilitado para la reserva directa de citas, por lo que permite un contacto ágil y coherente con su flujo de atención.",
         "canal": "WHATSAPP",
         "mejorMomento": "Contactar por WhatsApp de lunes a viernes entre 10:00 a. m. y 12:00 m., evitando horarios de mayor carga operativa de atención clínica.",
-        "verificado": true
+        "verificado": true,
+        "telefono": null,
+        "whatsapp": null,
+        "email": null,
+        "decisor": "BENJAMIN FRANKLIN MENDOZA LOPEZ (UNVERIFIED LEGACY CONTACT)",
+        "redes": {}
       },
       "oportunidad": "Fortalecer la captación recurrente de pacientes para especialidades, chequeos preventivos y paquetes de maternidad mediante contenido médico educativo que genere confianza y lleve consultas calificadas al canal de WhatsApp.",
       "senalCompra": "SIN VERIFICAR — no se encontró una señal de compra vigente. La evidencia reciente confirma que la clínica opera, pero no se aportó ningún anuncio, campaña, expansión o necesidad declarada de invertir en marketing.",
@@ -695,7 +754,12 @@
       "estadoEnvio": null,
       "estadoRespuesta": null,
       "resumenRespuesta": null,
-      "enlaceFuente": "admin.dakagency.net/admin",
+      "tipoOportunidad": null,
+      "potencialLiderazgo": null,
+      "riesgoAgenciaExistente": null,
+      "anguloEntrada": null,
+      "clasificacionDerivada": false,
+      "enlaceFuente": "https://admin.dakagency.net/admin",
       "dedupKey": null,
       "id": "in-028",
       "etapa": "investigado",
@@ -704,12 +768,13 @@
       "scoreBot": 0,
       "contacto": {
         "handle": "+51 9XX XXX XXX",
-        "motivoCanal": "Escribio el por WhatsApp",
+        "motivoCanal": "Escribió él por WhatsApp",
         "canal": "WHATSAPP",
         "mejorMomento": null,
-        "verificado": true
+        "verificado": true,
+        "redes": {}
       },
-      "porQueAhora": "Escribio hace dos dias y se fue a mitad de la conversacion, en ASK_INDUSTRY. Nadie le ha respondido: los follow-ups estan apagados desde julio.",
+      "porQueAhora": "Escribió hace días y se fue a mitad de la conversación, en ASK_INDUSTRY. Nadie le ha respondido: los follow-ups están apagados desde julio.",
       "notas": "step=ASK_INDUSTRY · followups apagados",
       "fechaDeteccion": "2026-08-17"
     },
@@ -738,7 +803,12 @@
       "estadoEnvio": null,
       "estadoRespuesta": null,
       "resumenRespuesta": null,
-      "enlaceFuente": "admin.dakagency.net/admin",
+      "tipoOportunidad": null,
+      "potencialLiderazgo": null,
+      "riesgoAgenciaExistente": null,
+      "anguloEntrada": null,
+      "clasificacionDerivada": false,
+      "enlaceFuente": "https://admin.dakagency.net/admin",
       "dedupKey": null,
       "id": "in-023",
       "etapa": "investigado",
@@ -750,9 +820,10 @@
         "motivoCanal": null,
         "canal": null,
         "mejorMomento": null,
-        "verificado": false
+        "verificado": false,
+        "redes": {}
       },
-      "porQueAhora": "Entro por el demo inmobiliario y no paso del saludo.",
+      "porQueAhora": "Entró por el demo inmobiliario y no pasó del saludo.",
       "notas": "source=demo-inmobiliaria-chat · step=WELCOME",
       "fechaDeteccion": "2026-07-09"
     },
@@ -781,7 +852,12 @@
       "estadoEnvio": null,
       "estadoRespuesta": null,
       "resumenRespuesta": null,
-      "enlaceFuente": "admin.dakagency.net/admin",
+      "tipoOportunidad": null,
+      "potencialLiderazgo": null,
+      "riesgoAgenciaExistente": null,
+      "anguloEntrada": null,
+      "clasificacionDerivada": false,
+      "enlaceFuente": "https://admin.dakagency.net/admin",
       "dedupKey": null,
       "id": "in-022",
       "etapa": "investigado",
@@ -793,9 +869,10 @@
         "motivoCanal": null,
         "canal": null,
         "mejorMomento": null,
-        "verificado": false
+        "verificado": false,
+        "redes": {}
       },
-      "porQueAhora": "Entro por el demo inmobiliario y no paso del saludo.",
+      "porQueAhora": "Entró por el demo inmobiliario y no pasó del saludo.",
       "notas": "source=demo-inmobiliaria-chat · step=WELCOME",
       "fechaDeteccion": "2026-07-08"
     }
@@ -829,13 +906,13 @@
           "orden": 1,
           "mensaje": "Hola nuevamente, le escribe Diana Muro. Para la nueva sede se podría ordenar una parrilla inicial en tres momentos: dar a conocer el local, mostrar los modelos disponibles en videos cortos y llevar las consultas directamente a WhatsApp. Así, cada pieza tendría un objetivo claro. ¿Le comparto una idea de contenidos para esas primeras semanas?",
           "angulo": "Ofrecer una parrilla inicial de contenidos alineada a tres momentos de decisión: descubrir la sede, conocer modelos y pedir cotización por WhatsApp.",
-          "plazo": "2-4 dias habiles"
+          "plazo": "2-4 días hábiles"
         },
         {
           "orden": 2,
           "mensaje": "Hola, Diana por aquí. También podemos revisar el recorrido desde un anuncio local hasta la cotización por WhatsApp, para que los mensajes y llamados a la acción acompañen mejor la apertura. Si en algún momento les resulta útil verlo, con gusto lo conversamos.",
           "angulo": "Abrir la posibilidad de revisar el recorrido de conversión desde anuncios locales hasta la consulta comercial, sin insistir ni prolongar la secuencia.",
-          "plazo": "5-8 dias habiles"
+          "plazo": "5-8 días hábiles"
         }
       ]
     },
@@ -867,13 +944,13 @@
           "orden": 1,
           "mensaje": "Hola nuevamente, le escribe Diana Muro. Para una apertura, un punto clave es que las consultas que lleguen por campañas, landing y WhatsApp puedan derivarse al equipo comercial con su origen identificado. Así se ordena la atención local sin afectar el trabajo de marketing corporativo. Si les hace sentido, les comparto cómo lo plantearíamos para Chiclayo.",
           "angulo": "Enfatizar la trazabilidad y centralización de consultas desde campañas, landing y WhatsApp/CRM para facilitar la gestión comercial durante la apertura.",
-          "plazo": "2-4 dias habiles"
+          "plazo": "2-4 días hábiles"
         },
         {
           "orden": 2,
           "mensaje": "Hola, Diana por aquí. Antes de la apertura también puede ser útil revisar qué piezas locales conviene preparar: contenido de sucursal, equipo, productos o atención comercial. Podemos revisar brevemente el calendario y priorizar lo necesario; quedamos atentos si en algún momento les resulta útil.",
           "angulo": "Ofrecer una revisión breve del calendario de lanzamiento para priorizar las piezas de contenido local necesarias antes de la apertura.",
-          "plazo": "5-8 dias habiles"
+          "plazo": "5-8 días hábiles"
         }
       ]
     },
@@ -905,13 +982,13 @@
           "orden": 1,
           "mensaje": "Hola nuevamente, le escribe Diana Muro. Para un lanzamiento como San Antonio Chiclayo 3, una landing específica puede ayudar a concentrar las consultas que lleguen desde pauta y contenido, con información clara del proyecto en un solo punto. Podemos mostrarles una estructura breve pensada para ese flujo. ¿Les interesaría revisarla?",
           "angulo": "Enfocar la conversación en cómo una landing específica centraliza y ordena las consultas generadas por pauta y contenido para San Antonio Chiclayo 3.",
-          "plazo": "2-4 dias habiles"
+          "plazo": "2-4 días hábiles"
         },
         {
           "orden": 2,
           "mensaje": "Hola, Diana de DAK por aquí. También vemos la oportunidad de diseñar un formato visual y de campañas que sirva para San Antonio Chiclayo 3 y pueda adaptarse a los próximos proyectos en Chiclayo. Si en algún momento les resulta útil evaluarlo, quedamos atentos.",
           "angulo": "Presentar la posibilidad de construir un formato visual y de campañas reutilizable para San Antonio Chiclayo 3 y los proyectos previstos en Chiclayo, cerrando sin presión.",
-          "plazo": "5-8 dias habiles"
+          "plazo": "5-8 días hábiles"
         }
       ]
     },
@@ -943,13 +1020,13 @@
           "orden": 1,
           "mensaje": "Hola nuevamente, le escribe Diana Muro. Además de generar consultas para Valles de Lambayeque, podemos ayudar a ordenar la atención por WhatsApp: clasificar interesados y derivarlos con un flujo claro para el equipo comercial. Así, la campaña y la respuesta al prospecto trabajan de forma integrada. ¿Les parece útil revisar un esquema breve?",
           "angulo": "Enfatizar la organización de las consultas por WhatsApp provenientes de campañas, para facilitar la atención y derivación al equipo comercial.",
-          "plazo": "2-4 dias habiles"
+          "plazo": "2-4 días hábiles"
         },
         {
           "orden": 2,
           "mensaje": "Hola, Diana por aquí. Una pieza puntual en campo, como un Reel de recorrido o explicación de Valles de Lambayeque, puede resolver dudas iniciales del público de Techo Propio antes de que consulte. Desde DAK podemos producirlo localmente. Si en algún momento les interesa evaluarlo, quedamos atentos.",
           "angulo": "Presentar una pieza puntual de contenido en campo que explique el proyecto y resuelva dudas iniciales del público de Techo Propio antes de la consulta.",
-          "plazo": "5-8 dias habiles"
+          "plazo": "5-8 días hábiles"
         }
       ]
     },
@@ -981,13 +1058,13 @@
           "orden": 1,
           "mensaje": "Hola nuevamente, le escribe Diana Muro. Revisando el enfoque de Juliano Park y Costanera de Eten, vemos una oportunidad de dar continuidad al dossier con piezas distintas para cada público: video corto, banco fotográfico y contenidos para inversionistas o compradores de lotes. Podemos enviarles una propuesta breve de enfoque por proyecto, ¿les gustaría revisarla?",
           "angulo": "Propuesta concreta de contenidos diferenciados por proyecto para extender el dossier a canales digitales.",
-          "plazo": "2-4 dias habiles"
+          "plazo": "2-4 días hábiles"
         },
         {
           "orden": 2,
           "mensaje": "Hola, Diana por aquí. Una campaña puede atraer consultas, pero también importa qué información recibe primero quien llega por Juliano Park o Costanera de Eten. Podemos revisar brevemente ese recorrido, desde el anuncio hasta WhatsApp, y compartirles observaciones puntuales. ¿Les resulta útil?",
           "angulo": "Invitación a revisar el recorrido de consulta desde anuncios de Meta hacia WhatsApp, identificando la información inicial clave.",
-          "plazo": "5-8 dias habiles"
+          "plazo": "5-8 días hábiles"
         }
       ]
     },
@@ -1019,13 +1096,13 @@
           "orden": 1,
           "mensaje": "Hola nuevamente, le escribe Diana Muro. Para Villa Refugio del Sol, una campaña puede trabajar piezas distintas según el interés: una para conocer el proyecto, otra para solicitar información y otra para coordinar una visita. Así, cada contacto llega con una intención más clara a WhatsApp. ¿Les comparto una estructura breve de anuncios para evaluarla?",
           "angulo": "Segmentar las piezas publicitarias según la etapa de interés para que el proyecto no use un mismo mensaje para todos los contactos.",
-          "plazo": "2-4 dias habiles"
+          "plazo": "2-4 días hábiles"
         },
         {
           "orden": 2,
           "mensaje": "Hola, Diana por aquí. También vale la pena revisar qué recibe el interesado al llegar a WhatsApp desde un anuncio: información inicial clara y una primera respuesta orientada a coordinar visitas. Es un punto que puede ordenar mejor la atención comercial. Si en algún momento les resulta útil revisarlo, quedo atenta.",
           "angulo": "Revisar la experiencia posterior al anuncio, especialmente la información y primera respuesta que recibe el interesado en WhatsApp, para facilitar visitas.",
-          "plazo": "5-8 dias habiles"
+          "plazo": "5-8 días hábiles"
         }
       ]
     },
@@ -1057,13 +1134,13 @@
           "orden": 1,
           "mensaje": "Hola nuevamente, quería compartirle una idea puntual para ARKANA: podemos trabajar campañas y anuncios distintos para quienes buscan acceder con Bono Techo Propio y para el público interesado en una vivienda cerca al mar en Pimentel. Así cada proyecto recibe consultas más alineadas. ¿Podemos revisarlo en una llamada breve esta semana?",
           "angulo": "Separar audiencias y mensajes por proyecto: interesados en Bono Techo Propio para Santa Catalina/San Felipe versus compradores aspiracionales de segunda vivienda o playa para Santa María del Mar en Pimentel.",
-          "plazo": "2-4 dias habiles"
+          "plazo": "2-4 días hábiles"
         },
         {
           "orden": 2,
           "mensaje": "Hola, Diana por aquí. Si en este momento están evaluando cómo generar consultas más calificadas para sus proyectos, con gusto le comparto una propuesta breve de captación por Meta Ads. ¿Le acomodaría una llamada de 15 minutos esta semana o la próxima?",
           "angulo": "Cierre elegante con foco en resultados y baja fricción: dejar abierta una conversación corta para evaluar si la captación segmentada encaja con sus proyectos actuales.",
-          "plazo": "5-8 dias habiles"
+          "plazo": "5-8 días hábiles"
         }
       ]
     },
@@ -1095,20 +1172,20 @@
           "orden": 1,
           "mensaje": "Hola nuevamente, quería sumar una idea concreta: las preguntas frecuentes sobre paquetes de maternidad, controles prenatales y chequeos preventivos pueden convertirse en videos cortos que orienten a las familias antes de su visita. Esto ayuda a generar confianza y consultas por WhatsApp. ¿Le comparto las 3 ideas adaptadas a sus especialidades?",
           "angulo": "Aterrizar la propuesta en preguntas frecuentes de maternidad y chequeos preventivos para mostrar utilidad inmediata y potencial de consultas por WhatsApp.",
-          "plazo": "2-4 dias habiles"
+          "plazo": "2-4 días hábiles"
         },
         {
           "orden": 2,
           "mensaje": "Hola, Diana de DAK por aquí. Cierro este mensaje para no insistir de más. Si en algún momento desean reforzar sus redes con videos educativos para maternidad, pediatría o cardiología, con gusto les envío las 3 ideas. ¿Las revisamos esta semana?",
           "angulo": "Cierre cordial y sin presión, manteniendo abierta la posibilidad de enviar las ideas cuando sea oportuno.",
-          "plazo": "5-8 dias habiles"
+          "plazo": "5-8 días hábiles"
         }
       ]
     }
   ],
   "fuentes": [
     {
-      "fuente": "Camara de Comercio de Lambayeque",
+      "fuente": "Cámara de Comercio de Lambayeque",
       "procesadas": 109,
       "aceptadas": 2,
       "rendimiento": 0.0183,
@@ -1118,7 +1195,7 @@
         "NOT QUALIFIED - LOGGED ONLY": 32,
         "REJECTED": 75
       },
-      "notas": "La reactivacion no valido ni un solo telefono. Los contactos verificados que hoy existen salieron de la investigacion web de la QUEUE, no del padron."
+      "notas": "La reactivación no validó ni un solo teléfono. Los contactos verificados que hoy existen salieron de la investigación web de la QUEUE, no del padrón."
     }
   ]
 }
