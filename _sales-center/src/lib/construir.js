@@ -161,10 +161,13 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
       id: `out-${String(i + 1).padStart(3, '0')}`,
       origen: 'outbound',
       etapa: 'investigado',
-      // Lo escribe el panel, no los agentes: es la unica marca que un humano
-      // puede dejar sobre una fila que todavia no ha salido de Leads.
-      pedido: g('Panel Request') === 'REQUESTED',
-      pedidoEn: g('Panel Request At'),
+      // Las escribe el PANEL, no los agentes. Son la unica marca que una persona
+      // puede dejar sobre una fila que todavia no ha salido de Leads, y el
+      // carril por el que un mensaje escrito a mano recorre el embudo sin que
+      // haya que inventarle una fila en la hoja del Outreach Strategist.
+      panelEstado: g('Panel Status'),
+      panelTexto: g('Panel Opener'),
+      panelEstadoEn: g('Panel Status At'),
       empresa,
       persona: null,
       rubro: conGlosario(g('Industry')),
@@ -230,10 +233,53 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
     return p
   })
 
+  /* 1.5 El carril manual: lo que escribe una persona desde el panel
+
+     Un mensaje redactado a mano no crea fila en la QUEUE —eso es la salida del
+     Outreach Strategist y no se falsifica— pero SI recorre el mismo embudo. La
+     etapa sale de `Panel Status` y el mensaje de `Panel Opener`, asi que Hoy,
+     Panorama y Prospectos lo tratan como a cualquier otro sin saber de donde
+     vino. Quien lo escribio queda registrado en el propio mensaje (`aMano`),
+     que es lo unico que de verdad hay que poder distinguir. */
+  const ETAPA_MANUAL = {
+    DRAFTED: 'por-aprobar',
+    APPROVED: 'por-enviar',
+    REJECTED: 'descartado',
+    SENT: 'enviado',
+  }
+  const mensajes = []
+  for (const p of outbound) {
+    const etapaManual = ETAPA_MANUAL[p.panelEstado]
+    if (!etapaManual) continue
+    p.etapa = etapaManual
+    if (!p.panelTexto) continue
+
+    // El enlace de WhatsApp se arma aqui porque el de la hoja lo escribe la capa
+    // operativa y un mensaje manual no pasa por ella. Sin telefono no hay enlace
+    // y no se inventa uno: llevar a un chat vacio es peor que no llevar a nada.
+    const crudo = String(p.contacto?.whatsapp || p.contacto?.telefono || '')
+    const digitos = crudo.replace(/[^0-9]/g, '')
+    const enlaceWhatsApp = digitos.length >= 9 && !redactar
+      ? `https://wa.me/${digitos.length === 9 ? '51' + digitos : digitos}?text=${encodeURIComponent(p.panelTexto)}`
+      : null
+
+    mensajes.push({
+      prospectoId: p.id,
+      estadoRevision: p.panelEstado === 'DRAFTED' ? 'PENDING' : p.panelEstado,
+      etapa: 'OPENER',
+      canal: p.contacto?.canal ?? 'WhatsApp',
+      enlaceWhatsApp,
+      texto: p.panelTexto,
+      aMano: true,
+      asuntoEmail: null, cuerpoEmail: null, ganchoValor: null,
+      primeraOferta: null, formaRelacion: null, ideaVenta: null,
+      objeciones: [], seguimientos: [],
+    })
+  }
+
   /* 2. OUTREACH QUEUE: contacto verificado y mensaje escrito */
   const gQ = lector(queue, 'QUEUE')
   const huerfanas = []
-  const mensajes = []
 
   for (const f of queue.datos) {
     const g = (c) => gQ(f, c)
@@ -251,6 +297,17 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
       mejorMomento: g('Best Timing'),
       verificado: true,
     }
+    // Si una persona ya aprobo o envio esta empresa a mano, la fila de la QUEUE
+    // no la hace retroceder. Lo contrario significaria que una corrida del
+    // agente puede deshacer un mensaje ya enviado, y eso no se deshace.
+    const yaLoLlevaUnaPersona = p.panelEstado === 'APPROVED' || p.panelEstado === 'SENT'
+    if (yaLoLlevaUnaPersona) { continue }
+
+    // Twin escribio su propio mensaje: sustituye al borrador manual en vez de
+    // convivir con el, o `getOpener` devolveria el primero que encuentre.
+    const borrador = mensajes.findIndex((m) => m.prospectoId === p.id)
+    if (borrador !== -1) mensajes.splice(borrador, 1)
+
     const revision = g('Human Review')
     p.etapa = revision === 'APPROVED' ? 'por-enviar' : 'por-aprobar'
 

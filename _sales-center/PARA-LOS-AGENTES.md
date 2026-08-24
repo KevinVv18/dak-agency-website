@@ -76,27 +76,46 @@ no toca.
 
 ---
 
-## 4. La cola de peticiones del panel: `Panel Request`
+## 4. Las tres columnas del panel en `Leads`
 
-Hay dos columnas nuevas en la pestaña **`Leads`**, y **las escribe el panel, no tú**:
+Hay tres columnas nuevas en la pestaña **`Leads`**, y **las escribe el panel, no tú**:
 
-| Columna | Quién escribe | Valores |
-|---|---|---|
-| `Panel Request` | El panel | `REQUESTED` o vacío |
-| `Panel Request At` | El panel | fecha y hora, `AAAA-MM-DD HH:MM` |
+| Columna | Valores |
+|---|---|
+| `Panel Status` | vacío · `REQUESTED` · `DRAFTED` · `APPROVED` · `REJECTED` · `SENT` |
+| `Panel Opener` | el texto del mensaje, escrito por una persona |
+| `Panel Status At` | fecha y hora, `AAAA-MM-DD HH:MM` |
 
-Sirven para una sola cosa: que un humano pueda decir «a esta empresa escríbele el
-mensaje antes que a las demás» sin tener que crear él la fila en la QUEUE.
+Existen porque un prospecto en «investigado» no se podía mover sin ti: la etapa
+se deduce de en qué hoja vive la fila, así que avanzar exigía que tú le
+escribieras el mensaje y le crearas su fila en `DAK OUTREACH QUEUE`. Si tardabas,
+no había nada que hacer.
 
-> En cada corrida, antes de elegir a qué empresas les escribes el mensaje, mira
-> la columna `Panel Request` de la pestaña `Leads`. **Las filas que digan
-> `REQUESTED` van primero**, por delante de tu criterio de puntuación.
+Ahora una persona puede escribir el mensaje desde el panel. **Ese mensaje no
+pasa por tu hoja**: vive en `Panel Opener`, y `Panel Status` lleva su recorrido
+por el mismo embudo. Tú y el panel no escribís nunca en el mismo sitio.
+
+Lo que necesitamos de ti son dos reglas, y la segunda evita pisar trabajo hecho:
+
+> **1. `REQUESTED` va primero.** En cada corrida, antes de elegir a qué empresas
+> les escribes el mensaje, mira `Panel Status` en `Leads`. Las que digan
+> `REQUESTED` van por delante de tu criterio de puntuación. Cuando ya le hayas
+> creado su fila en `DAK OUTREACH QUEUE`, **vacía su celda `Panel Status`**. Si
+> no la vacías, esa empresa sale la primera en cada corrida para siempre.
 >
-> Cuando ya le hayas escrito el mensaje y creado su fila en `DAK OUTREACH
-> QUEUE`, **vacía su celda `Panel Request`**. Si no la vacías, esa empresa
-> vuelve a salir la primera en cada corrida para siempre.
+> **2. `APPROVED` y `SENT` no se tocan.** Si `Panel Status` dice `APPROVED` o
+> `SENT`, una persona ya aprobó o ya envió ese mensaje. **No le crees fila en la
+> QUEUE.** Escribir un mensaje para alguien a quien ya se le escribió es, en el
+> mejor caso, trabajo tirado; en el peor, un segundo mensaje al mismo negocio.
 >
-> No escribas nunca en estas dos columnas para nada más. No son tuyas.
+> Si `Panel Status` dice `DRAFTED`, hay un borrador humano sin aprobar todavía.
+> Puedes encolarla, y entonces manda tu mensaje: se entiende que el tuyo mejora
+> el borrador. Si el borrador te sirve, **reutiliza el texto de `Panel Opener`**
+> en vez de empezar de cero.
+>
+> No escribas nunca en estas tres columnas para nada más. No son tuyas.
 
-Si una petición lleva días con `REQUESTED` y la empresa sigue sin fila en la
-QUEUE, el panel lo enseña: significa que no has corrido o que no le tocó turno.
+Y una cosa que sí ayuda mucho: **el nombre de la empresa tiene que ser idéntico**
+en `Leads` y en la QUEUE. El puente busca por nombre exacto y, si encuentra dos
+filas con el mismo nombre, **aborta sin escribir nada** — a propósito: escribir en
+la fila equivocada es peor que no escribir.

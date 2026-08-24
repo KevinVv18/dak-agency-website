@@ -50,19 +50,31 @@ const PERMITIDO = {
     tambienFecha: 'Sent At',
     sellarCuando: 'SENT',
   },
-  // Pedir que a una empresa se le escriba el mensaje.
+  // ── El carril manual, sobre la propia fila de Leads ──────────────────────
   //
-  // Es la unica forma que tiene el panel de mover algo desde «investigado», y lo
-  // hace SIN crear filas en la QUEUE: encolar es trabajo del Outreach
-  // Strategist, y el panel ni escribe mensajes ni inventa filas. Lo unico que
-  // hace es marcar la empresa en su propia fila de Leads para que el agente la
-  // priorice en la proxima corrida. Es una peticion, no una orden.
-  pedir: {
+  // Twin puede tardar, y mientras tanto un prospecto investigado no se podia
+  // mover: la etapa se deduce de en que hoja vive la fila, y crearle una fila en
+  // la QUEUE seria falsificar la salida del Outreach Strategist.
+  //
+  // La salida es no tocar la QUEUE en absoluto. Un mensaje escrito a mano vive
+  // en la propia fila de Leads, en columnas que solo escribe el panel, y el
+  // embudo se lee igual. Asi las dos vias conviven sin pisarse y siempre se sabe
+  // quien escribio que: si esta en `Panel Opener`, lo escribio una persona.
+  //
+  // `Panel Status` lleva el ciclo entero —pedido, redactado, aprobado, enviado,
+  // descartado— en una sola columna, en vez de una columna por gesto.
+  estado: {
     hoja: 'Leads',
-    columna: 'Panel Request',
-    valores: ['REQUESTED', ''],
-    tambienFecha: 'Panel Request At',
-    sellarCuando: 'REQUESTED',
+    columna: 'Panel Status',
+    valores: ['', 'REQUESTED', 'DRAFTED', 'APPROVED', 'REJECTED', 'SENT'],
+    tambienFecha: 'Panel Status At',
+    sellarCuando: '*',
+  },
+  redactar: {
+    hoja: 'Leads',
+    columna: 'Panel Opener',
+    libre: true,
+    maximo: 2000,
   },
   // Editar el texto del mensaje desde el panel.
   //
@@ -178,7 +190,10 @@ function doPost(e) {
     hoja.getRange(fila + 1, colDestino + 1).setValue(peticion.valor);
 
     let fechaSellada = null;
-    if (regla.tambienFecha && peticion.valor === regla.sellarCuando) {
+    const tocaSellar = regla.sellarCuando === '*'
+      ? Boolean(peticion.valor)
+      : peticion.valor === regla.sellarCuando;
+    if (regla.tambienFecha && tocaSellar) {
       const colFecha = cabecera.indexOf(regla.tambienFecha);
       if (colFecha !== -1) {
         fechaSellada = Utilities.formatDate(new Date(), 'America/Lima', 'yyyy-MM-dd HH:mm');

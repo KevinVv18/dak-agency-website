@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import Intro, { tocaIntro } from './Intro'
 import {
@@ -23,6 +23,18 @@ const VIEWS = [
   { id: 'base', label: 'Base', icon: 'database' },
   { id: 'como-funciona', label: 'Cómo funciona', icon: 'info' },
 ]
+
+/**
+ * Releer la hoja despues de escribir en ella.
+ *
+ * Hasta ahora, aprobar algo dejaba el panel enseñando el estado anterior con una
+ * nota que decia «esto se vera en la proxima lectura». Eso era pedirle al humano
+ * que se acordase de recargar para comprobar su propio trabajo. Con el carril
+ * manual es peor todavia: al guardar un mensaje el prospecto cambia de etapa, y
+ * si el panel no vuelve a leer, la fila se queda en «investigado» como si no
+ * hubiera pasado nada.
+ */
+const Recarga = React.createContext(() => {})
 
 const stages = {
   investigado: 'Investigado',
@@ -260,12 +272,24 @@ function PotentialGauge({ value }) {
  * Si el puente no esta configurado, este bloque no existe y la ficha se queda
  * con el enlace a la hoja de siempre.
  */
-function AccionesHoja({ prospect, readyToSend }) {
+function AccionesHoja({ prospect, readyToSend, aMano = false }) {
   const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
+  const recargar = useContext(Recarga)
 
   if (!puedeEscribir || !prospect.empresa) return null
 
-  const lanzar = async (accion, valor, etiquetaHecho) => {
+  // Aprobar y enviar son el mismo gesto lleve el mensaje quien lo lleve; lo que
+  // cambia es donde queda apuntado. Los de Twin se apuntan en sus hojas —QUEUE y
+  // DAILY OUTREACH— y los escritos a mano en la propia fila de Leads, porque no
+  // tienen fila en ninguna de las otras dos y no se les va a inventar una.
+  const traducir = (accion, valor) => {
+    if (!aMano) return { accion, valor }
+    if (accion === 'enviar') return { accion: 'estado', valor: 'SENT' }
+    return { accion: 'estado', valor: valor === 'APPROVED' ? 'APPROVED' : 'REJECTED' }
+  }
+
+  const lanzar = async (accionPedida, valorPedido, etiquetaHecho) => {
+    const { accion, valor } = traducir(accionPedida, valorPedido)
     setEstado({ fase: 'enviando', mensaje: null })
     const resultado = await escribirEnHoja({ accion, empresa: prospect.empresa, valor })
     setEstado(
@@ -273,6 +297,7 @@ function AccionesHoja({ prospect, readyToSend }) {
         ? { fase: 'hecho', mensaje: `${etiquetaHecho} · la hoja tenía «${resultado.anterior || 'vacío'}»` }
         : { fase: 'fallo', mensaje: resultado.error ?? 'La hoja rechazó el cambio.' },
     )
+    if (resultado.ok) recargar()
   }
 
   const trabajando = estado.fase === 'enviando'
@@ -301,11 +326,7 @@ function AccionesHoja({ prospect, readyToSend }) {
           {estado.mensaje}
         </p>
       )}
-      {estado.fase === 'hecho' && (
-        <p className="sheet-actions__note">
-          El panel sigue mostrando los datos de ejemplo hasta la próxima lectura de la hoja.
-        </p>
-      )}
+
     </div>
   )
 }
@@ -410,7 +431,7 @@ function Clasificacion({ prospect }) {
  * Guardar NO aprueba. Son dos decisiones distintas —cambiar el texto y darlo
  * por bueno— y juntarlas haria que corregir una tilde aprobara el mensaje.
  */
-function EditorMensaje({ empresa, texto }) {
+function EditorMensaje({ empresa, texto, aMano = false }) {
   const [editando, setEditando] = useState(false)
   const [borrador, setBorrador] = useState(texto ?? '')
   const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
@@ -418,10 +439,13 @@ function EditorMensaje({ empresa, texto }) {
 
   const actual = guardado ?? texto
   const editable = puedeEscribir && Boolean(empresa) && Boolean(texto)
+  // Un mensaje escrito a mano vive en Leads y otro de Twin en la QUEUE. Es la
+  // misma caja de texto: lo unico que cambia es en que columna aterriza.
+  const donde = aMano ? 'redactar' : 'editar'
 
   const guardar = async () => {
     setEstado({ fase: 'guardando', mensaje: null })
-    const resultado = await escribirEnHoja({ accion: 'editar', empresa, valor: borrador })
+    const resultado = await escribirEnHoja({ accion: donde, empresa, valor: borrador })
     if (resultado.ok) {
       setGuardado(borrador)
       setEditando(false)
@@ -582,13 +606,13 @@ function MessageCard({ prospect, message, readyToSend = false }) {
         </div>
       </div>
 
-      <AccionesHoja prospect={prospect} readyToSend={readyToSend} />
+      <AccionesHoja aMano={Boolean(message?.aMano)} prospect={prospect} readyToSend={readyToSend} />
 
       <Clasificacion prospect={prospect} />
 
       <EnlacesEmpresa prospect={prospect} />
 
-      <EditorMensaje empresa={prospect.empresa} texto={message?.texto} />
+      <EditorMensaje aMano={Boolean(message?.aMano)} empresa={prospect.empresa} texto={message?.texto} />
 
       <div className="message-card__actions">
         {readyToSend && message?.enlaceWhatsApp ? (
@@ -1117,7 +1141,7 @@ function ProspectDetail({ data, prospect }) {
 
       {/* Solo en «investigado»: en el resto de etapas la fila ya vive en la
           QUEUE y las acciones que tocan son aprobar y enviar, que estan en Hoy. */}
-      {prospect.etapa === 'investigado' && <PedirMensaje prospect={prospect} />}
+      {prospect.etapa === 'investigado' && <MensajeManual prospect={prospect} />}
 
       {/* La evidencia es procedencia, no material de decisión. Va plegada:
           importa poder comprobarla, no tenerla siempre delante. */}
@@ -1259,68 +1283,112 @@ function RailFaceta({ activa, neutro, opciones, poner, titulo }) {
 }
 
 /**
- * Pedir que a una empresa se le escriba el mensaje.
+ * Escribir el mensaje a mano, desde la ficha.
  *
- * Es lo unico que el panel puede hacer con un prospecto que sigue en
- * «investigado», y hay una razon de fondo: la etapa no es un campo que se
- * escriba, se deduce de en que hoja vive la fila. Pasar de «investigado» a «con
- * mensaje» significa CREAR la fila en la QUEUE con el mensaje ya redactado, y
- * eso es la salida del Outreach Strategist. Un boton que fabricara esa fila con
- * el mensaje en blanco no adelantaria el trabajo: lo falsearia.
+ * La etapa de un prospecto no es un campo que se escriba: se deduce de en que
+ * hoja vive su fila. Por eso «investigado» era un callejon sin salida — para
+ * avanzar hacia falta un mensaje, y el mensaje lo escribe el Outreach
+ * Strategist. Si Twin tardaba, no habia nada que hacer salvo esperar.
  *
- * Asi que el panel marca la empresa en su propia fila de Leads y el agente la
- * prioriza en la proxima corrida. El humano elige el orden; el agente sigue
- * siendo quien escribe.
+ * Aqui se abre la otra puerta, y la clave es que NO pasa por la QUEUE: crear
+ * ahi una fila seria falsificar la salida de un agente, y ademas dos filas con
+ * el mismo nombre bloquean todas las escrituras posteriores de esa empresa. El
+ * mensaje escrito a mano vive en la propia fila de Leads, en `Panel Opener`, y
+ * `Panel Status` lleva su recorrido. Desde ahi entra al mismo embudo: en cuanto
+ * se guarda, el prospecto aparece en Hoy con sus botones de aprobar y enviar,
+ * sin que ninguna otra parte del panel tenga que saber quien lo escribio.
+ *
+ * Las dos vias conviven porque nunca escriben en el mismo sitio, y siempre se
+ * puede saber cual es cual: si el texto esta en `Panel Opener`, lo escribio una
+ * persona.
  */
-function PedirMensaje({ prospect }) {
+function MensajeManual({ prospect }) {
+  const [editando, setEditando] = useState(false)
+  const [borrador, setBorrador] = useState('')
   const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
-  const [pedido, setPedido] = useState(Boolean(prospect.pedido))
+  const recargar = useContext(Recarga)
 
   if (!puedeEscribir || !prospect.empresa) return null
 
-  const lanzar = async (quiero) => {
-    setEstado({ fase: 'enviando', mensaje: null })
-    const resultado = await escribirEnHoja({
-      accion: 'pedir', empresa: prospect.empresa, valor: quiero ? 'REQUESTED' : '',
-    })
-    if (resultado.ok) {
-      setPedido(quiero)
-      setEstado({ fase: 'hecho', mensaje: quiero ? 'Pedido. Twin lo tomara en su proxima corrida.' : 'Retirado de la cola de peticiones.' })
-    } else {
-      setEstado({ fase: 'fallo', mensaje: resultado.error ?? 'La hoja rechazo el cambio.' })
-    }
+  const pedido = prospect.panelEstado === 'REQUESTED'
+  const trabajando = estado.fase === 'guardando'
+
+  const marcar = async (valor, hecho) => {
+    setEstado({ fase: 'guardando', mensaje: null })
+    const r = await escribirEnHoja({ accion: 'estado', empresa: prospect.empresa, valor })
+    if (!r.ok) { setEstado({ fase: 'fallo', mensaje: r.error ?? 'La hoja rechazó el cambio.' }); return false }
+    setEstado({ fase: 'hecho', mensaje: hecho })
+    recargar()
+    return true
   }
 
-  const trabajando = estado.fase === 'enviando'
+  // Dos escrituras, y en este orden a proposito: primero el texto y despues el
+  // estado. Si falla la segunda, queda un mensaje guardado sin etapa —molesto,
+  // recuperable—; al reves quedaria un prospecto anunciando un mensaje que no
+  // existe, y alguien lo aprobaria a ciegas.
+  const guardar = async () => {
+    setEstado({ fase: 'guardando', mensaje: null })
+    const texto = await escribirEnHoja({ accion: 'redactar', empresa: prospect.empresa, valor: borrador })
+    if (!texto.ok) { setEstado({ fase: 'fallo', mensaje: texto.error ?? 'La hoja rechazó el mensaje.' }); return }
+    const paso = await escribirEnHoja({ accion: 'estado', empresa: prospect.empresa, valor: 'DRAFTED' })
+    if (!paso.ok) {
+      setEstado({ fase: 'fallo', mensaje: 'El mensaje se guardó, pero no se pudo mover a «por aprobar». Vuelve a intentarlo.' })
+      return
+    }
+    setEditando(false)
+    setEstado({ fase: 'hecho', mensaje: 'Guardado. Ya está en Hoy, esperando tu aprobación.' })
+    recargar()
+  }
+
+  if (editando) {
+    return (
+      <div className="sheet-actions">
+        <span className="context-label">Tu mensaje para {getShortName(prospect)}</span>
+        <textarea
+          autoFocus
+          className="message-editor"
+          onChange={(evento) => setBorrador(evento.target.value)}
+          placeholder="Escribe aquí el mensaje de apertura, tal como se lo enviarías…"
+          rows={Math.min(14, Math.max(6, Math.ceil(borrador.length / 60)))}
+          value={borrador}
+        />
+        <div className="sheet-actions__row">
+          <button className="sheet-button sheet-button--principal" disabled={trabajando || borrador.trim().length < 10} onClick={guardar} type="button">
+            {trabajando ? 'Guardando…' : 'Guardar y pasar a por aprobar'}
+          </button>
+          <button className="sheet-button" disabled={trabajando} onClick={() => { setEditando(false); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
+            Descartar
+          </button>
+        </div>
+        {borrador.trim().length > 0 && borrador.trim().length < 10 && (
+          <p className="sheet-actions__note">Diez caracteres como mínimo — es el mismo límite que impide vaciar un mensaje por accidente.</p>
+        )}
+        {estado.mensaje && (
+          <p aria-live="polite" className={`sheet-actions__result ${estado.fase === 'fallo' ? 'is-fallo' : ''}`}>{estado.mensaje}</p>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className="sheet-actions">
       <span className="context-label">Todavía sin mensaje</span>
       <div className="sheet-actions__row">
-        <button
-          className={`sheet-button ${pedido ? '' : 'sheet-button--principal'}`}
-          disabled={trabajando}
-          onClick={() => lanzar(!pedido)}
-          type="button"
-        >
-          {trabajando ? 'Guardando…' : pedido ? 'Quitar la petición' : 'Pedir mensaje a Twin'}
+        <button className="sheet-button sheet-button--principal" disabled={trabajando} onClick={() => { setBorrador(''); setEditando(true); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
+          Escribirlo yo
+        </button>
+        <button className="sheet-button" disabled={trabajando} onClick={() => marcar(pedido ? '' : 'REQUESTED', pedido ? 'Petición retirada.' : 'Pedido. Twin lo tomará en su próxima corrida.')} type="button">
+          {trabajando ? 'Guardando…' : pedido ? 'Quitar la petición' : 'Pedírselo a Twin'}
         </button>
       </div>
       {estado.mensaje && (
-        <p aria-live="polite" className={`sheet-actions__result ${estado.fase === 'fallo' ? 'is-fallo' : ''}`}>
-          {estado.mensaje}
-        </p>
+        <p aria-live="polite" className={`sheet-actions__result ${estado.fase === 'fallo' ? 'is-fallo' : ''}`}>{estado.mensaje}</p>
       )}
-      {pedido && estado.fase !== 'hecho' && (
-        <p className="sheet-actions__note">
-          Pedido{prospect.pedidoEn ? ` el ${prospect.pedidoEn}` : ''}. Sigue sin mensaje: Twin no ha corrido todavía o no le tocó turno.
-        </p>
-      )}
-      {!pedido && (
-        <p className="sheet-actions__note">
-          El panel no escribe mensajes ni encola filas — eso lo hace Twin. Esto solo marca la empresa para que la tome primero.
-        </p>
-      )}
+      <p className="sheet-actions__note">
+        {pedido
+          ? `Pedido${prospect.panelEstadoEn ? ` el ${prospect.panelEstadoEn}` : ''} y todavía sin mensaje: Twin no ha corrido o no le tocó turno. No hace falta esperarlo.`
+          : 'Si lo escribes tú, pasa a «por aprobar» y sigue el mismo camino que los de Twin. No se toca la hoja del agente.'}
+      </p>
     </div>
   )
 }
@@ -1751,6 +1819,8 @@ function App() {
     }
   }, [])
 
+  const releer = useCallback(() => setRequestKey((key) => key + 1), [])
+
   useEffect(() => {
     let cancelled = false
     setResource({ status: 'loading', data: null })
@@ -1828,11 +1898,13 @@ function App() {
           ? <Badge title={data.meta.motivoMock ?? undefined} tone="mock">Datos de ejemplo</Badge>
           : <Badge tone="oro">En vivo</Badge>)}
       </header>
+      <Recarga.Provider value={releer}>
       <main className={`main-content main-content--${renderedView}`}>
         {resource.status === 'loading' && <LoadingState />}
-        {resource.status === 'error' && <ErrorState onRetry={() => setRequestKey((key) => key + 1)} />}
+        {resource.status === 'error' && <ErrorState onRetry={releer} />}
         {resource.status === 'ready' && <div className={`view-frame view-frame--${viewPhase}`} key={renderedView}>{viewContent}</div>}
       </main>
+      </Recarga.Provider>
     </div>
     </>
   )
