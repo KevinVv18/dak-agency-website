@@ -825,3 +825,58 @@ PLACEHOLDER
   .intro { display: none; }
   .app-shell--entrando, .app-shell--montando { opacity: 1; animation: none; }
 }
+
+/* ═══ Tipo de oportunidad ═══════════════════════════════════════════════════
+   La pregunta central del sistema comercial nuevo: ¿podemos ser LA agencia de
+   esta empresa, o solo entrar por una pieza? «Agencia completa» va en oro
+   porque es lo que hay que perseguir; «soporte» en hueso — sigue valiendo, pero
+   no es lo mismo. */
+.tipo-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border: 1px solid var(--linea-viva); border-radius: 999px;
+  color: var(--secondary); font-size: 11px; font-weight: 500;
+  letter-spacing: .07em; text-transform: uppercase; white-space: nowrap;
+}
+.tipo-badge--completa { border-color: #6d5427; color: var(--oro); }
+.tipo-badge i { font-style: normal; opacity: .6; }
+
+.escala-liderazgo { display: inline-flex; align-items: center; gap: 3px; }
+.escala-liderazgo i { display: block; width: 4px; height: 12px; border-radius: 1px; background: rgba(255, 255, 255, .12); }
+.escala-liderazgo i.is-on { background: rgba(244, 241, 248, .55); }
+.escala-liderazgo b { margin-left: 6px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .06em; }
+
+/* Marca discreta en la fila: se ve cuales son agencia completa sin abrir nada. */
+.marca-completa { flex: none; width: 5px; height: 5px; border-radius: 50%; background: var(--oro); }
+
+.clasificacion { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--linea); }
+.clasificacion .context-label em { font-style: normal; color: var(--muted); text-transform: none; letter-spacing: .02em; }
+.clasificacion__cabeza { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 10px 0 4px; }
+.clasificacion__datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin: 14px 0 0; }
+.clasificacion__datos dt { margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.clasificacion__datos dd { margin: 0; color: var(--secondary); font-size: 14px; line-height: 1.5; }
+
+.coverage-row--completa strong { color: var(--oro); }
+.coverage-row--completa i b { background: var(--oro); opacity: .7; }
+
+/* ═══ Editar el mensaje ═════════════════════════════════════════════════════
+   En reposo es texto, no un campo: un formulario permanente invita a toquetear
+   y aqui lo normal es leer y aprobar, no reescribir. */
+.editar-link {
+  margin-left: 10px; padding: 0; border: 0; background: none;
+  color: var(--oro); font-size: 11px; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--t-corta) var(--ease-suave);
+}
+.editar-link:hover { border-bottom-color: var(--oro); }
+
+.message-editor {
+  display: block; width: 100%; margin-top: 4px; padding: 14px 16px;
+  border: 1px solid var(--linea-viva); border-radius: var(--radius);
+  background: var(--fondo); color: var(--text);
+  font-family: inherit; font-size: 16px; font-weight: 300; line-height: 1.68;
+  resize: vertical;
+  transition: border-color var(--t-corta) var(--ease-suave);
+}
+.message-editor:focus { border-color: var(--oro); outline: none; }
+.message-editor__acciones { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 12px; }

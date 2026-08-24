@@ -49,6 +49,17 @@ const PERMITIDO = {
     // Al marcar SENT tambien se sella la fecha, que es la columna de al lado.
     tambienFecha: 'Sent At',
   },
+  // Editar el texto del mensaje desde el panel.
+  //
+  // Esta accion no lleva lista de valores permitidos —es texto libre, no puede
+  // llevarla— asi que se acota de otra forma: `libre: true` mas un tope de
+  // longitud. Sigue sin poder tocar ninguna columna que no sea esta.
+  editar: {
+    hoja: 'DAK OUTREACH QUEUE',
+    columna: 'Spanish WhatsApp/DM Opener',
+    libre: true,
+    maximo: 2000,
+  },
 };
 
 // La columna por la que se busca la fila. Es la que comparten las dos pestañas.
@@ -66,7 +77,16 @@ function doPost(e) {
     if (!regla) {
       return responder(400, { ok: false, error: 'Accion no permitida: ' + peticion.accion });
     }
-    if (regla.valores.indexOf(peticion.valor) === -1) {
+    if (regla.libre) {
+      // Texto libre, pero acotado: ni vacio ni desmesurado. Guardar un mensaje
+      // en blanco por accidente borraria el trabajo del Outreach Strategist.
+      if (typeof peticion.valor !== 'string' || peticion.valor.trim().length < 10) {
+        return responder(400, { ok: false, error: 'El mensaje es demasiado corto.' });
+      }
+      if (peticion.valor.length > regla.maximo) {
+        return responder(400, { ok: false, error: 'El mensaje supera los ' + regla.maximo + ' caracteres.' });
+      }
+    } else if (regla.valores.indexOf(peticion.valor) === -1) {
       return responder(400, { ok: false, error: 'Valor no permitido: ' + peticion.valor });
     }
 

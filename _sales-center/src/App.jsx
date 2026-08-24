@@ -276,6 +276,149 @@ function BotonVolver({ onClick, titulo }) {
   )
 }
 
+/**
+ * Agencia completa o soporte especializado.
+ *
+ * Es la pregunta central del sistema comercial nuevo: ¿podemos ser LA agencia
+ * de esta empresa, o solo entrar por una pieza concreta? Son dos conversaciones
+ * distintas y dos mensajes distintos, y hasta ahora el panel no las separaba.
+ *
+ * Agencia completa va en oro porque es lo que hay que perseguir. Soporte va en
+ * hueso: sigue valiendo, pero no es lo mismo.
+ */
+function TipoOportunidad({ tipo, derivada }) {
+  if (!tipo) return null
+  const completa = tipo === 'Agencia completa'
+  return (
+    <span
+      className={`tipo-badge ${completa ? 'tipo-badge--completa' : ''}`}
+      title={derivada ? 'Clasificación deducida por el panel; la hoja todavía no trae esta columna.' : undefined}
+    >
+      {tipo}
+      {derivada && <i aria-label="deducido por el panel">·</i>}
+    </span>
+  )
+}
+
+/** Cuanto puede DAK liderar el crecimiento de esta empresa, de 1 a 5. */
+function EscalaLiderazgo({ valor }) {
+  if (!valor) return null
+  return (
+    <span aria-label={`Potencial para que DAK lidere: ${valor} de 5`} className="escala-liderazgo" role="img">
+      {[1, 2, 3, 4, 5].map((paso) => <i className={paso <= valor ? 'is-on' : ''} key={paso} />)}
+      <b>{valor}/5</b>
+    </span>
+  )
+}
+
+/**
+ * La lectura comercial: si DAK puede ser la agencia o solo entrar por una pieza.
+ *
+ * Va marcada como deducida mientras la hoja no traiga sus columnas. No es un
+ * detalle legal: si el equipo la toma por dato de Twin y resulta que la dedujo
+ * el panel, la proxima vez no se creera nada de lo que hay en pantalla.
+ */
+function Clasificacion({ prospect }) {
+  if (!prospect.tipoOportunidad) return null
+
+  return (
+    <div className="clasificacion">
+      <span className="context-label">
+        Lectura comercial
+        {prospect.clasificacionDerivada && <em> · deducida por el panel</em>}
+      </span>
+
+      <div className="clasificacion__cabeza">
+        <TipoOportunidad derivada={prospect.clasificacionDerivada} tipo={prospect.tipoOportunidad} />
+        <EscalaLiderazgo valor={prospect.potencialLiderazgo} />
+      </div>
+
+      <dl className="clasificacion__datos">
+        <div>
+          <dt>Riesgo de agencia existente</dt>
+          <dd>{valueOrMissing(prospect.riesgoAgenciaExistente)}</dd>
+        </div>
+        <div>
+          <dt>Entrada recomendada</dt>
+          <dd>{valueOrMissing(prospect.anguloEntrada)}</dd>
+        </div>
+      </dl>
+    </div>
+  )
+}
+
+/**
+ * El mensaje, y ahora tambien su edicion.
+ *
+ * En reposo es texto, no un campo: un formulario permanente invita a toquetear
+ * y aqui lo normal es leer y aprobar, no reescribir. Se entra a editar a
+ * proposito, y al guardar se escribe en la hoja.
+ *
+ * Guardar NO aprueba. Son dos decisiones distintas —cambiar el texto y darlo
+ * por bueno— y juntarlas haria que corregir una tilde aprobara el mensaje.
+ */
+function EditorMensaje({ empresa, texto }) {
+  const [editando, setEditando] = useState(false)
+  const [borrador, setBorrador] = useState(texto ?? '')
+  const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
+  const [guardado, setGuardado] = useState(null)
+
+  const actual = guardado ?? texto
+  const editable = puedeEscribir && Boolean(empresa) && Boolean(texto)
+
+  const guardar = async () => {
+    setEstado({ fase: 'guardando', mensaje: null })
+    const resultado = await escribirEnHoja({ accion: 'editar', empresa, valor: borrador })
+    if (resultado.ok) {
+      setGuardado(borrador)
+      setEditando(false)
+      setEstado({ fase: 'hecho', mensaje: 'Guardado en la hoja.' })
+    } else {
+      setEstado({ fase: 'fallo', mensaje: resultado.error ?? 'La hoja rechazó el cambio.' })
+    }
+  }
+
+  return (
+    <div className="message-card__message">
+      <span className="context-label">
+        Mensaje tal como se enviaría
+        {editable && !editando && (
+          <button className="editar-link" onClick={() => { setBorrador(actual); setEditando(true); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
+            Editar
+          </button>
+        )}
+      </span>
+
+      {editando ? (
+        <>
+          <textarea
+            className="message-editor"
+            onChange={(evento) => setBorrador(evento.target.value)}
+            rows={Math.min(14, Math.max(5, Math.ceil(borrador.length / 60)))}
+            value={borrador}
+          />
+          <div className="message-editor__acciones">
+            <button className="sheet-button sheet-button--principal" disabled={estado.fase === 'guardando' || borrador === actual} onClick={guardar} type="button">
+              {estado.fase === 'guardando' ? 'Guardando…' : 'Guardar en la hoja'}
+            </button>
+            <button className="sheet-button" disabled={estado.fase === 'guardando'} onClick={() => { setEditando(false); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
+              Descartar
+            </button>
+          </div>
+        </>
+      ) : (
+        <p>{valueOrMissing(actual)}</p>
+      )}
+
+      {estado.mensaje && (
+        <p aria-live="polite" className={`sheet-actions__result ${estado.fase === 'fallo' ? 'is-fallo' : ''}`}>
+          {estado.mensaje}
+        </p>
+      )}
+    </div>
+  )
+}
+
 function Badge({ children, tone = 'neutral' }) {
   return <span className={`badge badge--${tone}`}>{children}</span>
 }
@@ -388,12 +531,11 @@ function MessageCard({ prospect, message, readyToSend = false }) {
 
       <AccionesHoja prospect={prospect} readyToSend={readyToSend} />
 
+      <Clasificacion prospect={prospect} />
+
       <EnlacesEmpresa prospect={prospect} />
 
-      <div className="message-card__message">
-        <span className="context-label">Mensaje tal como se enviaría</span>
-        <p>{valueOrMissing(message?.texto)}</p>
-      </div>
+      <EditorMensaje empresa={prospect.empresa} texto={message?.texto} />
 
       <div className="message-card__actions">
         {readyToSend && message?.enlaceWhatsApp ? (
@@ -517,6 +659,16 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
       }, {}),
   ).sort((left, right) => right[1] - left[1])
   const maxCity = cities[0]?.[1] || 1
+
+  // El reparto entre agencia completa y soporte especializado. Se fija el orden
+  // en vez de ordenarlo por cantidad: «Agencia completa» va siempre arriba
+  // aunque hoy sea la minoria, porque es lo que hay que perseguir. Si se
+  // ordenara por volumen, la lista premiaria justo lo que sobra.
+  const reparto = ['Agencia completa', 'Soporte especializado'].map((tipo) => [
+    tipo,
+    prospects.filter((prospect) => prospect.tipoOportunidad === tipo).length,
+  ])
+  const maxTipo = Math.max(...reparto.map(([, n]) => n), 1)
   const inbound = prospects.filter((prospect) => prospect.origen === 'inbound')
   const newestInbound = [...inbound].sort((left, right) => (right.fechaDeteccion ?? '').localeCompare(left.fechaDeteccion ?? ''))[0] ?? null
   const readyNames = todayActions.readyToSend.map(({ prospect }) => getDisplayName(prospect)).join(' · ')
@@ -598,12 +750,21 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
           </div>
         </section>
 
+        {/* Esta zona era «Dónde están» (ciudades). La sustituye el tipo de
+            oportunidad porque es la pregunta central del sistema nuevo:
+            ¿podemos ser su agencia o solo entrar por una pieza? Las ciudades no
+            se pierden — siguen como filtro en Prospectos. */}
         <section className="console-zone coverage-zone" aria-labelledby="coverage-title">
-          <header className="zone-heading"><h2 id="coverage-title">Dónde están</h2><span>Outbound · derivado</span></header>
+          <header className="zone-heading"><h2 id="coverage-title">Tipo de oportunidad</h2><span>Deducido</span></header>
           <div className="coverage-list">
-            {cities.map(([city, count]) => (
-              <button className="coverage-row" key={city} onClick={() => onSelectView('prospectos', { buscar: city })} type="button">
-                <span>{city}</span><strong>{count}</strong><i><b style={{ '--measure': count / maxCity }} /></i>
+            {reparto.map(([tipo, count]) => (
+              <button
+                className={`coverage-row ${tipo === 'Agencia completa' ? 'coverage-row--completa' : ''}`}
+                key={tipo}
+                onClick={() => onSelectView('prospectos', { tipo })}
+                type="button"
+              >
+                <span>{tipo}</span><strong>{count}</strong><i><b style={{ '--measure': count / maxTipo }} /></i>
               </button>
             ))}
           </div>
@@ -661,6 +822,7 @@ function WorkRow({ prospect, selected, onSelect, metric = 'readiness' }) {
     >
       <span className="work-row__top">
         <span className="work-row__name">{getShortName(prospect)}</span>
+        {prospect.tipoOportunidad === 'Agencia completa' && <span aria-label="Agencia completa" className="marca-completa" title="Agencia completa" />}
         <PotentialGauge value={prospect.potencialNegocio} />
         <span className="work-row__score">{valueOrMissing(valor)}</span>
       </span>
@@ -833,6 +995,7 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
   const [query, setQuery] = useState(filtrosIniciales.buscar ?? '')
   const [origin, setOrigin] = useState(filtrosIniciales.origen ?? 'todos')
   const [stage, setStage] = useState(filtrosIniciales.etapa ?? 'todas')
+  const [tipo, setTipo] = useState(filtrosIniciales.tipo ?? 'todos')
   const [selectedId, setSelectedId] = useState(prospects[0]?.id ?? null)
   const [enDetalle, setEnDetalle] = useState(false)
   const abrir = (id) => { setSelectedId(id); setEnDetalle(true) }
@@ -840,9 +1003,12 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
     const normalizedQuery = query.trim().toLocaleLowerCase('es')
     return prospects.filter((prospect) => {
       const matchesQuery = !normalizedQuery || [prospect.empresa, prospect.persona, prospect.fuente, prospect.rubro, prospect.ciudad].filter(Boolean).some((value) => value.toLocaleLowerCase('es').includes(normalizedQuery))
-      return matchesQuery && (origin === 'todos' || prospect.origen === origin) && (stage === 'todas' || prospect.etapa === stage)
+      return matchesQuery
+        && (origin === 'todos' || prospect.origen === origin)
+        && (stage === 'todas' || prospect.etapa === stage)
+        && (tipo === 'todos' || prospect.tipoOportunidad === tipo)
     })
-  }, [origin, prospects, query, stage])
+  }, [origin, prospects, query, stage, tipo])
   const selectedProspect = filteredProspects.find((prospect) => prospect.id === selectedId) ?? filteredProspects[0] ?? null
 
   // Las quince filas se agrupan por etapa del embudo. Una lista plana de quince
@@ -868,6 +1034,15 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
           <label className="search-field">
             <span>Buscar</span>
             <input onChange={(event) => setQuery(event.target.value)} placeholder="Empresa, fuente, ciudad…" type="search" value={query} />
+          </label>
+          {/* Primero de todo: es la pregunta central del sistema comercial. */}
+          <label>
+            <span>Tipo de oportunidad</span>
+            <select onChange={(event) => setTipo(event.target.value)} value={tipo}>
+              <option value="todos">Todos</option>
+              <option value="Agencia completa">Agencia completa</option>
+              <option value="Soporte especializado">Soporte especializado</option>
+            </select>
           </label>
           <label>
             <span>Origen</span>
