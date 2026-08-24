@@ -36,6 +36,39 @@ const stages = {
 
 const missing = 'sin dato'
 
+/**
+ * Los enums de control se traducen AL PINTAR, nunca en el dato.
+ *
+ * El contrato con Twin es explicito: los valores de maquina siguen en ingles y
+ * el frontend los traduce para mostrar. Traducirlos al leer parece mas comodo y
+ * es una trampa — lo hice con el glosario y deje muerto el marcador de
+ * prioridad, porque el codigo buscaba PRIORITY OUTREACH y el dato ya decia
+ * «Contacto prioritario». El fallo no daba error: simplemente el oro dejo de
+ * aparecer y nadie se entera hasta que lo mira alguien.
+ */
+const ENUMS = {
+  'PRIORITY OUTREACH': 'Contacto prioritario',
+  READY: 'Listo',
+  STRONG: 'Señal fuerte',
+  QUALIFIED: 'Calificado',
+  WARM: 'Tibio',
+  HIGH: 'Alto',
+  MEDIUM: 'Medio',
+  LOW: 'Bajo',
+  SMALL: 'Chico',
+  UNKNOWN: 'Sin confirmar',
+  APPROVED: 'Aprobado',
+  PENDING: 'Pendiente',
+  REJECTED: 'Rechazado',
+  SENT: 'Enviado',
+  'NOT SENT': 'Sin enviar',
+  'NO REPLY': 'Sin respuesta',
+  REPLIED: 'Respondió',
+  'FULL AGENCY PROSPECT': 'Agencia completa',
+  'SPECIALIZED SUPPORT PROSPECT': 'Soporte especializado',
+}
+const traducirEnum = (v) => v == null ? missing : (ENUMS[v] ?? v)
+
 function valueOrMissing(value) {
   return value === null || value === undefined || value === '' ? missing : value
 }
@@ -168,9 +201,12 @@ function EnlacesEmpresa({ prospect }) {
       </p>
       {faltan.length > 0 && (
         <p className="company-links__nota">
+          {/* «Sin verificar todavía», no «falta». El contrato con Twin dice que
+              solo escribe perfiles que confirma, así que una celda vacía es un
+              estado legítimo del proceso y no un error de nadie. */}
           {faltan.length === todos.length
-            ? 'Ningún enlace en la hoja. El agente puede buscarlos y rellenarlos.'
-            : `Faltan en la hoja: ${faltan.join(', ')}.`}
+            ? 'Sin perfiles verificados todavía. Twin solo escribe los que confirma.'
+            : `Sin verificar todavía: ${faltan.join(', ')}.`}
         </p>
       )}
     </div>
@@ -346,7 +382,7 @@ function Clasificacion({ prospect }) {
       <dl className="clasificacion__datos">
         <div>
           <dt>Riesgo de agencia existente</dt>
-          <dd>{valueOrMissing(prospect.riesgoAgenciaExistente)}</dd>
+          <dd>{traducirEnum(prospect.riesgoAgenciaExistente)}</dd>
         </div>
         <div>
           <dt>Entrada recomendada</dt>
@@ -936,20 +972,45 @@ function TodayView({ todayActions }) {
   )
 }
 
+/**
+ * El score, descompuesto en sus cinco componentes.
+ *
+ * Aqui SI entra el color, y por un motivo concreto: esto es un grafico, y en un
+ * grafico el color codifica un dato en vez de decorar. Cinco componentes con
+ * cinco tonos se comparan de un vistazo; cinco barras del mismo gris obligan a
+ * leer las etiquetas una por una.
+ *
+ * Fuera de este bloque el panel sigue siendo hueso y un solo acento. La regla no
+ * era «poco color»: era «color solo cuando significa algo».
+ *
+ * Los maximos por componente salen de la propia hoja (25/25/20/20/10 suman 100).
+ */
+const COMPONENTES = [
+  { clave: 'potencial', etiqueta: 'Potencial', maximo: 25 },
+  { clave: 'senal', etiqueta: 'Señal de compra', maximo: 25 },
+  { clave: 'oportunidad', etiqueta: 'Oportunidad', maximo: 20 },
+  { clave: 'encaje', etiqueta: 'Encaje con DAK', maximo: 20 },
+  { clave: 'contactabilidad', etiqueta: 'Contactabilidad', maximo: 10 },
+]
+
 function ScoreBreakdown({ prospect }) {
   if (!prospect.scoreDetalle) return <p className="empty-inline">Detalle de score: {missing}</p>
 
-  const detailEntries = [
-    ['Potencial', prospect.scoreDetalle.potencial], ['Señal', prospect.scoreDetalle.senal],
-    ['Oportunidad', prospect.scoreDetalle.oportunidad], ['Encaje', prospect.scoreDetalle.encaje],
-    ['Contactabilidad', prospect.scoreDetalle.contactabilidad],
-  ]
-  const sum = detailEntries.reduce((total, [, value]) => total + value, 0)
-
   return (
     <div className="score-breakdown">
-      {detailEntries.map(([label, value]) => <div className="score-breakdown__item" key={label}><span>{label}</span><strong>{valueOrMissing(value)}</strong></div>)}
-      <div className="score-breakdown__total"><span>Suma de componentes <em>vista derivada</em></span><strong>{sum}</strong></div>
+      {COMPONENTES.map(({ clave, etiqueta, maximo }, n) => {
+        const valor = prospect.scoreDetalle[clave]
+        const parte = valor === null || valor === undefined ? 0 : valor / maximo
+        return (
+          <div className={`score-comp score-comp--${n}`} key={clave}>
+            <span className="score-comp__nombre">{etiqueta}</span>
+            <span className="score-comp__cifra">{valueOrMissing(valor)}<em>/{maximo}</em></span>
+            <span aria-hidden="true" className="score-comp__barra">
+              <i style={{ '--parte': Math.max(0, Math.min(1, parte)) }} />
+            </span>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -1033,10 +1094,10 @@ function ProspectDetail({ data, prospect }) {
         <h3>Cómo entramos</h3>
         {prospect.anguloEntrada && <p>{prospect.anguloEntrada}</p>}
         <dl className="ficha-contacto">
-          <div><dt>Canal</dt><dd>{valueOrMissing(contact.canal)}</dd></div>
+          <div><dt>Canal</dt><dd>{traducirEnum(contact.canal)}</dd></div>
           <div><dt>Contacto</dt><dd>{valueOrMissing(contact.handle)}</dd></div>
           <div><dt>Mejor momento</dt><dd>{valueOrMissing(contact.mejorMomento)}</dd></div>
-          <div><dt>Riesgo de agencia</dt><dd>{valueOrMissing(prospect.riesgoAgenciaExistente)}</dd></div>
+          <div><dt>Riesgo de agencia</dt><dd>{traducirEnum(prospect.riesgoAgenciaExistente)}</dd></div>
           <div><dt>Responsable</dt><dd>{valueOrMissing(prospect.responsable)}</dd></div>
           <div><dt>Fuente</dt><dd>{valueOrMissing(prospect.fuente)}</dd></div>
         </dl>
@@ -1066,6 +1127,7 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
   const [origin, setOrigin] = useState(filtrosIniciales.origen ?? 'todos')
   const [stage, setStage] = useState(filtrosIniciales.etapa ?? 'todas')
   const [tipo, setTipo] = useState(filtrosIniciales.tipo ?? 'todos')
+  const [orden, setOrden] = useState('score')
   const [selectedId, setSelectedId] = useState(prospects[0]?.id ?? null)
   const [enDetalle, setEnDetalle] = useState(false)
   const abrir = (id) => { setSelectedId(id); setEnDetalle(true) }
@@ -1085,7 +1147,16 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
   // nombres no dice nada; agrupada, la forma del embudo se lee en la propia
   // columna sin mirar Panorama.
   const porEtapa = Object.entries(stages)
-    .map(([clave, titulo]) => ({ clave, titulo, items: filteredProspects.filter((p) => p.etapa === clave) }))
+    .map(([clave, titulo]) => ({
+      clave,
+      titulo,
+      items: filteredProspects.filter((p) => p.etapa === clave).sort((a, b) => {
+        if (orden === 'nombre') return getShortName(a).localeCompare(getShortName(b), 'es')
+        if (orden === 'antiguedad') return (a.fechaDeteccion ?? '').localeCompare(b.fechaDeteccion ?? '')
+        if (orden === 'liderazgo') return (b.potencialLiderazgo ?? 0) - (a.potencialLiderazgo ?? 0)
+        return (b.score ?? -1) - (a.score ?? -1)
+      }),
+    }))
     .filter((grupo) => grupo.items.length)
 
   const alTeclado = (evento) => {
@@ -1097,38 +1168,92 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
     setSelectedId(filteredProspects[hasta].id)
   }
 
+  // El resumen del conjunto. Cada cifra es tambien un filtro: mirar y recortar
+  // son el mismo gesto, en vez de leer arriba y buscar el desplegable abajo.
+  const cuenta = (fn) => prospects.filter(fn).length
+  const resumen = [
+    { etiqueta: 'Prospectos', valor: prospects.length, activo: tipo === 'todos' && origin === 'todos' && stage === 'todas' && !query,
+      alPulsar: () => { setTipo('todos'); setOrigin('todos'); setStage('todas'); setQuery('') } },
+    { etiqueta: 'Agencia completa', valor: cuenta((p) => p.tipoOportunidad === 'Agencia completa'), oro: true,
+      activo: tipo === 'Agencia completa', alPulsar: () => setTipo(tipo === 'Agencia completa' ? 'todos' : 'Agencia completa') },
+    { etiqueta: 'Soporte', valor: cuenta((p) => p.tipoOportunidad === 'Soporte especializado'),
+      activo: tipo === 'Soporte especializado', alPulsar: () => setTipo(tipo === 'Soporte especializado' ? 'todos' : 'Soporte especializado') },
+    { etiqueta: 'Sin contacto', valor: cuenta((p) => !p.contacto?.handle && !p.contacto?.telefono && !p.contacto?.email),
+      activo: false, alPulsar: () => setQuery('') },
+    { etiqueta: 'Detectados hoy', valor: cuenta((p) => diasDesde(p.fechaDeteccion) === 0),
+      activo: false, alPulsar: () => setOrden('antiguedad') },
+  ]
+
   return (
     <div className={`work-split ${enDetalle ? 'work-split--detalle' : 'work-split--lista'}`}>
       <div className="work-queue" onKeyDown={alTeclado}>
-        <div className="filter-bar">
-          <label className="search-field">
-            <span>Buscar</span>
-            <input onChange={(event) => setQuery(event.target.value)} placeholder="Empresa, fuente, ciudad…" type="search" value={query} />
+        {/* Los filtros ya no viven dentro de la columna de 300px. Ahi salian
+            apretados y con las etiquetas partidas, porque una barra de
+            herramientas no cabe en el ancho de una lista. Ahora es una barra
+            propia a lo ancho de la vista. */}
+        <div className="prospect-toolbar">
+          <label className="toolbar-buscar">
+            <input onChange={(event) => setQuery(event.target.value)} placeholder="Buscar empresa, ciudad, fuente…" type="search" value={query} />
           </label>
-          {/* Primero de todo: es la pregunta central del sistema comercial. */}
-          <label>
-            <span>Tipo de oportunidad</span>
-            <select onChange={(event) => setTipo(event.target.value)} value={tipo}>
-              <option value="todos">Todos</option>
-              <option value="Agencia completa">Agencia completa</option>
-              <option value="Soporte especializado">Soporte especializado</option>
-            </select>
-          </label>
-          <label>
-            <span>Origen</span>
-            <select onChange={(event) => setOrigin(event.target.value)} value={origin}>
-              <option value="todos">Todos</option>
-              <option value="outbound">Búsqueda activa</option>
-              <option value="inbound">Llegaron solos</option>
-            </select>
-          </label>
-          <label>
-            <span>Etapa</span>
-            <select onChange={(event) => setStage(event.target.value)} value={stage}>
-              <option value="todas">Todas</option>
-              {Object.entries(stages).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select>
-          </label>
+
+          {/* Segmentado y no desplegable: es LA pregunta del sistema comercial,
+              son solo tres opciones, y asi se ve cual esta activa sin abrir nada. */}
+          <div aria-label="Tipo de oportunidad" className="segmentado" role="group">
+            {[['todos', 'Todos'], ['Agencia completa', 'Agencia completa'], ['Soporte especializado', 'Soporte']].map(([valor, texto]) => (
+              <button
+                aria-pressed={tipo === valor}
+                className={`segmentado__opcion ${valor === 'Agencia completa' ? 'segmentado__opcion--oro' : ''}`}
+                key={valor}
+                onClick={() => setTipo(valor)}
+                type="button"
+              >
+                {texto}
+              </button>
+            ))}
+          </div>
+
+          <div className="toolbar-selects">
+            <label>
+              <span>Origen</span>
+              <select onChange={(event) => setOrigin(event.target.value)} value={origin}>
+                <option value="todos">Todos</option>
+                <option value="outbound">Búsqueda activa</option>
+                <option value="inbound">Llegaron solos</option>
+              </select>
+            </label>
+            <label>
+              <span>Etapa</span>
+              <select onChange={(event) => setStage(event.target.value)} value={stage}>
+                <option value="todas">Todas</option>
+                {Object.entries(stages).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              </select>
+            </label>
+            <label>
+              <span>Ordenar</span>
+              <select onChange={(event) => setOrden(event.target.value)} value={orden}>
+                <option value="score">Oportunidad</option>
+                <option value="liderazgo">Podemos liderar</option>
+                <option value="antiguedad">Más antiguos</option>
+                <option value="nombre">Nombre</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        {/* El resumen: sin esto, Prospectos era una lista sin sentido del
+            conjunto. Cada cifra es un filtro — se pulsa y recorta. */}
+        <div className="prospect-resumen">
+          {resumen.map((r) => (
+            <button
+              className={`resumen-cifra ${r.activo ? 'is-activo' : ''} ${r.oro ? 'resumen-cifra--oro' : ''}`}
+              key={r.etiqueta}
+              onClick={r.alPulsar}
+              type="button"
+            >
+              <strong>{r.valor}</strong>
+              <span>{r.etiqueta}</span>
+            </button>
+          ))}
         </div>
 
         {porEtapa.map((grupo) => (

@@ -1,6 +1,5 @@
 {
   "_nota": "Sustitucion de TERMINOS, no de frases enteras. A diferencia de traducciones.json —que va empresa por empresa y no escala— esto se aplica a cualquier fila presente y futura, porque los agentes escriben con un vocabulario cerrado y repetido: rubros, nombres de servicio, prefijos de evidencia. Lo que NO puede arreglar es la prosa libre; eso solo se arregla haciendo que el agente escriba en español. Orden: las claves largas se aplican primero para que 'Real Estate Development' no lo pise 'Real Estate'.",
-
   "terminos": {
     "Residential Real Estate Development and Property Sales": "Desarrollo residencial y venta de inmuebles",
     "Private multispecialty healthcare clinic": "Clínica privada multiespecialidad",
@@ -17,7 +16,6 @@
     "Education": "Educación",
     "Tourism": "Turismo",
     "Retail": "Comercio",
-
     "Source: buying-signal public announcement": "Origen: anuncio público con señal de compra",
     "Source: real estate developer": "Origen: desarrolladora inmobiliaria",
     "Verified:": "Verificado:",
@@ -26,20 +24,6 @@
     "CONFIRMED FACT:": "HECHO CONFIRMADO:",
     "AGENT ANALYSIS:": "ANÁLISIS DEL AGENTE:",
     "via Google Places": "vía Google Places",
-
-    "PRIORITY OUTREACH": "Contacto prioritario",
-    "READY": "Listo",
-    "STRONG": "Fuerte",
-    "QUALIFIED": "Calificado",
-    "HIGH": "Alto",
-    "MEDIUM": "Medio",
-    "SMALL": "Chico",
-    "NOT SENT": "Sin enviar",
-    "NO REPLY": "Sin respuesta",
-    "APPROVED": "Aprobado",
-    "PENDING": "Pendiente",
-    "REJECTED": "Rechazado",
-
     "property video + photography + Reels + Meta Ads": "video de propiedad + fotografía + Reels + Meta Ads",
     "Real-estate marketing package": "Paquete de marketing inmobiliario",
     "Launch content package": "Paquete de contenido de lanzamiento",
@@ -54,5 +38,6 @@
     "food photography": "fotografía gastronómica",
     "product video": "video de producto",
     "short-form video": "video corto"
-  }
+  },
+  "_aviso_control": "Los enums de control (STRONG, APPROVED, PRIORITY OUTREACH...) NO van aqui. Traducirlos en el dato rompe las comparaciones del codigo: paso una vez y dejo muerto el marcador de prioridad, porque prioritaria() busca PRIORITY OUTREACH y el dato ya decia Contacto prioritario. Se traducen al PINTAR, con traducirEnum() en App.jsx."
 }

@@ -179,7 +179,9 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
       },
       readiness: null, readinessBand: null, scoreBot: null,
       // Lead Temperature y Status son la misma columna duplicada.
-      temperatura: conGlosario(g('Lead Temperature')),
+      // Valores de CONTROL: se guardan crudos y se traducen al pintar. Si se
+      // traducen aqui, las comparaciones del codigo dejan de encontrarlos.
+      temperatura: g('Lead Temperature'),
       potencialNegocio: null,
 
       contacto: {
@@ -235,7 +237,7 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
     if (!p) { huerfanas.push(['QUEUE', g('Business Name')]); continue }
 
     p.readiness = numero(g('Outreach Readiness Score'))
-    p.readinessBand = conGlosario(g('Readiness Band'))
+    p.readinessBand = g('Readiness Band')
     p.potencialNegocio = g('Deal Potential')
     p.contacto = {
       ...p.contacto,
