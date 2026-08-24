@@ -300,7 +300,7 @@ tbody tr.is-selected { background: var(--elevada); }
 
 @keyframes turn { to { transform: rotate(1turn); } }
 @keyframes content-arrival { from { opacity: 0; transform: translateY(10px); } }
-@keyframes detail-arrival { from { opacity: 0; transform: translateX(16px); } }
+/* (la definicion util vive mas abajo; esta estaba duplicada y la pisaba) */
 @keyframes funnel-entry { to { opacity: 1; transform: translateY(0); } }
 @keyframes measure-entry { to { transform: scaleX(var(--measure)); } }
 @keyframes connector-entry { to { transform: scaleX(1); } }
@@ -355,12 +355,25 @@ tbody tr.is-selected { background: var(--elevada); }
   .panorama-console { grid-template-rows: minmax(0, .92fr) minmax(0, 1.18fr); }
   .zone-heading { gap: 8px; padding: 12px 12px 0; }
   .zone-heading span { display: none; }
-  .funnel-route { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center; gap: 3px; padding: 2px 10px 8px; }
-  .funnel-node { align-self: center; padding: 7px 2px; }
-  .funnel-node > strong { font-size: clamp(1.5rem, 8vw, 2rem); }
-  .funnel-node__survival { display: block; margin-bottom: 5px; }
-  .funnel-node__label { min-height: 29px; margin-top: 7px; overflow-wrap: anywhere; font-size: 11px; letter-spacing: .04em; }
-  .funnel-node__measure { margin-top: 8px; }
+  /* El embudo en movil pasa de rejilla de cinco columnas a lista vertical.
+     Cinco columnas en 375 px dejan 63 px por celda, y ahi «INVESTIGADAS» se
+     partia por la mitad. En vertical cada etapa tiene el ancho entero: no se
+     corta ninguna palabra y de paso se llena el hueco que sobraba arriba. */
+  .funnel-route { display: grid; grid-template-columns: 1fr; align-items: stretch; gap: 0; padding: 4px 12px 10px; }
+  .funnel-node {
+    display: grid; grid-template-columns: 2.6em minmax(0, 1fr) auto;
+    align-items: center; gap: 0 14px; padding: 10px 6px;
+    border-top: 1px solid var(--linea); border-radius: 0;
+  }
+  .funnel-node:first-of-type { border-top: 0; }
+  .funnel-node > strong { grid-row: 1 / 3; font-size: 1.7rem; text-align: right; }
+  .funnel-node__label {
+    grid-column: 2; margin: 0; font-size: 11px; letter-spacing: .1em;
+    /* Sin overflow-wrap:anywhere. Era exactamente lo que partia INVESTIG-ADAS. */
+    overflow-wrap: normal; word-break: keep-all;
+  }
+  .funnel-node__survival { grid-column: 3; grid-row: 1; display: block; margin: 0; }
+  .funnel-node__measure { grid-column: 2 / 4; margin-top: 7px; }
   /* En movil el embudo pasa a rejilla y cada nodo lleva su propio porcentaje,
      asi que el conector sobra. La linea de estado tambien: sin raton no hay
      nada que señalar, y el aria-label de cada nodo ya lleva la explicacion. */
@@ -511,11 +524,38 @@ tbody tr.is-selected { background: var(--elevada); }
 /* Dentro de la consola la tarjeta ya no necesita marco propio. */
 .work-detail .message-card { border: 0; border-radius: 0; background: transparent; padding: 22px 26px 40px; }
 
+/* El boton de volver solo existe en movil: en escritorio la lista nunca
+   desaparece, asi que no hay a donde volver. */
+.volver { display: none; }
+
 @media (max-width: 860px) {
-  .main-content--hoy { overflow: auto; }
-  .work-split { grid-template-columns: 1fr; height: auto; }
-  .work-queue { overflow: visible; }
-  .work-detail { overflow: visible; border-top: 1px solid var(--linea); }
+  .work-split { grid-template-columns: 1fr; }
+
+  /* Se enseña UNA de las dos, nunca las dos apiladas. Apiladas, tocar una fila
+     no parecia hacer nada: la ficha se dibujaba fuera de pantalla y habia que
+     adivinar que tocaba bajar. Con dos pantallas el gesto es el de cualquier
+     bandeja de correo — entras y vuelves. */
+  .work-split--lista .work-detail { display: none; }
+  .work-split--detalle .work-queue { display: none; }
+
+  .volver {
+    position: sticky; top: 0; z-index: 3;
+    display: flex; align-items: center; gap: 9px; width: 100%;
+    min-height: 46px; padding: 12px 16px;
+    border: 0; border-bottom: 1px solid var(--linea);
+    background: rgba(3, 1, 6, .82); backdrop-filter: saturate(180%) blur(18px);
+    color: var(--secondary); font-size: 14px; text-align: left;
+  }
+  .volver span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .volver svg { flex: none; }
+  .volver:active { color: var(--text); }
+
+  /* Entra desde la derecha: deja claro que has ido a otro sitio y que se vuelve. */
+  .work-split--detalle .work-detail { animation: detalle-movil 300ms var(--ease-suave) both; }
+}
+@keyframes detalle-movil { from { opacity: 0; transform: translateX(14px); } }
+@media (prefers-reduced-motion: reduce) {
+  .work-split--detalle .work-detail { animation: none; }
 }
 @media (prefers-reduced-motion: reduce) { .work-detail > * { animation: none; } }
 
@@ -575,3 +615,268 @@ tbody tr.is-selected { background: var(--elevada); }
 }
 .work-group:first-child > header::before { background: var(--oro); }
 .work-group > header { padding-left: 22px; }
+
+/* ═══ Las tres vistas restantes, en el mismo idioma ══════════════════════════
+   Prospectos reusa work-split y WorkRow tal cual. Base y Como funciona toman
+   el lenguaje de Panorama: cifras en peso 200, barra proporcional y la
+   explicacion en una linea de estado. */
+
+.main-content--prospectos,
+.main-content--base,
+.main-content--como-funciona { overflow: hidden; padding: 0; }
+.main-content--prospectos .view-frame,
+.main-content--base .view-frame,
+.main-content--como-funciona .view-frame { height: 100%; }
+
+/* ── Prospectos: filtros dentro de la columna, no sobre la pagina ────────── */
+.work-queue .filter-bar {
+  position: sticky; top: 0; z-index: 2;
+  display: grid; gap: 9px; padding: 14px 16px;
+  border-bottom: 1px solid var(--linea);
+  background: var(--rail);
+}
+.work-queue .filter-bar label { display: grid; gap: 5px; }
+.work-queue .filter-bar label > span { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .09em; text-transform: uppercase; }
+.work-queue .filter-bar input,
+.work-queue .filter-bar select {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--linea-viva);
+  border-radius: 8px; background: var(--fondo); color: var(--text); font-size: 14px;
+  transition: border-color var(--t-corta) var(--ease-suave);
+}
+.work-queue .filter-bar input:focus, .work-queue .filter-bar select:focus { border-color: var(--oro); outline: none; }
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+.base-console { height: 100%; overflow-y: auto; }
+.source-panel { padding-bottom: 30px; }
+.source-panel + .source-panel { border-top: 1px solid var(--linea); }
+
+.source-figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; margin: 4px 26px 0; background: var(--linea); border-radius: var(--radius); overflow: hidden; }
+.source-figure { padding: 18px 18px 16px; background: var(--fondo); }
+.source-figure strong { display: block; color: var(--text); font-size: clamp(1.9rem, 3.2vw, 2.9rem); font-variant-numeric: tabular-nums; font-weight: 200; letter-spacing: -.03em; line-height: 1; }
+.source-figure span { display: block; margin-top: 10px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
+/* Oro donde la cifra es el problema: 1,8 % de rendimiento y cero contactos. */
+.source-figure--alerta strong, .source-figure--alerta span { color: var(--oro); }
+
+.source-split { margin: 24px 26px 0; }
+.source-split ul { margin: 0; padding: 0; list-style: none; }
+.source-split li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 11px 0; border-top: 1px solid var(--linea); }
+.source-split__name { overflow: hidden; color: var(--secondary); font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.source-split__count { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; font-weight: 500; }
+.source-split__meter { grid-column: 1 / 3; height: 2px; overflow: hidden; border-radius: 1px; background: rgba(255, 255, 255, .05); }
+.source-split__meter i { display: block; width: var(--w, 0%); height: 100%; border-radius: inherit; background: rgba(244, 241, 248, .3); transform: scaleX(0); transform-origin: left; animation: measure-entry var(--t-vista) var(--ease-suave) forwards; }
+.source-note { max-width: 74ch; margin: 22px 26px 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+/* ── Cómo funciona ──────────────────────────────────────────────────────── */
+.flow-console { display: flex; flex-direction: column; height: 100%; overflow-y: auto; }
+.flow-track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 6px 26px 0; background: var(--linea); border-radius: var(--radius); overflow: hidden; }
+.flow-node {
+  display: block; padding: 20px 18px 22px; border: 0; background: var(--fondo);
+  color: inherit; text-align: left;
+  transition: background-color var(--t-corta) var(--ease-suave);
+}
+.flow-node.is-active { background: var(--superficie); }
+.flow-node__number { display: block; color: var(--muted); font-size: clamp(1.6rem, 2.6vw, 2.3rem); font-variant-numeric: tabular-nums; font-weight: 200; line-height: 1; transition: color var(--t-corta) var(--ease-suave); }
+.flow-node.is-active .flow-node__number { color: var(--text); }
+.flow-node--humana.is-active .flow-node__number { color: var(--oro); }
+.flow-node__title { display: block; margin-top: 12px; color: var(--secondary); font-size: 14px; line-height: 1.35; }
+.flow-node__agent { display: block; margin-top: 8px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+
+.flow-readout { margin: 18px 26px 0; }
+.flow-readout > span { display: block; max-width: 70ch; min-height: 3em; color: var(--secondary); font-size: 14px; line-height: 1.6; opacity: .45; transform: translateY(2px); transition: opacity var(--t-corta) var(--ease-suave), transform var(--t-corta) var(--ease-suave), color var(--t-corta) var(--ease-suave); }
+.flow-readout > span.is-on { color: var(--text); opacity: 1; transform: none; }
+
+.flow-console .scope-note { margin: auto 26px 26px; padding-top: 20px; border-top: 1px solid var(--linea); }
+.flow-console .scope-note p:last-child { max-width: 74ch; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+@media (max-width: 860px) {
+  .main-content--prospectos, .main-content--base, .main-content--como-funciona { overflow: auto; }
+  .flow-track { grid-template-columns: 1fr 1fr; }
+}
+/* En un telefono, dos columnas dejan 200px por etapa y los nombres de los
+   agentes van justos. Una sola columna se lee mejor y no cuesta nada. */
+@media (max-width: 560px) {
+  .flow-track { grid-template-columns: 1fr; }
+  .flow-console .scope-note { margin-top: 26px; }
+}
+
+/* ── Todo lo que es una cifra, se puede abrir ───────────────────────────────
+   Una cifra que no lleva a ningun sitio obliga a buscarla a mano, y entonces el
+   panel no ahorra nada. El nodo del embudo, la ciudad y el bloque de inbound
+   pasan a ser botones; se comportan como el resto y no cambian de aspecto. */
+.funnel-node, .coverage-row, .inbound-signal {
+  width: 100%; border: 0; background: transparent; color: inherit;
+  font: inherit; text-align: left; cursor: pointer;
+  border-radius: 10px;
+  transition: background-color var(--t-corta) var(--ease-suave);
+}
+.funnel-node:hover, .coverage-row:hover, .inbound-signal:hover { background: rgba(255, 255, 255, .03); }
+.coverage-row { padding: 2px 6px; margin: 0 -6px; }
+.inbound-signal { padding: 10px 26px 22px; margin: 0; }
+
+/* La tercera cola de decision. Cuando esta a cero se apaga en vez de
+   desaparecer: un hueco explicito informa, y una fila que aparece de la nada el
+   dia que hay datos, no. */
+.decision-row--espera > strong { color: var(--secondary); }
+.decision-row--vacia { opacity: .45; }
+.decision-row--vacia > strong { color: var(--muted); }
+
+/* ── Antigüedad: el panel se entera de que el tiempo pasa ──────────────────
+   Solo aparece cuando ya molesta (3 días o más). En las quince filas seria una
+   columna que nadie mira; en las que llevan paradas, es un aviso. */
+PLACEHOLDER
+
+/* El grupo de inbound cierra un agujero: un lead entrante no tiene mensaje
+   redactado, asi que no caia en ninguna cola y no aparecia en Hoy. */
+.work-group:last-child > header::before { background: var(--oro); }
+
+/* Antigüedad en hueso por defecto; oro solo al cruzar el umbral de abandono. */
+.work-row__age { color: var(--muted); }
+.work-row__age.is-alerta { color: var(--oro); }
+
+/* La alarma de conjunto: una sola, arriba, en vez de once iguales abajo. */
+.queue-alarm {
+  margin: 0; padding: 14px 20px;
+  border-bottom: 1px solid var(--linea);
+  color: var(--secondary); font-size: 14px; line-height: 1.5;
+}
+.queue-alarm b { color: var(--oro); font-weight: 500; }
+
+/* ── Registrar en la hoja ───────────────────────────────────────────────────
+   La unica parte del panel que escribe. Se separa del resto con su propio
+   bloque para que no se confunda con las acciones que solo copian o abren. */
+.sheet-actions { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--linea); }
+.sheet-actions__row { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 10px; }
+.sheet-button {
+  padding: 10px 16px; border: 1px solid var(--linea-viva); border-radius: 10px;
+  background: transparent; color: var(--secondary); font-size: 14px; font-weight: 500;
+  transition: background-color var(--t-corta) var(--ease-suave), border-color var(--t-corta) var(--ease-suave), color var(--t-corta) var(--ease-suave);
+}
+.sheet-button:hover:not(:disabled) { border-color: var(--oro); color: var(--oro); }
+.sheet-button--principal { border-color: var(--oro); background: var(--oro); color: #241803; font-weight: 600; }
+.sheet-button--principal:hover:not(:disabled) { background: #F2C77C; border-color: #F2C77C; color: #241803; }
+.sheet-button:disabled { opacity: .5; }
+.sheet-actions__result { margin: 12px 0 0; color: var(--oro); font-size: 14px; line-height: 1.5; }
+.sheet-actions__result.is-fallo { color: var(--danger); }
+.sheet-actions__note { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+/* ═══ Intro ═════════════════════════════════════════════════════════════════
+   El logo se dibuja, la D viaja al rail y el contenido entra con la animacion
+   escalonada que ya existia. Ver src/Intro.jsx para la coreografia. */
+
+.intro {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: center;
+  background: var(--fondo);
+  transition: opacity var(--t-corta) var(--ease-salida);
+}
+.intro--saltando { opacity: 1; }
+
+.intro__marca {
+  width: min(46vw, 420px);
+  transition: transform 450ms var(--ease-suave);
+  will-change: transform;
+}
+.intro__marca svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* Los contornos se dibujan. pathLength="1" en el poligono deja el dasharray en
+   una unidad exacta, sin medir perimetros a mano. */
+.intro__trazo {
+  fill: none; stroke: var(--text); stroke-width: 10; stroke-linejoin: miter;
+}
+.intro__relleno { fill: var(--text); fill-opacity: 0; }
+.intro__relleno--morado { fill: var(--purple); }
+
+.intro--telon .intro__letra { opacity: 0; }
+
+/* El dibujado y el relleno los dirige la Web Animations API desde Intro.jsx,
+   no CSS: stroke-dashoffset es a la vez atributo de presentacion y propiedad
+   CSS, y las reglas por fase no se resolvian de forma fiable. Aqui solo queda
+   el estado de partida; el movimiento vive en el componente. */
+
+/* Al saltar, la A y la K se retiran y dejan sola a la D, que es la que aterriza
+   en el rail. El trazo se apaga a la vez que el relleno se queda: en pequeño,
+   una linea de 10 unidades taparia el glifo entero. */
+.intro--saltando .intro__letra--a,
+.intro--saltando .intro__letra--k {
+  opacity: 0; transition: opacity 260ms var(--ease-salida);
+}
+.intro--saltando .intro__trazo {
+  opacity: 0; transition: opacity 200ms var(--ease-salida);
+}
+
+/* El chasis se dibuja mientras la marca viaja: las dos lineas del rail y del
+   topbar crecen desde su origen. Es la consola montandose. */
+.app-shell--entrando { opacity: 0; }
+.app-shell--montando { animation: intro-aparecer 350ms var(--ease-suave) forwards; }
+.app-shell--montando .app-rail { animation: intro-linea-vertical 350ms var(--ease-suave) both; }
+.app-shell--montando .app-header { animation: intro-linea-horizontal 350ms var(--ease-suave) both; }
+@keyframes intro-aparecer { from { opacity: 0; } to { opacity: 1; } }
+@keyframes intro-linea-vertical { from { border-right-color: transparent; } }
+@keyframes intro-linea-horizontal { from { border-bottom-color: transparent; } }
+
+/* La marca del rail es la D de verdad, no tres barritas: por eso el salto puede
+   aterrizar en ella sin disimulos. */
+.brand__mark { display: block; width: 22px; height: 18px; }
+.brand__mark svg { display: block; width: 100%; height: 100%; }
+.brand__mark polygon { fill: var(--text); transition: fill var(--t-corta) var(--ease-suave); }
+.brand:hover .brand__mark polygon { fill: var(--oro); }
+
+@media (prefers-reduced-motion: reduce) {
+  .intro { display: none; }
+  .app-shell--entrando, .app-shell--montando { opacity: 1; animation: none; }
+}
+
+/* ═══ Tipo de oportunidad ═══════════════════════════════════════════════════
+   La pregunta central del sistema comercial nuevo: ¿podemos ser LA agencia de
+   esta empresa, o solo entrar por una pieza? «Agencia completa» va en oro
+   porque es lo que hay que perseguir; «soporte» en hueso — sigue valiendo, pero
+   no es lo mismo. */
+.tipo-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border: 1px solid var(--linea-viva); border-radius: 999px;
+  color: var(--secondary); font-size: 11px; font-weight: 500;
+  letter-spacing: .07em; text-transform: uppercase; white-space: nowrap;
+}
+.tipo-badge--completa { border-color: #6d5427; color: var(--oro); }
+.tipo-badge i { font-style: normal; opacity: .6; }
+
+.escala-liderazgo { display: inline-flex; align-items: center; gap: 3px; }
+.escala-liderazgo i { display: block; width: 4px; height: 12px; border-radius: 1px; background: rgba(255, 255, 255, .12); }
+.escala-liderazgo i.is-on { background: rgba(244, 241, 248, .55); }
+.escala-liderazgo b { margin-left: 6px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .06em; }
+
+/* Marca discreta en la fila: se ve cuales son agencia completa sin abrir nada. */
+.marca-completa { flex: none; width: 5px; height: 5px; border-radius: 50%; background: var(--oro); }
+
+.clasificacion { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--linea); }
+.clasificacion .context-label em { font-style: normal; color: var(--muted); text-transform: none; letter-spacing: .02em; }
+.clasificacion__cabeza { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 10px 0 4px; }
+.clasificacion__datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin: 14px 0 0; }
+.clasificacion__datos dt { margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.clasificacion__datos dd { margin: 0; color: var(--secondary); font-size: 14px; line-height: 1.5; }
+
+.coverage-row--completa strong { color: var(--oro); }
+.coverage-row--completa i b { background: var(--oro); opacity: .7; }
+
+/* ═══ Editar el mensaje ═════════════════════════════════════════════════════
+   En reposo es texto, no un campo: un formulario permanente invita a toquetear
+   y aqui lo normal es leer y aprobar, no reescribir. */
+.editar-link {
+  margin-left: 10px; padding: 0; border: 0; background: none;
+  color: var(--oro); font-size: 11px; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--t-corta) var(--ease-suave);
+}
+.editar-link:hover { border-bottom-color: var(--oro); }
+
+.message-editor {
+  display: block; width: 100%; margin-top: 4px; padding: 14px 16px;
+  border: 1px solid var(--linea-viva); border-radius: var(--radius);
+  background: var(--fondo); color: var(--text);
+  font-family: inherit; font-size: 16px; font-weight: 300; line-height: 1.68;
+  resize: vertical;
+  transition: border-color var(--t-corta) var(--ease-suave);
+}
+.message-editor:focus { border-color: var(--oro); outline: none; }
+.message-editor__acciones { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 12px; }

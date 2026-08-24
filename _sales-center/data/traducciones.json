@@ -1,0 +1,33 @@
+{
+  "_nota": "Parche temporal. Los agentes de Twin escriben la señal de compra en INGLES y el panel es en español, asi que aqui vive la traduccion de las filas que ya existen. Esto NO escala: cada lote nuevo del Lead Hunter llegara otra vez en ingles. El arreglo de verdad es que el agente escriba en español; mientras tanto, esto evita que el panel mezcle idiomas. La clave es el nombre de la empresa tal cual viene en la hoja.",
+
+  "senalCompra": {
+    "Sol de Lambayeque II (housing project)": "Señal pública verificada: Sol de Lambayeque II es un proyecto residencial nuevo, listado como «en construcción» en 2026 y comercializado activamente en el portal de proyectos del BCP.",
+    "Delcrosa (Chiclayo)": "Delcrosa anunció públicamente la apertura de una nueva sucursal en Chiclayo en 2026 — expansión activa hacia el norte, que necesita visibilidad y demanda local de inmediato.",
+    "JCH Motos (Chiclayo)": "JCH Motos abrió un local nuevo en Chiclayo como parte de su plan declarado de crecimiento sostenible (blog de la empresa, 2026).",
+    "Westfalia Fruit Perú (Chiclayo plant)": "La nueva planta de fruta congelada de Westfalia Fruit Perú en Chiclayo estaba prevista para arrancar en junio de 2026; la empresa proyecta un crecimiento del 10-15 % impulsado por la planta (Gestión).",
+    "Menorca - San Antonio Chiclayo 3": "San Antonio Chiclayo 3 es un lanzamiento residencial reciente en Chiclayo; la desarrolladora Menorca anunció más proyectos en Chiclayo para 2026 (construir.com.pe, enero de 2026).",
+    "Shimaya Ramen (Chiclayo)": "Shimaya Ramen abrió un local en Chiclayo en enero de 2026, dentro de un plan de expansión acelerada con aperturas en provincias (Gestión).",
+    "Los Portales - Valles de Lambayeque": "Valles de Lambayeque, un proyecto de vivienda nuevo de Los Portales (segmento Techo Propio), se promocionó activamente en julio de 2026.",
+    "Charles Sutton (planned housing city, Olmos)": "Charles Sutton es la ciudad de vivienda social planificada más grande del norte del Perú; su primera subasta de terrenos (2 de febrero de 2026) quedó desierta — un problema comercial verificado que necesita generación de demanda.",
+    "Marverde - Villa Refugio del Sol": "Marverde se presenta como desarrolladora inmobiliaria con un proyecto residencial activo en Chiclayo (Villa Refugio del Sol) comercializado desde su web.",
+    "Acuña Inmobiliaria (Lambayeque investment dossier)": "Acuña Inmobiliaria publicó un «Dossier de Inversión Lambayeque 2026» promocionando activamente desarrollos como Juliano Park y los lotes comerciales de Costanera de Eten.",
+    "ARKANA INMOBILIARIA SAC": "Web activa verificada que comercializa tres proyectos de vivienda en Chiclayo y Pimentel (Residencial San Felipe, Santa María del Mar y Santa Catalina) y promociona el Bono Techo Propio de S/46 545. Indica necesidad activa de captación de compradores, aunque no se verificó ningún anuncio fechado de lanzamiento o campaña.",
+    "BM CLINICA MENDOZA S.A.C.": "SIN VERIFICAR — no se encontró una señal de compra vigente. La evidencia reciente confirma que la clínica opera, pero no se aportó ningún anuncio, campaña, expansión o necesidad declarada de invertir en marketing."
+  },
+
+  "porQueAhora": {
+    "Sol de Lambayeque II (housing project)": "Un proyecto de vivienda en construcción necesita vender unidades DURANTE la obra, no después: cada mes sin marketing de lanzamiento profesional retrasa la velocidad de venta.",
+    "Delcrosa (Chiclayo)": "La apertura de una sucursal es un momento con fecha: Delcrosa necesita reconocimiento local y un flujo fiable de compradores industriales lo bastante rápido como para justificar su expansión al norte.",
+    "JCH Motos (Chiclayo)": "Un local nuevo se juega su suerte en el reconocimiento local de los primeros meses; y el retail de motos es muy visual y promocional — ideal para Reels, video y Meta Ads.",
+    "Westfalia Fruit Perú (Chiclayo plant)": "Una planta que arranca ahora crea necesidades de comunicación inmediatas: marca empleadora, contenido para compradores B2B y posicionamiento de la operación de Chiclayo ante públicos nacionales e internacionales.",
+    "Menorca - San Antonio Chiclayo 3": "Un proyecto residencial recién lanzado con más proyectos en camino es una relación de marketing inmobiliario recurrente, no un encargo suelto — justo la vertical más fuerte de DAK.",
+    "Shimaya Ramen (Chiclayo)": "Una cadena en plan de expansión acelerada necesita marketing de apertura repetible por local — un patrón de trabajo recurrente entre aperturas, no contenido de una vez.",
+    "Los Portales - Valles de Lambayeque": "Una desarrolladora grande promocionando activamente un proyecto nuevo en Lambayeque necesita contenido de lanzamiento local y generación de leads; y una relación aquí abre la puerta a una cuenta con varios proyectos.",
+    "Charles Sutton (planned housing city, Olmos)": "Una primera subasta desierta es un problema de marketing directo y urgente: el proyecto tiene que generar demanda y confianza, y la siguiente subasta pone una fecha concreta a las campañas.",
+    "Marverde - Villa Refugio del Sol": "Un proyecto residencial en comercialización activa necesita contenido visual profesional y captación de pago para convertir el interés en visitas y en venta de unidades.",
+    "Acuña Inmobiliaria (Lambayeque investment dossier)": "Una desarrolladora que invierte en materiales formales de inversión está en modo activo de captación de capital y de venta — y el marketing de proyecto profesional apoya las dos cosas.",
+    "ARKANA INMOBILIARIA SAC": "La oportunidad se sustenta en la comercialización visible de tres proyectos y en la promoción vigente del Bono Techo Propio. No se verificó un anuncio fechado de lanzamiento; por eso la prioridad se basa en potencial comercial activo, no en un evento puntual.",
+    "BM CLINICA MENDOZA S.A.C.": "El caso se sustenta en su potencial comercial y en evidencia de operación reciente, no en un evento comercial fechado. Su web activa, la atención 24 horas y los paquetes de maternidad hacen pertinente hablar de una estrategia continua de captación de pacientes."
+  }
+}

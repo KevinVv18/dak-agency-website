@@ -209,3 +209,67 @@ _sales-center/data/
   mock.json                ← lo que consume el adaptador. Redactado
   CONTRATO.md · INVENTARIO-INBOUND.md
 ```
+
+---
+
+## 7. Agencia completa frente a soporte especializado (24-ago)
+
+El sistema comercial cambió: ya no busca «buenos leads» sin más. Ahora distingue entre empresas
+donde DAK puede ser **la** agencia y empresas donde solo puede entrar por **una pieza concreta**.
+Son dos conversaciones distintas y dos mensajes distintos.
+
+```ts
+tipoOportunidad: 'Agencia completa' | 'Soporte especializado' | null
+potencialLiderazgo: 1 | 2 | 3 | 4 | 5 | null   // cuánto puede DAK liderar el crecimiento
+riesgoAgenciaExistente: 'Alto' | 'Medio' | 'Sin confirmar' | null
+anguloEntrada: string | null
+clasificacionDerivada: boolean                  // true = lo dedujo el panel, no la hoja
+```
+
+### ⚠️ Hoy esto se DEDUCE, y el panel lo dice
+
+La hoja **todavía no tiene estas columnas**. Mientras no las tenga, el panel las deriva y las
+marca en pantalla como «deducida por el panel». Eso no es una formalidad: si el equipo las toma
+por dato de Twin y luego resulta que las dedujo el panel, la próxima vez no se creerá nada de lo
+que ve.
+
+La regla no sale de la nada. Se apoya en una señal que **los agentes ya escriben**: cuando el
+Outreach Strategist redacta la objeción «Ya tenemos agencia o equipo que nos maneja las redes»,
+está diciendo que detectó una estructura de marketing existente.
+
+- menciona *corporativo* → riesgo **Alto**
+- menciona *agencia / equipo que nos maneja* → riesgo **Medio**
+- no menciona nada → **Sin confirmar**, nunca «Bajo». Que no aparezca la objeción no demuestra que
+  no tengan agencia. Ausencia de prueba no es prueba de ausencia.
+
+`potencialLiderazgo` combina ese riesgo con `Deal Potential`, y a partir de 4 la clasificación es
+«Agencia completa».
+
+### Lo que dice el resultado
+
+**11 de 12 salen «Soporte especializado». Solo ARKANA es «Agencia completa».**
+
+No es un fallo de la regla: es el retrato del pipeline actual. Está lleno de inmobiliarias grandes
+y corporativos que ya tienen marketing — justo lo que la estrategia nueva dice de despriorizar. El
+panel está enseñando que el Lead Hunter todavía caza con el criterio viejo.
+
+### Para que deje de deducirse
+
+Cuatro columnas en la pestaña `Leads` de DAK LEADS MASTER:
+
+| Columna | Valores |
+|---|---|
+| `Opportunity Type` | `FULL AGENCY PROSPECT` / `SPECIALIZED SUPPORT PROSPECT` |
+| `Agency Ownership Potential` | 1–5 |
+| `Existing Agency Risk` | `LOW` / `MEDIUM` / `HIGH` / `UNKNOWN` |
+| `Recommended Entry Angle` | texto |
+
+En cuanto existan, se borra `clasificar()` de `normalizar.mjs` y se leen tal cual.
+
+## 8. El idioma
+
+Los agentes escriben `Buying Signal` y `Why Now` **en inglés** — las 12 filas. El panel es en
+español, así que `traducciones.json` traduce las que ya existen.
+
+**Es un parche y no escala:** cada lote nuevo del Lead Hunter llegará otra vez en inglés. El
+arreglo de verdad es que el agente escriba en español desde el principio.

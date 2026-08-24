@@ -1,17 +1,23 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
+import Intro, { tocaIntro } from './Intro'
 import {
   getBaseHealth,
   getDisplayName,
   getOpener,
   getProspects,
   getShortName,
+  diasDesde,
+  estaEstancado,
+  resumenAntiguedad,
+  puedeEscribir,
+  escribirEnHoja,
   getTodayActions,
   loadSalesData,
 } from './lib/sales'
 
 const VIEWS = [
-  { id: 'panorama', label: 'Panorama', icon: 'panorama' },
+  { id: 'inicio', label: 'Inicio', icon: 'panorama' },
   { id: 'hoy', label: 'Hoy', icon: 'today' },
   { id: 'prospectos', label: 'Prospectos', icon: 'prospects' },
   { id: 'base', label: 'Base', icon: 'database' },
@@ -187,6 +193,232 @@ function PotentialGauge({ value }) {
   )
 }
 
+/**
+ * Los botones que escriben en la hoja.
+ *
+ * Es la unica parte del panel que no es de solo lectura, y esta deliberadamente
+ * acotada: dos acciones, sobre dos columnas, con el resultado dicho en la misma
+ * fila donde se pulso.
+ *
+ * No hay optimismo aqui. Hasta que la hoja no confirma, no se dice que se hizo:
+ * un panel que da por buena una escritura que fallo es peor que uno de solo
+ * lectura, porque te hace creer que el trabajo ya esta registrado.
+ *
+ * Si el puente no esta configurado, este bloque no existe y la ficha se queda
+ * con el enlace a la hoja de siempre.
+ */
+function AccionesHoja({ prospect, readyToSend }) {
+  const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
+
+  if (!puedeEscribir || !prospect.empresa) return null
+
+  const lanzar = async (accion, valor, etiquetaHecho) => {
+    setEstado({ fase: 'enviando', mensaje: null })
+    const resultado = await escribirEnHoja({ accion, empresa: prospect.empresa, valor })
+    setEstado(
+      resultado.ok
+        ? { fase: 'hecho', mensaje: `${etiquetaHecho} · la hoja tenía «${resultado.anterior || 'vacío'}»` }
+        : { fase: 'fallo', mensaje: resultado.error ?? 'La hoja rechazó el cambio.' },
+    )
+  }
+
+  const trabajando = estado.fase === 'enviando'
+
+  return (
+    <div className="sheet-actions">
+      <span className="context-label">Registrar en la hoja</span>
+      <div className="sheet-actions__row">
+        {readyToSend ? (
+          <button className="sheet-button sheet-button--principal" disabled={trabajando} onClick={() => lanzar('enviar', 'SENT', 'Marcado como enviado')} type="button">
+            {trabajando ? 'Guardando…' : 'Marcar como enviado'}
+          </button>
+        ) : (
+          <>
+            <button className="sheet-button sheet-button--principal" disabled={trabajando} onClick={() => lanzar('aprobar', 'APPROVED', 'Aprobado')} type="button">
+              {trabajando ? 'Guardando…' : 'Aprobar'}
+            </button>
+            <button className="sheet-button" disabled={trabajando} onClick={() => lanzar('aprobar', 'REJECTED', 'Rechazado')} type="button">
+              Rechazar
+            </button>
+          </>
+        )}
+      </div>
+      {estado.mensaje && (
+        <p aria-live="polite" className={`sheet-actions__result ${estado.fase === 'fallo' ? 'is-fallo' : ''}`}>
+          {estado.mensaje}
+        </p>
+      )}
+      {estado.fase === 'hecho' && (
+        <p className="sheet-actions__note">
+          El panel sigue mostrando los datos de ejemplo hasta la próxima lectura de la hoja.
+        </p>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Volver a la lista. Solo existe en movil.
+ *
+ * En el telefono la lista y la ficha son dos pantallas, no una encima de otra.
+ * Apiladas, tocar una fila no parecia hacer nada: la ficha se dibujaba fuera de
+ * pantalla y habia que adivinar que tocaba bajar. Con dos pantallas el gesto es
+ * el de cualquier bandeja de correo — entras y vuelves.
+ */
+function BotonVolver({ onClick, titulo }) {
+  return (
+    <button className="volver" onClick={onClick} type="button">
+      <svg aria-hidden="true" fill="none" height="16" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24" width="16">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+      <span>{titulo}</span>
+    </button>
+  )
+}
+
+/**
+ * Agencia completa o soporte especializado.
+ *
+ * Es la pregunta central del sistema comercial nuevo: ¿podemos ser LA agencia
+ * de esta empresa, o solo entrar por una pieza concreta? Son dos conversaciones
+ * distintas y dos mensajes distintos, y hasta ahora el panel no las separaba.
+ *
+ * Agencia completa va en oro porque es lo que hay que perseguir. Soporte va en
+ * hueso: sigue valiendo, pero no es lo mismo.
+ */
+function TipoOportunidad({ tipo, derivada }) {
+  if (!tipo) return null
+  const completa = tipo === 'Agencia completa'
+  return (
+    <span
+      className={`tipo-badge ${completa ? 'tipo-badge--completa' : ''}`}
+      title={derivada ? 'Clasificación deducida por el panel; la hoja todavía no trae esta columna.' : undefined}
+    >
+      {tipo}
+      {derivada && <i aria-label="deducido por el panel">·</i>}
+    </span>
+  )
+}
+
+/** Cuanto puede DAK liderar el crecimiento de esta empresa, de 1 a 5. */
+function EscalaLiderazgo({ valor }) {
+  if (!valor) return null
+  return (
+    <span aria-label={`Potencial para que DAK lidere: ${valor} de 5`} className="escala-liderazgo" role="img">
+      {[1, 2, 3, 4, 5].map((paso) => <i className={paso <= valor ? 'is-on' : ''} key={paso} />)}
+      <b>{valor}/5</b>
+    </span>
+  )
+}
+
+/**
+ * La lectura comercial: si DAK puede ser la agencia o solo entrar por una pieza.
+ *
+ * Va marcada como deducida mientras la hoja no traiga sus columnas. No es un
+ * detalle legal: si el equipo la toma por dato de Twin y resulta que la dedujo
+ * el panel, la proxima vez no se creera nada de lo que hay en pantalla.
+ */
+function Clasificacion({ prospect }) {
+  if (!prospect.tipoOportunidad) return null
+
+  return (
+    <div className="clasificacion">
+      <span className="context-label">
+        Lectura comercial
+        {prospect.clasificacionDerivada && <em> · deducida por el panel</em>}
+      </span>
+
+      <div className="clasificacion__cabeza">
+        <TipoOportunidad derivada={prospect.clasificacionDerivada} tipo={prospect.tipoOportunidad} />
+        <EscalaLiderazgo valor={prospect.potencialLiderazgo} />
+      </div>
+
+      <dl className="clasificacion__datos">
+        <div>
+          <dt>Riesgo de agencia existente</dt>
+          <dd>{valueOrMissing(prospect.riesgoAgenciaExistente)}</dd>
+        </div>
+        <div>
+          <dt>Entrada recomendada</dt>
+          <dd>{valueOrMissing(prospect.anguloEntrada)}</dd>
+        </div>
+      </dl>
+    </div>
+  )
+}
+
+/**
+ * El mensaje, y ahora tambien su edicion.
+ *
+ * En reposo es texto, no un campo: un formulario permanente invita a toquetear
+ * y aqui lo normal es leer y aprobar, no reescribir. Se entra a editar a
+ * proposito, y al guardar se escribe en la hoja.
+ *
+ * Guardar NO aprueba. Son dos decisiones distintas —cambiar el texto y darlo
+ * por bueno— y juntarlas haria que corregir una tilde aprobara el mensaje.
+ */
+function EditorMensaje({ empresa, texto }) {
+  const [editando, setEditando] = useState(false)
+  const [borrador, setBorrador] = useState(texto ?? '')
+  const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
+  const [guardado, setGuardado] = useState(null)
+
+  const actual = guardado ?? texto
+  const editable = puedeEscribir && Boolean(empresa) && Boolean(texto)
+
+  const guardar = async () => {
+    setEstado({ fase: 'guardando', mensaje: null })
+    const resultado = await escribirEnHoja({ accion: 'editar', empresa, valor: borrador })
+    if (resultado.ok) {
+      setGuardado(borrador)
+      setEditando(false)
+      setEstado({ fase: 'hecho', mensaje: 'Guardado en la hoja.' })
+    } else {
+      setEstado({ fase: 'fallo', mensaje: resultado.error ?? 'La hoja rechazó el cambio.' })
+    }
+  }
+
+  return (
+    <div className="message-card__message">
+      <span className="context-label">
+        Mensaje tal como se enviaría
+        {editable && !editando && (
+          <button className="editar-link" onClick={() => { setBorrador(actual); setEditando(true); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
+            Editar
+          </button>
+        )}
+      </span>
+
+      {editando ? (
+        <>
+          <textarea
+            className="message-editor"
+            onChange={(evento) => setBorrador(evento.target.value)}
+            rows={Math.min(14, Math.max(5, Math.ceil(borrador.length / 60)))}
+            value={borrador}
+          />
+          <div className="message-editor__acciones">
+            <button className="sheet-button sheet-button--principal" disabled={estado.fase === 'guardando' || borrador === actual} onClick={guardar} type="button">
+              {estado.fase === 'guardando' ? 'Guardando…' : 'Guardar en la hoja'}
+            </button>
+            <button className="sheet-button" disabled={estado.fase === 'guardando'} onClick={() => { setEditando(false); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
+              Descartar
+            </button>
+          </div>
+        </>
+      ) : (
+        <p>{valueOrMissing(actual)}</p>
+      )}
+
+      {estado.mensaje && (
+        <p aria-live="polite" className={`sheet-actions__result ${estado.fase === 'fallo' ? 'is-fallo' : ''}`}>
+          {estado.mensaje}
+        </p>
+      )}
+    </div>
+  )
+}
+
 function Badge({ children, tone = 'neutral' }) {
   return <span className={`badge badge--${tone}`}>{children}</span>
 }
@@ -297,12 +529,13 @@ function MessageCard({ prospect, message, readyToSend = false }) {
         </div>
       </div>
 
+      <AccionesHoja prospect={prospect} readyToSend={readyToSend} />
+
+      <Clasificacion prospect={prospect} />
+
       <EnlacesEmpresa prospect={prospect} />
 
-      <div className="message-card__message">
-        <span className="context-label">Mensaje tal como se enviaría</span>
-        <p>{valueOrMissing(message?.texto)}</p>
-      </div>
+      <EditorMensaje empresa={prospect.empresa} texto={message?.texto} />
 
       <div className="message-card__actions">
         {readyToSend && message?.enlaceWhatsApp ? (
@@ -382,10 +615,20 @@ function wholePercent(value, previous) {
   return `${Math.round((value / previous) * 100)} %`
 }
 
+/**
+ * De cuando son los datos, y cuanto hace de eso.
+ *
+ * Con mock da igual. Con la hoja de verdad no: mirar cifras de hace tres dias
+ * creyendo que son de hoy es peor que no mirarlas. La antiguedad va pegada a la
+ * fecha para que no haya forma de leer una sin la otra.
+ */
 function getSnapshotDate(data) {
   const source = data.meta?.fuentes?.outbound ?? ''
   const date = source.match(/\d{4}-\d{2}-\d{2}/)?.[0]
-  return formatDate(date)
+  if (!date) return missing
+  const dias = diasDesde(date)
+  const antiguedad = dias === null ? '' : dias === 0 ? ' · hoy' : dias === 1 ? ' · hace 1 día' : ` · hace ${dias} días`
+  return `${formatDate(date)}${antiguedad}`
 }
 
 function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView }) {
@@ -395,12 +638,15 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
   const processed = baseHealth.length && baseHealth.every((source) => source.procesadas !== null)
     ? baseHealth.reduce((total, source) => total + source.procesadas, 0)
     : null
+  // `destino` son los argumentos de selectView: cada cifra lleva a la vista y al
+  // recorte que la explica. Una cifra que no se puede abrir es una cifra que
+  // obliga a buscarla a mano, y entonces el panel no ahorra nada.
   const funnel = [
-    { label: 'Minadas', value: processed, note: 'Base procesada por las fuentes disponibles.' },
-    { label: 'Investigadas', value: data.meta?.totales?.outbound, note: 'Prospectos outbound con investigación comercial.' },
-    { label: 'Con mensaje', value: data.meta?.totales?.mensajes, note: 'Contacto verificado y mensaje redactado.' },
-    { label: 'Aprobadas', value: data.meta?.embudo?.porEnviar, note: 'Listas para salir por WhatsApp.' },
-    { label: 'Enviadas', value: data.meta?.embudo?.enviados, note: 'Contactos registrados como enviados.', warning: true },
+    { label: 'Minadas', value: processed, note: 'Base procesada por las fuentes disponibles.', destino: ['base'] },
+    { label: 'Investigadas', value: data.meta?.totales?.outbound, note: 'Prospectos outbound con investigación comercial.', destino: ['prospectos', { origen: 'outbound' }] },
+    { label: 'Con mensaje', value: data.meta?.totales?.mensajes, note: 'Contacto verificado y mensaje redactado.', destino: ['hoy'] },
+    { label: 'Aprobadas', value: data.meta?.embudo?.porEnviar, note: 'Listas para salir por WhatsApp.', destino: ['prospectos', { etapa: 'por-enviar' }] },
+    { label: 'Enviadas', value: data.meta?.embudo?.enviados, note: 'Contactos registrados como enviados.', warning: true, destino: ['prospectos', { etapa: 'enviado' }] },
   ]
   const maxFunnel = funnel[0].value || 1
   const cities = Object.entries(
@@ -413,6 +659,16 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
       }, {}),
   ).sort((left, right) => right[1] - left[1])
   const maxCity = cities[0]?.[1] || 1
+
+  // El reparto entre agencia completa y soporte especializado. Se fija el orden
+  // en vez de ordenarlo por cantidad: «Agencia completa» va siempre arriba
+  // aunque hoy sea la minoria, porque es lo que hay que perseguir. Si se
+  // ordenara por volumen, la lista premiaria justo lo que sobra.
+  const reparto = ['Agencia completa', 'Soporte especializado'].map((tipo) => [
+    tipo,
+    prospects.filter((prospect) => prospect.tipoOportunidad === tipo).length,
+  ])
+  const maxTipo = Math.max(...reparto.map(([, n]) => n), 1)
   const inbound = prospects.filter((prospect) => prospect.origen === 'inbound')
   const newestInbound = [...inbound].sort((left, right) => (right.fechaDeteccion ?? '').localeCompare(left.fechaDeteccion ?? ''))[0] ?? null
   const readyNames = todayActions.readyToSend.map(({ prospect }) => getDisplayName(prospect)).join(' · ')
@@ -425,19 +681,20 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
         <div className="funnel-route" onMouseLeave={() => setActiveStage(null)}>
           {funnel.map((stage, index) => (
             <React.Fragment key={stage.label}>
-              <div
-                aria-label={`${valueOrMissing(stage.value)} ${stage.label}. ${stage.note}`}
+              <button
+                aria-label={`${valueOrMissing(stage.value)} ${stage.label}. ${stage.note}. Abrir esta etapa.`}
                 className={`funnel-node ${stage.warning ? 'funnel-node--warning' : ''} ${activeStage === index ? 'is-active' : ''}`}
                 onBlur={() => setActiveStage(null)}
+                onClick={() => onSelectView(...(stage.destino ?? ['prospectos']))}
                 onFocus={() => setActiveStage(index)}
                 onMouseEnter={() => setActiveStage(index)}
-                tabIndex="0"
+                type="button"
               >
                 <span className="funnel-node__survival">{index ? wholePercent(stage.value, funnel[index - 1].value) : stage.value === null ? missing : '100 %'}</span>
                 <strong>{valueOrMissing(stage.value)}</strong>
                 <span className="funnel-node__label">{stage.label}</span>
                 <span className="funnel-node__measure"><i style={{ '--measure': Math.max((stage.value ?? 0) / maxFunnel, 0) }} /></span>
-              </div>
+              </button>
               {index < funnel.length - 1 && (
                 <div className={`funnel-connector ${funnel[index + 1].warning ? 'funnel-connector--warning' : ''}`} aria-label={`${wholePercent(funnel[index + 1].value, stage.value)} continúa`}>
                   <span>{wholePercent(funnel[index + 1].value, stage.value)}</span>
@@ -471,23 +728,55 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
               <span><b>Por enviar</b><small>{readyNames || missing}</small></span>
               <Icon name="arrow" size={15} />
             </button>
+            {/* Tercera cola: lo que ya salio y todavia no contesta. Hoy es cero
+                porque no se ha enviado nada; en cuanto salga el primer mensaje,
+                esta fila es la que avisa de quien no responde. Se pinta aunque
+                este vacia: un hueco explicito informa, y una fila que aparece
+                de la nada el dia que hay datos, no. */}
+            <button
+              className={`decision-row decision-row--espera ${todayActions.waitingForReply.length ? '' : 'decision-row--vacia'}`}
+              onClick={() => onSelectView('prospectos', { etapa: 'enviado' })}
+              type="button"
+            >
+              <strong>{todayActions.waitingForReply.length}</strong>
+              <span>
+                <b>Sin respuesta</b>
+                <small>{todayActions.waitingForReply.length
+                  ? todayActions.waitingForReply.map(({ prospect }) => getShortName(prospect)).join(' · ')
+                  : 'Nada enviado todavía'}</small>
+              </span>
+              <Icon name="arrow" size={15} />
+            </button>
           </div>
         </section>
 
+        {/* Esta zona era «Dónde están» (ciudades). La sustituye el tipo de
+            oportunidad porque es la pregunta central del sistema nuevo:
+            ¿podemos ser su agencia o solo entrar por una pieza? Las ciudades no
+            se pierden — siguen como filtro en Prospectos. */}
         <section className="console-zone coverage-zone" aria-labelledby="coverage-title">
-          <header className="zone-heading"><h2 id="coverage-title">Dónde están</h2><span>Outbound · derivado</span></header>
+          <header className="zone-heading"><h2 id="coverage-title">Tipo de oportunidad</h2><span>Deducido</span></header>
           <div className="coverage-list">
-            {cities.map(([city, count]) => <div className="coverage-row" key={city}><span>{city}</span><strong>{count}</strong><i><b style={{ '--measure': count / maxCity }} /></i></div>)}
+            {reparto.map(([tipo, count]) => (
+              <button
+                className={`coverage-row ${tipo === 'Agencia completa' ? 'coverage-row--completa' : ''}`}
+                key={tipo}
+                onClick={() => onSelectView('prospectos', { tipo })}
+                type="button"
+              >
+                <span>{tipo}</span><strong>{count}</strong><i><b style={{ '--measure': count / maxTipo }} /></i>
+              </button>
+            ))}
           </div>
         </section>
 
         <section className="console-zone inbound-zone" aria-labelledby="inbound-title">
           <header className="zone-heading"><h2 id="inbound-title">Vinieron solos</h2></header>
-          <div className="inbound-signal">
+          <button className="inbound-signal" onClick={() => onSelectView('prospectos', { origen: 'inbound' })} type="button">
             <strong>{valueOrMissing(data.meta?.totales?.inbound)}</strong>
             <span>Chat y WhatsApp</span>
             <p>{newestInbound ? `Uno del ${formatDate(newestInbound.fechaDeteccion).replace(/\s+\d{4}$/, '')} sigue sin responsable` : `Último ingreso: ${missing}`}</p>
-          </div>
+          </button>
         </section>
       </div>
     </section>
@@ -508,11 +797,56 @@ function PanoramaView({ data, todayActions, prospects, baseHealth, onSelectView 
 /** PRIORITY OUTREACH lo decide Twin, no el panel. Aqui solo se pinta. */
 const prioritaria = (prospect) => prospect.readinessBand === 'PRIORITY OUTREACH'
 
+/**
+ * La fila de una cola. La comparten Hoy y Prospectos a proposito: si cada vista
+ * dibujase su propia fila, en dos semanas tendrian tres pesos de tipografia y
+ * dos formas de marcar la seleccion. La coherencia se consigue reusando el
+ * componente, no copiando el CSS.
+ *
+ * `metric` deja que cada vista elija que cifra pesa: en Hoy es la preparacion
+ * para contactar, en Prospectos la oportunidad. La barra siempre representa la
+ * cifra que se muestra.
+ */
+function WorkRow({ prospect, selected, onSelect, metric = 'readiness' }) {
+  const valor = metric === 'score' ? prospect.score : prospect.readiness
+  const dias = diasDesde(prospect.fechaDeteccion)
+  const estancado = estaEstancado(prospect)
+
+  return (
+    <button
+      aria-selected={selected}
+      className={`work-row ${prioritaria(prospect) ? 'work-row--prioritaria' : ''}`}
+      onClick={() => onSelect(prospect.id)}
+      role="option"
+      type="button"
+    >
+      <span className="work-row__top">
+        <span className="work-row__name">{getShortName(prospect)}</span>
+        {prospect.tipoOportunidad === 'Agencia completa' && <span aria-label="Agencia completa" className="marca-completa" title="Agencia completa" />}
+        <PotentialGauge value={prospect.potencialNegocio} />
+        <span className="work-row__score">{valueOrMissing(valor)}</span>
+      </span>
+      <span aria-hidden="true" className="work-row__meter">
+        <i style={{ '--w': `${Math.min(valor ?? 0, 100)}%` }} />
+      </span>
+      {/* La antiguedad se ve siempre, en hueso: es informacion y sirve para
+          comparar filas de un vistazo. Solo sube a oro cuando cruza el umbral
+          de abandono — si la llevaran todas, no seria un aviso. */}
+      {dias !== null && (
+        <span className={`work-row__age ${estancado ? 'is-alerta' : ''}`}>
+          {dias === 0 ? 'hoy' : dias === 1 ? '1 día' : `${dias} días`}
+        </span>
+      )}
+    </button>
+  )
+}
+
 function TodayView({ todayActions }) {
   const grupos = [
     { id: 'aprobar', titulo: 'Por aprobar', items: todayActions.pending },
     { id: 'enviar', titulo: 'Por enviar', items: todayActions.readyToSend, listo: true },
     { id: 'espera', titulo: 'Esperando respuesta', items: todayActions.waitingForReply },
+    { id: 'inbound', titulo: 'Vinieron solos, sin atender', items: todayActions.inboundSinAtender },
   ].filter((grupo) => grupo.items.length)
 
   const filas = grupos.flatMap((grupo) =>
@@ -520,6 +854,11 @@ function TodayView({ todayActions }) {
   )
 
   const [elegido, setElegido] = useState(null)
+  // En movil la lista y la ficha son DOS PANTALLAS, no una encima de otra:
+  // apilarlas hacia que tocar una fila no pareciera hacer nada, porque la ficha
+  // quedaba fuera de pantalla. En escritorio esto no cambia nada.
+  const [enDetalle, setEnDetalle] = useState(false)
+  const abrir = (id) => { setElegido(id); setEnDetalle(true) }
   const activo = filas.find((fila) => fila.prospect.id === elegido) ?? filas[0] ?? null
 
   // El teclado mueve la seleccion, como en cualquier bandeja. Es lo que separa
@@ -541,9 +880,22 @@ function TodayView({ todayActions }) {
     )
   }
 
+  // Que TODO lleve parado no es un problema de fila, es un problema de
+  // conjunto. Por eso se dice una vez aqui arriba en lugar de repetir el mismo
+  // aviso once veces en la columna, que es como se pierde un aviso.
+  const antiguedad = resumenAntiguedad(filas)
+
   return (
-    <div className="work-split">
+    <div className={`work-split ${enDetalle ? 'work-split--detalle' : 'work-split--lista'}`}>
       <div className="work-queue" onKeyDown={alTeclado}>
+        {antiguedad && antiguedad.min >= 1 && (
+          <p className="queue-alarm">
+            <b>Nada se ha movido.</b>{' '}
+            {antiguedad.min === antiguedad.max
+              ? `Las ${antiguedad.cuantas} llevan ${antiguedad.max} días paradas.`
+              : `Las ${antiguedad.cuantas} llevan entre ${antiguedad.min} y ${antiguedad.max} días paradas.`}
+          </p>
+        )}
         {grupos.map((grupo) => (
           <section className="work-group" key={grupo.id}>
             <header>
@@ -555,24 +907,7 @@ function TodayView({ todayActions }) {
                 const seleccionada = prospect.id === activo.prospect.id
                 return (
                   <li key={prospect.id}>
-                    <button
-                      aria-selected={seleccionada}
-                      className={`work-row ${prioritaria(prospect) ? 'work-row--prioritaria' : ''}`}
-                      onClick={() => setElegido(prospect.id)}
-                      role="option"
-                      type="button"
-                    >
-                      <span className="work-row__top">
-                        <span className="work-row__name">{getShortName(prospect)}</span>
-                        <PotentialGauge value={prospect.potencialNegocio} />
-                        <span className="work-row__score">{valueOrMissing(prospect.readiness)}</span>
-                      </span>
-                      {/* La barra es preparacion sobre 100, tal cual viene. En
-                          oro solo si Twin la marco PRIORITY OUTREACH. */}
-                      <span aria-hidden="true" className="work-row__meter">
-                        <i style={{ '--w': `${Math.min(prospect.readiness ?? 0, 100)}%` }} />
-                      </span>
-                    </button>
+                    <WorkRow onSelect={abrir} prospect={prospect} selected={seleccionada} />
                   </li>
                 )
               })}
@@ -584,6 +919,7 @@ function TodayView({ todayActions }) {
       {/* La `key` fuerza el remontaje al cambiar de fila: asi el detalle entra
           con su animacion en vez de cambiar de texto de golpe. */}
       <div className="work-detail" key={activo.prospect.id}>
+        <BotonVolver onClick={() => setEnDetalle(false)} titulo={getShortName(activo.prospect)} />
         <MessageCard message={activo.message} prospect={activo.prospect} readyToSend={activo.listo} />
       </div>
     </div>
@@ -655,55 +991,170 @@ function ProspectDetail({ data, prospect }) {
   )
 }
 
-function ProspectsView({ data, prospects }) {
-  const [query, setQuery] = useState('')
-  const [origin, setOrigin] = useState('todos')
-  const [stage, setStage] = useState('todas')
+function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
+  const [query, setQuery] = useState(filtrosIniciales.buscar ?? '')
+  const [origin, setOrigin] = useState(filtrosIniciales.origen ?? 'todos')
+  const [stage, setStage] = useState(filtrosIniciales.etapa ?? 'todas')
+  const [tipo, setTipo] = useState(filtrosIniciales.tipo ?? 'todos')
   const [selectedId, setSelectedId] = useState(prospects[0]?.id ?? null)
+  const [enDetalle, setEnDetalle] = useState(false)
+  const abrir = (id) => { setSelectedId(id); setEnDetalle(true) }
   const filteredProspects = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('es')
     return prospects.filter((prospect) => {
       const matchesQuery = !normalizedQuery || [prospect.empresa, prospect.persona, prospect.fuente, prospect.rubro, prospect.ciudad].filter(Boolean).some((value) => value.toLocaleLowerCase('es').includes(normalizedQuery))
-      return matchesQuery && (origin === 'todos' || prospect.origen === origin) && (stage === 'todas' || prospect.etapa === stage)
+      return matchesQuery
+        && (origin === 'todos' || prospect.origen === origin)
+        && (stage === 'todas' || prospect.etapa === stage)
+        && (tipo === 'todos' || prospect.tipoOportunidad === tipo)
     })
-  }, [origin, prospects, query, stage])
+  }, [origin, prospects, query, stage, tipo])
   const selectedProspect = filteredProspects.find((prospect) => prospect.id === selectedId) ?? filteredProspects[0] ?? null
 
+  // Las quince filas se agrupan por etapa del embudo. Una lista plana de quince
+  // nombres no dice nada; agrupada, la forma del embudo se lee en la propia
+  // columna sin mirar Panorama.
+  const porEtapa = Object.entries(stages)
+    .map(([clave, titulo]) => ({ clave, titulo, items: filteredProspects.filter((p) => p.etapa === clave) }))
+    .filter((grupo) => grupo.items.length)
+
+  const alTeclado = (evento) => {
+    const salto = evento.key === 'ArrowDown' ? 1 : evento.key === 'ArrowUp' ? -1 : 0
+    if (!salto || !selectedProspect) return
+    evento.preventDefault()
+    const desde = filteredProspects.findIndex((p) => p.id === selectedProspect.id)
+    const hasta = Math.min(Math.max(desde + salto, 0), filteredProspects.length - 1)
+    setSelectedId(filteredProspects[hasta].id)
+  }
+
   return (
-    <>
-      <PageHeading title={`${prospects.length} prospectos`}><p>Vista derivada · selecciona una fila para abrir su contexto.</p></PageHeading>
-      <section className="prospect-workbench">
-        <div className="prospect-list">
-          <div className="filter-bar">
-            <label className="search-field"><span>Buscar</span><input onChange={(event) => setQuery(event.target.value)} placeholder="Empresa, persona, fuente…" type="search" value={query} /></label>
-            <label><span>Origen</span><select onChange={(event) => setOrigin(event.target.value)} value={origin}><option value="todos">Todos</option><option value="outbound">Búsqueda activa</option><option value="inbound">Llegaron solos</option></select></label>
-            <label><span>Etapa</span><select onChange={(event) => setStage(event.target.value)} value={stage}><option value="todas">Todas</option>{Object.entries(stages).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-          </div>
-          <p className="derived-note prospect-list__count">{filteredProspects.length} filas encontradas · vista derivada del mock.</p>
-          <div className="table-wrap"><table><thead><tr><th scope="col">Prospecto</th><th scope="col">Origen</th><th scope="col">Etapa</th><th scope="col">Score</th><th scope="col">Contacto</th></tr></thead><tbody>
-            {filteredProspects.map((prospect) => <tr className={selectedProspect?.id === prospect.id ? 'is-selected' : ''} key={prospect.id}><td><button aria-pressed={selectedProspect?.id === prospect.id} className="table-select" onClick={() => setSelectedId(prospect.id)} type="button"><span>{getDisplayName(prospect)}</span><small>{valueOrMissing(prospect.fuente)}</small></button></td><td>{prospect.origen === 'inbound' ? 'Llegó solo' : 'Búsqueda activa'}</td><td>{valueOrMissing(stages[prospect.etapa])}</td><td>{valueOrMissing(prospect.score)}</td><td>{valueOrMissing(prospect.contacto?.handle)}</td></tr>)}
-          </tbody></table></div>
-          {!filteredProspects.length && <div className="empty-state empty-state--compact"><div><h3>Sin resultados</h3><p>Ninguna fila del mock coincide con estos filtros.</p></div></div>}
+    <div className={`work-split ${enDetalle ? 'work-split--detalle' : 'work-split--lista'}`}>
+      <div className="work-queue" onKeyDown={alTeclado}>
+        <div className="filter-bar">
+          <label className="search-field">
+            <span>Buscar</span>
+            <input onChange={(event) => setQuery(event.target.value)} placeholder="Empresa, fuente, ciudad…" type="search" value={query} />
+          </label>
+          {/* Primero de todo: es la pregunta central del sistema comercial. */}
+          <label>
+            <span>Tipo de oportunidad</span>
+            <select onChange={(event) => setTipo(event.target.value)} value={tipo}>
+              <option value="todos">Todos</option>
+              <option value="Agencia completa">Agencia completa</option>
+              <option value="Soporte especializado">Soporte especializado</option>
+            </select>
+          </label>
+          <label>
+            <span>Origen</span>
+            <select onChange={(event) => setOrigin(event.target.value)} value={origin}>
+              <option value="todos">Todos</option>
+              <option value="outbound">Búsqueda activa</option>
+              <option value="inbound">Llegaron solos</option>
+            </select>
+          </label>
+          <label>
+            <span>Etapa</span>
+            <select onChange={(event) => setStage(event.target.value)} value={stage}>
+              <option value="todas">Todas</option>
+              {Object.entries(stages).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </label>
         </div>
-        <ProspectDetail data={data} key={selectedProspect?.id ?? 'empty'} prospect={selectedProspect} />
-      </section>
-    </>
+
+        {porEtapa.map((grupo) => (
+          <section className="work-group" key={grupo.clave}>
+            <header><h2>{grupo.titulo}</h2><span>{grupo.items.length}</span></header>
+            <ul>
+              {grupo.items.map((prospect) => (
+                <li key={prospect.id}>
+                  <WorkRow
+                    metric="score"
+                    onSelect={abrir}
+                    prospect={prospect}
+                    selected={selectedProspect?.id === prospect.id}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+
+        {!filteredProspects.length && (
+          <div className="empty-state empty-state--compact">
+            <div><h3>Sin resultados</h3><p>Ninguna fila del mock coincide con estos filtros.</p></div>
+          </div>
+        )}
+      </div>
+
+      <div className="work-detail" key={selectedProspect?.id ?? 'empty'}>
+        {selectedProspect && <BotonVolver onClick={() => setEnDetalle(false)} titulo={getShortName(selectedProspect)} />}
+        <ProspectDetail data={data} prospect={selectedProspect} />
+      </div>
+    </div>
   )
 }
 
+/**
+ * Base — cuanto rinde cada fuente.
+ *
+ * No es una lista de las 109 empresas minadas: es la respuesta a «¿vale la pena
+ * seguir minando esto?». Y hoy la respuesta se ve sola — 2 aceptadas de 109 y
+ * cero telefonos validados.
+ *
+ * Mismo lenguaje que Panorama: cifras grandes en peso 200, una barra
+ * proporcional debajo y la explicacion en una linea, no en un parrafo.
+ */
 function BaseView({ baseHealth }) {
   return (
-    <>
-      <PageHeading title={`${baseHealth.length} ${baseHealth.length === 1 ? 'fuente' : 'fuentes'}`}><p>Rendimiento reportado · vista derivada.</p></PageHeading>
-      <section className="base-grid">
-        {baseHealth.map((source) => <article className="source-card" key={source.fuente}>
-          <div className="source-card__heading"><div><span className="detail-kicker">Fuente · vista derivada</span><h2>{source.fuente}</h2></div></div>
-          <div className="source-metrics"><div><span>Procesadas</span><strong>{valueOrMissing(source.procesadas)}</strong></div><div><span>Aceptadas</span><strong>{valueOrMissing(source.aceptadas)}</strong></div><div><span>Rendimiento reportado</span><strong>{formatPercent(source.rendimiento)}</strong></div><div><span>Contactos validados</span><strong>{valueOrMissing(source.contactosValidados)}</strong></div></div>
-          <div className="source-card__decision"><p className="section-label">Lectura para decidir</p><p>La fuente reporta {formatPercent(source.rendimiento)} de aceptación y {valueOrMissing(source.contactosValidados)} contactos validados. La decisión de continuar o pausar requiere comparar este rendimiento con las demás fuentes cuando haya datos.</p></div>
-          <div className="source-card__notes"><p className="section-label">Nota de la fuente</p><p>{valueOrMissing(source.notas)}</p></div>
-        </article>)}
-      </section>
-    </>
+    <div className="base-console">
+      {baseHealth.map((source) => {
+        const desglose = Object.entries(source.desglose ?? {})
+        const total = source.procesadas || 1
+        const rinde = (source.aceptadas ?? 0) / total
+
+        return (
+          <section className="source-panel" key={source.fuente}>
+            <header className="zone-heading">
+              <h2>{source.fuente}</h2>
+              <span>Vista derivada</span>
+            </header>
+
+            <div className="source-figures">
+              {[
+                { etiqueta: 'Procesadas', valor: valueOrMissing(source.procesadas) },
+                { etiqueta: 'Aceptadas', valor: valueOrMissing(source.aceptadas) },
+                { etiqueta: 'Rendimiento', valor: formatPercent(source.rendimiento), alerta: rinde < 0.05 },
+                { etiqueta: 'Contactos validados', valor: valueOrMissing(source.contactosValidados), alerta: !source.contactosValidados },
+              ].map((cifra) => (
+                <div className={`source-figure ${cifra.alerta ? 'source-figure--alerta' : ''}`} key={cifra.etiqueta}>
+                  <strong>{cifra.valor}</strong>
+                  <span>{cifra.etiqueta}</span>
+                </div>
+              ))}
+            </div>
+
+            {desglose.length > 0 && (
+              <div className="source-split">
+                <p className="section-label">En qué acabó cada empresa</p>
+                <ul>
+                  {desglose.sort((a, b) => b[1] - a[1]).map(([estado, cuantas]) => (
+                    <li key={estado}>
+                      <span className="source-split__name">{estado}</span>
+                      <span className="source-split__count">{cuantas}</span>
+                      <span aria-hidden="true" className="source-split__meter">
+                        <i style={{ '--w': `${(cuantas / total) * 100}%` }} />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {source.notas && <p className="source-note">{source.notas}</p>}
+          </section>
+        )
+      })}
+    </div>
   )
 }
 
@@ -714,15 +1165,48 @@ const flow = [
   { number: '04', title: 'Decisión y contacto', copy: 'Una persona aprueba en la hoja y envía desde WhatsApp. La respuesta y el seguimiento se registran en la fuente de verdad.', agent: 'Decisión humana' },
 ]
 
+/**
+ * Como funciona — las cuatro etapas en horizontal, como el embudo de Panorama.
+ *
+ * Antes eran cuatro tarjetas apiladas con su parrafo desplegado. Aqui la
+ * explicacion vive en el hover, igual que en el embudo: se ven las cuatro
+ * etapas de golpe y el texto aparece donde estas mirando.
+ */
 function HowItWorksView() {
+  const [activa, setActiva] = useState(null)
+  const mostrada = activa === null ? flow.length - 1 : activa
+
   return (
-    <>
-      <PageHeading title={`${flow.length} etapas`}><p>Twin y DAK LEADS MASTER mantienen la operación.</p></PageHeading>
-      <section aria-label="Embudo comercial de cuatro etapas" className="flow-diagram">
-        {flow.map((step, index) => <article className="flow-step" key={step.number}><span className="flow-step__number">{step.number}</span><div><p className="section-label">Etapa {index + 1}</p><h2>{step.title}</h2><p>{step.copy}</p><Badge tone={index === 3 ? 'oro' : 'outline'}>{step.agent}</Badge></div></article>)}
-      </section>
-      <aside className="scope-note"><p className="section-label">Límite de esta fase</p><p>No se escribe ningún dato desde este sitio. Aprobar sigue ocurriendo en la hoja; enviar abre WhatsApp con el texto preparado. El panel no reemplaza a Twin ni a DAK LEADS MASTER.</p></aside>
-    </>
+    <div className="flow-console">
+      <header className="zone-heading"><h2>Recorrido del sistema</h2><span>Cuatro etapas</span></header>
+
+      <div className="flow-track" onMouseLeave={() => setActiva(null)}>
+        {flow.map((step, index) => (
+          <button
+            aria-label={`${step.title}. ${step.copy}`}
+            className={`flow-node ${index === mostrada ? 'is-active' : ''} ${index === flow.length - 1 ? 'flow-node--humana' : ''}`}
+            key={step.number}
+            onBlur={() => setActiva(null)}
+            onFocus={() => setActiva(index)}
+            onMouseEnter={() => setActiva(index)}
+            type="button"
+          >
+            <span className="flow-node__number">{step.number}</span>
+            <span className="flow-node__title">{step.title}</span>
+            <span className="flow-node__agent">{step.agent}</span>
+          </button>
+        ))}
+      </div>
+
+      <p className="flow-readout">
+        <span className={activa === null ? '' : 'is-on'}>{flow[mostrada].copy}</span>
+      </p>
+
+      <aside className="scope-note">
+        <p className="section-label">Límite de esta fase</p>
+        <p>No se escribe ningún dato desde aquí. Aprobar sigue ocurriendo en la hoja; enviar abre WhatsApp con el texto preparado. El panel no reemplaza a Twin ni a DAK LEADS MASTER.</p>
+      </aside>
+    </div>
   )
 }
 
@@ -735,15 +1219,31 @@ function ErrorState({ onRetry }) {
 }
 
 function App() {
-  const getCurrentView = () => {
-    const requested = window.location.hash.replace('#', '')
-    return VIEWS.some((view) => view.id === requested) ? requested : 'panorama'
+  // URLs de verdad: /inicio, /prospectos?etapa=por-enviar. Sin almohadilla.
+  //
+  // Que esto funcione al recargar depende de dos cosas fuera de este archivo, y
+  // las dos son faciles de romper sin darse cuenta:
+  //   · vite.config.js tiene que tener `base: '/'`. Con './' un asset pedido
+  //     desde /prospectos se busca en /prospectos/assets/ y sale pantalla blanca.
+  //   · publico/.htaccess necesita el fallback a index.html.
+  const leerRuta = () => {
+    const camino = window.location.pathname.replace(/^\/+|\/+$/g, '')
+    return {
+      vista: VIEWS.some((view) => view.id === camino) ? camino : VIEWS[0].id,
+      filtros: Object.fromEntries(new URLSearchParams(window.location.search)),
+    }
   }
+  const getCurrentView = () => leerRuta().vista
   const [currentView, setCurrentView] = useState(getCurrentView)
   const [renderedView, setRenderedView] = useState(getCurrentView)
   const [viewPhase, setViewPhase] = useState('entered')
   const [resource, setResource] = useState({ status: 'loading', data: null })
   const [requestKey, setRequestKey] = useState(0)
+  // 'corriendo' mientras se ve la intro, 'fuera' despues. `vieneDeIntro` deja
+  // que el chasis se dibuje solo cuando de verdad hubo intro; si se entro
+  // directo, la consola ya estaba ahi y animarla seria un parpadeo gratis.
+  const [faseIntro, setFaseIntro] = useState(() => (tocaIntro() ? 'corriendo' : 'fuera'))
+  const vieneDeIntro = useRef(tocaIntro()).current
   const exitTimerRef = useRef(null)
   const entryFrameRef = useRef(null)
   const renderedViewRef = useRef(renderedView)
@@ -763,13 +1263,23 @@ function App() {
     }
 
     if (document.startViewTransition) {
-      document.startViewTransition(() => {
+      // Si se cambia de vista antes de que termine la transicion anterior, el
+      // navegador la aborta y rechaza `finished`. No es un fallo —el cambio se
+      // aplica igual— pero sin capturarla llena la consola de
+      // InvalidStateError. Se ignora a proposito: no hay nada que hacer con ella.
+      const transicion = document.startViewTransition(() => {
         flushSync(() => {
           renderedViewRef.current = nextView
           setRenderedView(nextView)
           setViewPhase('entered')
         })
       })
+      // Las tres promesas, no solo `finished`: al abortar tambien rechazan
+      // `ready` y `updateCallbackDone`, y basta con que quede una sin capturar
+      // para que el error salga igual.
+      transicion.finished?.catch(() => {})
+      transicion.ready?.catch(() => {})
+      transicion.updateCallbackDone?.catch(() => {})
       return
     }
 
@@ -786,9 +1296,9 @@ function App() {
 
   useEffect(() => {
     const syncView = () => transitionToView(getCurrentView())
-    window.addEventListener('hashchange', syncView)
+    window.addEventListener('popstate', syncView)
     return () => {
-      window.removeEventListener('hashchange', syncView)
+      window.removeEventListener('popstate', syncView)
       clearViewTransition()
     }
   }, [])
@@ -804,29 +1314,57 @@ function App() {
     return () => { cancelled = true }
   }, [requestKey])
 
-  const selectView = (viewId) => {
-    if (viewId === currentView) return
-    window.location.hash = viewId
+  // Segundo argumento opcional: el recorte con el que abrir la vista.
+  // Segundo argumento opcional: el recorte con el que abrir la vista. Va en el
+  // hash y no en estado de React a proposito — asi el enlace se puede pegar en
+  // un chat y abre exactamente lo mismo que estaba viendo quien lo mando.
+  const selectView = (viewId, filtros) => {
+    const consulta = filtros ? `?${new URLSearchParams(filtros)}` : ''
+    const destino = `/${viewId}${consulta}`
+    if (destino === window.location.pathname + window.location.search) return
+    // pushState no dispara popstate, asi que la transicion se lanza a mano. El
+    // listener de popstate se queda para el boton de atras del navegador.
+    window.history.pushState(null, '', destino)
+    transitionToView(viewId)
   }
   const data = resource.data
   const todayActions = data ? getTodayActions(data) : null
   const prospects = data ? getProspects(data) : null
   const baseHealth = data ? getBaseHealth(data) : null
   const activeView = VIEWS.find((view) => view.id === currentView) ?? VIEWS[0]
-  const viewContent = renderedView === 'panorama'
+  const viewContent = renderedView === 'inicio'
     ? <PanoramaView baseHealth={baseHealth} data={data} onSelectView={selectView} prospects={prospects} todayActions={todayActions} />
     : renderedView === 'hoy'
       ? <TodayView todayActions={todayActions} />
       : renderedView === 'prospectos'
-        ? <ProspectsView data={data} prospects={prospects} />
+        ? <ProspectsView data={data} filtrosIniciales={leerRuta().filtros} key={window.location.pathname + window.location.search} prospects={prospects} />
         : renderedView === 'base'
           ? <BaseView baseHealth={baseHealth} />
           : <HowItWorksView />
 
   return (
-    <div className="app-shell">
+    <>
+      {/* El chasis se monta desde el primer frame aunque no se vea: la intro
+          necesita medir donde esta la marca del rail para aterrizar ahi. */}
+      {faseIntro !== 'fuera' && (
+        <Intro datosListos={resource.status === 'ready'} onTerminada={() => setFaseIntro('fuera')} />
+      )}
+    <div className={`app-shell ${faseIntro === 'corriendo' ? 'app-shell--entrando' : ''} ${faseIntro === 'fuera' && vieneDeIntro ? 'app-shell--montando' : ''}`}>
       <nav aria-label="Vistas del panel" className="app-rail">
-        <a aria-label="Ir a Panorama" className="brand" href="#panorama" onClick={() => selectView('panorama')}><span aria-hidden="true" className="brand__mark"><i /><i /><i /></span></a>
+        <a
+          aria-label="Ir al inicio"
+          className="brand"
+          href="/inicio"
+          onClick={(evento) => { evento.preventDefault(); selectView('inicio') }}
+        >
+          {/* La D del logo de verdad. Es el mismo glifo en el que aterriza la
+              intro, por eso el salto no necesita ningun disimulo. */}
+          <span aria-hidden="true" className="brand__mark">
+            <svg viewBox="0 0 521.16 420.36" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="521.16 123.61 398.75 420.36 49.35 420.36 49.87 419.85 0 419.85 76.23 236.93 200.97 236.93 174.41 300.63 316.74 300.63 391.92 119.75 133.8 119.75 26.6 0 441.69 0 521.16 123.61" />
+            </svg>
+          </span>
+        </a>
         <div className="rail-actions">
           {VIEWS.map((view) => <button aria-current={currentView === view.id ? 'page' : undefined} aria-label={view.label} className={currentView === view.id ? 'is-active' : ''} data-view={view.id} key={view.id} onClick={() => selectView(view.id)} type="button"><Icon name={view.icon} size={17} /><span aria-hidden="true">{view.label}</span></button>)}
         </div>
@@ -843,6 +1381,7 @@ function App() {
         {resource.status === 'ready' && <div className={`view-frame view-frame--${viewPhase}`} key={renderedView}>{viewContent}</div>}
       </main>
     </div>
+    </>
   )
 }
 

@@ -34,6 +34,12 @@ import path from 'node:path'
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url))
 
+// Parche de idioma: los agentes escriben la señal de compra en ingles y el panel
+// es en español. Ver el _nota de traducciones.json — esto no escala, el arreglo
+// de verdad es que el agente escriba en español.
+const TRADUCCIONES = JSON.parse(readFileSync(path.join(AQUI, "traducciones.json"), "utf8"))
+const enEspanol = (campo, empresa, original) => TRADUCCIONES[campo]?.[empresa] ?? original
+
 /* ── CSV con comillas y saltos de linea embebidos ───────────────────────────
    Los cuerpos de email de la QUEUE son parrafos multilinea dentro de una celda,
    asi que un split por comas no vale. Parser de 12 lineas; no merece dependencia. */
@@ -85,6 +91,63 @@ const redactar = t => t == null ? null
 const clave = n => (n ?? '').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
   .replace(/[^A-Z0-9]/g, '')
 
+/* ── La clasificacion comercial nueva ────────────────────────────────────────
+   DAK ya no busca «buenos leads» sin mas: distingue entre empresas donde puede
+   ser LA agencia y empresas donde solo puede entrar por una pieza concreta. Son
+   dos conversaciones distintas y dos mensajes distintos.
+
+   ⚠️ La hoja TODAVIA NO tiene estas columnas, asi que esto se DERIVA — y por eso
+   viaja marcado como derivado y la interfaz lo dice. Pero la regla no sale de la
+   nada: se apoya en una señal que los agentes YA escriben. Cuando el Outreach
+   Strategist redacta la objecion «Ya tenemos agencia o equipo que nos maneja las
+   redes», esta diciendo que detecto una estructura de marketing existente. Ese
+   es justo el riesgo que hay que medir, y lo escribio el sistema, no el panel.
+
+   En cuanto la hoja traiga Opportunity Type, Agency Ownership Potential,
+   Existing Agency Risk y Recommended Entry Angle, esta derivacion se borra y se
+   leen tal cual. */
+
+const clasificar = (prospecto, mensaje) => {
+  const texto = [
+    ...(mensaje?.objeciones ?? []).map((o) => o.objecion),
+    prospecto.anguloVenta ?? '',
+  ].join(' ').toLowerCase()
+
+  const mencionaEstructura = /agencia|equipo que|nos maneja|quien nos maneja/.test(texto)
+  const mencionaCorporativo = /corporativ/.test(texto)
+
+  // «Sin confirmar» y no «Bajo» cuando no hay señal: que no aparezca una
+  // objecion sobre su agencia no demuestra que no la tengan. Ausencia de prueba
+  // no es prueba de ausencia, y poner «Bajo» seria inventarse una certeza.
+  const riesgo = mencionaCorporativo ? 'Alto'
+    : mencionaEstructura ? 'Medio'
+    : 'Sin confirmar'
+
+  const peso = { HIGH: 3, MEDIUM: 2, SMALL: 1 }[prospecto.potencialNegocio] ?? 1
+
+  // 1 a 5: cuanto puede DAK liderar el crecimiento de esta empresa.
+  const liderazgo = riesgo === 'Alto' ? Math.min(2, peso)
+    : riesgo === 'Medio' ? (peso >= 3 ? 3 : 2)
+    : Math.min(5, 2 + peso)
+
+  const tipo = liderazgo >= 4 ? 'Agencia completa' : 'Soporte especializado'
+
+  const anguloEntrada = tipo === 'Agencia completa'
+    ? 'Sistema completo de captación: contenido, Meta Ads, landing y derivación a WhatsApp.'
+    : mencionaCorporativo
+      ? 'Ejecución local que complementa al equipo corporativo: contenido de sede, campañas y derivación de consultas.'
+      : 'Pieza concreta que no reemplaza a su equipo: landing, ruta a WhatsApp y seguimiento de campaña.'
+
+  return {
+    tipoOportunidad: tipo,
+    potencialLiderazgo: liderazgo,
+    riesgoAgenciaExistente: riesgo,
+    anguloEntrada,
+    // Para que la interfaz pueda decir la verdad: esto lo dedujo el panel.
+    clasificacionDerivada: true,
+  }
+}
+
 /* ── 1. Leads: la investigacion ─────────────────────────────────────────── */
 
 const LEADS = hoja('muestra-leads.csv')
@@ -122,8 +185,8 @@ const outbound = LEADS.datos.map((f, i) => {
     contacto: { handle: null, motivoCanal: null, canal: null, mejorMomento: null, verificado: false },
 
     oportunidad: g('Primary Opportunity'),
-    senalCompra: g('Buying Signal'),
-    porQueAhora: g('Why Now'),
+    senalCompra: enEspanol('senalCompra', g('Business Name'), g('Buying Signal')),
+    porQueAhora: enEspanol('porQueAhora', g('Business Name'), g('Why Now')),
     servicioSugerido: g('Recommended First Service'),
     anguloVenta: g('Sales Angle'),
     evidencia: redactar(g('Evidence / Sources')),
@@ -134,6 +197,12 @@ const outbound = LEADS.datos.map((f, i) => {
     enviadoEn: null, estadoEnvio: null, estadoRespuesta: null, resumenRespuesta: null,
 
     enlaceFuente: null,
+    tipoOportunidad: null,
+    potencialLiderazgo: null,
+    riesgoAgenciaExistente: null,
+    anguloEntrada: null,
+    clasificacionDerivada: false,
+
     fechaDeteccion: g('Date Found'),
     dedupKey: null,
     notas: redactar(notas)
@@ -220,6 +289,15 @@ for (const f of DAILY.datos) {
 
   const m = mensajes.find(x => x.prospectoId === p.id)
   if (m) m.enlaceWhatsApp = redactar(g('WhatsApp Link'))
+}
+
+/* ── 3.5 Clasificacion comercial ──────────────────────────────────────────
+   Se hace AQUI y no antes porque necesita el mensaje: la señal que distingue
+   «podemos ser su agencia» de «solo podemos entrar por una pieza» esta en las
+   objeciones que redacto el Outreach Strategist, y esas llegan con la QUEUE. */
+
+for (const p of outbound) {
+  Object.assign(p, clasificar(p, mensajes.find((m) => m.prospectoId === p.id)))
 }
 
 /* ── 4. CAMARA REACTIVATION LOG: salud de la fuente, no una lista ────────── */
