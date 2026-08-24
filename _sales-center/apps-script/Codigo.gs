@@ -76,6 +76,11 @@ const PERMITIDO = {
     columna: 'Panel Opener',
     libre: true,
     maximo: 2000,
+    // Este SI se puede vaciar, y `editar` no. La diferencia no es capricho:
+    // vaciar el mensaje de Twin borraria trabajo del agente sin querer, pero
+    // vaciar el tuyo es arrepentirte de un borrador, que es una operacion
+    // legitima. Sin esto, escribir un mensaje a mano no tenia vuelta atras.
+    puedeVaciar: true,
   },
   // Editar el texto del mensaje desde el panel.
   //
@@ -165,8 +170,10 @@ function doPost(e) {
     }
     if (regla.libre) {
       // Texto libre, pero acotado: ni vacio ni desmesurado. Guardar un mensaje
-      // en blanco por accidente borraria el trabajo del Outreach Strategist.
-      if (typeof peticion.valor !== 'string' || peticion.valor.trim().length < 10) {
+      // en blanco por accidente borraria el trabajo del Outreach Strategist —
+      // salvo donde vaciar es justo lo que se pretende (ver `puedeVaciar`).
+      const vaciando = regla.puedeVaciar && peticion.valor === '';
+      if (!vaciando && (typeof peticion.valor !== 'string' || peticion.valor.trim().length < 10)) {
         return responder(400, { ok: false, error: 'El mensaje es demasiado corto.' });
       }
       if (peticion.valor.length > regla.maximo) {

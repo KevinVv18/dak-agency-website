@@ -436,12 +436,25 @@ function EditorMensaje({ empresa, texto, aMano = false }) {
   const [borrador, setBorrador] = useState(texto ?? '')
   const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
   const [guardado, setGuardado] = useState(null)
+  const recargar = useContext(Recarga)
 
   const actual = guardado ?? texto
   const editable = puedeEscribir && Boolean(empresa) && Boolean(texto)
   // Un mensaje escrito a mano vive en Leads y otro de Twin en la QUEUE. Es la
   // misma caja de texto: lo unico que cambia es en que columna aterriza.
   const donde = aMano ? 'redactar' : 'editar'
+
+  // Borrar el borrador propio: se va el texto y se va la etapa con el, o el
+  // prospecto se quedaria en «por aprobar» sin nada que aprobar.
+  const borrar = async () => {
+    setEstado({ fase: 'guardando', mensaje: null })
+    const texto = await escribirEnHoja({ accion: 'redactar', empresa, valor: '' })
+    if (!texto.ok) { setEstado({ fase: 'fallo', mensaje: texto.error ?? 'La hoja rechazó el borrado.' }); return }
+    await escribirEnHoja({ accion: 'estado', empresa, valor: '' })
+    setEditando(false)
+    setEstado({ fase: 'hecho', mensaje: 'Borrado. Vuelve a «investigado».' })
+    recargar()
+  }
 
   const guardar = async () => {
     setEstado({ fase: 'guardando', mensaje: null })
@@ -481,6 +494,13 @@ function EditorMensaje({ empresa, texto, aMano = false }) {
             <button className="sheet-button" disabled={estado.fase === 'guardando'} onClick={() => { setEditando(false); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
               Descartar
             </button>
+            {/* Solo para los propios: borrar el de Twin seria tirar el trabajo
+                del agente, y ademas el puente lo rechaza. */}
+            {aMano && (
+              <button className="sheet-button" disabled={estado.fase === 'guardando'} onClick={borrar} type="button">
+                Borrar el mensaje
+              </button>
+            )}
           </div>
         </>
       ) : (
@@ -1313,6 +1333,16 @@ function MensajeManual({ prospect }) {
   const pedido = prospect.panelEstado === 'REQUESTED'
   const trabajando = estado.fase === 'guardando'
 
+  // Doce de las veinte empresas de la hoja no traen telefono. Escribirle un
+  // mensaje a una de esas es trabajo perdido, y el sitio para decirlo es aqui
+  // —antes de escribirlo— y no despues, cuando ya esta redactado y descubres
+  // que no hay boton de WhatsApp. Twin verifica el contacto al encolar; el
+  // carril manual se salta ese paso, asi que el aviso lo tiene que dar el panel.
+  const sinContacto = !prospect.contacto?.telefono
+    && !prospect.contacto?.whatsapp
+    && !prospect.contacto?.handle
+    && !prospect.contacto?.email
+
   const marcar = async (valor, hecho) => {
     setEstado({ fase: 'guardando', mensaje: null })
     const r = await escribirEnHoja({ accion: 'estado', empresa: prospect.empresa, valor })
@@ -1374,10 +1404,10 @@ function MensajeManual({ prospect }) {
     <div className="sheet-actions">
       <span className="context-label">Todavía sin mensaje</span>
       <div className="sheet-actions__row">
-        <button className="sheet-button sheet-button--principal" disabled={trabajando} onClick={() => { setBorrador(''); setEditando(true); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
+        <button className={`sheet-button ${sinContacto ? '' : 'sheet-button--principal'}`} disabled={trabajando} onClick={() => { setBorrador(''); setEditando(true); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
           Escribirlo yo
         </button>
-        <button className="sheet-button" disabled={trabajando} onClick={() => marcar(pedido ? '' : 'REQUESTED', pedido ? 'Petición retirada.' : 'Pedido. Twin lo tomará en su próxima corrida.')} type="button">
+        <button className={`sheet-button ${sinContacto && !pedido ? 'sheet-button--principal' : ''}`} disabled={trabajando} onClick={() => marcar(pedido ? '' : 'REQUESTED', pedido ? 'Petición retirada.' : 'Pedido. Twin lo tomará en su próxima corrida.')} type="button">
           {trabajando ? 'Guardando…' : pedido ? 'Quitar la petición' : 'Pedírselo a Twin'}
         </button>
       </div>
@@ -1385,9 +1415,11 @@ function MensajeManual({ prospect }) {
         <p aria-live="polite" className={`sheet-actions__result ${estado.fase === 'fallo' ? 'is-fallo' : ''}`}>{estado.mensaje}</p>
       )}
       <p className="sheet-actions__note">
-        {pedido
-          ? `Pedido${prospect.panelEstadoEn ? ` el ${prospect.panelEstadoEn}` : ''} y todavía sin mensaje: Twin no ha corrido o no le tocó turno. No hace falta esperarlo.`
-          : 'Si lo escribes tú, pasa a «por aprobar» y sigue el mismo camino que los de Twin. No se toca la hoja del agente.'}
+        {sinContacto
+          ? 'Esta empresa no tiene teléfono ni correo en la hoja: podrías escribir el mensaje, pero no habría a quién mandárselo. Antes hay que conseguir el contacto.'
+          : pedido
+            ? `Pedido${prospect.panelEstadoEn ? ` el ${prospect.panelEstadoEn}` : ''} y todavía sin mensaje: Twin no ha corrido o no le tocó turno. No hace falta esperarlo.`
+            : 'Si lo escribes tú, pasa a «por aprobar» y sigue el mismo camino que los de Twin. No se toca la hoja del agente.'}
       </p>
     </div>
   )
