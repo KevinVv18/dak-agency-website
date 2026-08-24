@@ -407,7 +407,11 @@ section{scroll-margin-top:3.6rem}
    `.step` y las columnas del cuadro comparativo se quedan blancos aunque la
    sección sea oscura: si no declaran su color, heredan el blanco de `.dark`.
    Con esto, mover una sección de clara a oscura ya no puede romper nada. */
-.dark .tier,.dark .step,.dark .vs .col{color:var(--tx)}
+/* Estas islas claras necesitan los MISMOS valores restaurados que .dark .tw:
+   sobre su tarjeta blanca, las variantes aclaradas de .dark son ilegibles. Al
+   redeclarar aqui las variables, todo lo de debajo (h3, b, .pro, .con) se corrige
+   solo. Sin esta linea, --tx valdria blanco y los titulos desaparecerian. */
+.dark .tier,.dark .step,.dark .vs .col{--red:#D4123F;--green:#0A7A55;--amber:#8F5A00;--purpd:#7A1FB8;--tx:#141416;color:var(--tx)}
 .dark .tier h3,.dark .step h3,.dark .vs .col h3{color:var(--tx)}
 .dark .vs .pro h3{color:var(--green)}
 .dark .vs .con h3{color:var(--red)}
