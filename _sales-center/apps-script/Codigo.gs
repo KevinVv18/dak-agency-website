@@ -13,7 +13,7 @@
  *
  *   1. El TOKEN de abajo, que el panel manda en cada peticion.
  *   2. La LISTA BLANCA de (hoja, columna). Aunque alguien consiguiera el token,
- *      solo podria tocar esas dos columnas. No puede escribir en el telefono de
+ *      solo podria tocar esas columnas. No puede escribir en el telefono de
  *      un prospecto, ni borrar una fila, ni leerse la hoja entera.
  *
  * Riesgo que queda, dicho claro: el token viaja dentro del JavaScript del
@@ -23,8 +23,9 @@
  * esto hay que mover a un backend de verdad.
  *
  * ── Que hace y que NO hace ─────────────────────────────────────────────────
- * Hace: poner APPROVED/REJECTED en Human Review, y SENT en Send Status con su
- * fecha. Devuelve el valor anterior, para que quede rastro de que cambio.
+ * Hace: escribir estados permitidos, guardar mensajes redactados desde el panel
+ * y sellar fechas cuando corresponde. Devuelve el valor anterior, para que quede
+ * rastro de que cambio.
  *
  * No hace: crear filas, borrar, leer la hoja completa, ni tocar ninguna columna
  * que no este en la lista blanca.
