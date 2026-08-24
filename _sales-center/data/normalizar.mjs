@@ -23,6 +23,7 @@ import { construir } from '../src/lib/construir.js'
 const AQUI = path.dirname(fileURLToPath(import.meta.url))
 
 const TRADUCCIONES = JSON.parse(readFileSync(path.join(AQUI, 'traducciones.json'), 'utf8'))
+const GLOSARIO = JSON.parse(readFileSync(path.join(AQUI, 'glosario.json'), 'utf8')).terminos
 
 /* ── CSV con comillas y saltos de linea embebidos ───────────────────────────
    Los cuerpos de email de la QUEUE son parrafos multilinea dentro de una celda,
@@ -93,6 +94,7 @@ const datos = construir({
   camara: hoja('muestra-camara-reactivation-log.csv'),
   inbound,
   traducciones: TRADUCCIONES,
+  glosario: GLOSARIO,
   redactar: true,
   fuentes: {
     outbound: 'DAK LEADS MASTER, 4 pestañas, exportación del 2026-08-19',

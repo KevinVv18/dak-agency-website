@@ -972,31 +972,91 @@ function ProspectDetail({ data, prospect }) {
   const message = getOpener(prospect.id, data)
   const contact = prospect.contacto ?? {}
 
+  const dias = diasDesde(prospect.fechaDeteccion)
+  const senas = [prospect.rubro, prospect.ciudad, stages[prospect.etapa]].filter(Boolean)
+
   return (
     <aside aria-live="polite" className="prospect-detail">
-      <div className="prospect-detail__header">
-        <div><span className="detail-kicker">Ficha derivada del registro</span><h2>{getDisplayName(prospect)}</h2></div>
-        <Badge tone={prospect.origen === 'inbound' ? 'oro' : 'marca'}>{prospect.origen === 'inbound' ? 'Llegó solo' : 'Búsqueda activa'}</Badge>
+      {/* La portada: quién es y cuánto vale, sin que haya que leer nada. Antes
+          esto eran cuatro pares etiqueta/valor en mayúsculas y parecía un
+          formulario; el nombre competía con «FICHA DERIVADA DEL REGISTRO». */}
+      <header className="ficha-portada">
+        <h2>{getDisplayName(prospect)}</h2>
+        <p className="ficha-senas">{senas.join(' · ')}</p>
+
+        <div className="ficha-marcas">
+          <TipoOportunidad derivada={prospect.clasificacionDerivada} tipo={prospect.tipoOportunidad} />
+          {prospect.origen === 'inbound' && <span className="tipo-badge tipo-badge--completa">Llegó solo</span>}
+          {dias !== null && (
+            <span className={`ficha-dias ${estaEstancado(prospect) ? 'is-alerta' : ''}`}>
+              {dias === 0 ? 'detectado hoy' : dias === 1 ? 'hace 1 día' : `hace ${dias} días`}
+            </span>
+          )}
+        </div>
+
+        <div className="ficha-cifras">
+          <div>
+            <strong>{valueOrMissing(prospect.score)}</strong>
+            <span>Oportunidad</span>
+            <ScoreBreakdown prospect={prospect} />
+          </div>
+          <div>
+            <strong>{valueOrMissing(prospect.readiness)}</strong>
+            <span>Preparación</span>
+          </div>
+          <div>
+            <strong>{prospect.potencialLiderazgo ? `${prospect.potencialLiderazgo}/5` : missing}</strong>
+            <span>DAK puede liderar</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Tres preguntas, no diez campos. Un socio abre esto para decidir, y la
+          decisión se toma con estas tres respuestas. */}
+      <section className="ficha-bloque">
+        <h3>Por qué esta empresa</h3>
+        <p>{valueOrMissing(prospect.senalCompra)}</p>
+        {prospect.porQueAhora && <p>{prospect.porQueAhora}</p>}
+        {prospect.oportunidad && <p className="ficha-destacado">{prospect.oportunidad}</p>}
+      </section>
+
+      <section className="ficha-bloque">
+        <h3>Qué le ofrecemos</h3>
+        <p>{valueOrMissing(prospect.servicioSugerido)}</p>
+        {prospect.anguloVenta && <p>{prospect.anguloVenta}</p>}
+        {message?.primeraOferta && (
+          <p className="ficha-destacado">{message.primeraOferta}</p>
+        )}
+      </section>
+
+      <section className="ficha-bloque">
+        <h3>Cómo entramos</h3>
+        {prospect.anguloEntrada && <p>{prospect.anguloEntrada}</p>}
+        <dl className="ficha-contacto">
+          <div><dt>Canal</dt><dd>{valueOrMissing(contact.canal)}</dd></div>
+          <div><dt>Contacto</dt><dd>{valueOrMissing(contact.handle)}</dd></div>
+          <div><dt>Mejor momento</dt><dd>{valueOrMissing(contact.mejorMomento)}</dd></div>
+          <div><dt>Riesgo de agencia</dt><dd>{valueOrMissing(prospect.riesgoAgenciaExistente)}</dd></div>
+          <div><dt>Responsable</dt><dd>{valueOrMissing(prospect.responsable)}</dd></div>
+          <div><dt>Fuente</dt><dd>{valueOrMissing(prospect.fuente)}</dd></div>
+        </dl>
+      </section>
+
+      <EnlacesEmpresa prospect={prospect} />
+
+      {/* La evidencia es procedencia, no material de decisión. Va plegada:
+          importa poder comprobarla, no tenerla siempre delante. */}
+      {prospect.evidencia && (
+        <details className="ficha-evidencia">
+          <summary><span>De dónde sale esto</span><Icon name="chevron" size={14} /></summary>
+          <p>{prospect.evidencia}</p>
+        </details>
+      )}
+
+      <div className="detail-actions">
+        <CopyButton label="Copiar ficha" text={buildProspectCopy(prospect, message)} />
+        <SourceLink prospect={prospect} />
       </div>
-      <div className="detail-grid">
-        <Field label="Etapa" value={stages[prospect.etapa]} /><Field label="Fuente" value={prospect.fuente} />
-        <Field label="Detectado" value={formatDate(prospect.fechaDeteccion)} /><Field label="Responsable" value={prospect.responsable} />
-      </div>
-      <div className="detail-section">
-        <p className="section-label">Qué sabemos</p><Field label="Rubro" value={prospect.rubro} /><Field label="Ciudad" value={prospect.ciudad} />
-        <Field label="Oportunidad detectada" value={prospect.oportunidad} /><Field label="Evidencia" value={prospect.evidencia} />
-      </div>
-      <div className="detail-section"><p className="section-label">Por qué importa</p><p className="detail-prose">{valueOrMissing(prospect.senalCompra)}</p><p className="detail-prose">{valueOrMissing(prospect.porQueAhora)}</p></div>
-      <div className="detail-section">
-        <p className="section-label">Qué ofrecer</p><Field label="Servicio sugerido" value={prospect.servicioSugerido} />
-        <Field label="Ángulo comercial" value={prospect.anguloVenta} /><Field label="Primera oferta" value={message?.primeraOferta} />
-      </div>
-      <div className="detail-section">
-        <p className="section-label">Cómo contactarlo</p><Field label="Canal" value={contact.canal} /><Field label="Contacto" value={contact.handle} />
-        <Field label="Por qué ese canal" value={contact.motivoCanal} /><Field label="Mejor momento" value={contact.mejorMomento} />
-      </div>
-      <div className="detail-section"><div className="score-heading"><p className="section-label">Por qué puntúa así</p><strong>Score {valueOrMissing(prospect.score)}</strong></div><ScoreBreakdown prospect={prospect} /></div>
-      <div className="detail-actions"><CopyButton label="Copiar ficha" text={buildProspectCopy(prospect, message)} /><SourceLink prospect={prospect} /></div>
     </aside>
   )
 }
@@ -1383,9 +1443,12 @@ function App() {
         <h1>{activeView.label}</h1>
         {data && <span className="header-meta">{getSnapshotDate(data)}</span>}
         <span className="header-spacer" />
-        {data?.meta.esMock
-          ? <Badge tone="mock" title={data.meta.motivoMock ?? undefined}>Datos de ejemplo</Badge>
-          : <Badge tone="oro">En vivo</Badge>}
+        {/* Mientras carga NO se dice nada. La primera version caia al `else`
+            con `data` en null y anunciaba «En vivo» antes de haber leido una
+            sola fila — justo la mentira que esta insignia existe para evitar. */}
+        {data && (data.meta.esMock
+          ? <Badge title={data.meta.motivoMock ?? undefined} tone="mock">Datos de ejemplo</Badge>
+          : <Badge tone="oro">En vivo</Badge>)}
       </header>
       <main className={`main-content main-content--${renderedView}`}>
         {resource.status === 'loading' && <LoadingState />}

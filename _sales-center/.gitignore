@@ -4,3 +4,6 @@
 
 # Docroot armado por el despliegue (puerta + build). Artefacto, no fuente.
 publicar
+
+# Volcado temporal de la hoja para diagnostico. No es fuente.
+.vivo.json

@@ -114,9 +114,33 @@ export const clasificar = (prospecto, mensaje, deLaHoja = {}) => {
 
 /* ── La construccion ─────────────────────────────────────────────────────── */
 
-export function construir({ leads, queue, daily, camara, inbound = [], traducciones = {}, redactar = false, fuentes: origenes = {} }) {
+export function construir({ leads, queue, daily, camara, inbound = [], traducciones = {}, glosario = {}, redactar = false, fuentes: origenes = {} }) {
   const tapar = redactar ? redactarTelefono : (v) => v
-  const enEspanol = (campo, empresa, original) => traducciones[campo]?.[empresa] ?? original
+
+  /**
+   * El idioma, en dos capas y con expectativas distintas.
+   *
+   * 1. GLOSARIO — sustitucion de terminos. Escala: se aplica a cualquier fila,
+   *    presente o futura, porque los agentes escriben con vocabulario cerrado
+   *    (rubros, nombres de servicio, prefijos de evidencia). Las claves largas
+   *    van primero para que «Real Estate Development» no lo pise «Real Estate».
+   *
+   * 2. TRADUCCIONES — frases enteras, empresa por empresa. NO escala y no
+   *    pretende escalar: es un parche para las filas que ya existian.
+   *
+   * Lo que ninguna de las dos arregla es la prosa libre de cada lote nuevo. Eso
+   * solo se arregla haciendo que el agente escriba en español, y esta dicho en
+   * CONTRATO.md §8.
+   */
+  const terminos = Object.entries(glosario).sort((a, b) => b[0].length - a[0].length)
+  const conGlosario = (t) => {
+    if (!t) return t
+    let salida = t
+    for (const [en, es] of terminos) salida = salida.split(en).join(es)
+    return salida
+  }
+  const enEspanol = (campo, empresa, original) =>
+    conGlosario(traducciones[campo]?.[empresa] ?? original)
 
   /* 1. Leads: la investigacion */
   const gL = lector(leads, 'Leads')
@@ -139,7 +163,7 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
       etapa: 'investigado',
       empresa,
       persona: null,
-      rubro: g('Industry'),
+      rubro: conGlosario(g('Industry')),
       // La hoja escribe la ciudad a veces en mayusculas (CHICLAYO) y a veces no.
       // Se normaliza aqui o la UI acaba con dos filtros para la misma ciudad.
       ciudad: ciudad ? ciudad[0] + ciudad.slice(1).toLowerCase() : null,
@@ -155,7 +179,7 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
       },
       readiness: null, readinessBand: null, scoreBot: null,
       // Lead Temperature y Status son la misma columna duplicada.
-      temperatura: g('Lead Temperature'),
+      temperatura: conGlosario(g('Lead Temperature')),
       potencialNegocio: null,
 
       contacto: {
@@ -168,12 +192,12 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
         redes,
       },
 
-      oportunidad: g('Primary Opportunity'),
+      oportunidad: conGlosario(g('Primary Opportunity')),
       senalCompra: enEspanol('senalCompra', empresa, g('Buying Signal')),
       porQueAhora: enEspanol('porQueAhora', empresa, g('Why Now')),
-      servicioSugerido: g('Recommended First Service'),
-      anguloVenta: g('Sales Angle'),
-      evidencia: tapar(g('Evidence / Sources')),
+      servicioSugerido: conGlosario(g('Recommended First Service')),
+      anguloVenta: conGlosario(g('Sales Angle')),
+      evidencia: conGlosario(tapar(g('Evidence / Sources'))),
       web: g('Website'),
       mapsUrl: g('Google Maps URL'),
 
@@ -194,7 +218,7 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
 
       fechaDeteccion: g('Date Found'),
       dedupKey: null,
-      notas: tapar(notas),
+      notas: conGlosario(tapar(notas)),
     }
     porClave.set(clave(p.empresa), p)
     return p
@@ -211,12 +235,12 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
     if (!p) { huerfanas.push(['QUEUE', g('Business Name')]); continue }
 
     p.readiness = numero(g('Outreach Readiness Score'))
-    p.readinessBand = g('Readiness Band')
+    p.readinessBand = conGlosario(g('Readiness Band'))
     p.potencialNegocio = g('Deal Potential')
     p.contacto = {
       ...p.contacto,
       handle: tapar(g('Contact Handle')),
-      motivoCanal: g('Channel Reason'),
+      motivoCanal: conGlosario(g('Channel Reason')),
       canal: g('Recommended Channel'),
       mejorMomento: g('Best Timing'),
       verificado: true,
@@ -246,10 +270,10 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
       texto: tapar(g('Spanish WhatsApp/DM Opener')),
       asuntoEmail: g('Email Subject'),
       cuerpoEmail: tapar(g('Spanish Email Body')),
-      ganchoValor: g('Value Hook'),
-      primeraOferta: g('Suggested First Offer'),
+      ganchoValor: conGlosario(g('Value Hook')),
+      primeraOferta: conGlosario(g('Suggested First Offer')),
       formaRelacion: g('Engagement Shape'),
-      ideaVenta: g('Sales Idea'),
+      ideaVenta: conGlosario(g('Sales Idea')),
       objeciones,
       seguimientos,
     })

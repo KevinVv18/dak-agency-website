@@ -636,7 +636,15 @@ tbody tr.is-selected { background: var(--elevada); }
   background: var(--rail);
 }
 .work-queue .filter-bar label { display: grid; gap: 5px; }
-.work-queue .filter-bar label > span { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .09em; text-transform: uppercase; }
+/* Las etiquetas NO se cortan. «Tipo de oportunidad» en mayusculas con tracking
+   no cabe en una columna de 300px, y el ancho de la columna manda: la barra de
+   filtros no puede empujar el maestro-detalle. Asi que se deja envolver en dos
+   lineas en vez de truncarse — una etiqueta a medias no dice nada. */
+.work-queue .filter-bar label > span {
+  color: var(--muted); font-size: 11px; font-weight: 500;
+  letter-spacing: .07em; line-height: 1.35; text-transform: uppercase;
+  overflow-wrap: normal; word-break: keep-all;
+}
 .work-queue .filter-bar input,
 .work-queue .filter-bar select {
   width: 100%; padding: 8px 10px; border: 1px solid var(--linea-viva);
@@ -889,3 +897,73 @@ PLACEHOLDER
   border-bottom: 1px dashed var(--linea-viva); padding-bottom: 1px;
 }
 .company-links__nota { margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+/* ═══ La ficha del prospecto ════════════════════════════════════════════════
+   Antes era un formulario: veinte pares etiqueta/valor en mayúsculas, con el
+   nombre de la empresa compitiendo contra «FICHA DERIVADA DEL REGISTRO».
+   Ahora se lee como un informe — un socio la abre para decidir, y la decisión
+   se toma con tres respuestas, no con veinte campos. */
+
+.prospect-detail { padding: 0 0 40px; }
+
+.ficha-portada { padding: 26px 26px 22px; border-bottom: 1px solid var(--linea); }
+.ficha-portada h2 {
+  margin: 0; color: var(--text);
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 300;
+  letter-spacing: -.02em; line-height: 1.15;
+}
+.ficha-senas { margin: 9px 0 0; color: var(--muted); font-size: 14px; }
+.ficha-marcas { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 16px; }
+.ficha-dias { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.ficha-dias.is-alerta { color: var(--oro); }
+
+/* Las tres cifras que deciden, juntas y grandes. */
+.ficha-cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 24px; }
+.ficha-cifras > div > strong {
+  display: block; color: var(--text); font-size: 2.1rem; font-weight: 200;
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em; line-height: 1;
+}
+.ficha-cifras > div > span { display: block; margin-top: 7px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.ficha-cifras .score-breakdown { margin-top: 12px; }
+
+.ficha-bloque { padding: 22px 26px 0; }
+.ficha-bloque h3 {
+  margin: 0 0 12px; color: var(--muted);
+  font-size: 11px; font-weight: 500; letter-spacing: .13em; text-transform: uppercase;
+}
+.ficha-bloque p { max-width: 72ch; margin: 0 0 10px; color: var(--secondary); font-size: 15px; line-height: 1.6; }
+.ficha-bloque p:last-child { margin-bottom: 0; }
+
+/* Lo que hay que hacer, separado de lo que hay que saber. */
+.ficha-destacado {
+  padding: 13px 16px; border-radius: var(--radius);
+  background: var(--superficie); color: var(--text) !important;
+}
+
+.ficha-contacto { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1px; margin: 16px 0 0; background: var(--linea); border-radius: var(--radius); overflow: hidden; }
+.ficha-contacto > div { padding: 12px 15px; background: var(--fondo); }
+.ficha-contacto dt { margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.ficha-contacto dd { margin: 0; color: var(--secondary); font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+
+/* La evidencia es procedencia, no material de decisión: plegada. */
+.ficha-evidencia { margin: 22px 26px 0; border-top: 1px solid var(--linea); }
+.ficha-evidencia > summary {
+  display: flex; align-items: center; gap: 10px; padding: 14px 2px;
+  cursor: pointer; list-style: none;
+  color: var(--muted); font-size: 11px; font-weight: 500;
+  letter-spacing: .11em; text-transform: uppercase;
+}
+.ficha-evidencia > summary::-webkit-details-marker { display: none; }
+.ficha-evidencia > summary:hover { color: var(--secondary); }
+.ficha-evidencia > summary .icon { margin-left: auto; transition: transform var(--t-corta) var(--ease-suave); }
+.ficha-evidencia[open] > summary .icon { transform: rotate(180deg); }
+.ficha-evidencia p { max-width: 76ch; margin: 0 0 14px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+.prospect-detail .company-links { margin: 22px 26px 0; }
+.prospect-detail .detail-actions { display: flex; flex-wrap: wrap; gap: 9px; margin: 24px 26px 0; padding-top: 20px; border-top: 1px solid var(--linea); }
+
+@media (max-width: 700px) {
+  .ficha-portada, .ficha-bloque { padding-left: 16px; padding-right: 16px; }
+  .ficha-evidencia, .prospect-detail .company-links, .prospect-detail .detail-actions { margin-left: 16px; margin-right: 16px; }
+  .ficha-cifras { gap: 14px; }
+}

@@ -1,5 +1,6 @@
 import mock from '../../data/mock.json'
 import traducciones from '../../data/traducciones.json'
+import glosarioCompleto from '../../data/glosario.json'
 import { construir } from './construir'
 
 // El puente con la hoja. Se declaran arriba porque los usan tanto la lectura
@@ -178,6 +179,7 @@ export const loadSalesData = async () => {
       // mock para no perder esa mitad del embudo mientras tanto.
       inbound: mock.prospectos.filter((p) => p.origen === 'inbound'),
       traducciones,
+      glosario: glosarioCompleto.terminos,
       // En vivo NO se redacta. La redaccion existe porque mock.json se versiona;
       // aqui el panel necesita el telefono de verdad para poder llamar.
       redactar: false,
