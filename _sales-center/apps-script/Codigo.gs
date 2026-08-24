@@ -48,6 +48,21 @@ const PERMITIDO = {
     valores: ['SENT', 'NOT SENT'],
     // Al marcar SENT tambien se sella la fecha, que es la columna de al lado.
     tambienFecha: 'Sent At',
+    sellarCuando: 'SENT',
+  },
+  // Pedir que a una empresa se le escriba el mensaje.
+  //
+  // Es la unica forma que tiene el panel de mover algo desde «investigado», y lo
+  // hace SIN crear filas en la QUEUE: encolar es trabajo del Outreach
+  // Strategist, y el panel ni escribe mensajes ni inventa filas. Lo unico que
+  // hace es marcar la empresa en su propia fila de Leads para que el agente la
+  // priorice en la proxima corrida. Es una peticion, no una orden.
+  pedir: {
+    hoja: 'Leads',
+    columna: 'Panel Request',
+    valores: ['REQUESTED', ''],
+    tambienFecha: 'Panel Request At',
+    sellarCuando: 'REQUESTED',
   },
   // Editar el texto del mensaje desde el panel.
   //
@@ -163,7 +178,7 @@ function doPost(e) {
     hoja.getRange(fila + 1, colDestino + 1).setValue(peticion.valor);
 
     let fechaSellada = null;
-    if (regla.tambienFecha && peticion.valor === 'SENT') {
+    if (regla.tambienFecha && peticion.valor === regla.sellarCuando) {
       const colFecha = cabecera.indexOf(regla.tambienFecha);
       if (colFecha !== -1) {
         fechaSellada = Utilities.formatDate(new Date(), 'America/Lima', 'yyyy-MM-dd HH:mm');

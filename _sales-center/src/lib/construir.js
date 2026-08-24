@@ -161,6 +161,10 @@ export function construir({ leads, queue, daily, camara, inbound = [], traduccio
       id: `out-${String(i + 1).padStart(3, '0')}`,
       origen: 'outbound',
       etapa: 'investigado',
+      // Lo escribe el panel, no los agentes: es la unica marca que un humano
+      // puede dejar sobre una fila que todavia no ha salido de Leads.
+      pedido: g('Panel Request') === 'REQUESTED',
+      pedidoEn: g('Panel Request At'),
       empresa,
       persona: null,
       rubro: conGlosario(g('Industry')),

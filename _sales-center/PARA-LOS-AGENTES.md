@@ -73,3 +73,30 @@ deducir en cuanto la hoja traiga estas columnas en `Leads`:
 Si no se puede determinar el riesgo, **`UNKNOWN`, nunca `LOW`**. Que no haya evidencia de agencia
 no demuestra que no la tengan, y un `LOW` falso hace que DAK entre a vender agencia completa donde
 no toca.
+
+---
+
+## 4. La cola de peticiones del panel: `Panel Request`
+
+Hay dos columnas nuevas en la pestaña **`Leads`**, y **las escribe el panel, no tú**:
+
+| Columna | Quién escribe | Valores |
+|---|---|---|
+| `Panel Request` | El panel | `REQUESTED` o vacío |
+| `Panel Request At` | El panel | fecha y hora, `AAAA-MM-DD HH:MM` |
+
+Sirven para una sola cosa: que un humano pueda decir «a esta empresa escríbele el
+mensaje antes que a las demás» sin tener que crear él la fila en la QUEUE.
+
+> En cada corrida, antes de elegir a qué empresas les escribes el mensaje, mira
+> la columna `Panel Request` de la pestaña `Leads`. **Las filas que digan
+> `REQUESTED` van primero**, por delante de tu criterio de puntuación.
+>
+> Cuando ya le hayas escrito el mensaje y creado su fila en `DAK OUTREACH
+> QUEUE`, **vacía su celda `Panel Request`**. Si no la vacías, esa empresa
+> vuelve a salir la primera en cada corrida para siempre.
+>
+> No escribas nunca en estas dos columnas para nada más. No son tuyas.
+
+Si una petición lleva días con `REQUESTED` y la empresa sigue sin fila en la
+QUEUE, el panel lo enseña: significa que no has corrido o que no le tocó turno.

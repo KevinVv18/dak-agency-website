@@ -1115,6 +1115,10 @@ function ProspectDetail({ data, prospect }) {
 
       <EnlacesEmpresa prospect={prospect} />
 
+      {/* Solo en «investigado»: en el resto de etapas la fila ya vive en la
+          QUEUE y las acciones que tocan son aprobar y enviar, que estan en Hoy. */}
+      {prospect.etapa === 'investigado' && <PedirMensaje prospect={prospect} />}
+
       {/* La evidencia es procedencia, no material de decisión. Va plegada:
           importa poder comprobarla, no tenerla siempre delante. */}
       {prospect.evidencia && (
@@ -1250,6 +1254,73 @@ function RailFaceta({ activa, neutro, opciones, poner, titulo }) {
           </button>
         ))}
       </div>
+    </div>
+  )
+}
+
+/**
+ * Pedir que a una empresa se le escriba el mensaje.
+ *
+ * Es lo unico que el panel puede hacer con un prospecto que sigue en
+ * «investigado», y hay una razon de fondo: la etapa no es un campo que se
+ * escriba, se deduce de en que hoja vive la fila. Pasar de «investigado» a «con
+ * mensaje» significa CREAR la fila en la QUEUE con el mensaje ya redactado, y
+ * eso es la salida del Outreach Strategist. Un boton que fabricara esa fila con
+ * el mensaje en blanco no adelantaria el trabajo: lo falsearia.
+ *
+ * Asi que el panel marca la empresa en su propia fila de Leads y el agente la
+ * prioriza en la proxima corrida. El humano elige el orden; el agente sigue
+ * siendo quien escribe.
+ */
+function PedirMensaje({ prospect }) {
+  const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
+  const [pedido, setPedido] = useState(Boolean(prospect.pedido))
+
+  if (!puedeEscribir || !prospect.empresa) return null
+
+  const lanzar = async (quiero) => {
+    setEstado({ fase: 'enviando', mensaje: null })
+    const resultado = await escribirEnHoja({
+      accion: 'pedir', empresa: prospect.empresa, valor: quiero ? 'REQUESTED' : '',
+    })
+    if (resultado.ok) {
+      setPedido(quiero)
+      setEstado({ fase: 'hecho', mensaje: quiero ? 'Pedido. Twin lo tomara en su proxima corrida.' : 'Retirado de la cola de peticiones.' })
+    } else {
+      setEstado({ fase: 'fallo', mensaje: resultado.error ?? 'La hoja rechazo el cambio.' })
+    }
+  }
+
+  const trabajando = estado.fase === 'enviando'
+
+  return (
+    <div className="sheet-actions">
+      <span className="context-label">Todavía sin mensaje</span>
+      <div className="sheet-actions__row">
+        <button
+          className={`sheet-button ${pedido ? '' : 'sheet-button--principal'}`}
+          disabled={trabajando}
+          onClick={() => lanzar(!pedido)}
+          type="button"
+        >
+          {trabajando ? 'Guardando…' : pedido ? 'Quitar la petición' : 'Pedir mensaje a Twin'}
+        </button>
+      </div>
+      {estado.mensaje && (
+        <p aria-live="polite" className={`sheet-actions__result ${estado.fase === 'fallo' ? 'is-fallo' : ''}`}>
+          {estado.mensaje}
+        </p>
+      )}
+      {pedido && estado.fase !== 'hecho' && (
+        <p className="sheet-actions__note">
+          Pedido{prospect.pedidoEn ? ` el ${prospect.pedidoEn}` : ''}. Sigue sin mensaje: Twin no ha corrido todavía o no le tocó turno.
+        </p>
+      )}
+      {!pedido && (
+        <p className="sheet-actions__note">
+          El panel no escribe mensajes ni encola filas — eso lo hace Twin. Esto solo marca la empresa para que la tome primero.
+        </p>
+      )}
     </div>
   )
 }
