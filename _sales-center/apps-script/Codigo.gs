@@ -90,9 +90,13 @@ function doPost(e) {
     if (peticion.accion === 'leer') {
       const libro = SpreadsheetApp.getActiveSpreadsheet();
       const salida = {};
-      for (var i = 0; i < LEGIBLES.length; i++) {
-        var hoja = libro.getSheetByName(LEGIBLES[i]);
-        salida[LEGIBLES[i]] = hoja ? hoja.getDataRange().getDisplayValues() : [];
+      // Nombres propios y `let`, no `var`. La primera version usaba
+      // `var hoja` aqui dentro, y como `var` es de ambito de FUNCION y no de
+      // bloque, chocaba con el `const hoja` que hay mas abajo en este mismo
+      // doPost: el script entero dejaba de compilar.
+      for (const nombrePestana of LEGIBLES) {
+        const pestana = libro.getSheetByName(nombrePestana);
+        salida[nombrePestana] = pestana ? pestana.getDataRange().getDisplayValues() : [];
       }
       return responder(200, {
         ok: true,
