@@ -115,7 +115,17 @@ Lo que necesitamos de ti son dos reglas, y la segunda evita pisar trabajo hecho:
 >
 > No escribas nunca en estas tres columnas para nada más. No son tuyas.
 
-Y una cosa que sí ayuda mucho: **el nombre de la empresa tiene que ser idéntico**
-en `Leads` y en la QUEUE. El puente busca por nombre exacto y, si encuentra dos
-filas con el mismo nombre, **aborta sin escribir nada** — a propósito: escribir en
-la fila equivocada es peor que no escribir.
+Y una cosa sobre los nombres. El panel une las pestañas ignorando mayúsculas,
+tildes, espacios y puntuación: para él, `Acuña Inmobiliaria`, `ACUNA
+INMOBILIARIA` y `Acuna-Inmobiliaria` son la misma empresa. **No hace falta que
+escribas el nombre idéntico**, pero sí que no se parezcan dos empresas distintas:
+
+> Si dos filas de una misma pestaña se llaman igual una vez quitadas mayúsculas,
+> tildes y puntuación, el panel **no escribe en ninguna de las dos** — ni la
+> aprobación, ni el envío, ni nada. Prefiere quedarse quieto antes que escribir
+> en la fila equivocada.
+>
+> Así que **no crees una segunda fila para una empresa que ya está**. Si necesitas
+> distinguir dos sedes o dos proyectos del mismo grupo, que el nombre se
+> diferencie en algo más que un guion: `Acuña Inmobiliaria Chiclayo` y `Acuña
+> Inmobiliaria Trujillo`, no `Acuña` y `Acuña.`.
