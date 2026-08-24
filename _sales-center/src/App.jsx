@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import Intro, { tocaIntro } from './Intro'
 import {
@@ -137,6 +137,13 @@ function Icon({ name, size = 16 }) {
       </>
     ),
     check: <path d="m5 12 4.2 4.2L19 6.5" />,
+    buscar: (
+      <>
+        <circle cx="11" cy="11" r="6.5" />
+        <path d="m16 16 4.5 4.5" />
+      </>
+    ),
+    cerrar: <path d="m6 6 12 12M18 6 6 18" />,
     chevron: <path d="m6 9 6 6 6-6" />,
     retry: (
       <>
@@ -1059,7 +1066,6 @@ function ProspectDetail({ data, prospect }) {
           <div>
             <strong>{valueOrMissing(prospect.score)}</strong>
             <span>Oportunidad</span>
-            <ScoreBreakdown prospect={prospect} />
           </div>
           <div>
             <strong>{valueOrMissing(prospect.readiness)}</strong>
@@ -1070,6 +1076,10 @@ function ProspectDetail({ data, prospect }) {
             <span>DAK puede liderar</span>
           </div>
         </div>
+
+        {/* El desglose va a lo ancho y no dentro de la celda de «Oportunidad»:
+            ahi le tocaban 317px y las etiquetas de dos palabras se partian. */}
+        <ScoreBreakdown prospect={prospect} />
       </header>
 
       {/* Tres preguntas, no diez campos. Un socio abre esto para decidir, y la
@@ -1122,30 +1132,232 @@ function ProspectDetail({ data, prospect }) {
   )
 }
 
+/**
+ * Cifra que rueda hasta su valor nuevo.
+ *
+ * Es el momento con autoria de esta vista, y no es decoracion: el trabajo del
+ * panel es mirar como se mueven unas cifras al recortar el conjunto. Si al
+ * pulsar un filtro los numeros SALTAN, cambian sin que los veas cambiar y toca
+ * releerlos todos. Rodando, la vista sigue el que se movio mas.
+ *
+ * Con cifras tabulares el ancho no baila mientras rueda, asi que nada de
+ * alrededor se mueve — que es la diferencia entre esto y una animacion que
+ * estorba.
+ */
+function useRueda(objetivo) {
+  // Se pinta `objetivo` salvo mientras hay una rueda en marcha. Al reves —guardar
+  // el numero en el estado y moverlo por fotogramas— la cifra se queda en el
+  // valor viejo si los fotogramas no llegan, y llegan a no llegar: una pestaña
+  // en segundo plano congela requestAnimationFrame. La animacion es un añadido
+  // encima del valor bueno, nunca la unica via para llegar a el.
+  const [rodando, setRodando] = useState(null)
+  const pintado = useRef(objetivo)
+
+  useEffect(() => {
+    const desde = pintado.current
+    pintado.current = objetivo
+    if (desde === objetivo) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const inicio = performance.now()
+    const duracion = 300
+    let ficha = requestAnimationFrame(function paso(ahora) {
+      const parte = Math.min(1, (ahora - inicio) / duracion)
+      const suave = 1 - (1 - parte) ** 4
+      const valor = Math.round(desde + (objetivo - desde) * suave)
+      pintado.current = parte < 1 ? valor : objetivo
+      setRodando(parte < 1 ? valor : null)
+      if (parte < 1) ficha = requestAnimationFrame(paso)
+    })
+    return () => { cancelAnimationFrame(ficha); setRodando(null) }
+  }, [objetivo])
+
+  return rodando ?? objetivo
+}
+
+function Rueda({ valor }) {
+  return <>{useRueda(valor)}</>
+}
+
+/**
+ * Un rail de opciones con UNA marca de oro que viaja de una a otra.
+ *
+ * Dos marcas que se apagan y se encienden dicen «esta se apago, esta se
+ * encendio». Una sola que se desplaza dice «has cambiado de sitio», que es lo
+ * que de verdad ha pasado, y ademas deja claro sin explicarlo que aqui solo se
+ * puede elegir una cosa. Las medidas de arriba se encienden por separado
+ * justamente porque ahi si se pueden combinar: el movimiento explica la regla.
+ */
+function RailFaceta({ activa, neutro, opciones, poner, titulo }) {
+  const rail = useRef(null)
+  const marca = useRef(null)
+  const primera = useRef(true)
+
+  const situar = useCallback(() => {
+    const caja = rail.current
+    const linea = marca.current
+    if (!caja || !linea) return
+    const elegida = caja.querySelector('[aria-pressed="true"]')
+    if (!elegida) { linea.style.opacity = '0'; return }
+    const base = caja.getBoundingClientRect()
+    const suya = elegida.getBoundingClientRect()
+    // La marca mide 1px y se estira: escalar es transformar, y transformar no
+    // recalcula el layout en cada fotograma como lo haria animar el ancho.
+    linea.style.opacity = '1'
+    linea.style.transform = `translateX(${suya.left - base.left}px) scaleX(${suya.width})`
+  }, [])
+
+  useLayoutEffect(() => {
+    // En el primer pintado la marca aparece donde le toca; sin esto entraria
+    // deslizandose desde el borde izquierdo cada vez que se abre la vista.
+    if (primera.current) {
+      const linea = marca.current
+      if (linea) linea.style.transition = 'none'
+      situar()
+      if (linea) { linea.getBoundingClientRect(); linea.style.transition = '' }
+      primera.current = false
+    } else {
+      situar()
+    }
+  })
+
+  // Si cambia el ancho —redimensionar, plegar la ficha— la marca tiene que
+  // seguir debajo de su opcion y no quedarse a medio camino. Se vigila una vez,
+  // no en cada pulsacion de tecla del buscador.
+  useLayoutEffect(() => {
+    const caja = rail.current
+    if (!caja) return undefined
+    const vigia = new ResizeObserver(situar)
+    vigia.observe(caja)
+    return () => vigia.disconnect()
+  }, [situar])
+
+  return (
+    <div className="faceta">
+      <h2>{titulo}</h2>
+      <div aria-label={titulo} className="faceta__rail" ref={rail} role="group">
+        <span aria-hidden="true" className="faceta__marca" ref={marca} />
+        {opciones.map((o) => (
+          <button
+            aria-pressed={activa === o.valor}
+            className="faceta__opcion"
+            disabled={!o.total && o.valor !== neutro && activa !== o.valor}
+            key={o.valor}
+            onClick={() => poner(activa === o.valor ? neutro : o.valor)}
+            type="button"
+          >
+            {o.texto}<i><Rueda valor={o.total} /></i>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Prospectos.
+ *
+ * El filtro dejo de ser una barra de formularios. Cinco controles —buscar,
+ * tipo, origen, etapa y orden— no caben en el ancho de una lista, y ahi es
+ * exactamente donde estaban: dentro de `work-queue`, la columna de 300px.
+ *
+ * El intento siguiente los saco de ahi pero los convirtio en cinco tarjetas de
+ * cifra grande, cada una con su filete de color. Es la plantilla mas repetida
+ * que existe en paneles generados —numero enorme, etiqueta pequeña, acento
+ * lateral, cinco colores— y se nota de lejos. Fuera.
+ *
+ * Lo que hay ahora es un RAIL DE MEDIDAS: las cifras sobre el propio fondo,
+ * separadas por filetes de 1px y nada mas, como la escala de un instrumento.
+ * Sin tarjetas, sin colores y sin sombras. Y sin nada de eso, lo que distingue
+ * a un panel bueno de uno generado es lo unico que queda: como se mueve. Las
+ * cifras ruedan hasta su valor nuevo y una sola marca de oro viaja hasta la
+ * opcion elegida.
+ *
+ * Las cuentas son de faceta: cada dimension se cuenta con el resto de filtros
+ * aplicados pero ignorando el suyo propio. Asi el numero de cada opcion dice
+ * cuantas filas veras si la pulsas, que es lo unico que se le pregunta a un
+ * numero puesto ahi.
+ */
 function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
   const [query, setQuery] = useState(filtrosIniciales.buscar ?? '')
   const [origin, setOrigin] = useState(filtrosIniciales.origen ?? 'todos')
   const [stage, setStage] = useState(filtrosIniciales.etapa ?? 'todas')
   const [tipo, setTipo] = useState(filtrosIniciales.tipo ?? 'todos')
+  const [foco, setFoco] = useState(null)
   const [orden, setOrden] = useState('score')
   const [selectedId, setSelectedId] = useState(prospects[0]?.id ?? null)
   const [enDetalle, setEnDetalle] = useState(false)
   const abrir = (id) => { setSelectedId(id); setEnDetalle(true) }
-  const filteredProspects = useMemo(() => {
-    const normalizedQuery = query.trim().toLocaleLowerCase('es')
-    return prospects.filter((prospect) => {
-      const matchesQuery = !normalizedQuery || [prospect.empresa, prospect.persona, prospect.fuente, prospect.rubro, prospect.ciudad].filter(Boolean).some((value) => value.toLocaleLowerCase('es').includes(normalizedQuery))
-      return matchesQuery
-        && (origin === 'todos' || prospect.origen === origin)
-        && (stage === 'todas' || prospect.etapa === stage)
-        && (tipo === 'todos' || prospect.tipoOportunidad === tipo)
-    })
-  }, [origin, prospects, query, stage, tipo])
-  const selectedProspect = filteredProspects.find((prospect) => prospect.id === selectedId) ?? filteredProspects[0] ?? null
 
-  // Las quince filas se agrupan por etapa del embudo. Una lista plana de quince
-  // nombres no dice nada; agrupada, la forma del embudo se lee en la propia
-  // columna sin mirar Panorama.
+  const sinContacto = (p) => !p.contacto?.handle && !p.contacto?.telefono && !p.contacto?.email
+  const deHoy = (p) => diasDesde(p.fechaDeteccion) === 0
+
+  const termino = query.trim().toLocaleLowerCase('es')
+  const coincideTexto = (p) => !termino || [p.empresa, p.persona, p.fuente, p.rubro, p.ciudad]
+    .filter(Boolean).some((valor) => valor.toLocaleLowerCase('es').includes(termino))
+
+  // `salvo` desactiva UNA dimension. Es lo que hace que las cuentas sirvan en
+  // vez de ser circulares: contar «Etapa: enviado» con el filtro de etapa ya
+  // puesto daria cero para todas las demas.
+  const pasa = (p, salvo = null) => coincideTexto(p)
+    && (salvo === 'tipo' || tipo === 'todos' || p.tipoOportunidad === tipo)
+    && (salvo === 'origen' || origin === 'todos' || p.origen === origin)
+    && (salvo === 'etapa' || stage === 'todas' || p.etapa === stage)
+    && (salvo === 'foco' || foco !== 'sin-contacto' || sinContacto(p))
+    && (salvo === 'foco' || foco !== 'hoy' || deHoy(p))
+
+  const cuenta = (condicion, salvo) => prospects.filter((p) => pasa(p, salvo) && condicion(p)).length
+  const filteredProspects = prospects.filter((p) => pasa(p))
+  const selectedProspect = filteredProspects.find((p) => p.id === selectedId) ?? filteredProspects[0] ?? null
+
+  const hayFiltro = Boolean(termino) || tipo !== 'todos' || origin !== 'todos' || stage !== 'todas' || foco
+  const limpiar = () => { setQuery(''); setTipo('todos'); setOrigin('todos'); setStage('todas'); setFoco(null) }
+  const alternar = (valor, actual, poner, neutro) => poner(actual === valor ? neutro : valor)
+
+  // Cinco medidas del conjunto. Solo una va en oro y siempre la misma: agencia
+  // completa es la unica que significa dinero grande, y el oro en este panel
+  // quiere decir eso. Las demas son hueso; la marca de abajo dice cual filtra.
+  const medidas = [
+    { clave: 'total', etiqueta: 'Prospectos', valor: prospects.filter(coincideTexto).length,
+      activo: !hayFiltro, alPulsar: limpiar },
+    { clave: 'agencia', etiqueta: 'Agencia completa', oro: true,
+      valor: cuenta((p) => p.tipoOportunidad === 'Agencia completa', 'tipo'),
+      activo: tipo === 'Agencia completa',
+      alPulsar: () => alternar('Agencia completa', tipo, setTipo, 'todos') },
+    { clave: 'soporte', etiqueta: 'Soporte',
+      valor: cuenta((p) => p.tipoOportunidad === 'Soporte especializado', 'tipo'),
+      activo: tipo === 'Soporte especializado',
+      alPulsar: () => alternar('Soporte especializado', tipo, setTipo, 'todos') },
+    { clave: 'sin-contacto', etiqueta: 'Sin contacto', valor: cuenta(sinContacto, 'foco'),
+      activo: foco === 'sin-contacto',
+      alPulsar: () => alternar('sin-contacto', foco, setFoco, null) },
+    { clave: 'hoy', etiqueta: 'Detectados hoy', valor: cuenta(deHoy, 'foco'),
+      activo: foco === 'hoy',
+      alPulsar: () => alternar('hoy', foco, setFoco, null) },
+  ]
+
+  const facetas = [
+    {
+      titulo: 'Etapa', activa: stage, neutro: 'todas', poner: setStage,
+      opciones: [
+        { valor: 'todas', texto: 'Todas', total: prospects.filter((p) => pasa(p, 'etapa')).length },
+        ...Object.entries(stages).map(([valor, texto]) => ({
+          valor, texto, total: cuenta((p) => p.etapa === valor, 'etapa'),
+        })),
+      ],
+    },
+    {
+      titulo: 'Origen', activa: origin, neutro: 'todos', poner: setOrigin,
+      opciones: [
+        { valor: 'todos', texto: 'Todos', total: prospects.filter((p) => pasa(p, 'origen')).length },
+        { valor: 'outbound', texto: 'Búsqueda activa', total: cuenta((p) => p.origen === 'outbound', 'origen') },
+        { valor: 'inbound', texto: 'Llegaron solos', total: cuenta((p) => p.origen === 'inbound', 'origen') },
+      ],
+    },
+  ]
+
+  // Las filas se agrupan por etapa del embudo. Una lista plana no dice nada;
+  // agrupada, la forma del embudo se lee en la propia columna.
   const porEtapa = Object.entries(stages)
     .map(([clave, titulo]) => ({
       clave,
@@ -1168,122 +1380,92 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
     setSelectedId(filteredProspects[hasta].id)
   }
 
-  // El resumen del conjunto. Cada cifra es tambien un filtro: mirar y recortar
-  // son el mismo gesto, en vez de leer arriba y buscar el desplegable abajo.
-  const cuenta = (fn) => prospects.filter(fn).length
-  const resumen = [
-    { etiqueta: 'Prospectos', valor: prospects.length, activo: tipo === 'todos' && origin === 'todos' && stage === 'todas' && !query,
-      alPulsar: () => { setTipo('todos'); setOrigin('todos'); setStage('todas'); setQuery('') } },
-    { etiqueta: 'Agencia completa', valor: cuenta((p) => p.tipoOportunidad === 'Agencia completa'), oro: true,
-      activo: tipo === 'Agencia completa', alPulsar: () => setTipo(tipo === 'Agencia completa' ? 'todos' : 'Agencia completa') },
-    { etiqueta: 'Soporte', valor: cuenta((p) => p.tipoOportunidad === 'Soporte especializado'),
-      activo: tipo === 'Soporte especializado', alPulsar: () => setTipo(tipo === 'Soporte especializado' ? 'todos' : 'Soporte especializado') },
-    { etiqueta: 'Sin contacto', valor: cuenta((p) => !p.contacto?.handle && !p.contacto?.telefono && !p.contacto?.email),
-      activo: false, alPulsar: () => setQuery('') },
-    { etiqueta: 'Detectados hoy', valor: cuenta((p) => diasDesde(p.fechaDeteccion) === 0),
-      activo: false, alPulsar: () => setOrden('antiguedad') },
-  ]
-
   return (
-    <div className={`work-split ${enDetalle ? 'work-split--detalle' : 'work-split--lista'}`}>
-      <div className="work-queue" onKeyDown={alTeclado}>
-        {/* Los filtros ya no viven dentro de la columna de 300px. Ahi salian
-            apretados y con las etiquetas partidas, porque una barra de
-            herramientas no cabe en el ancho de una lista. Ahora es una barra
-            propia a lo ancho de la vista. */}
-        <div className="prospect-toolbar">
-          <label className="toolbar-buscar">
-            <input onChange={(event) => setQuery(event.target.value)} placeholder="Buscar empresa, ciudad, fuente…" type="search" value={query} />
-          </label>
-
-          {/* Segmentado y no desplegable: es LA pregunta del sistema comercial,
-              son solo tres opciones, y asi se ve cual esta activa sin abrir nada. */}
-          <div aria-label="Tipo de oportunidad" className="segmentado" role="group">
-            {[['todos', 'Todos'], ['Agencia completa', 'Agencia completa'], ['Soporte especializado', 'Soporte']].map(([valor, texto]) => (
-              <button
-                aria-pressed={tipo === valor}
-                className={`segmentado__opcion ${valor === 'Agencia completa' ? 'segmentado__opcion--oro' : ''}`}
-                key={valor}
-                onClick={() => setTipo(valor)}
-                type="button"
-              >
-                {texto}
+    <div className={`vista-prospectos ${enDetalle ? 'vista-prospectos--detalle' : ''}`}>
+      <header className="prospectos-cabecera">
+        <div className="cabecera-linea">
+          <label className="cabecera-buscar">
+            <Icon name="buscar" size={15} />
+            <input
+              onChange={(evento) => setQuery(evento.target.value)}
+              placeholder="Buscar empresa, ciudad o rubro…"
+              type="search"
+              value={query}
+            />
+            {query && (
+              <button aria-label="Limpiar la búsqueda" onClick={() => setQuery('')} type="button">
+                <Icon name="cerrar" size={12} />
               </button>
-            ))}
-          </div>
-
-          <div className="toolbar-selects">
-            <label>
-              <span>Origen</span>
-              <select onChange={(event) => setOrigin(event.target.value)} value={origin}>
-                <option value="todos">Todos</option>
-                <option value="outbound">Búsqueda activa</option>
-                <option value="inbound">Llegaron solos</option>
-              </select>
-            </label>
-            <label>
-              <span>Etapa</span>
-              <select onChange={(event) => setStage(event.target.value)} value={stage}>
-                <option value="todas">Todas</option>
-                {Object.entries(stages).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-              </select>
-            </label>
-            <label>
-              <span>Ordenar</span>
-              <select onChange={(event) => setOrden(event.target.value)} value={orden}>
-                <option value="score">Oportunidad</option>
-                <option value="liderazgo">Podemos liderar</option>
-                <option value="antiguedad">Más antiguos</option>
-                <option value="nombre">Nombre</option>
-              </select>
-            </label>
-          </div>
+            )}
+          </label>
+          {/* Ordenar no es filtrar: no recorta nada, solo cambia el turno. Por
+              eso vive aparte del rail y no mezclado entre las medidas. */}
+          <label className="cabecera-orden">
+            <span>Ordenar</span>
+            <select onChange={(evento) => setOrden(evento.target.value)} value={orden}>
+              <option value="score">Oportunidad</option>
+              <option value="liderazgo">Podemos liderar</option>
+              <option value="antiguedad">Más antiguos</option>
+              <option value="nombre">Nombre</option>
+            </select>
+          </label>
         </div>
 
-        {/* El resumen: sin esto, Prospectos era una lista sin sentido del
-            conjunto. Cada cifra es un filtro — se pulsa y recorta. */}
-        <div className="prospect-resumen">
-          {resumen.map((r) => (
+        <div className="rail-medidas">
+          {medidas.map((m) => (
             <button
-              className={`resumen-cifra ${r.activo ? 'is-activo' : ''} ${r.oro ? 'resumen-cifra--oro' : ''}`}
-              key={r.etiqueta}
-              onClick={r.alPulsar}
+              aria-pressed={m.activo}
+              className={`medida ${m.activo ? 'is-activa' : ''} ${m.oro ? 'medida--oro' : ''}`}
+              key={m.clave}
+              onClick={m.alPulsar}
               type="button"
             >
-              <strong>{r.valor}</strong>
-              <span>{r.etiqueta}</span>
+              <strong><Rueda valor={m.valor} /></strong>
+              <span>{m.etiqueta}</span>
             </button>
           ))}
         </div>
 
-        {porEtapa.map((grupo) => (
-          <section className="work-group" key={grupo.clave}>
-            <header><h2>{grupo.titulo}</h2><span>{grupo.items.length}</span></header>
-            <ul>
-              {grupo.items.map((prospect) => (
-                <li key={prospect.id}>
-                  <WorkRow
-                    metric="score"
-                    onSelect={abrir}
-                    prospect={prospect}
-                    selected={selectedProspect?.id === prospect.id}
-                  />
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+        <div className="cabecera-facetas">
+          {facetas.map((f) => <RailFaceta key={f.titulo} {...f} />)}
+        </div>
+      </header>
 
-        {!filteredProspects.length && (
-          <div className="empty-state empty-state--compact">
-            <div><h3>Sin resultados</h3><p>Ninguna fila del mock coincide con estos filtros.</p></div>
-          </div>
-        )}
-      </div>
+      <div className={`work-split ${enDetalle ? 'work-split--detalle' : 'work-split--lista'}`}>
+        <div className="work-queue" onKeyDown={alTeclado}>
+          {porEtapa.map((grupo) => (
+            <section className="work-group" key={grupo.clave}>
+              <header><h2>{grupo.titulo}</h2><span><Rueda valor={grupo.items.length} /></span></header>
+              <ul>
+                {grupo.items.map((prospect) => (
+                  <li key={prospect.id}>
+                    <WorkRow
+                      metric="score"
+                      onSelect={abrir}
+                      prospect={prospect}
+                      selected={selectedProspect?.id === prospect.id}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
 
-      <div className="work-detail" key={selectedProspect?.id ?? 'empty'}>
-        {selectedProspect && <BotonVolver onClick={() => setEnDetalle(false)} titulo={getShortName(selectedProspect)} />}
-        <ProspectDetail data={data} prospect={selectedProspect} />
+          {!filteredProspects.length && (
+            <div className="empty-state empty-state--compact">
+              <div>
+                <h3>Sin resultados</h3>
+                <p>Ninguna empresa coincide con estos filtros.</p>
+                <button className="retry-button" onClick={limpiar} type="button">Quitar los filtros</button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="work-detail" key={selectedProspect?.id ?? 'empty'}>
+          {selectedProspect && <BotonVolver onClick={() => setEnDetalle(false)} titulo={getShortName(selectedProspect)} />}
+          <ProspectDetail data={data} prospect={selectedProspect} />
+        </div>
       </div>
     </div>
   )
