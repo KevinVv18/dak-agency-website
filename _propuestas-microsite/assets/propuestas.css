@@ -1,478 +1,344 @@
-/* Archivo (Omnibus-Type), subconjunto latino. Archivos aparte y no base64: las
-   dos cotizaciones comparten la misma copia y el navegador la cachea una vez. */
-@font-face{font-family:'Archivo';font-style:normal;font-weight:400;font-display:swap;src:url(archivo-400.woff2) format('woff2')}
-@font-face{font-family:'Archivo';font-style:normal;font-weight:700;font-display:swap;src:url(archivo-700.woff2) format('woff2')}
-@font-face{font-family:'Archivo Black';font-style:normal;font-weight:400;font-display:swap;src:url(archivo-black.woff2) format('woff2')}
-@font-face{font-family:'Archivo Narrow';font-style:normal;font-weight:400;font-display:swap;src:url(archivo-narrow-400.woff2) format('woff2')}
-@font-face{font-family:'Archivo Narrow';font-style:normal;font-weight:700;font-display:swap;src:url(archivo-narrow-700.woff2) format('woff2')}
+/* ═══════════════════════════════════════════════════════════════════════════
+   Cotizaciones de DAK Agency.
+
+   Paleta e identidad de la marca, según los compromisos vinculantes de
+   PRODUCT.md: fondo #030106, morado #B024FF, teal #00C8C8 y Poppins
+   autoalojada. El morado de marca da 4,49:1 sobre el fondo y no llega al
+   mínimo de texto pequeño, así que como TEXTO va #B93EFF (5,14:1); #B024FF
+   queda para rellenos, bordes y piezas grandes.
+
+   La estructura del documento —ficha, partidas numeradas, total, cláusulas y
+   aceptación con rúbricas— se conserva. Lo que cambia es la piel.
+   ═════════════════════════════════════════════════════════════════════════ */
+
+@font-face{font-family:'Poppins';font-style:normal;font-weight:400;font-display:swap;src:url(poppins-400.woff2) format('woff2')}
+@font-face{font-family:'Poppins';font-style:normal;font-weight:600;font-display:swap;src:url(poppins-600.woff2) format('woff2')}
+@font-face{font-family:'Poppins';font-style:normal;font-weight:700;font-display:swap;src:url(poppins-700.woff2) format('woff2')}
+@font-face{font-family:'Poppins';font-style:normal;font-weight:800;font-display:swap;src:url(poppins-800.woff2) format('woff2')}
 
 :root{
-  --tinta:#123A2A;
-  --senal:#D93A14;          /* tinta 2: rellenos, estallido, cinta */
-  --senal-texto:#A82A0B;    /* la misma tinta, legible como TEXTO sobre papel (4,83:1 en el peor fondo) */
-  --papel:#DDD6C4;
-  --papel-alto:#EAE4D5;
-  --calado:#F1ECDE;
-  --regla:#123A2A;
-  --exp:cubic-bezier(.16,1,.3,1);
-  --medida:68ch;
+  --fondo:#030106;
+  --panel:#0A0612;
+  --card:#120B1E;
+  --purp:#B024FF;        /* rellenos, bordes y piezas grandes */
+  --purp-tx:#B93EFF;     /* el mismo morado como TEXTO: 5,14:1 sobre el fondo */
+  --teal:#00C8C8;        /* la segunda luz */
+  --tx:#FFFFFF;
+  --tx2:rgba(255,255,255,.80);
+  --tx3:rgba(255,255,255,.62);
+  --linea:rgba(255,255,255,.12);
+  --linea-viva:rgba(255,255,255,.22);
+  --exp:cubic-bezier(.19,1,.22,1);
 }
+
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{
-  background:var(--papel);
-  color:var(--tinta);
-  font-family:'Archivo',system-ui,sans-serif;
-  font-size:clamp(1rem,.96rem + .2vw,1.09rem);
+  background:var(--fondo);
+  color:var(--tx2);
+  font-family:'Poppins',system-ui,sans-serif;
+  font-size:clamp(.97rem,.93rem + .2vw,1.05rem);
+  font-weight:400;
   line-height:1.62;
   font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
 
-/* --- superficies del navegador: también son del diseño --- */
-::selection{background:var(--senal);color:var(--calado)}
-:focus-visible{outline:3px solid var(--senal);outline-offset:3px}
-html{scrollbar-color:var(--tinta) var(--papel-alto)}
-::-webkit-scrollbar{width:13px}
-::-webkit-scrollbar-track{background:var(--papel-alto)}
-::-webkit-scrollbar-thumb{background:var(--tinta);border:3px solid var(--papel-alto)}
-a{color:inherit;text-underline-offset:.22em;text-decoration-thickness:.09em}
+/* ── Superficies del navegador: también son del diseño ────────────────────── */
+::selection{background:var(--purp);color:#fff}
+:focus-visible{outline:2px solid var(--purp-tx);outline-offset:3px;border-radius:2px}
+html{scrollbar-color:var(--purp) var(--panel)}
+::-webkit-scrollbar{width:12px}
+::-webkit-scrollbar-track{background:var(--panel)}
+::-webkit-scrollbar-thumb{background:var(--purp);border:3px solid var(--panel);border-radius:8px}
+a{color:inherit;text-underline-offset:.22em;text-decoration-thickness:.08em}
 
-/* --- materiales --- */
-.trama::before{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background-image:radial-gradient(currentColor .9px,transparent .9px);
-  background-size:7px 7px;opacity:.10;
+/* ── El logo, en línea para poder recolorearlo en papel ───────────────────── */
+.dakLogo{display:block;width:auto;color:var(--tx)}
+.dakLogo .d{fill:currentColor}
+.dakLogo .a{fill:var(--purp)}
+
+/* ── Planchas: una luz de sección propia en cada una ──────────────────────── */
+.plancha{position:relative;padding:clamp(3.2rem,6.5vw,6rem) 0;isolation:isolate}
+.plancha::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(60% 55% at var(--luz-x,25%) var(--luz-y,15%),
+             rgba(176,36,255,.16), transparent 68%);
 }
-.grano::after{
-  content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+.plancha:nth-of-type(2)::before{--luz-x:80%;--luz-y:25%;
+  background:radial-gradient(58% 52% at var(--luz-x) var(--luz-y),rgba(0,200,200,.11),transparent 66%)}
+.plancha:nth-of-type(3)::before{--luz-x:15%;--luz-y:70%}
+.plancha:nth-of-type(4)::before{--luz-x:88%;--luz-y:60%;
+  background:radial-gradient(58% 52% at var(--luz-x) var(--luz-y),rgba(0,200,200,.10),transparent 66%)}
+.plancha:nth-of-type(5)::before{--luz-x:35%;--luz-y:30%}
+.plancha:nth-of-type(6)::before{--luz-x:70%;--luz-y:75%}
+
+/* El divisor de sección: filete que se desvanece por los extremos, con un
+   punto luminoso centrado. Es el recurso estructural de la marca. */
+.plancha + .plancha::after{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--linea-viva) 22%,
+             var(--purp) 50%,var(--linea-viva) 78%,transparent);
+  opacity:.55;
 }
+.caja{width:min(1120px,92vw);margin-inline:auto;position:relative;z-index:1}
 
-/* --- planchas --- */
-.plancha{position:relative;padding:clamp(3.4rem,7vw,6.6rem) 0;border-top:6px solid var(--regla)}
-.plancha:first-of-type{border-top:0}
-.plancha.flood{background:var(--tinta);color:var(--calado);border-top-color:var(--tinta)}
-.flood .trama::before{opacity:.14}
-.caja{width:min(1180px,92vw);margin-inline:auto;position:relative;z-index:2}
+/* ── Tipografía ───────────────────────────────────────────────────────────── */
+h1,h2{font-weight:800;letter-spacing:-.03em;line-height:1.04;color:var(--tx)}
+h2{font-size:clamp(1.7rem,1.15rem + 2.4vw,2.9rem);max-width:20ch;text-wrap:balance;margin-bottom:1.2rem}
+h3{font-weight:700;font-size:1.02rem;letter-spacing:-.01em;line-height:1.3;color:var(--tx)}
+p{max-width:68ch}
+.entrada{font-size:clamp(1.03rem,.98rem + .3vw,1.2rem);line-height:1.55;max-width:58ch;color:var(--tx2)}
+.menor{font-size:.86rem;line-height:1.55;color:var(--tx3);max-width:60ch}
+.pie{margin-top:1.8rem;padding-top:.8rem;border-top:1px solid var(--linea);
+  font-size:.82rem;line-height:1.55;color:var(--tx3);max-width:74ch}
+b,strong{font-weight:600;color:var(--tx)}
 
-/* --- tipografía --- */
-h1,h2,h3,.numeral,.bloque .cifra{font-family:'Archivo Black',system-ui,sans-serif;font-weight:400;letter-spacing:-.028em;text-transform:uppercase;line-height:.94}
-h2{font-size:clamp(1.95rem,1.2rem + 3.1vw,3.6rem);max-width:19ch;text-wrap:balance;margin-bottom:1.5rem}
-h3{font-family:'Archivo Narrow',system-ui,sans-serif;font-weight:700;font-size:1.03rem;letter-spacing:.09em;line-height:1.24;text-transform:uppercase}
-p{max-width:var(--medida)}
-.entrada{font-size:clamp(1.09rem,1.02rem + .34vw,1.32rem);line-height:1.5;max-width:56ch}
-.flood .entrada{color:#DDD6C4}
-.menor{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.86rem;letter-spacing:.06em;line-height:1.5;max-width:60ch}
-.flood .menor{color:#B9C7BF}
-.pie{margin-top:1.9rem;font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.83rem;line-height:1.55;letter-spacing:.03em;color:#4A5D52;max-width:74ch;border-top:2px solid var(--regla);padding-top:.75rem}
-.flood .pie{color:#A8BAB0;border-top-color:#3B6153}
-b,strong{font-weight:700}
+/* ── Cinta superior ───────────────────────────────────────────────────────── */
+.cinta{position:sticky;top:0;z-index:60;background:rgba(3,1,6,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--linea);display:flex;align-items:center;gap:.9rem;
+  padding:.6rem clamp(1rem,4vw,2rem);font-size:.76rem;letter-spacing:.02em;color:var(--tx3)}
+.cinta .dakLogo{height:17px;flex:none}
+.cinta .sello{background:var(--purp);color:#fff;padding:.24rem .6rem;border-radius:999px;
+  font-weight:600;font-size:.7rem;letter-spacing:.06em;white-space:nowrap}
+.cinta .quien{color:var(--tx2);font-weight:500}
+.cinta .dst{margin-left:auto;font-size:.72rem}
+@media(max-width:720px){.cinta .dst{display:none}}
+@media(max-width:520px){.cinta .quien{display:none}}
 
-/* --- cabecera fija --- */
-.cinta{position:sticky;top:0;z-index:60;background:var(--tinta);color:var(--calado);
-  border-bottom:3px solid var(--senal);display:flex;align-items:center;gap:1rem;
-  padding:.52rem clamp(1rem,4vw,2rem);font-family:'Archivo Narrow',sans-serif;
-  font-size:.78rem;letter-spacing:.15em;text-transform:uppercase}
-.cinta .sello{background:var(--senal);color:#fff;padding:.2rem .5rem;font-weight:700;letter-spacing:.12em;white-space:nowrap}
-.cinta .dst{margin-left:auto;color:#9FB3A9;letter-spacing:.1em;font-size:.72rem}
-@media(max-width:640px){.cinta .dst{display:none}}
+/* ── Portada ──────────────────────────────────────────────────────────────── */
+.portada{padding-top:clamp(2rem,4vw,3.2rem)}
+.marcaPortada{height:clamp(30px,4.5vw,42px);margin-bottom:clamp(1.6rem,4vw,2.6rem)}
+.cabecera{display:grid;gap:clamp(1.2rem,3vw,2.2rem)}
+.dicho{display:grid;gap:clamp(.8rem,2.2vw,1.9rem)}
+@media(min-width:920px){.dicho{grid-template-columns:.92fr 1.08fr;align-items:start}}
+.portada h1{font-size:clamp(1.7rem,1.1rem + 2.3vw,2.85rem);max-width:22ch}
 
-/* --- portada: titular a la izquierda, la cifra como golpe de afiche a la derecha --- */
-.portada{padding-top:clamp(1rem,1.8vw,1.6rem);padding-bottom:clamp(2.2rem,4vw,3.2rem)}
-.portada h1{font-size:clamp(1.65rem,1.05rem + 2.1vw,2.75rem);max-width:22ch;margin-bottom:0}
-.cabecera{display:grid;gap:clamp(1rem,2.2vw,1.7rem)}
-.dicho{display:grid;gap:clamp(.9rem,2.4vw,2.2rem)}
-@media(min-width:900px){.dicho{grid-template-columns:.95fr 1.05fr;align-items:start}}
-.reglaDoble{border-top:6px solid var(--calado);border-bottom:2px solid var(--calado);height:11px;margin:clamp(1rem,2vw,1.5rem) 0 0}
+/* El numeral, con su eco morado. El eco es decorativo y va oculto a lectores. */
+.golpe{position:relative;display:flex;align-items:flex-end;gap:clamp(1rem,2.4vw,1.9rem);flex-wrap:wrap}
+.numWrap{position:relative;line-height:.84;padding-bottom:clamp(.5rem,1.4vw,1.1rem)}
+.numeral{font-size:clamp(5.4rem,1.6rem + 22vw,21rem);font-weight:800;letter-spacing:-.055em;
+  display:block;position:relative;z-index:2;color:var(--tx)}
+.numeral.largo{font-size:clamp(3rem,.6rem + 10vw,10rem);letter-spacing:-.045em}
+.numFantasma{position:absolute;inset:0;color:var(--purp);z-index:1;transform:translate(10px,8px);opacity:.9}
+.js .numFantasma{transition:transform 1.1s var(--exp)}
+.js .registrado .numFantasma{transform:translate(4px,3px)}
+.golpe .glosa{padding-bottom:clamp(.5rem,1.4vw,1.3rem);max-width:24ch}
+.golpe .glosa strong{display:block;font-size:clamp(.95rem,.88rem + .4vw,1.15rem);font-weight:700;
+  letter-spacing:.01em;color:var(--teal);margin-bottom:.4rem}
+.golpe .glosa span{font-size:.92rem;line-height:1.5;color:var(--tx3);display:block}
 
-/* --- el numeral de afiche, con su fuera de registro permanente --- */
-.golpe{position:relative;display:flex;align-items:flex-end;gap:clamp(.9rem,2vw,1.6rem);flex-wrap:wrap;padding-top:clamp(1.4rem,3vw,2.2rem)}
-/* line-height .8 recorta la caja: la coma pinta por debajo y caia sobre la glosa */
-.numWrap{position:relative;line-height:.8;padding-top:.12em;padding-bottom:clamp(1rem,2.4vw,2.2rem)}
-.numeral{font-size:clamp(6.8rem,2rem + 28vw,27rem);letter-spacing:-.055em;display:block;position:relative;z-index:2}
-/* El tamaño de arriba está calculado para 2 o 3 caracteres («7,9», «10%»). Una
-   cifra larga como «10,000» se sale de la plancha, así que lleva su propia escala. */
-.numeral.largo{font-size:clamp(3.1rem,.6rem + 10.5vw,10.5rem);letter-spacing:-.045em}
-.numFantasma{position:absolute;inset:0;padding-top:.12em;color:var(--senal);z-index:1;transform:translate(11px,9px)}
-.js .numFantasma{transition:transform 1.15s var(--exp)}
-.js .registrado .numFantasma{transform:translate(3px,3px)}
-.golpe .glosa{padding-bottom:clamp(.8rem,2.4vw,2.4rem);max-width:21ch}
-.golpe .glosa strong{display:block;font-family:'Archivo Narrow',sans-serif;font-size:clamp(1rem,.9rem + .5vw,1.3rem);
-  letter-spacing:.19em;text-transform:uppercase;color:var(--calado);margin-bottom:.45rem}
-.golpe .glosa span{font-size:.92rem;line-height:1.5;color:#C6D2CB;display:block}
+.reglaDoble{height:1px;margin:clamp(1.4rem,3vw,2.2rem) 0 0;
+  background:linear-gradient(90deg,var(--purp),var(--teal) 55%,transparent)}
 
-/* --- bloques de precio calados --- */
-.bloques{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:clamp(1rem,2.4vw,1.7rem);margin-top:clamp(1.1rem,2.4vw,1.8rem)}
-.bloque{border:4px solid var(--calado);padding:1.3rem 1.4rem 1.5rem;position:relative;background:transparent;color:var(--calado)}
-/* el que conviene va INKED: campo solido de bermellon con la cifra calada en
-   blanco de papel. La tinta dice cual gana; no hace falta una pestana. */
-.bloque.gana{background:var(--senal);border-color:var(--senal);color:#fff}
-.bloque .tit{font-family:'Archivo Narrow',sans-serif;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;
-  border-bottom:2px solid currentColor;padding-bottom:.42rem;margin-bottom:.85rem;display:flex;justify-content:space-between;gap:.6rem;align-items:baseline}
-.bloque .cifra{font-size:clamp(2.7rem,1.6rem + 4.6vw,4.6rem);letter-spacing:-.04em;display:block}
-.bloque .cifra sup{font-family:'Archivo Narrow',sans-serif;font-size:.3em;letter-spacing:.1em;vertical-align:.9em;font-weight:700;margin-right:.16em}
-.bloque .desg{font-family:'Archivo Narrow',sans-serif;font-size:.83rem;letter-spacing:.04em;margin-top:.55rem;line-height:1.45;color:#B9C7BF}
-.bloque.gana .desg{color:#fff}
+/* ── Ficha de cabecera ────────────────────────────────────────────────────── */
+.ficha{display:grid;gap:1px;background:var(--linea);border:1px solid var(--linea);
+  border-radius:14px;overflow:hidden;margin-top:clamp(1.4rem,3vw,2.2rem)}
+@media(min-width:620px){.ficha{grid-template-columns:1fr 1fr}}
+@media(min-width:980px){.ficha{grid-template-columns:1fr 1fr 1fr}}
+.ficha div{background:var(--panel);padding:.95rem 1.15rem}
+.ficha dt{font-size:max(11px,.68rem);font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--purp-tx);margin-bottom:.28rem}
+.ficha dd{font-size:.96rem;line-height:1.42;color:var(--tx2)}
+.ficha dd b{font-weight:600;color:var(--tx)}
 
-/* --- el instrumento: escala impresa --- */
-.instrumento{margin-top:clamp(2rem,4vw,3rem);border:4px solid var(--calado);padding:clamp(1.1rem,2.5vw,1.7rem)}
-.instrumento .cab{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:1.1rem}
-.instrumento .cab h3{color:var(--calado)}
-.lectura{font-family:'Archivo Black',sans-serif;font-size:clamp(1.6rem,1.1rem + 2vw,2.4rem);letter-spacing:-.03em;color:var(--calado)}
-.lectura small{font-family:'Archivo Narrow',sans-serif;font-size:max(11px,.42em);letter-spacing:.14em;color:#9FB3A9;margin-left:.5rem;font-weight:700}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:40px;background:transparent;cursor:ew-resize;display:block}
-input[type=range]::-webkit-slider-runnable-track{height:14px;background:
-  repeating-linear-gradient(90deg,#3B6153 0 2px,transparent 2px 5px),#0C2A1E;border:2px solid var(--calado)}
-input[type=range]::-moz-range-track{height:14px;background:
-  repeating-linear-gradient(90deg,#3B6153 0 2px,transparent 2px 5px),#0C2A1E;border:2px solid var(--calado)}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:34px;background:var(--senal);
-  border:3px solid var(--calado);margin-top:-8px}
-input[type=range]::-moz-range-thumb{width:20px;height:34px;background:var(--senal);border:3px solid var(--calado);
-  border-radius:0}
-.escala{display:flex;justify-content:space-between;font-family:'Archivo Narrow',sans-serif;font-size:.72rem;
-  letter-spacing:.1em;color:#9FB3A9;margin-top:.5rem}
-.veredicto{margin-top:1.15rem;border-top:2px solid #3B6153;padding-top:.9rem;font-family:'Archivo Narrow',sans-serif;
-  font-size:.95rem;letter-spacing:.03em;line-height:1.5;color:#DDD6C4}
-.veredicto b{color:#fff}
+/* ── Partidas ─────────────────────────────────────────────────────────────── */
+.partidas{margin-top:2rem}
+.partida{display:grid;grid-template-columns:auto 1fr;gap:clamp(.9rem,2.2vw,1.8rem);
+  border-top:1px solid var(--linea);padding:1.35rem 0 1.5rem}
+.partida .cod{font-size:clamp(1.3rem,1rem + 1.2vw,1.8rem);font-weight:800;line-height:1;
+  letter-spacing:-.03em;color:var(--purp-tx)}
+.partida h3{margin-bottom:.4rem}
+.partida p{max-width:62ch;color:var(--tx2)}
+.partida .detalle{margin-top:.75rem;display:grid;gap:.5rem}
+.partida .detalle span{position:relative;padding-left:1.4rem;font-size:.9rem;line-height:1.5;
+  color:var(--tx3);max-width:60ch}
+.partida .detalle span::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;
+  border-radius:50%;background:var(--teal)}
 
-/* --- estallido, una sola vez en toda la pieza --- */
-.estallido{position:absolute;top:0;right:0;width:clamp(92px,11vw,138px);z-index:4;color:var(--senal)}
-.estallido svg{display:block;width:100%;height:auto}
-.estallido b{position:absolute;inset:0;display:grid;place-content:center;text-align:center;
-  font-family:'Archivo Narrow',sans-serif;font-size:clamp(.56rem,.5rem + .3vw,.72rem);font-weight:700;
-  letter-spacing:.1em;line-height:1.16;text-transform:uppercase;color:#fff;padding:0 12%}
-@media(max-width:1000px){.estallido{width:96px}}
-/* en columna estrecha el estallido entra en flujo, encima de la cifra: absoluto pisaba la glosa */
-@media(max-width:760px){
-  .golpe{padding-top:0}
-  .estallido{position:relative;top:auto;right:auto;width:86px;flex:0 0 86px;order:-1;margin-bottom:.4rem}
-}
+/* ── Lista de aportes ─────────────────────────────────────────────────────── */
+.lista{list-style:none;margin-top:1.4rem;display:grid;gap:.9rem}
+.lista li{position:relative;padding-left:1.6rem;max-width:62ch}
+.lista li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;
+  border-radius:50%;background:var(--purp)}
+.lista li b{display:block;color:var(--tx)}
+.lista li span{color:var(--tx3);font-size:.9rem;line-height:1.5}
 
-/* --- tablas --- */
-.marco{margin-top:2rem;border:4px solid var(--regla);background:var(--calado);overflow-x:auto}
-.flood .marco{border-color:var(--calado)}
-table{border-collapse:collapse;width:100%;min-width:520px;color:var(--tinta)}
-caption{caption-side:top;text-align:left;font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:.82rem;
-  letter-spacing:.15em;text-transform:uppercase;background:var(--tinta);color:var(--calado);padding:.55rem .9rem}
-th{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;
-  text-align:left;padding:.62rem .9rem;border-bottom:3px solid var(--regla);background:var(--papel-alto);vertical-align:bottom}
-td{padding:.6rem .9rem;border-bottom:1px solid rgba(18,58,42,.26);vertical-align:top;font-size:.94rem}
+/* ── Total ────────────────────────────────────────────────────────────────── */
+.total{margin-top:2rem;background:linear-gradient(120deg,var(--purp),#8B15D6);
+  border-radius:16px;padding:clamp(1.15rem,2.6vw,1.7rem) clamp(1.3rem,3vw,2rem);
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
+  box-shadow:0 14px 40px -18px rgba(176,36,255,.75)}
+.total .rot{font-size:.84rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+.total .per{display:block;margin-top:.24rem;font-size:.8rem;font-weight:400;letter-spacing:0;
+  text-transform:none;color:rgba(255,255,255,.88)}
+.total .imp{font-size:clamp(1.9rem,1.3rem + 2.4vw,2.9rem);font-weight:800;letter-spacing:-.035em;
+  line-height:1;color:#fff}
+.total .imp sup{font-size:max(11px,.34em);font-weight:600;vertical-align:.9em;margin-right:.14em;
+  letter-spacing:.02em}
+
+/* ── Cláusulas ────────────────────────────────────────────────────────────── */
+.clausulas{margin-top:2rem}
+.clausula{display:grid;grid-template-columns:minmax(88px,116px) 1fr;gap:clamp(.8rem,2vw,1.8rem);
+  border-top:1px solid var(--linea);padding:1.2rem 0 1.35rem}
+.clausula .orden{font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--purp-tx)}
+.clausula h3{margin-bottom:.35rem}
+.clausula p{max-width:62ch;color:var(--tx2)}
+@media(max-width:560px){.clausula{grid-template-columns:1fr;gap:.35rem}}
+
+/* ── Tablas ───────────────────────────────────────────────────────────────── */
+.marco{margin-top:1.8rem;border:1px solid var(--linea);border-radius:14px;overflow-x:auto;
+  background:var(--panel);-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:520px;color:var(--tx2)}
+caption{caption-side:top;text-align:left;font-size:.74rem;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--purp-tx);padding:.85rem 1.1rem .1rem;background:var(--panel)}
+th{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;text-align:left;
+  padding:.7rem 1.1rem;color:var(--tx3);border-bottom:1px solid var(--linea);vertical-align:bottom}
+td{padding:.75rem 1.1rem;border-bottom:1px solid var(--linea);vertical-align:top;font-size:.93rem}
 tbody tr:last-child td{border-bottom:0}
-tbody tr:nth-child(even) td{background:rgba(18,58,42,.045)}
 td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-td.destaca{color:var(--senal-texto);font-weight:700}
-tr.subraya td{background:var(--tinta)!important;color:var(--calado);font-weight:700}
-/* La celda se cala en papel y encima va la tinta: un bermellon mas claro que
-   #D93A14 no sale de ninguna prensa a dos tintas. */
-tr.subraya td.destaca{background:var(--calado)!important;color:var(--senal-texto)}
-.desliza{font-family:'Archivo Narrow',sans-serif;font-size:.76rem;letter-spacing:.11em;text-transform:uppercase;
-  color:#4A5D52;margin-top:.55rem}
-.flood .desliza{color:#9FB3A9}
-@media(min-width:860px){.desliza{display:none}}
+td.destaca{color:var(--purp-tx);font-weight:600}
+tr.subraya td{background:rgba(176,36,255,.13)}
+tr.subraya td b{color:var(--tx)}
+tr.subraya td.destaca{color:var(--purp-tx)}
+.desliza{font-size:.76rem;letter-spacing:.02em;color:var(--tx3);margin-top:.6rem}
+@media(min-width:880px){.desliza{display:none}}
 
-/* --- dos columnas de lectura --- */
-.par{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(1.4rem,3vw,2.6rem);margin-top:2rem}
-.par > div > h3{border-bottom:3px solid var(--regla);padding-bottom:.45rem;margin-bottom:.75rem}
-.flood .par > div > h3{border-bottom-color:#3B6153;color:var(--calado)}
-.par p{max-width:46ch}
+/* ── Aceptación ───────────────────────────────────────────────────────────── */
+.aceptacion{margin-top:2.4rem;background:var(--panel);border:1px solid var(--linea);
+  border-radius:18px;padding:clamp(1.3rem,3vw,2.2rem)}
+.aceptacion h3{margin-bottom:.7rem;color:var(--tx)}
+.aceptacion p{color:var(--tx2)}
+.rubricas{display:grid;gap:clamp(1.6rem,4vw,3rem);margin-top:2.4rem}
+@media(min-width:620px){.rubricas{grid-template-columns:1fr 1fr}}
+.rubrica{border-top:1px solid var(--linea-viva);padding-top:.65rem}
+.rubrica b{display:block;font-size:.78rem;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--tx)}
+.rubrica span{font-size:.82rem;color:var(--tx3)}
 
-/* --- hallazgos numerados de precio --- */
-.hallazgos{margin-top:2.2rem;display:grid;gap:1.5rem}
-.hallazgo{display:grid;grid-template-columns:auto 1fr;gap:clamp(.9rem,2vw,1.7rem);align-items:start;
-  border-top:3px solid var(--regla);padding-top:1.1rem}
-.hallazgo .idx{font-family:'Archivo Black',sans-serif;font-size:clamp(2rem,1.4rem + 2vw,3rem);line-height:.8;color:var(--senal-texto)}
-.hallazgo h3{margin-bottom:.45rem}
+/* ── Bloques de la portada del índice ─────────────────────────────────────── */
+.bloques{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:clamp(1rem,2.4vw,1.6rem);margin-top:clamp(1.4rem,3vw,2.2rem)}
+.bloque{background:var(--panel);border:1px solid var(--linea);border-radius:18px;
+  padding:1.35rem 1.5rem 1.5rem;transition:border-color .25s var(--exp),transform .25s var(--exp)}
+a.bloque:hover,a.bloque:focus-visible{border-color:var(--purp);transform:translateY(-3px)}
+.bloque .tit{display:flex;justify-content:space-between;gap:.7rem;align-items:baseline;
+  font-size:max(11px,.74rem);font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--purp-tx);padding-bottom:.5rem;margin-bottom:.85rem;border-bottom:1px solid var(--linea)}
+.bloque .cifra{display:block;font-size:clamp(2rem,1.4rem + 2.4vw,2.9rem);font-weight:800;
+  letter-spacing:-.04em;line-height:1;color:var(--tx)}
+.bloque .cifra sup{font-size:max(11px,.32em);font-weight:600;vertical-align:.9em;margin-right:.14em}
+.bloque .desg{display:block;margin-top:.7rem;font-size:.9rem;line-height:1.5;color:var(--tx3)}
 
-/* --- cláusulas --- */
-.clausulas{margin-top:2rem;counter-reset:cl}
-.clausula{border-top:3px solid var(--regla);padding:1rem 0 1.15rem;display:grid;
-  grid-template-columns:minmax(90px,120px) 1fr;gap:clamp(.8rem,2vw,1.8rem)}
-.flood .clausula{border-top-color:#3B6153}
-.clausula .orden{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:.79rem;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--senal-texto)}
-.flood .clausula .orden{color:var(--calado)}
-.clausula h3{margin-bottom:.4rem}
-.clausula p{max-width:60ch}
-@media(max-width:560px){.clausula{grid-template-columns:1fr;gap:.3rem}}
+/* ── Acciones ─────────────────────────────────────────────────────────────── */
+.acciones{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.9rem}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:.7rem 1.4rem;border-radius:999px;
+  font-family:inherit;font-size:.88rem;font-weight:600;letter-spacing:.01em;
+  background:var(--purp);color:#fff;border:1px solid var(--purp);text-decoration:none;cursor:pointer;
+  transition:background .22s var(--exp),border-color .22s var(--exp),color .22s var(--exp)}
+.btn:hover,.btn:focus-visible{background:#C555FF;border-color:#C555FF}
+.btn.linea{background:transparent;border-color:var(--linea-viva);color:var(--tx)}
+.btn.linea:hover,.btn.linea:focus-visible{border-color:var(--purp);background:rgba(176,36,255,.12)}
 
-/* --- ruta --- */
-/* Reglas horizontales con la lozenge montada encima, como las clausulas y los
-   hallazgos. Antes era un filete vertical de 4px: mismo dibujo que el acento
-   lateral de tarjeta que delata una interfaz generada. */
-.ruta{margin-top:2.1rem}
-.tramo{position:relative;border-top:3px solid var(--regla);padding:1.25rem 0 1.4rem 2.4rem}
-.tramo:last-child{padding-bottom:0}
-.tramo::before{content:"";position:absolute;left:0;top:-9px;width:17px;height:17px;
-  background:var(--senal);transform:rotate(45deg)}
-.tramo .cuando{font-family:'Archivo Narrow',sans-serif;font-size:.77rem;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--senal-texto);margin-bottom:.28rem}
-.tramo h3{margin-bottom:.35rem}
+/* ── Firma de pie ─────────────────────────────────────────────────────────── */
+.firma{margin-top:clamp(2.2rem,5vw,3.4rem);padding-top:1.1rem;border-top:1px solid var(--linea);
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  font-size:.8rem;color:var(--tx3)}
 
-/* --- preguntas --- */
-.preguntas{margin-top:2rem;display:grid;gap:0}
-.preg{display:grid;grid-template-columns:auto 1fr;gap:1.1rem;align-items:baseline;
-  border-bottom:2px solid #3B6153;padding:1rem 0}
-.preg:first-child{border-top:2px solid #3B6153}
-.preg .q{font-family:'Archivo Black',sans-serif;font-size:1.6rem;color:var(--calado);line-height:1}
-.preg p{max-width:58ch}
-.preg .porque{display:block;font-family:'Archivo Narrow',sans-serif;font-size:.83rem;letter-spacing:.04em;color:#9FB3A9;margin-top:.25rem}
-
-/* --- recomendación con manecilla --- */
-.recomienda{display:grid;grid-template-columns:auto 1fr;gap:clamp(1rem,3vw,2.2rem);align-items:start;
-  border:5px solid var(--regla);padding:clamp(1.3rem,3vw,2.2rem);background:var(--calado);margin-top:2rem}
-.recomienda svg{width:clamp(46px,7vw,74px);height:auto;color:var(--senal);flex:none}
-.recomienda h2{margin-bottom:.7rem}
-@media(max-width:560px){.recomienda{grid-template-columns:1fr}}
-
-/* --- cierre --- */
-.firma{margin-top:clamp(2.4rem,5vw,3.6rem);border-top:6px solid var(--calado);padding-top:1.3rem;
-  display:flex;justify-content:space-between;gap:1.2rem;flex-wrap:wrap;
-  font-family:'Archivo Narrow',sans-serif;font-size:.8rem;letter-spacing:.11em;text-transform:uppercase;color:#9FB3A9}
-
-/* --- entrada, un solo momento --- */
-.js .ap{opacity:0;transform:translateY(20px)}
-.js .ap.dentro{opacity:1;transform:none;transition:opacity .72s var(--exp),transform .72s var(--exp)}
+/* ── Entrada, un solo momento ─────────────────────────────────────────────── */
+.js .ap{opacity:0;transform:translateY(16px)}
+.js .ap.dentro{opacity:1;transform:none;transition:opacity .68s var(--exp),transform .68s var(--exp)}
 @media(prefers-reduced-motion:reduce){
   .js .ap,.js .ap.dentro{opacity:1;transform:none;transition:none}
-  .js .numFantasma{transition:none;transform:translate(0,0)}
+  .js .numFantasma{transition:none;transform:translate(4px,3px)}
 }
-
-@media print{
-  /* Sin print-color-adjust la impresora tira los fondos: el bloque ganador
-     saldria en blanco sobre blanco y con el se irian todos sus calados. */
-  .bloque.gana,.instrumento,thead th,caption,tr.subraya td,tr.subraya td.destaca,
-  .cinta .sello,.estallido svg,.numFantasma,.tramo::before{
-    -webkit-print-color-adjust:exact;print-color-adjust:exact;
-  }
-  .cinta,.instrumento input,.desliza{display:none}
-  .plancha.flood{background:#fff!important;color:var(--tinta)!important;border-top:5px solid var(--tinta)}
-  .flood h2,.flood h3,.flood .entrada,.flood .menor,.flood .pie,.flood .veredicto,
-  .flood .clausula .orden,.flood .par > div > h3,.preg .q,.lectura,.golpe .glosa strong,
-  .golpe .glosa span,.bloque,.bloque .desg,.bloque .tit,.firma,.escala span,
-  .flood .par p,.clausula p,.preg p,.preg .porque{color:var(--tinta)!important}
-  /* el <b> hereda el blanco del calado y se volvia invisible sobre papel:
-     eran justo las dos cifras del punto de equilibrio */
-  .veredicto b{color:var(--senal-texto)!important}
-  .bloque{border-color:var(--tinta)}
-  .bloque.gana{background:var(--senal);border-color:var(--senal);color:#fff}
-  .bloque.gana .desg{color:#fff}
-  .instrumento{border-color:var(--tinta)}
-  .reglaDoble{border-color:var(--tinta)}
-  .numeral{color:var(--tinta)}
-  .numFantasma{color:var(--senal)}
-  .plancha{page-break-inside:avoid;padding:1.4rem 0}
-}
-
-/* ── Componentes propios de una cotización ────────────────────────────────── */
-
-/* Lista de inclusiones: la lozenge de tinta que ya usa la hoja de ruta. */
-.lista{list-style:none;margin-top:1.4rem;display:grid;gap:.85rem}
-.lista li{position:relative;padding-left:1.85rem;max-width:62ch}
-.lista li::before{content:"";position:absolute;left:0;top:.52em;width:11px;height:11px;
-  background:var(--senal);transform:rotate(45deg)}
-.flood .lista li::before{background:var(--calado)}
-.lista li b{display:block}
-.lista li span{color:#4A5D52;font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.87rem;letter-spacing:.03em;line-height:1.5}
-.flood .lista li span{color:#B9C7BF}
-/* Lo que NO entra: la lozenge se vacía. Se lee distinto sin cambiar de tinta. */
-.lista.no li::before{background:transparent;border:2px solid var(--senal-texto);width:10px;height:10px}
-.flood .lista.no li::before{border-color:var(--calado)}
-
-/* Panel de mandos: varios parámetros a la vez, cada uno con su escala impresa. */
-.mandos{display:grid;gap:1.15rem;margin-top:1.2rem}
-@media(min-width:760px){.mandos{grid-template-columns:1fr 1fr;gap:1.15rem 2rem}}
-.mando label{display:block;font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.8rem;
-  letter-spacing:.1em;text-transform:uppercase;color:#C6D2CB;margin-bottom:.45rem;
-  display:flex;justify-content:space-between;gap:.7rem;align-items:baseline}
-.mando label .val{font-family:'Archivo Black',system-ui,sans-serif;font-size:1.15rem;
-  letter-spacing:-.02em;color:var(--calado);text-transform:none}
-.mando .lim{display:flex;justify-content:space-between;font-family:'Archivo Narrow',system-ui,sans-serif;
-  font-size:.7rem;letter-spacing:.09em;color:#9FB3A9;margin-top:.35rem}
-
-/* Resultado del panel: bloques calados, como los de precio. */
-.salida{display:grid;gap:1rem;margin-top:1.5rem;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
-.salida .caso{border:4px solid var(--calado);padding:1rem 1.15rem 1.15rem}
-.salida .caso.inked{background:var(--senal);border-color:var(--senal);color:#fff}
-.salida .caso p:first-child{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.78rem;
-  letter-spacing:.13em;text-transform:uppercase;border-bottom:2px solid currentColor;
-  padding-bottom:.38rem;margin-bottom:.7rem}
-.salida .caso .monto{font-family:'Archivo Black',system-ui,sans-serif;font-size:clamp(1.7rem,1.2rem + 2vw,2.5rem);
-  letter-spacing:-.035em;line-height:.95;display:block}
-.salida .caso .monto sup{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.32em;
-  letter-spacing:.1em;vertical-align:.95em;font-weight:700;margin-right:.16em;font-size:max(11px,.32em)}
-.salida .caso .nota{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.82rem;
-  letter-spacing:.03em;line-height:1.45;margin-top:.5rem;color:#B9C7BF}
-.salida .caso.inked .nota{color:#fff}
-
-/* Sello de cotización en la cinta superior: no es un documento interno. */
-.cinta .sello.cot{background:var(--calado);color:var(--tinta)}
-
-/* Botón de acción, en la gramática del bloque de precio. */
-.acciones{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:1.8rem}
-.btn{display:inline-block;font-family:'Archivo Narrow',system-ui,sans-serif;font-weight:700;
-  font-size:.88rem;letter-spacing:.13em;text-transform:uppercase;padding:.85rem 1.5rem;
-  border:4px solid var(--senal);background:var(--senal);color:#fff;text-decoration:none;
-  cursor:pointer;transition:background .2s var(--exp),color .2s var(--exp)}
-.btn.linea{background:transparent;border-color:var(--calado);color:var(--calado)}
-.btn:hover,.btn:focus-visible{background:var(--calado);border-color:var(--calado);color:var(--tinta)}
-
-/* ── Componentes de cotización formal ─────────────────────────────────────── */
-
-/* Ficha de cabecera: de quién, para quién, número, fecha y validez. */
-.ficha{display:grid;gap:0;border:4px solid var(--calado);margin-top:clamp(1.4rem,3vw,2.2rem)}
-@media(min-width:640px){.ficha{grid-template-columns:1fr 1fr}}
-@media(min-width:1000px){.ficha{grid-template-columns:1fr 1fr 1fr}}
-.ficha div{padding:.85rem 1.1rem;border-top:2px solid #3B6153}
-.ficha div:first-child{border-top:0}
-@media(min-width:640px){
-  .ficha div{border-top:2px solid #3B6153;border-left:2px solid #3B6153}
-  .ficha div:nth-child(-n+2){border-top:0}
-  .ficha div:nth-child(odd){border-left:0}
-}
-@media(min-width:1000px){
-  .ficha div:nth-child(-n+3){border-top:0}
-  .ficha div:nth-child(odd){border-left:2px solid #3B6153}
-  .ficha div:nth-child(3n+1){border-left:0}
-}
-.ficha dt{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.72rem;font-weight:700;
-  letter-spacing:.14em;text-transform:uppercase;color:#9FB3A9;margin-bottom:.22rem}
-.ficha dd{font-size:.98rem;line-height:1.4;color:var(--calado)}
-.ficha dd b{font-weight:700}
-
-/* Partidas: las lineas de la cotizacion. El numero es referencia, no adorno. */
-.partidas{margin-top:2rem;counter-reset:partida}
-.partida{display:grid;grid-template-columns:auto 1fr;gap:clamp(.9rem,2.2vw,1.8rem);
-  border-top:3px solid var(--regla);padding:1.2rem 0 1.35rem}
-.flood .partida{border-top-color:#3B6153}
-.partida .cod{font-family:'Archivo Black',system-ui,sans-serif;font-size:clamp(1.5rem,1.1rem + 1.4vw,2.1rem);
-  line-height:.85;color:var(--senal-texto)}
-.flood .partida .cod{color:var(--calado)}
-.partida h3{margin-bottom:.4rem}
-.partida p{max-width:62ch}
-.partida .detalle{margin-top:.7rem;display:grid;gap:.5rem}
-.partida .detalle span{position:relative;padding-left:1.5rem;font-family:'Archivo Narrow',system-ui,sans-serif;
-  font-size:.9rem;letter-spacing:.02em;line-height:1.5;color:#4A5D52;max-width:60ch}
-.flood .partida .detalle span{color:#C6D2CB}
-.partida .detalle span::before{content:"";position:absolute;left:0;top:.5em;width:9px;height:9px;
-  background:var(--senal);transform:rotate(45deg)}
-.flood .partida .detalle span::before{background:var(--calado)}
-
-/* Bloque de aceptacion, con sus lineas de firma. */
-.aceptacion{margin-top:2.4rem;border:5px solid var(--regla);padding:clamp(1.3rem,3vw,2.2rem);background:var(--calado)}
-.aceptacion h3{border-bottom:3px solid var(--regla);padding-bottom:.5rem;margin-bottom:1rem}
-.rubricas{display:grid;gap:clamp(1.6rem,4vw,3rem);margin-top:2.2rem}
-@media(min-width:640px){.rubricas{grid-template-columns:1fr 1fr}}
-.rubrica{border-top:2px solid var(--tinta);padding-top:.6rem}
-.rubrica b{display:block;font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.78rem;
-  font-weight:700;letter-spacing:.13em;text-transform:uppercase}
-.rubrica span{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.82rem;color:#4A5D52}
-
-/* Total destacado al pie del alcance. */
-.total{margin-top:2rem;border:5px solid var(--senal);background:var(--senal);color:#fff;
-  padding:clamp(1.1rem,2.6vw,1.6rem) clamp(1.2rem,3vw,1.9rem);
-  display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap}
-.total .rot{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.85rem;font-weight:700;
-  letter-spacing:.15em;text-transform:uppercase}
-.total .imp{font-family:'Archivo Black',system-ui,sans-serif;font-size:clamp(1.9rem,1.3rem + 2.6vw,3rem);
-  letter-spacing:-.035em;line-height:.95}
-.total .imp sup{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:max(11px,.3em);
-  letter-spacing:.1em;vertical-align:.95em;font-weight:700;margin-right:.16em}
-.total .per{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.85rem;letter-spacing:.06em;display:block;margin-top:.2rem}
 
 /* ═══ El papel ════════════════════════════════════════════════════════════════
-   Una cotizacion se firma en papel, asi que la ruta de impresion es una
-   superficie de primera clase y no un descarte. El bloque de impresion que
-   viene heredado del documento interno no conoce .ficha, .partida, .total ni
-   .aceptacion; este los cubre y corrige la portada, que en pantalla usa una
-   rejilla de dos columnas y un numeral de 432px que se salia de la hoja. */
+   Una cotización se firma en papel. Se invierte a blanco con la tinta de marca:
+   el morado #B024FF da 4,62:1 sobre blanco, así que ahí sí sirve como texto. */
 @media print{
   @page{ size:A4; margin:15mm 14mm; }
 
-  html,body{background:#fff!important;font-size:10.5pt}
+  html,body{background:#fff!important;color:#1A1420!important;font-size:10.5pt}
   body{overflow:visible}
 
-  /* Texturas fuera: gastan tinta y en trama fina salen sucias. */
-  .trama,.grano::after,.trama::before{display:none!important}
-
-  /* Cromo de pantalla que en papel no hace nada. */
+  .plancha::before,.plancha + .plancha::after{display:none!important}
   .cinta,.acciones,.desliza{display:none!important}
 
-  .plancha{page-break-inside:auto;padding:9mm 0 7mm;border-top:4px solid var(--tinta)}
+  .plancha{padding:9mm 0 7mm;border-top:1.5pt solid #030106;page-break-inside:auto}
   .plancha:first-of-type{border-top:0;padding-top:0}
   .caja{width:100%}
 
-  /* Portada: una sola columna, y el numeral a una medida que cabe en la hoja. */
-  .cabecera,.dicho{display:block}
-  .portada{padding-top:0}
-  .golpe{display:flex;align-items:flex-end;gap:6mm;padding-top:0;page-break-inside:avoid}
-  .numWrap{padding-top:4mm;padding-bottom:2mm;line-height:.82}
-  .numeral{font-size:52pt!important;letter-spacing:-.04em}
-  .numeral.largo{font-size:38pt!important}
-  .numFantasma{transform:translate(2px,2px)!important;transition:none!important}
-  .golpe .glosa{max-width:none;padding-bottom:1mm}
-  .golpe .glosa strong{font-size:11pt;color:var(--tinta)!important}
-  .golpe .glosa span{font-size:9.5pt;color:#3E4F46!important}
-  .portada h1{font-size:19pt;max-width:none;margin:6mm 0 2mm}
-  .portada .entrada{max-width:none}
-  .reglaDoble{margin:4mm 0 0}
+  .dakLogo{color:#030106!important}
+  .marcaPortada{height:12mm;margin-bottom:6mm}
 
-  /* Un titular nunca cierra pagina: se va con su contenido. */
+  h1,h2,h3,b,strong{color:#030106!important}
   h2,h3{page-break-after:avoid;break-after:avoid}
   h2{font-size:15pt;max-width:none;margin-bottom:3mm}
-  h3{font-size:10pt}
-  .plancha > .caja > h2:first-child{page-break-before:auto}
-  .entrada{font-size:11pt;max-width:none}
-  p{max-width:none}
+  h3{font-size:10.5pt}
+  p,.entrada,.menor{color:#2A2233!important;max-width:none}
+  .entrada{font-size:11pt}
   p,li{orphans:3;widows:3}
 
-  /* Ficha de cabecera: rejilla en tinta sobre papel. */
-  .ficha{border-color:var(--tinta);page-break-inside:avoid;margin-top:5mm}
-  .ficha div{border-color:var(--tinta)!important;padding:3mm 4mm}
-  .ficha dt{color:#5B6B62!important}
-  .ficha dd{color:var(--tinta)!important;font-size:10pt}
-
-  /* Partidas y clausulas: nunca partidas a la mitad. */
-  .partida,.clausula,.lista li,.rubrica{page-break-inside:avoid}
-  .partida{border-top-color:var(--tinta)!important;padding:4mm 0 4.5mm}
-  .partida .cod{color:var(--senal-texto)!important;font-size:16pt}
-  .partida .detalle span,.lista li span{color:#3E4F46!important;font-size:9.5pt}
-  .partida .detalle span::before,.lista li::before{background:var(--senal-texto)!important;
+  .cabecera,.dicho{display:block}
+  .portada{padding-top:0}
+  .golpe{display:flex;align-items:flex-end;gap:6mm;page-break-inside:avoid}
+  .numWrap{padding-top:4mm;padding-bottom:2mm;line-height:.84}
+  .numeral{font-size:52pt!important;color:#030106!important}
+  .numeral.largo{font-size:38pt!important}
+  .numFantasma{color:var(--purp)!important;transform:translate(2px,2px)!important;
+    transition:none!important;opacity:1;
     -webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .clausula{border-top-color:var(--tinta)!important;padding:4mm 0 4.5mm}
-  .clausula .orden{color:var(--senal-texto)!important}
-  .clausula p,.lista li b{color:var(--tinta)!important}
+  .golpe .glosa{max-width:none}
+  .golpe .glosa strong{color:#0F7A7A!important;font-size:11pt}
+  .golpe .glosa span{color:#2A2233!important;font-size:9.5pt}
+  .portada h1{font-size:19pt;max-width:none;margin:5mm 0 2mm}
+  .reglaDoble{display:none}
 
-  /* El total y la aceptacion viajan enteros. */
-  .total{page-break-inside:avoid;margin-top:6mm;background:var(--senal)!important;
-    border-color:var(--senal)!important;color:#fff!important;
+  .ficha{border:1pt solid #030106;border-radius:0;gap:0;background:none;page-break-inside:avoid;margin-top:5mm}
+  .ficha div{background:none;border-top:.75pt solid #030106;border-left:.75pt solid #030106;padding:3mm 4mm}
+  .ficha div:nth-child(-n+3){border-top:0}
+  .ficha div:nth-child(3n+1){border-left:0}
+  .ficha dt{color:#7A1FB8!important}
+  .ficha dd,.ficha dd b{color:#030106!important;font-size:10pt}
+
+  .partida,.clausula,.lista li,.rubrica{page-break-inside:avoid}
+  .partida,.clausula{border-top:.75pt solid #030106;padding:4mm 0 4.5mm}
+  .partida .cod,.clausula .orden{color:#7A1FB8!important}
+  .partida .cod{font-size:16pt}
+  .partida .detalle span,.lista li span{color:#2A2233!important;font-size:9.5pt}
+  .partida .detalle span::before{background:#0F7A7A!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .lista li::before{background:var(--purp)!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+  .total{page-break-inside:avoid;margin-top:6mm;background:var(--purp)!important;
+    border-radius:0;box-shadow:none;padding:4mm 5mm;
     -webkit-print-color-adjust:exact;print-color-adjust:exact}
   .total .rot,.total .per,.total .imp{color:#fff!important}
-  .aceptacion{page-break-inside:avoid;margin-top:6mm;background:#fff!important;
-    border-color:var(--tinta)!important;padding:5mm}
-  .aceptacion h3,.aceptacion p{color:var(--tinta)!important}
+
+  .aceptacion{page-break-inside:avoid;margin-top:6mm;background:none!important;
+    border:1pt solid #030106;border-radius:0;padding:5mm}
   .rubricas{margin-top:14mm;gap:8mm}
-  .rubrica{border-top-color:var(--tinta)!important}
-  .rubrica b{color:var(--tinta)!important}
-  .rubrica span{color:#5B6B62!important}
+  .rubrica{border-top:.75pt solid #030106}
+  .rubrica b{color:#030106!important}
+  .rubrica span{color:#4A4155!important}
 
-  /* Tablas: en papel no hay scroll, asi que se dejan fluir. */
-  .marco{overflow:visible!important;max-height:none!important;border-color:var(--tinta)!important;
-    page-break-inside:avoid;margin-top:5mm}
+  .marco{border:.75pt solid #030106;border-radius:0;background:none;page-break-inside:avoid;margin-top:5mm}
+  .marco{overflow:visible!important}
   table{min-width:0!important;font-size:9.5pt}
-  caption{background:var(--tinta)!important;color:#fff!important;
+  caption{background:none;color:#7A1FB8!important;padding:2.5mm 3mm .5mm}
+  th{color:#4A4155!important;border-bottom:.75pt solid #030106}
+  td{color:#2A2233!important;border-bottom:.5pt solid #B9B2C2}
+  td b{color:#030106!important}
+  td.destaca,tr.subraya td.destaca{color:#7A1FB8!important;font-weight:600}
+  tr.subraya td{background:#F1E6FB!important;
     -webkit-print-color-adjust:exact;print-color-adjust:exact}
-  th{background:#EAE4D5!important;color:var(--tinta)!important;
-    -webkit-print-color-adjust:exact;print-color-adjust:exact}
-  td{color:var(--tinta)!important}
-  /* La fila entintada lleva su texto CALADO en blanco. El td de arriba se lo
-     comia y la fila salia en verde sobre verde, es decir en blanco. */
-  tr.subraya td,tr.subraya td b,tr.subraya td strong{color:#fff!important}
-  tr.subraya td.destaca{background:var(--calado)!important;color:var(--senal-texto)!important}
 
-  .pie{color:#5B6B62!important;border-top-color:var(--tinta)!important;max-width:none;font-size:9pt}
-  .firma{border-top-color:var(--tinta)!important;color:#5B6B62!important;font-size:8.5pt}
-
-  /* La entrada animada no debe dejar nada invisible en el PDF. */
+  /* La nota al pie pertenece a lo que la precede: no abre pagina sola. */
+  .pie,.firma{page-break-before:avoid;break-before:avoid}
+  .pie,.firma{color:#4A4155!important;border-top-color:#030106!important;max-width:none;font-size:9pt}
   .js .ap,.js .ap.dentro{opacity:1!important;transform:none!important}
 }
