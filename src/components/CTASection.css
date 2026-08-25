@@ -135,70 +135,19 @@
   margin: 0 0 1.5rem;
 }
 
-/* ── La aguja de medición ──
+/* ── AQUÍ VIVÍA LA AGUJA DE MEDICIÓN ──
 
-   Antes cruzaba el titular en HORIZONTAL mientras el encendido del texto iba
-   fila por fila hacia ABAJO. Las dos cosas se contradecían: la aguja nunca
-   estaba donde ocurría lo que decía medir, y por eso se leía como un artefacto
-   y no como un instrumento. Además arrancaba visible y quieta en el borde
-   izquierdo, y llevaba un resplandor morado de 12px del mundo anterior.
+   Un filete horizontal que cruzaba el titular de lado a lado y bajaba con el
+   scroll, marcando el límite entre las filas ya encendidas y las que faltaban.
+   Ya estaba apagado en móvil por leerse como una raya ENCIMA del texto en vez
+   de como el filo de una regla; en escritorio pasaba lo mismo sobre tres
+   renglones anchos, así que Kevin lo retira entero.
 
-   Ahora desciende, y va exactamente en el límite entre las filas ya encendidas
-   y las que faltan. La aguja ES el borde de lectura.
-
-   El recorrido sale de cuadrar los centros de las tres filas —1/6, 3/6 y 5/6 de
-   la altura— con el --entrega al que cada una se enciende (su --llega de 0,62 /
-   0,72 / 0,82, más el medio paso que tarda en llenarse): cruza cada fila justo
-   cuando esa fila se enciende.
-
-   La franja 0,60-0,92 no es arbitraria: es el tramo en que el titular está de
-   verdad en pantalla. Con los valores anteriores la aguja se movía por y=900 de
-   una ventana de 900 —o sea, nunca se veía—, y eso es lo que la hacía parecer
-   un fallo de pintado. El porqué completo está en CTASection.jsx.
-
-   Se desplaza con transform —igual que el índice del eje del hero— porque
-   colocarla con `top` costaría una maquetación por fotograma. */
-.cta-barrido {
-  position: absolute;
-  inset: -0.2em 0;
-  --recorrido: clamp(0, calc((var(--entrega, 1) - 0.60) * 3.125), 1);
-  pointer-events: none;
-  transform: translateY(calc(var(--recorrido) * (100% - 1px)));
-  will-change: transform;
-}
-
-/* En MÓVIL la aguja no se pinta.
-   En una columna estrecha el titular se parte en cinco o seis renglones muy
-   juntos, y un filete horizontal cruzándolos no se lee como el borde de una
-   lectura: se lee como una raya encima del texto. Lo que sí sobrevive es el
-   SUBRAYADO de las tres palabras clave (.hover-word::after), que es lo que de
-   verdad marca por dónde va el encendido.
-
-   En escritorio, con las tres filas separadas y anchas, la aguja sí tiene
-   sitio y se queda. */
-@media (max-width: 768px) {
-  .cta-barrido {
-    display: none;
-  }
-}
-
-.cta-barrido-linea {
-  position: absolute;
-  inset: auto 0;
-  top: 0;
-  height: 1px;
-  /* Los extremos difuminados: si acabara en seco se leería como un borde
-     suelto, no como el filo de una regla. */
-  background: linear-gradient(to right,
-    transparent, var(--color-accent-texto) 6%, var(--color-accent-texto) 62%, transparent 96%);
-  /* Entra y sale. Antes solo tenía la salida, así que se quedaba parada arriba
-     a la vista antes de empezar a medir; y un instrumento que ya leyó tampoco
-     deja la aguja encima del resultado. */
-  opacity: min(
-    clamp(0, calc(var(--recorrido) * 8), 1),
-    clamp(0, calc((1 - var(--recorrido)) * 5), 1)
-  );
-}
+   Lo que hacía de verdad se queda: el encendido fila a fila (.heading-row) y
+   el subrayado de las tres palabras (.hover-word::after) leen --entrega y su
+   propio --llega directamente, nunca dependieron de la aguja. Se va el trazo,
+   no la medición. Con él se van --recorrido y su media query de móvil, que no
+   tenían más consumidor. */
 
 /* Cada fila se enciende al paso de la aguja. No baja de 0.66: por delante de la
    aguja el texto sigue teniendo que leerse, y ahí es donde la auditoría de

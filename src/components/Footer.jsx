@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import './Footer.css'
 /* La marca, en crudo. FORMAS son los cinco polígonos que el campo de flujo del
@@ -70,11 +70,109 @@ const MarcaEnReposo = () => (
         vectorEffect="non-scaling-stroke"
       />
     ))}
+
+    {/* La misma geometría con el trazo engordado, en transparente y sin pintar:
+        es contra ESTA con la que se comprueba si el ratón cruza la marca. El
+        trazo visible mide 2px y acertarle sería puntería, no un roce. */}
+    <g className="pie-marca-tacto" stroke="transparent" strokeWidth="26">
+      {FORMAS.map((puntos, i) => (
+        <polygon key={i} points={puntos.join(',')} />
+      ))}
+    </g>
   </svg>
 )
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
+
+  /* ── El grabado del pie se enciende ──
+
+     Dos disparadores, tal como los pidió Kevin:
+
+     - AUTOMÁTICO, en móvil y en escritorio: cada tanto la marca prende TRABADA,
+       como un fluorescente que no arranca a la primera, aguanta constante unos
+       segundos y se apaga sola.
+     - AL ROCE, solo con ratón: cuando el puntero cruza uno de los trazos, se
+       enciende los mismos segundos pero SIN el trabado, que es un gesto del
+       evento automático y no de la respuesta al gesto.
+
+     Lo del roce no se puede resolver con :hover: la marca vive detrás de la
+     placa del pie y con `pointer-events: none`, así que nunca recibe el
+     puntero. Se comprueba por GEOMETRÍA, con isPointInStroke contra una copia
+     de trazo grueso — eso responde de verdad a «cruzar un trazo», y no a
+     «entrar en el rectángulo del logo».
+
+     Coste: el escuchador vive en el pie, no en la ventana; se estrangula a un
+     fotograma; y el reloj automático solo corre mientras el pie está a la
+     vista. Con el visitante pidiendo no ver movimiento no se monta nada. */
+  const fondoRef = useRef(null)
+
+  useEffect(() => {
+    const fondo = fondoRef.current
+    if (!fondo) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const svg = fondo.querySelector('svg')
+    const pie = fondo.closest('.pie')
+    let aLaVista = false
+
+    const apagar = () => fondo.classList.remove('pie-fondo--tubo', 'pie-fondo--roce')
+    const encender = (clase) => {
+      // Si ya está encendida, no se reinicia: dos disparos seguidos harían un
+      // tartamudeo que no es el trabado que buscamos.
+      if (!aLaVista) return
+      if (fondo.classList.contains('pie-fondo--tubo') ||
+          fondo.classList.contains('pie-fondo--roce')) return
+      fondo.classList.add(clase)
+    }
+    fondo.addEventListener('animationend', apagar)
+
+    /* El reloj solo corre mientras el pie está a la vista, y arranca AL
+       LLEGAR: con un intervalo pelado, quien baja hasta aquí podía quedarse
+       hasta 17s mirando una placa muerta antes del primer encendido. */
+    let reloj = null
+    let primera = null
+    const parar = () => { clearInterval(reloj); clearTimeout(primera); reloj = null; primera = null }
+
+    const observador = new IntersectionObserver(([e]) => {
+      aLaVista = e.isIntersecting
+      if (!aLaVista) { apagar(); parar(); return }
+      if (reloj) return
+      primera = setTimeout(() => encender('pie-fondo--tubo'), 1200)
+      reloj = setInterval(() => encender('pie-fondo--tubo'), 17000)
+    }, { threshold: 0 })
+    observador.observe(fondo)
+
+    // ── El roce, solo con ratón ──
+    let pendiente = false
+    let ultimo = null
+    const comprobar = () => {
+      pendiente = false
+      const m = svg.getScreenCTM()
+      if (!m || !ultimo) return
+      const p = new DOMPoint(ultimo.clientX, ultimo.clientY).matrixTransform(m.inverse())
+      for (const trazo of svg.querySelectorAll('.pie-marca-tacto polygon')) {
+        if (trazo.isPointInStroke(p)) { encender('pie-fondo--roce'); return }
+      }
+    }
+    const alMover = (e) => {
+      if (e.pointerType !== 'mouse') return
+      ultimo = e
+      if (pendiente) return
+      pendiente = true
+      requestAnimationFrame(comprobar)
+    }
+    const conRaton = window.matchMedia('(pointer: fine)').matches
+    if (conRaton && pie) pie.addEventListener('pointermove', alMover)
+
+    return () => {
+      parar()
+      observador.disconnect()
+      fondo.removeEventListener('animationend', apagar)
+      if (conRaton && pie) pie.removeEventListener('pointermove', alMover)
+    }
+  }, [])
+
 
   const footerLinks = [
     { name: 'Servicios', href: '#services' },
@@ -155,19 +253,28 @@ const Footer = () => {
           movimiento. */}
       <div className="pie-cinta">
         <div className="pie-cinta-riel">
-          {[0, 1].map((copia) => (
+          {/* CUATRO copias, no dos. Con dos, el grupo de siete servicios mide
+              menos de mil pixeles y no llegaba a llenar ni una pantalla ancha:
+              se veia una sola hilera cruzando y detras un riel vacio la mayor
+              parte del tiempo. Con cuatro, lo que queda a la vista tras el
+              desplazamiento son tres grupos seguidos, que cubren cualquier
+              ancho razonable, y la cinta no se vacia nunca.
+
+              Solo la primera copia son enlaces de verdad; las otras tres estan
+              fuera del arbol de accesibilidad y fuera del tabulador. */}
+          {[0, 1, 2, 3].map((copia) => (
             <nav
               key={copia}
               className="pie-cinta-grupo"
               aria-label={copia === 0 ? 'Servicios' : undefined}
-              aria-hidden={copia === 1 ? 'true' : undefined}
+              aria-hidden={copia > 0 ? 'true' : undefined}
             >
               {SERVICIOS.map((nombre, i) => (
                 <a
                   key={nombre}
                   href="#services"
                   className="pie-cinta-item"
-                  tabIndex={copia === 1 ? -1 : undefined}
+                  tabIndex={copia > 0 ? -1 : undefined}
                   onClick={(e) => handleLinkClick(e, '#services')}
                 >
                   <span className="pie-cinta-n">{String(i + 1).padStart(2, '0')}</span>
@@ -181,7 +288,7 @@ const Footer = () => {
 
       {/* La marca, de fondo. Ya no es un bloque propio al final: vive detrás de
           toda la placa, muy tenue, como el grabado de una chapa. */}
-      <div className="pie-fondo" aria-hidden="true">
+      <div className="pie-fondo" aria-hidden="true" ref={fondoRef}>
         <MarcaEnReposo />
       </div>
 

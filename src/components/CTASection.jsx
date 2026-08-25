@@ -176,20 +176,23 @@ const CTASection = () => {
         {/* Es el h1 del documento: el enunciado dominante de la home. Antes la
             página no tenía ningún h1 y su primer encabezado era el «- RUIDO»
             del hero. */}
-        {/* El barrido de medición: una línea cruza el enunciado según bajas —el
-            mismo índice que recorre el eje del hero, ahora midiendo el
-            titular—. Por detrás el texto queda pleno; por delante, atenuado. Y
-            las tres palabras clave se subrayan justo cuando el barrido las
-            alcanza, reutilizando el mismo subrayado que ya tenían para el ratón
-            en vez de inventar otro camino.
+        {/* El titular se enciende de arriba abajo según bajas: por detrás el
+            texto queda pleno, por delante atenuado, y las tres palabras clave se
+            subrayan a su paso.
+
+            AQUÍ HUBO UNA AGUJA: un filete horizontal que cruzaba el enunciado de
+            lado a lado marcando por dónde iba el encendido. Se retira a petición
+            de Kevin — cruzada sobre tres renglones anchos no se leía como el
+            filo de una regla, se leía como una raya encima del texto, que es
+            exactamente por lo que ya estaba apagada en móvil. El encendido de
+            las filas y los subrayados NO dependían de ella: los tres leen
+            --entrega directamente, así que la medición sigue entera y lo que se
+            va es solo el trazo.
 
             `--llega` es dónde cae cada fila y cada palabra a lo largo del
-            barrido. Va aquí, en el marcado, porque es composición: depende de
+            recorrido. Va aquí, en el marcado, porque es composición: depende de
             en qué línea y en qué posición está cada cosa. */}
         <h1 className="cta-entra cta-heading" style={{ '--desde': ENTRADAS.titular }}>
-          <span className="cta-barrido" aria-hidden="true">
-            <span className="cta-barrido-linea" />
-          </span>
           {/* Los tres --llega se corrieron de 0,14 / 0,30 / 0,46 a 0,62 / 0,72 /
               0,82, y las palabras con ellos.
 

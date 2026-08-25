@@ -53,10 +53,10 @@
 html, body, #root { width: 100%; height: 100%; }
 html { min-width: 320px; background: var(--fondo); }
 body { min-width: 320px; min-height: 100vh; margin: 0; overflow: hidden; background: var(--fondo); -webkit-font-smoothing: antialiased; }
-::selection { background: #5f2a7a; color: #fff; }
+::selection { background: rgba(232, 181, 98, .26); color: var(--text); }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: var(--fondo); }
-::-webkit-scrollbar-thumb { border: 3px solid var(--fondo); border-radius: 999px; background: #56515d; }
+::-webkit-scrollbar-thumb { border: 3px solid var(--fondo); border-radius: 999px; background: rgba(244, 241, 248, .18); }
 
 button, input, select { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -65,7 +65,7 @@ button:disabled { cursor: not-allowed; }
 button:not(:disabled):active { transform: scale(.98); transition: transform var(--t-micro) var(--ease-suave); }
 a { color: inherit; }
 p, h1, h2, h3 { margin-top: 0; }
-:focus-visible { outline: 2px solid #c45fff; outline-offset: 3px; }
+:focus-visible { outline: 1px solid var(--oro); outline-offset: 3px; }
 
 .app-shell { display: grid; grid-template-columns: var(--rail-width) minmax(0, 1fr); grid-template-rows: var(--header-height) minmax(0, 1fr); width: 100%; height: 100dvh; overflow: hidden; }
 .app-rail { z-index: 30; grid-row: 1 / 3; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 0; border-right: 1px solid var(--linea); background: var(--rail); }
@@ -235,12 +235,6 @@ p, h1, h2, h3 { margin-top: 0; }
 .prospect-workbench { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(340px, .85fr); gap: 18px; align-items: start; }
 .prospect-list, .prospect-detail, .source-card, .flow-diagram, .scope-note { border: 1px solid var(--linea); border-radius: var(--radius); background: var(--superficie); transition: background-color var(--t-corta) var(--ease-suave), border-color var(--t-corta) var(--ease-suave); }
 .prospect-list { overflow: hidden; }
-.filter-bar { display: grid; grid-template-columns: minmax(210px, 1.4fr) minmax(120px, .7fr) minmax(120px, .7fr); gap: 12px; padding: 17px; border-bottom: 1px solid var(--linea); }
-.filter-bar label { display: grid; gap: 6px; }
-.filter-bar label > span { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
-.filter-bar input, .filter-bar select { width: 100%; min-height: 42px; padding: 8px 11px; border: 1px solid var(--linea-viva); border-radius: 9px; outline: none; background: var(--fondo); color: var(--text); font-size: 14px; }
-.filter-bar input::placeholder { color: var(--muted); }
-.filter-bar input:focus, .filter-bar select:focus { border-color: #a856d1; outline: 2px solid #a856d1; outline-offset: -2px; }
 .prospect-list__count { display: block; padding: 12px 17px 0; }
 .table-wrap { overflow-x: auto; padding-top: 8px; }
 table { width: 100%; min-width: 720px; border-collapse: collapse; }
@@ -263,11 +257,6 @@ tbody tr.is-selected { background: var(--elevada); }
 .detail-prose { margin: 0; color: var(--secondary); font-size: 14px; line-height: 1.65; }
 .score-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .score-heading strong { color: #e8c6ff; font-size: 14px; }
-.score-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-.score-breakdown__item, .score-breakdown__total { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 10px; border-bottom: 1px solid var(--linea); color: var(--muted); font-size: 11px; }
-.score-breakdown__item strong, .score-breakdown__total strong { color: var(--text); font-size: 14px; }
-.score-breakdown__total { grid-column: 1 / -1; border-color: var(--linea-viva); }
-.score-breakdown__total em { color: var(--muted); font-size: 11px; font-style: normal; letter-spacing: .04em; text-transform: uppercase; }
 .detail-actions { border-top: 1px solid var(--linea); }
 .empty-state--compact { display: block; margin: 20px; padding: 22px 0; }
 
@@ -311,7 +300,7 @@ tbody tr.is-selected { background: var(--elevada); }
 ::view-transition-new(workspace) { animation: workspace-entry var(--t-vista) var(--ease-suave) 80ms both; }
 
 @media (hover: hover) {
-  ::-webkit-scrollbar-thumb:hover { background: #756e7d; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(244, 241, 248, .32); }
   .brand:hover, .rail-actions button:hover { background: rgba(255, 255, 255, .04); color: var(--secondary); }
   .rail-actions button:hover > span { opacity: 1; transform: translateX(0); }
   .rail-actions button:focus-visible > span { opacity: 1; transform: translateX(0); }
@@ -405,11 +394,9 @@ tbody tr.is-selected { background: var(--elevada); }
   .whatsapp-button, .copy-button { flex: 1 1 160px; }
   .empty-state { grid-template-columns: 28px 1fr; gap: 9px; padding: 22px 0; }
   .empty-state__line { width: 19px; }
-  .filter-bar { grid-template-columns: 1fr; padding: 14px; }
   .prospect-list__count { padding: 11px 14px 0; }
   .prospect-detail { padding: 18px 15px; }
-  .detail-grid, .score-breakdown { grid-template-columns: 1fr; }
-  .score-breakdown__total { grid-column: auto; }
+  .detail-grid { grid-template-columns: 1fr; }
   .source-card { padding: 19px 15px; }
   .base-grid { grid-template-columns: 1fr; }
   .source-metrics { grid-template-columns: 1fr 1fr; margin: 22px 0; }
@@ -627,23 +614,6 @@ tbody tr.is-selected { background: var(--elevada); }
 .main-content--prospectos .view-frame,
 .main-content--base .view-frame,
 .main-content--como-funciona .view-frame { height: 100%; }
-
-/* ── Prospectos: filtros dentro de la columna, no sobre la pagina ────────── */
-.work-queue .filter-bar {
-  position: sticky; top: 0; z-index: 2;
-  display: grid; gap: 9px; padding: 14px 16px;
-  border-bottom: 1px solid var(--linea);
-  background: var(--rail);
-}
-.work-queue .filter-bar label { display: grid; gap: 5px; }
-.work-queue .filter-bar label > span { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .09em; text-transform: uppercase; }
-.work-queue .filter-bar input,
-.work-queue .filter-bar select {
-  width: 100%; padding: 8px 10px; border: 1px solid var(--linea-viva);
-  border-radius: 8px; background: var(--fondo); color: var(--text); font-size: 14px;
-  transition: border-color var(--t-corta) var(--ease-suave);
-}
-.work-queue .filter-bar input:focus, .work-queue .filter-bar select:focus { border-color: var(--oro); outline: none; }
 
 /* ── Base ───────────────────────────────────────────────────────────────── */
 .base-console { height: 100%; overflow-y: auto; }
@@ -880,3 +850,292 @@ PLACEHOLDER
 }
 .message-editor:focus { border-color: var(--oro); outline: none; }
 .message-editor__acciones { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 12px; }
+
+/* Los enlaces que FALTAN se enseñan apagados y sin enlace. El hueco es el dato
+   accionable: dice exactamente qué pedirle al agente que rellena la hoja. */
+.company-links__falta {
+  display: inline-flex; align-items: center;
+  color: var(--muted); font-size: 14px; opacity: .5;
+  border-bottom: 1px dashed var(--linea-viva); padding-bottom: 1px;
+}
+.company-links__nota { margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+/* ═══ La ficha del prospecto ════════════════════════════════════════════════
+   Antes era un formulario: veinte pares etiqueta/valor en mayúsculas, con el
+   nombre de la empresa compitiendo contra «FICHA DERIVADA DEL REGISTRO».
+   Ahora se lee como un informe — un socio la abre para decidir, y la decisión
+   se toma con tres respuestas, no con veinte campos. */
+
+.prospect-detail { padding: 0 0 40px; }
+
+.ficha-portada { padding: 26px 26px 22px; border-bottom: 1px solid var(--linea); }
+.ficha-portada h2 {
+  margin: 0; color: var(--text);
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 300;
+  letter-spacing: -.02em; line-height: 1.15;
+}
+.ficha-senas { margin: 9px 0 0; color: var(--muted); font-size: 14px; }
+.ficha-marcas { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 16px; }
+.ficha-dias { color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.ficha-dias.is-alerta { color: var(--oro); }
+
+/* Las tres cifras que deciden, juntas y grandes. */
+.ficha-cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 24px; }
+.ficha-cifras > div > strong {
+  display: block; color: var(--text); font-size: 2.1rem; font-weight: 200;
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em; line-height: 1;
+}
+.ficha-cifras > div > span { display: block; margin-top: 7px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.ficha-cifras .score-breakdown { margin-top: 12px; }
+
+.ficha-bloque { padding: 22px 26px 0; }
+.ficha-bloque h3 {
+  margin: 0 0 12px; color: var(--muted);
+  font-size: 11px; font-weight: 500; letter-spacing: .13em; text-transform: uppercase;
+}
+.ficha-bloque p { max-width: 72ch; margin: 0 0 10px; color: var(--secondary); font-size: 15px; line-height: 1.6; }
+.ficha-bloque p:last-child { margin-bottom: 0; }
+
+/* Lo que hay que hacer, separado de lo que hay que saber. */
+.ficha-destacado {
+  padding: 13px 16px; border-radius: var(--radius);
+  background: var(--superficie); color: var(--text) !important;
+}
+
+.ficha-contacto { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1px; margin: 16px 0 0; background: var(--linea); border-radius: var(--radius); overflow: hidden; }
+.ficha-contacto > div { padding: 12px 15px; background: var(--fondo); }
+.ficha-contacto dt { margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.ficha-contacto dd { margin: 0; color: var(--secondary); font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+
+/* La evidencia es procedencia, no material de decisión: plegada. */
+.ficha-evidencia { margin: 22px 26px 0; border-top: 1px solid var(--linea); }
+.ficha-evidencia > summary {
+  display: flex; align-items: center; gap: 10px; padding: 14px 2px;
+  cursor: pointer; list-style: none;
+  color: var(--muted); font-size: 11px; font-weight: 500;
+  letter-spacing: .11em; text-transform: uppercase;
+}
+.ficha-evidencia > summary::-webkit-details-marker { display: none; }
+.ficha-evidencia > summary:hover { color: var(--secondary); }
+.ficha-evidencia > summary .icon { margin-left: auto; transition: transform var(--t-corta) var(--ease-suave); }
+.ficha-evidencia[open] > summary .icon { transform: rotate(180deg); }
+.ficha-evidencia p { max-width: 76ch; margin: 0 0 14px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+.prospect-detail .company-links { margin: 22px 26px 0; }
+.prospect-detail .detail-actions { display: flex; flex-wrap: wrap; gap: 9px; margin: 24px 26px 0; padding-top: 20px; border-top: 1px solid var(--linea); }
+
+@media (max-width: 700px) {
+  .ficha-portada, .ficha-bloque { padding-left: 16px; padding-right: 16px; }
+  .ficha-evidencia, .prospect-detail .company-links, .prospect-detail .detail-actions { margin-left: 16px; margin-right: 16px; }
+  .ficha-cifras { gap: 14px; }
+}
+
+/* ═══ El score, como medida ═════════════════════════════════════════════════
+   Aqui hubo cinco componentes con cinco colores. La idea era que el color
+   codificase el dato, pero cinco tonos en una ficha que por lo demas es hueso
+   sobre negro no codifican: rompen. Se lee igual de rapido con una sola tinta,
+   porque lo que compara el ojo es el LARGO de la barra, no su color.
+
+   Lo que si hacia falta era sitio: dentro de la celda de «Oportunidad» le
+   tocaban 317px y «Señal de compra» se partia en dos lineas encima de su propia
+   barra. Ahora va a lo ancho de la ficha. */
+.score-breakdown {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: 14px 28px; margin: 26px 0 2px;
+}
+.score-comp { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; align-items: baseline; }
+.score-comp__nombre { overflow: hidden; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.score-comp__cifra { color: var(--secondary); font-size: 13px; font-variant-numeric: tabular-nums; font-weight: 500; }
+.score-comp__cifra em { color: var(--muted); font-size: 11px; font-style: normal; }
+.score-comp__barra { grid-column: 1 / 3; height: 2px; overflow: hidden; background: rgba(255, 255, 255, .07); }
+.score-comp__barra i {
+  display: block; width: 100%; height: 100%;
+  background: rgba(244, 241, 248, .5);
+  transform: scaleX(var(--parte, 0)); transform-origin: left;
+  animation: comp-entra 620ms var(--ease-suave) both;
+}
+/* Escalonadas: cinco barras que salen a la vez son un bloque que aparece; una
+   detras de otra se leen como cinco medidas distintas, que es lo que son. */
+.score-comp--1 i { animation-delay: 60ms; }
+.score-comp--2 i { animation-delay: 120ms; }
+.score-comp--3 i { animation-delay: 180ms; }
+.score-comp--4 i { animation-delay: 240ms; }
+@keyframes comp-entra { from { transform: scaleX(0); } }
+
+@media (prefers-reduced-motion: reduce) { .score-comp__barra i { animation: none; } }
+
+/* ═══ Prospectos: la cabecera ES el filtro ══════════════════════════════════
+   Dos intentos antes de este. El primero metia cinco controles de formulario
+   dentro de la columna de 300px de la lista: no era cuestion de apretarlos
+   mejor, una barra de herramientas no cabe en el ancho de una lista.
+
+   El segundo los saco de ahi pero los convirtio en cinco tarjetas de cifra
+   grande con filete de color lateral. Esa es la plantilla mas repetida que
+   existe en paneles generados —numero enorme, etiqueta pequeña, acento de
+   color, cinco veces— y canta. Fuera tarjetas y fuera los cinco colores.
+
+   Lo que queda es un rail de medidas: las cifras sobre el propio fondo,
+   separadas por filetes de 1px, como la escala de un instrumento. Sin cajas,
+   sin sombras y con un solo acento. Quitado el color, lo unico que separa un
+   panel bueno de uno generado es como se mueve — y de eso va el resto. */
+
+.vista-prospectos { display: flex; flex-direction: column; height: 100%; min-width: 0; min-height: 0; }
+.vista-prospectos .work-split { flex: 1; min-height: 0; height: auto; }
+
+.prospectos-cabecera {
+  flex: none; display: grid; min-width: 0; gap: 16px;
+  padding: 15px 26px 0; border-bottom: 1px solid var(--linea); background: var(--rail);
+}
+
+/* ── Buscar y ordenar ────────────────────────────────────────────────────── */
+.cabecera-linea { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
+
+.cabecera-buscar {
+  display: flex; align-items: center; gap: 9px; flex: 1 1 260px; min-width: 0;
+  padding: 0 12px; border: 1px solid var(--linea); border-radius: 10px;
+  background: var(--fondo);
+  transition: border-color var(--t-corta) var(--ease-suave);
+}
+.cabecera-buscar:focus-within { border-color: var(--linea-viva); }
+.cabecera-buscar > .icon { flex: none; color: var(--muted); transition: color var(--t-corta) var(--ease-suave); }
+.cabecera-buscar:focus-within > .icon { color: var(--oro); }
+.cabecera-buscar input {
+  flex: 1; min-width: 0; min-height: 38px; padding: 0;
+  border: 0; outline: none; background: none; color: var(--text); font-size: 14px;
+  caret-color: var(--oro);
+}
+.cabecera-buscar input::placeholder { color: var(--muted); }
+.cabecera-buscar input::-webkit-search-cancel-button { display: none; }
+.cabecera-buscar > button {
+  flex: none; display: grid; place-items: center; width: 19px; height: 19px;
+  border: 0; border-radius: 50%; background: rgba(255, 255, 255, .07); color: var(--secondary);
+  transition: background-color var(--t-corta) var(--ease-suave), color var(--t-corta) var(--ease-suave);
+}
+.cabecera-buscar > button:hover { background: rgba(255, 255, 255, .15); color: var(--text); }
+
+.cabecera-orden { display: flex; align-items: center; gap: 9px; }
+.cabecera-orden > span { color: var(--muted); font-size: 10px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; white-space: nowrap; }
+.cabecera-orden select {
+  min-height: 38px; padding: 0 10px; border: 1px solid var(--linea); border-radius: 10px;
+  outline: none; background: var(--fondo); color: var(--secondary); font-size: 14px;
+  transition: border-color var(--t-corta) var(--ease-suave), color var(--t-corta) var(--ease-suave);
+}
+.cabecera-orden select:hover { color: var(--text); }
+.cabecera-orden select:focus { border-color: var(--linea-viva); color: var(--text); }
+
+/* ── El rail de medidas ──────────────────────────────────────────────────────
+   Filetes verticales metidos por arriba y por abajo, no de borde a borde: un
+   filete que llega a los extremos parte la cabecera en cajas y volvemos a las
+   tarjetas. Retirado unos pixeles, separa sin encerrar. */
+.rail-medidas { display: flex; min-width: 0; }
+
+.medida {
+  position: relative; flex: 1 1 0; min-width: 0;
+  display: grid; gap: 4px; padding: 2px 18px 13px;
+  border: 0; background: none; color: inherit; text-align: left;
+}
+.medida:first-child { padding-left: 0; }
+.medida + .medida::before {
+  position: absolute; top: 4px; bottom: 15px; left: 0; width: 1px;
+  background: var(--linea); content: '';
+}
+/* La marca de la medida activa crece desde la izquierda; al pasar por encima
+   asoma un tercio, que es la forma mas barata de decir «esto se puede pulsar»
+   sin mover ni un pixel de sitio. */
+.medida::after {
+  position: absolute; right: 18px; bottom: 0; left: 0; height: 1px;
+  background: var(--oro); content: '';
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--t-corta) var(--ease-suave);
+}
+.medida:first-child::after { left: 0; }
+.medida:not(:first-child)::after { left: 18px; }
+.medida:hover::after { transform: scaleX(.3); }
+.medida.is-activa::after { transform: scaleX(1); }
+
+.medida strong {
+  color: var(--text); font-size: 1.7rem; font-weight: 200;
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em; line-height: 1.1;
+  transition: color var(--t-corta) var(--ease-suave);
+}
+/* Un solo numero en oro en toda la cabecera, y siempre el mismo: agencia
+   completa es la unica medida que significa dinero grande, que es lo que el oro
+   quiere decir en este panel. Si se doran dos, deja de querer decir nada. */
+.medida--oro strong { color: var(--oro); }
+.medida span {
+  overflow: hidden; color: var(--muted); font-size: 11px; font-weight: 500;
+  letter-spacing: .11em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap;
+  transition: color var(--t-corta) var(--ease-suave);
+}
+.medida:hover span, .medida.is-activa span { color: var(--secondary); }
+
+/* ── Las facetas ─────────────────────────────────────────────────────────────
+   Texto con su cuenta al lado, no desplegables ni pildoras. Un desplegable
+   esconde cuantas opciones hay y cuanto cae en cada una; once pildoras seguidas
+   vuelven a llenar la cabecera de cajas. Asi se ven enteras, traen la cuenta y
+   se apagan solas al llegar a cero: no se puede pulsar hacia el vacio. */
+.cabecera-facetas { display: flex; flex-wrap: wrap; min-width: 0; gap: 0 34px; padding-bottom: 4px; }
+.faceta { display: flex; align-items: center; gap: 13px; min-width: 0; min-height: 34px; }
+.faceta h2 {
+  flex: none; margin: 0; color: var(--muted);
+  font-size: 10px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase;
+}
+.faceta__rail { position: relative; display: flex; flex-wrap: wrap; min-width: 0; gap: 0 17px; }
+
+/* Mide 1px y se estira con scaleX: transformar no recalcula el layout en cada
+   frame, animar el ancho si. La posicion la pone RailFaceta al medir. */
+.faceta__marca {
+  position: absolute; bottom: -7px; left: 0; width: 1px; height: 1px;
+  background: var(--oro); opacity: 0; transform-origin: left;
+  transition: transform 420ms var(--ease-suave), opacity var(--t-corta) var(--ease-suave);
+}
+
+.faceta__opcion {
+  padding: 4px 0; border: 0; background: none;
+  color: var(--muted); font-size: 13px; white-space: nowrap;
+  transition: color var(--t-corta) var(--ease-suave);
+}
+.faceta__opcion i {
+  margin-left: 6px; color: rgba(244, 241, 248, .38); font-size: 11px; font-style: normal;
+  font-variant-numeric: tabular-nums;
+  transition: color var(--t-corta) var(--ease-suave);
+}
+.faceta__opcion:hover:not(:disabled) { color: var(--secondary); }
+.faceta__opcion:hover:not(:disabled) i { color: var(--muted); }
+.faceta__opcion[aria-pressed="true"] { color: var(--text); }
+.faceta__opcion[aria-pressed="true"] i { color: var(--oro); }
+.faceta__opcion:disabled { color: rgba(244, 241, 248, .24); }
+.faceta__opcion:disabled i { color: rgba(244, 241, 248, .24); }
+
+@media (prefers-reduced-motion: reduce) {
+  .medida::after, .faceta__marca { transition: none; }
+}
+
+@media (max-width: 860px) {
+  .prospectos-cabecera { gap: 13px; padding: 12px 16px 0; }
+  .cabecera-orden { flex: 1 1 100%; }
+  .cabecera-orden select { flex: 1; min-width: 0; }
+
+  /* El rail rueda de lado en vez de partirse en dos filas de dos y media: cinco
+     medidas en 390px darian 78px cada una y «Agencia completa» no cabe. */
+  .rail-medidas { overflow-x: auto; scrollbar-width: none; }
+  .rail-medidas::-webkit-scrollbar { display: none; }
+  .medida { flex: 0 0 auto; min-width: 108px; padding: 2px 15px 12px; }
+  .medida + .medida::before { bottom: 14px; }
+  .medida:not(:first-child)::after { left: 15px; }
+  .medida::after { right: 15px; }
+  .medida strong { font-size: 1.45rem; }
+
+  .cabecera-facetas { gap: 0; }
+  .faceta { flex: 1 1 100%; gap: 11px; min-height: 30px; }
+  .faceta__rail { flex-wrap: nowrap; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .faceta__rail::-webkit-scrollbar { display: none; }
+  /* La marca se mide contra el rail, y un rail que se desplaza la dejaria a
+     medio camino. En movil el estado lo lleva el color del texto. */
+  .faceta__marca { display: none; }
+  .faceta__opcion[aria-pressed="true"] { color: var(--oro); }
+
+  /* Con la ficha abierta la cabecera sobra: ocupaba media pantalla encima de lo
+     que fuiste a leer. Es la regla del resto del movil — una cosa cada vez. */
+  .vista-prospectos--detalle .prospectos-cabecera { display: none; }
+}

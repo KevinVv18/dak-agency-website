@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import Intro, { tocaIntro } from './Intro'
 import {
@@ -24,6 +24,18 @@ const VIEWS = [
   { id: 'como-funciona', label: 'Cómo funciona', icon: 'info' },
 ]
 
+/**
+ * Releer la hoja despues de escribir en ella.
+ *
+ * Hasta ahora, aprobar algo dejaba el panel enseñando el estado anterior con una
+ * nota que decia «esto se vera en la proxima lectura». Eso era pedirle al humano
+ * que se acordase de recargar para comprobar su propio trabajo. Con el carril
+ * manual es peor todavia: al guardar un mensaje el prospecto cambia de etapa, y
+ * si el panel no vuelve a leer, la fila se queda en «investigado» como si no
+ * hubiera pasado nada.
+ */
+const Recarga = React.createContext(() => {})
+
 const stages = {
   investigado: 'Investigado',
   'con-mensaje': 'Con mensaje',
@@ -35,6 +47,39 @@ const stages = {
 }
 
 const missing = 'sin dato'
+
+/**
+ * Los enums de control se traducen AL PINTAR, nunca en el dato.
+ *
+ * El contrato con Twin es explicito: los valores de maquina siguen en ingles y
+ * el frontend los traduce para mostrar. Traducirlos al leer parece mas comodo y
+ * es una trampa — lo hice con el glosario y deje muerto el marcador de
+ * prioridad, porque el codigo buscaba PRIORITY OUTREACH y el dato ya decia
+ * «Contacto prioritario». El fallo no daba error: simplemente el oro dejo de
+ * aparecer y nadie se entera hasta que lo mira alguien.
+ */
+const ENUMS = {
+  'PRIORITY OUTREACH': 'Contacto prioritario',
+  READY: 'Listo',
+  STRONG: 'Señal fuerte',
+  QUALIFIED: 'Calificado',
+  WARM: 'Tibio',
+  HIGH: 'Alto',
+  MEDIUM: 'Medio',
+  LOW: 'Bajo',
+  SMALL: 'Chico',
+  UNKNOWN: 'Sin confirmar',
+  APPROVED: 'Aprobado',
+  PENDING: 'Pendiente',
+  REJECTED: 'Rechazado',
+  SENT: 'Enviado',
+  'NOT SENT': 'Sin enviar',
+  'NO REPLY': 'Sin respuesta',
+  REPLIED: 'Respondió',
+  'FULL AGENCY PROSPECT': 'Agencia completa',
+  'SPECIALIZED SUPPORT PROSPECT': 'Soporte especializado',
+}
+const traducirEnum = (v) => v == null ? missing : (ENUMS[v] ?? v)
 
 function valueOrMissing(value) {
   return value === null || value === undefined || value === '' ? missing : value
@@ -104,6 +149,13 @@ function Icon({ name, size = 16 }) {
       </>
     ),
     check: <path d="m5 12 4.2 4.2L19 6.5" />,
+    buscar: (
+      <>
+        <circle cx="11" cy="11" r="6.5" />
+        <path d="m16 16 4.5 4.5" />
+      </>
+    ),
+    cerrar: <path d="m6 6 12 12M18 6 6 18" />,
     chevron: <path d="m6 9 6 6 6-6" />,
     retry: (
       <>
@@ -131,37 +183,50 @@ function Icon({ name, size = 16 }) {
 /**
  * Adonde ir para mirar a la empresa por tu cuenta antes de decidir.
  *
- * Falta a proposito el hueco de "sin dato" por cada red: la hoja no trae ni una
- * sola red social rellena, asi que enseñar cinco huecos vacios seria ruido con
- * forma de dato. Se pintan solo los enlaces que existen, y si no hay ninguno se
- * dice en una linea. Web sale en 7 de 12 y Maps en 9 de 12; las redes se
- * pintaran solas el dia que el pipeline las traiga.
+ * Los huecos SE ENSEÑAN, y eso cambio a proposito. Antes se ocultaban por no
+ * meter ruido, pero resulta que el hueco es el dato accionable: dice exactamente
+ * que pedirle al agente que rellena la hoja. Un Instagram que falta no es un
+ * espacio en blanco, es una tarea.
  */
 function EnlacesEmpresa({ prospect }) {
   const redes = prospect.contacto?.redes ?? {}
-  const enlaces = [
+  const todos = [
     { etiqueta: 'Web', href: getHref(prospect.web) },
     { etiqueta: 'Google Maps', href: getHref(prospect.mapsUrl) },
     { etiqueta: 'Instagram', href: getHref(redes.instagram) },
     { etiqueta: 'Facebook', href: getHref(redes.facebook) },
-    { etiqueta: 'LinkedIn', href: getHref(redes.linkedin) },
     { etiqueta: 'TikTok', href: getHref(redes.tiktok) },
-  ].filter((enlace) => enlace.href)
+    { etiqueta: 'LinkedIn', href: getHref(redes.linkedin) },
+  ]
+  const hay = todos.filter((e) => e.href)
+  const faltan = todos.filter((e) => !e.href).map((e) => e.etiqueta)
 
   return (
     <div className="company-links">
       <span className="context-label">Mirar a la empresa</span>
-      {enlaces.length ? (
-        <p>
-          {enlaces.map((enlace) => (
-            <a href={enlace.href} key={enlace.etiqueta} rel="noreferrer noopener" target="_blank">
-              {enlace.etiqueta}
-              <Icon name="arrow" size={12} />
-            </a>
-          ))}
+      <p>
+        {hay.map((enlace) => (
+          <a href={enlace.href} key={enlace.etiqueta} rel="noreferrer noopener" target="_blank">
+            {enlace.etiqueta}
+            <Icon name="arrow" size={12} />
+          </a>
+        ))}
+        {/* Los huecos se enseñan a proposito. Antes se ocultaban por no meter
+            ruido, pero el hueco ES el dato accionable: dice exactamente que
+            pedirle al agente que rellena la hoja. Van apagados, sin enlace. */}
+        {faltan.map((etiqueta) => (
+          <span className="company-links__falta" key={etiqueta}>{etiqueta}</span>
+        ))}
+      </p>
+      {faltan.length > 0 && (
+        <p className="company-links__nota">
+          {/* «Sin verificar todavía», no «falta». El contrato con Twin dice que
+              solo escribe perfiles que confirma, así que una celda vacía es un
+              estado legítimo del proceso y no un error de nadie. */}
+          {faltan.length === todos.length
+            ? 'Sin perfiles verificados todavía. Twin solo escribe los que confirma.'
+            : `Sin verificar todavía: ${faltan.join(', ')}.`}
         </p>
-      ) : (
-        <p className="empty-inline">Sin enlaces públicos verificados.</p>
       )}
     </div>
   )
@@ -207,12 +272,24 @@ function PotentialGauge({ value }) {
  * Si el puente no esta configurado, este bloque no existe y la ficha se queda
  * con el enlace a la hoja de siempre.
  */
-function AccionesHoja({ prospect, readyToSend }) {
+function AccionesHoja({ prospect, readyToSend, aMano = false }) {
   const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
+  const recargar = useContext(Recarga)
 
   if (!puedeEscribir || !prospect.empresa) return null
 
-  const lanzar = async (accion, valor, etiquetaHecho) => {
+  // Aprobar y enviar son el mismo gesto lleve el mensaje quien lo lleve; lo que
+  // cambia es donde queda apuntado. Los de Twin se apuntan en sus hojas —QUEUE y
+  // DAILY OUTREACH— y los escritos a mano en la propia fila de Leads, porque no
+  // tienen fila en ninguna de las otras dos y no se les va a inventar una.
+  const traducir = (accion, valor) => {
+    if (!aMano) return { accion, valor }
+    if (accion === 'enviar') return { accion: 'estado', valor: 'SENT' }
+    return { accion: 'estado', valor: valor === 'APPROVED' ? 'APPROVED' : 'REJECTED' }
+  }
+
+  const lanzar = async (accionPedida, valorPedido, etiquetaHecho) => {
+    const { accion, valor } = traducir(accionPedida, valorPedido)
     setEstado({ fase: 'enviando', mensaje: null })
     const resultado = await escribirEnHoja({ accion, empresa: prospect.empresa, valor })
     setEstado(
@@ -220,6 +297,7 @@ function AccionesHoja({ prospect, readyToSend }) {
         ? { fase: 'hecho', mensaje: `${etiquetaHecho} · la hoja tenía «${resultado.anterior || 'vacío'}»` }
         : { fase: 'fallo', mensaje: resultado.error ?? 'La hoja rechazó el cambio.' },
     )
+    if (resultado.ok) recargar()
   }
 
   const trabajando = estado.fase === 'enviando'
@@ -248,11 +326,7 @@ function AccionesHoja({ prospect, readyToSend }) {
           {estado.mensaje}
         </p>
       )}
-      {estado.fase === 'hecho' && (
-        <p className="sheet-actions__note">
-          El panel sigue mostrando los datos de ejemplo hasta la próxima lectura de la hoja.
-        </p>
-      )}
+
     </div>
   )
 }
@@ -336,7 +410,7 @@ function Clasificacion({ prospect }) {
       <dl className="clasificacion__datos">
         <div>
           <dt>Riesgo de agencia existente</dt>
-          <dd>{valueOrMissing(prospect.riesgoAgenciaExistente)}</dd>
+          <dd>{traducirEnum(prospect.riesgoAgenciaExistente)}</dd>
         </div>
         <div>
           <dt>Entrada recomendada</dt>
@@ -357,18 +431,34 @@ function Clasificacion({ prospect }) {
  * Guardar NO aprueba. Son dos decisiones distintas —cambiar el texto y darlo
  * por bueno— y juntarlas haria que corregir una tilde aprobara el mensaje.
  */
-function EditorMensaje({ empresa, texto }) {
+function EditorMensaje({ empresa, texto, aMano = false }) {
   const [editando, setEditando] = useState(false)
   const [borrador, setBorrador] = useState(texto ?? '')
   const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
   const [guardado, setGuardado] = useState(null)
+  const recargar = useContext(Recarga)
 
   const actual = guardado ?? texto
   const editable = puedeEscribir && Boolean(empresa) && Boolean(texto)
+  // Un mensaje escrito a mano vive en Leads y otro de Twin en la QUEUE. Es la
+  // misma caja de texto: lo unico que cambia es en que columna aterriza.
+  const donde = aMano ? 'redactar' : 'editar'
+
+  // Borrar el borrador propio: se va el texto y se va la etapa con el, o el
+  // prospecto se quedaria en «por aprobar» sin nada que aprobar.
+  const borrar = async () => {
+    setEstado({ fase: 'guardando', mensaje: null })
+    const texto = await escribirEnHoja({ accion: 'redactar', empresa, valor: '' })
+    if (!texto.ok) { setEstado({ fase: 'fallo', mensaje: texto.error ?? 'La hoja rechazó el borrado.' }); return }
+    await escribirEnHoja({ accion: 'estado', empresa, valor: '' })
+    setEditando(false)
+    setEstado({ fase: 'hecho', mensaje: 'Borrado. Vuelve a «investigado».' })
+    recargar()
+  }
 
   const guardar = async () => {
     setEstado({ fase: 'guardando', mensaje: null })
-    const resultado = await escribirEnHoja({ accion: 'editar', empresa, valor: borrador })
+    const resultado = await escribirEnHoja({ accion: donde, empresa, valor: borrador })
     if (resultado.ok) {
       setGuardado(borrador)
       setEditando(false)
@@ -404,6 +494,13 @@ function EditorMensaje({ empresa, texto }) {
             <button className="sheet-button" disabled={estado.fase === 'guardando'} onClick={() => { setEditando(false); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
               Descartar
             </button>
+            {/* Solo para los propios: borrar el de Twin seria tirar el trabajo
+                del agente, y ademas el puente lo rechaza. */}
+            {aMano && (
+              <button className="sheet-button" disabled={estado.fase === 'guardando'} onClick={borrar} type="button">
+                Borrar el mensaje
+              </button>
+            )}
           </div>
         </>
       ) : (
@@ -529,13 +626,13 @@ function MessageCard({ prospect, message, readyToSend = false }) {
         </div>
       </div>
 
-      <AccionesHoja prospect={prospect} readyToSend={readyToSend} />
+      <AccionesHoja aMano={Boolean(message?.aMano)} prospect={prospect} readyToSend={readyToSend} />
 
       <Clasificacion prospect={prospect} />
 
       <EnlacesEmpresa prospect={prospect} />
 
-      <EditorMensaje empresa={prospect.empresa} texto={message?.texto} />
+      <EditorMensaje aMano={Boolean(message?.aMano)} empresa={prospect.empresa} texto={message?.texto} />
 
       <div className="message-card__actions">
         {readyToSend && message?.enlaceWhatsApp ? (
@@ -926,20 +1023,45 @@ function TodayView({ todayActions }) {
   )
 }
 
+/**
+ * El score, descompuesto en sus cinco componentes.
+ *
+ * Aqui SI entra el color, y por un motivo concreto: esto es un grafico, y en un
+ * grafico el color codifica un dato en vez de decorar. Cinco componentes con
+ * cinco tonos se comparan de un vistazo; cinco barras del mismo gris obligan a
+ * leer las etiquetas una por una.
+ *
+ * Fuera de este bloque el panel sigue siendo hueso y un solo acento. La regla no
+ * era «poco color»: era «color solo cuando significa algo».
+ *
+ * Los maximos por componente salen de la propia hoja (25/25/20/20/10 suman 100).
+ */
+const COMPONENTES = [
+  { clave: 'potencial', etiqueta: 'Potencial', maximo: 25 },
+  { clave: 'senal', etiqueta: 'Señal de compra', maximo: 25 },
+  { clave: 'oportunidad', etiqueta: 'Oportunidad', maximo: 20 },
+  { clave: 'encaje', etiqueta: 'Encaje con DAK', maximo: 20 },
+  { clave: 'contactabilidad', etiqueta: 'Contactabilidad', maximo: 10 },
+]
+
 function ScoreBreakdown({ prospect }) {
   if (!prospect.scoreDetalle) return <p className="empty-inline">Detalle de score: {missing}</p>
 
-  const detailEntries = [
-    ['Potencial', prospect.scoreDetalle.potencial], ['Señal', prospect.scoreDetalle.senal],
-    ['Oportunidad', prospect.scoreDetalle.oportunidad], ['Encaje', prospect.scoreDetalle.encaje],
-    ['Contactabilidad', prospect.scoreDetalle.contactabilidad],
-  ]
-  const sum = detailEntries.reduce((total, [, value]) => total + value, 0)
-
   return (
     <div className="score-breakdown">
-      {detailEntries.map(([label, value]) => <div className="score-breakdown__item" key={label}><span>{label}</span><strong>{valueOrMissing(value)}</strong></div>)}
-      <div className="score-breakdown__total"><span>Suma de componentes <em>vista derivada</em></span><strong>{sum}</strong></div>
+      {COMPONENTES.map(({ clave, etiqueta, maximo }, n) => {
+        const valor = prospect.scoreDetalle[clave]
+        const parte = valor === null || valor === undefined ? 0 : valor / maximo
+        return (
+          <div className={`score-comp score-comp--${n}`} key={clave}>
+            <span className="score-comp__nombre">{etiqueta}</span>
+            <span className="score-comp__cifra">{valueOrMissing(valor)}<em>/{maximo}</em></span>
+            <span aria-hidden="true" className="score-comp__barra">
+              <i style={{ '--parte': Math.max(0, Math.min(1, parte)) }} />
+            </span>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -962,60 +1084,462 @@ function ProspectDetail({ data, prospect }) {
   const message = getOpener(prospect.id, data)
   const contact = prospect.contacto ?? {}
 
+  const dias = diasDesde(prospect.fechaDeteccion)
+  const senas = [prospect.rubro, prospect.ciudad, stages[prospect.etapa]].filter(Boolean)
+
   return (
     <aside aria-live="polite" className="prospect-detail">
-      <div className="prospect-detail__header">
-        <div><span className="detail-kicker">Ficha derivada del registro</span><h2>{getDisplayName(prospect)}</h2></div>
-        <Badge tone={prospect.origen === 'inbound' ? 'oro' : 'marca'}>{prospect.origen === 'inbound' ? 'Llegó solo' : 'Búsqueda activa'}</Badge>
+      {/* La portada: quién es y cuánto vale, sin que haya que leer nada. Antes
+          esto eran cuatro pares etiqueta/valor en mayúsculas y parecía un
+          formulario; el nombre competía con «FICHA DERIVADA DEL REGISTRO». */}
+      <header className="ficha-portada">
+        <h2>{getDisplayName(prospect)}</h2>
+        <p className="ficha-senas">{senas.join(' · ')}</p>
+
+        <div className="ficha-marcas">
+          <TipoOportunidad derivada={prospect.clasificacionDerivada} tipo={prospect.tipoOportunidad} />
+          {prospect.origen === 'inbound' && <span className="tipo-badge tipo-badge--completa">Llegó solo</span>}
+          {dias !== null && (
+            <span className={`ficha-dias ${estaEstancado(prospect) ? 'is-alerta' : ''}`}>
+              {dias === 0 ? 'detectado hoy' : dias === 1 ? 'hace 1 día' : `hace ${dias} días`}
+            </span>
+          )}
+        </div>
+
+        <div className="ficha-cifras">
+          <div>
+            <strong>{valueOrMissing(prospect.score)}</strong>
+            <span>Oportunidad</span>
+          </div>
+          <div>
+            <strong>{valueOrMissing(prospect.readiness)}</strong>
+            <span>Preparación</span>
+          </div>
+          <div>
+            <strong>{prospect.potencialLiderazgo ? `${prospect.potencialLiderazgo}/5` : missing}</strong>
+            <span>DAK puede liderar</span>
+          </div>
+        </div>
+
+        {/* El desglose va a lo ancho y no dentro de la celda de «Oportunidad»:
+            ahi le tocaban 317px y las etiquetas de dos palabras se partian. */}
+        <ScoreBreakdown prospect={prospect} />
+      </header>
+
+      {/* Tres preguntas, no diez campos. Un socio abre esto para decidir, y la
+          decisión se toma con estas tres respuestas. */}
+      <section className="ficha-bloque">
+        <h3>Por qué esta empresa</h3>
+        <p>{valueOrMissing(prospect.senalCompra)}</p>
+        {prospect.porQueAhora && <p>{prospect.porQueAhora}</p>}
+        {prospect.oportunidad && <p className="ficha-destacado">{prospect.oportunidad}</p>}
+      </section>
+
+      <section className="ficha-bloque">
+        <h3>Qué le ofrecemos</h3>
+        <p>{valueOrMissing(prospect.servicioSugerido)}</p>
+        {prospect.anguloVenta && <p>{prospect.anguloVenta}</p>}
+        {message?.primeraOferta && (
+          <p className="ficha-destacado">{message.primeraOferta}</p>
+        )}
+      </section>
+
+      <section className="ficha-bloque">
+        <h3>Cómo entramos</h3>
+        {prospect.anguloEntrada && <p>{prospect.anguloEntrada}</p>}
+        <dl className="ficha-contacto">
+          <div><dt>Canal</dt><dd>{traducirEnum(contact.canal)}</dd></div>
+          <div><dt>Contacto</dt><dd>{valueOrMissing(contact.handle)}</dd></div>
+          <div><dt>Mejor momento</dt><dd>{valueOrMissing(contact.mejorMomento)}</dd></div>
+          <div><dt>Riesgo de agencia</dt><dd>{traducirEnum(prospect.riesgoAgenciaExistente)}</dd></div>
+          <div><dt>Responsable</dt><dd>{valueOrMissing(prospect.responsable)}</dd></div>
+          <div><dt>Fuente</dt><dd>{valueOrMissing(prospect.fuente)}</dd></div>
+        </dl>
+      </section>
+
+      <EnlacesEmpresa prospect={prospect} />
+
+      {/* Solo en «investigado»: en el resto de etapas la fila ya vive en la
+          QUEUE y las acciones que tocan son aprobar y enviar, que estan en Hoy. */}
+      {prospect.etapa === 'investigado' && <MensajeManual prospect={prospect} />}
+
+      {/* La evidencia es procedencia, no material de decisión. Va plegada:
+          importa poder comprobarla, no tenerla siempre delante. */}
+      {prospect.evidencia && (
+        <details className="ficha-evidencia">
+          <summary><span>De dónde sale esto</span><Icon name="chevron" size={14} /></summary>
+          <p>{prospect.evidencia}</p>
+        </details>
+      )}
+
+      <div className="detail-actions">
+        <CopyButton label="Copiar ficha" text={buildProspectCopy(prospect, message)} />
+        <SourceLink prospect={prospect} />
       </div>
-      <div className="detail-grid">
-        <Field label="Etapa" value={stages[prospect.etapa]} /><Field label="Fuente" value={prospect.fuente} />
-        <Field label="Detectado" value={formatDate(prospect.fechaDeteccion)} /><Field label="Responsable" value={prospect.responsable} />
-      </div>
-      <div className="detail-section">
-        <p className="section-label">Qué sabemos</p><Field label="Rubro" value={prospect.rubro} /><Field label="Ciudad" value={prospect.ciudad} />
-        <Field label="Oportunidad detectada" value={prospect.oportunidad} /><Field label="Evidencia" value={prospect.evidencia} />
-      </div>
-      <div className="detail-section"><p className="section-label">Por qué importa</p><p className="detail-prose">{valueOrMissing(prospect.senalCompra)}</p><p className="detail-prose">{valueOrMissing(prospect.porQueAhora)}</p></div>
-      <div className="detail-section">
-        <p className="section-label">Qué ofrecer</p><Field label="Servicio sugerido" value={prospect.servicioSugerido} />
-        <Field label="Ángulo comercial" value={prospect.anguloVenta} /><Field label="Primera oferta" value={message?.primeraOferta} />
-      </div>
-      <div className="detail-section">
-        <p className="section-label">Cómo contactarlo</p><Field label="Canal" value={contact.canal} /><Field label="Contacto" value={contact.handle} />
-        <Field label="Por qué ese canal" value={contact.motivoCanal} /><Field label="Mejor momento" value={contact.mejorMomento} />
-      </div>
-      <div className="detail-section"><div className="score-heading"><p className="section-label">Por qué puntúa así</p><strong>Score {valueOrMissing(prospect.score)}</strong></div><ScoreBreakdown prospect={prospect} /></div>
-      <div className="detail-actions"><CopyButton label="Copiar ficha" text={buildProspectCopy(prospect, message)} /><SourceLink prospect={prospect} /></div>
     </aside>
   )
 }
 
+/**
+ * Cifra que rueda hasta su valor nuevo.
+ *
+ * Es el momento con autoria de esta vista, y no es decoracion: el trabajo del
+ * panel es mirar como se mueven unas cifras al recortar el conjunto. Si al
+ * pulsar un filtro los numeros SALTAN, cambian sin que los veas cambiar y toca
+ * releerlos todos. Rodando, la vista sigue el que se movio mas.
+ *
+ * Con cifras tabulares el ancho no baila mientras rueda, asi que nada de
+ * alrededor se mueve — que es la diferencia entre esto y una animacion que
+ * estorba.
+ */
+function useRueda(objetivo) {
+  // Se pinta `objetivo` salvo mientras hay una rueda en marcha. Al reves —guardar
+  // el numero en el estado y moverlo por fotogramas— la cifra se queda en el
+  // valor viejo si los fotogramas no llegan, y llegan a no llegar: una pestaña
+  // en segundo plano congela requestAnimationFrame. La animacion es un añadido
+  // encima del valor bueno, nunca la unica via para llegar a el.
+  const [rodando, setRodando] = useState(null)
+  const pintado = useRef(objetivo)
+
+  useEffect(() => {
+    const desde = pintado.current
+    pintado.current = objetivo
+    if (desde === objetivo) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const inicio = performance.now()
+    const duracion = 300
+    let ficha = requestAnimationFrame(function paso(ahora) {
+      const parte = Math.min(1, (ahora - inicio) / duracion)
+      const suave = 1 - (1 - parte) ** 4
+      const valor = Math.round(desde + (objetivo - desde) * suave)
+      pintado.current = parte < 1 ? valor : objetivo
+      setRodando(parte < 1 ? valor : null)
+      if (parte < 1) ficha = requestAnimationFrame(paso)
+    })
+    return () => { cancelAnimationFrame(ficha); setRodando(null) }
+  }, [objetivo])
+
+  return rodando ?? objetivo
+}
+
+function Rueda({ valor }) {
+  return <>{useRueda(valor)}</>
+}
+
+/**
+ * Un rail de opciones con UNA marca de oro que viaja de una a otra.
+ *
+ * Dos marcas que se apagan y se encienden dicen «esta se apago, esta se
+ * encendio». Una sola que se desplaza dice «has cambiado de sitio», que es lo
+ * que de verdad ha pasado, y ademas deja claro sin explicarlo que aqui solo se
+ * puede elegir una cosa. Las medidas de arriba se encienden por separado
+ * justamente porque ahi si se pueden combinar: el movimiento explica la regla.
+ */
+function RailFaceta({ activa, neutro, opciones, poner, titulo }) {
+  const rail = useRef(null)
+  const marca = useRef(null)
+  const primera = useRef(true)
+
+  const situar = useCallback(() => {
+    const caja = rail.current
+    const linea = marca.current
+    if (!caja || !linea) return
+    const elegida = caja.querySelector('[aria-pressed="true"]')
+    if (!elegida) { linea.style.opacity = '0'; return }
+    const base = caja.getBoundingClientRect()
+    const suya = elegida.getBoundingClientRect()
+    // La marca mide 1px y se estira: escalar es transformar, y transformar no
+    // recalcula el layout en cada fotograma como lo haria animar el ancho.
+    linea.style.opacity = '1'
+    linea.style.transform = `translateX(${suya.left - base.left}px) scaleX(${suya.width})`
+  }, [])
+
+  useLayoutEffect(() => {
+    // En el primer pintado la marca aparece donde le toca; sin esto entraria
+    // deslizandose desde el borde izquierdo cada vez que se abre la vista.
+    if (primera.current) {
+      const linea = marca.current
+      if (linea) linea.style.transition = 'none'
+      situar()
+      if (linea) { linea.getBoundingClientRect(); linea.style.transition = '' }
+      primera.current = false
+    } else {
+      situar()
+    }
+  })
+
+  // Si cambia el ancho —redimensionar, plegar la ficha— la marca tiene que
+  // seguir debajo de su opcion y no quedarse a medio camino. Se vigila una vez,
+  // no en cada pulsacion de tecla del buscador.
+  useLayoutEffect(() => {
+    const caja = rail.current
+    if (!caja) return undefined
+    const vigia = new ResizeObserver(situar)
+    vigia.observe(caja)
+    return () => vigia.disconnect()
+  }, [situar])
+
+  return (
+    <div className="faceta">
+      <h2>{titulo}</h2>
+      <div aria-label={titulo} className="faceta__rail" ref={rail} role="group">
+        <span aria-hidden="true" className="faceta__marca" ref={marca} />
+        {opciones.map((o) => (
+          <button
+            aria-pressed={activa === o.valor}
+            className="faceta__opcion"
+            disabled={!o.total && o.valor !== neutro && activa !== o.valor}
+            key={o.valor}
+            onClick={() => poner(activa === o.valor ? neutro : o.valor)}
+            type="button"
+          >
+            {o.texto}<i><Rueda valor={o.total} /></i>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Escribir el mensaje a mano, desde la ficha.
+ *
+ * La etapa de un prospecto no es un campo que se escriba: se deduce de en que
+ * hoja vive su fila. Por eso «investigado» era un callejon sin salida — para
+ * avanzar hacia falta un mensaje, y el mensaje lo escribe el Outreach
+ * Strategist. Si Twin tardaba, no habia nada que hacer salvo esperar.
+ *
+ * Aqui se abre la otra puerta, y la clave es que NO pasa por la QUEUE: crear
+ * ahi una fila seria falsificar la salida de un agente, y ademas dos filas con
+ * el mismo nombre bloquean todas las escrituras posteriores de esa empresa. El
+ * mensaje escrito a mano vive en la propia fila de Leads, en `Panel Opener`, y
+ * `Panel Status` lleva su recorrido. Desde ahi entra al mismo embudo: en cuanto
+ * se guarda, el prospecto aparece en Hoy con sus botones de aprobar y enviar,
+ * sin que ninguna otra parte del panel tenga que saber quien lo escribio.
+ *
+ * Las dos vias conviven porque nunca escriben en el mismo sitio, y siempre se
+ * puede saber cual es cual: si el texto esta en `Panel Opener`, lo escribio una
+ * persona.
+ */
+function MensajeManual({ prospect }) {
+  const [editando, setEditando] = useState(false)
+  const [borrador, setBorrador] = useState('')
+  const [estado, setEstado] = useState({ fase: 'listo', mensaje: null })
+  const recargar = useContext(Recarga)
+
+  if (!puedeEscribir || !prospect.empresa) return null
+
+  const pedido = prospect.panelEstado === 'REQUESTED'
+  const trabajando = estado.fase === 'guardando'
+
+  // Doce de las veinte empresas de la hoja no traen telefono. Escribirle un
+  // mensaje a una de esas es trabajo perdido, y el sitio para decirlo es aqui
+  // —antes de escribirlo— y no despues, cuando ya esta redactado y descubres
+  // que no hay boton de WhatsApp. Twin verifica el contacto al encolar; el
+  // carril manual se salta ese paso, asi que el aviso lo tiene que dar el panel.
+  const sinContacto = !prospect.contacto?.telefono
+    && !prospect.contacto?.whatsapp
+    && !prospect.contacto?.handle
+    && !prospect.contacto?.email
+
+  const marcar = async (valor, hecho) => {
+    setEstado({ fase: 'guardando', mensaje: null })
+    const r = await escribirEnHoja({ accion: 'estado', empresa: prospect.empresa, valor })
+    if (!r.ok) { setEstado({ fase: 'fallo', mensaje: r.error ?? 'La hoja rechazó el cambio.' }); return false }
+    setEstado({ fase: 'hecho', mensaje: hecho })
+    recargar()
+    return true
+  }
+
+  // Dos escrituras, y en este orden a proposito: primero el texto y despues el
+  // estado. Si falla la segunda, queda un mensaje guardado sin etapa —molesto,
+  // recuperable—; al reves quedaria un prospecto anunciando un mensaje que no
+  // existe, y alguien lo aprobaria a ciegas.
+  const guardar = async () => {
+    setEstado({ fase: 'guardando', mensaje: null })
+    const texto = await escribirEnHoja({ accion: 'redactar', empresa: prospect.empresa, valor: borrador })
+    if (!texto.ok) { setEstado({ fase: 'fallo', mensaje: texto.error ?? 'La hoja rechazó el mensaje.' }); return }
+    const paso = await escribirEnHoja({ accion: 'estado', empresa: prospect.empresa, valor: 'DRAFTED' })
+    if (!paso.ok) {
+      setEstado({ fase: 'fallo', mensaje: 'El mensaje se guardó, pero no se pudo mover a «por aprobar». Vuelve a intentarlo.' })
+      return
+    }
+    setEditando(false)
+    setEstado({ fase: 'hecho', mensaje: 'Guardado. Ya está en Hoy, esperando tu aprobación.' })
+    recargar()
+  }
+
+  if (editando) {
+    return (
+      <div className="sheet-actions">
+        <span className="context-label">Tu mensaje para {getShortName(prospect)}</span>
+        <textarea
+          autoFocus
+          className="message-editor"
+          onChange={(evento) => setBorrador(evento.target.value)}
+          placeholder="Escribe aquí el mensaje de apertura, tal como se lo enviarías…"
+          rows={Math.min(14, Math.max(6, Math.ceil(borrador.length / 60)))}
+          value={borrador}
+        />
+        <div className="sheet-actions__row">
+          <button className="sheet-button sheet-button--principal" disabled={trabajando || borrador.trim().length < 10} onClick={guardar} type="button">
+            {trabajando ? 'Guardando…' : 'Guardar y pasar a por aprobar'}
+          </button>
+          <button className="sheet-button" disabled={trabajando} onClick={() => { setEditando(false); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
+            Descartar
+          </button>
+        </div>
+        {borrador.trim().length > 0 && borrador.trim().length < 10 && (
+          <p className="sheet-actions__note">Diez caracteres como mínimo — es el mismo límite que impide vaciar un mensaje por accidente.</p>
+        )}
+        {estado.mensaje && (
+          <p aria-live="polite" className={`sheet-actions__result ${estado.fase === 'fallo' ? 'is-fallo' : ''}`}>{estado.mensaje}</p>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="sheet-actions">
+      <span className="context-label">Todavía sin mensaje</span>
+      <div className="sheet-actions__row">
+        <button className={`sheet-button ${sinContacto ? '' : 'sheet-button--principal'}`} disabled={trabajando} onClick={() => { setBorrador(''); setEditando(true); setEstado({ fase: 'listo', mensaje: null }) }} type="button">
+          Escribirlo yo
+        </button>
+        <button className={`sheet-button ${sinContacto && !pedido ? 'sheet-button--principal' : ''}`} disabled={trabajando} onClick={() => marcar(pedido ? '' : 'REQUESTED', pedido ? 'Petición retirada.' : 'Pedido. Twin lo tomará en su próxima corrida.')} type="button">
+          {trabajando ? 'Guardando…' : pedido ? 'Quitar la petición' : 'Pedírselo a Twin'}
+        </button>
+      </div>
+      {estado.mensaje && (
+        <p aria-live="polite" className={`sheet-actions__result ${estado.fase === 'fallo' ? 'is-fallo' : ''}`}>{estado.mensaje}</p>
+      )}
+      <p className="sheet-actions__note">
+        {sinContacto
+          ? 'Esta empresa no tiene teléfono ni correo en la hoja: podrías escribir el mensaje, pero no habría a quién mandárselo. Antes hay que conseguir el contacto.'
+          : pedido
+            ? `Pedido${prospect.panelEstadoEn ? ` el ${prospect.panelEstadoEn}` : ''} y todavía sin mensaje: Twin no ha corrido o no le tocó turno. No hace falta esperarlo.`
+            : 'Si lo escribes tú, pasa a «por aprobar» y sigue el mismo camino que los de Twin. No se toca la hoja del agente.'}
+      </p>
+    </div>
+  )
+}
+
+/**
+ * Prospectos.
+ *
+ * El filtro dejo de ser una barra de formularios. Cinco controles —buscar,
+ * tipo, origen, etapa y orden— no caben en el ancho de una lista, y ahi es
+ * exactamente donde estaban: dentro de `work-queue`, la columna de 300px.
+ *
+ * El intento siguiente los saco de ahi pero los convirtio en cinco tarjetas de
+ * cifra grande, cada una con su filete de color. Es la plantilla mas repetida
+ * que existe en paneles generados —numero enorme, etiqueta pequeña, acento
+ * lateral, cinco colores— y se nota de lejos. Fuera.
+ *
+ * Lo que hay ahora es un RAIL DE MEDIDAS: las cifras sobre el propio fondo,
+ * separadas por filetes de 1px y nada mas, como la escala de un instrumento.
+ * Sin tarjetas, sin colores y sin sombras. Y sin nada de eso, lo que distingue
+ * a un panel bueno de uno generado es lo unico que queda: como se mueve. Las
+ * cifras ruedan hasta su valor nuevo y una sola marca de oro viaja hasta la
+ * opcion elegida.
+ *
+ * Las cuentas son de faceta: cada dimension se cuenta con el resto de filtros
+ * aplicados pero ignorando el suyo propio. Asi el numero de cada opcion dice
+ * cuantas filas veras si la pulsas, que es lo unico que se le pregunta a un
+ * numero puesto ahi.
+ */
 function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
   const [query, setQuery] = useState(filtrosIniciales.buscar ?? '')
   const [origin, setOrigin] = useState(filtrosIniciales.origen ?? 'todos')
   const [stage, setStage] = useState(filtrosIniciales.etapa ?? 'todas')
   const [tipo, setTipo] = useState(filtrosIniciales.tipo ?? 'todos')
+  const [foco, setFoco] = useState(null)
+  const [orden, setOrden] = useState('score')
   const [selectedId, setSelectedId] = useState(prospects[0]?.id ?? null)
   const [enDetalle, setEnDetalle] = useState(false)
   const abrir = (id) => { setSelectedId(id); setEnDetalle(true) }
-  const filteredProspects = useMemo(() => {
-    const normalizedQuery = query.trim().toLocaleLowerCase('es')
-    return prospects.filter((prospect) => {
-      const matchesQuery = !normalizedQuery || [prospect.empresa, prospect.persona, prospect.fuente, prospect.rubro, prospect.ciudad].filter(Boolean).some((value) => value.toLocaleLowerCase('es').includes(normalizedQuery))
-      return matchesQuery
-        && (origin === 'todos' || prospect.origen === origin)
-        && (stage === 'todas' || prospect.etapa === stage)
-        && (tipo === 'todos' || prospect.tipoOportunidad === tipo)
-    })
-  }, [origin, prospects, query, stage, tipo])
-  const selectedProspect = filteredProspects.find((prospect) => prospect.id === selectedId) ?? filteredProspects[0] ?? null
 
-  // Las quince filas se agrupan por etapa del embudo. Una lista plana de quince
-  // nombres no dice nada; agrupada, la forma del embudo se lee en la propia
-  // columna sin mirar Panorama.
+  const sinContacto = (p) => !p.contacto?.handle && !p.contacto?.telefono && !p.contacto?.email
+  const deHoy = (p) => diasDesde(p.fechaDeteccion) === 0
+
+  const termino = query.trim().toLocaleLowerCase('es')
+  const coincideTexto = (p) => !termino || [p.empresa, p.persona, p.fuente, p.rubro, p.ciudad]
+    .filter(Boolean).some((valor) => valor.toLocaleLowerCase('es').includes(termino))
+
+  // `salvo` desactiva UNA dimension. Es lo que hace que las cuentas sirvan en
+  // vez de ser circulares: contar «Etapa: enviado» con el filtro de etapa ya
+  // puesto daria cero para todas las demas.
+  const pasa = (p, salvo = null) => coincideTexto(p)
+    && (salvo === 'tipo' || tipo === 'todos' || p.tipoOportunidad === tipo)
+    && (salvo === 'origen' || origin === 'todos' || p.origen === origin)
+    && (salvo === 'etapa' || stage === 'todas' || p.etapa === stage)
+    && (salvo === 'foco' || foco !== 'sin-contacto' || sinContacto(p))
+    && (salvo === 'foco' || foco !== 'hoy' || deHoy(p))
+
+  const cuenta = (condicion, salvo) => prospects.filter((p) => pasa(p, salvo) && condicion(p)).length
+  const filteredProspects = prospects.filter((p) => pasa(p))
+  const selectedProspect = filteredProspects.find((p) => p.id === selectedId) ?? filteredProspects[0] ?? null
+
+  const hayFiltro = Boolean(termino) || tipo !== 'todos' || origin !== 'todos' || stage !== 'todas' || foco
+  const limpiar = () => { setQuery(''); setTipo('todos'); setOrigin('todos'); setStage('todas'); setFoco(null) }
+  const alternar = (valor, actual, poner, neutro) => poner(actual === valor ? neutro : valor)
+
+  // Cinco medidas del conjunto. Solo una va en oro y siempre la misma: agencia
+  // completa es la unica que significa dinero grande, y el oro en este panel
+  // quiere decir eso. Las demas son hueso; la marca de abajo dice cual filtra.
+  const medidas = [
+    { clave: 'total', etiqueta: 'Prospectos', valor: prospects.filter(coincideTexto).length,
+      activo: !hayFiltro, alPulsar: limpiar },
+    { clave: 'agencia', etiqueta: 'Agencia completa', oro: true,
+      valor: cuenta((p) => p.tipoOportunidad === 'Agencia completa', 'tipo'),
+      activo: tipo === 'Agencia completa',
+      alPulsar: () => alternar('Agencia completa', tipo, setTipo, 'todos') },
+    { clave: 'soporte', etiqueta: 'Soporte',
+      valor: cuenta((p) => p.tipoOportunidad === 'Soporte especializado', 'tipo'),
+      activo: tipo === 'Soporte especializado',
+      alPulsar: () => alternar('Soporte especializado', tipo, setTipo, 'todos') },
+    { clave: 'sin-contacto', etiqueta: 'Sin contacto', valor: cuenta(sinContacto, 'foco'),
+      activo: foco === 'sin-contacto',
+      alPulsar: () => alternar('sin-contacto', foco, setFoco, null) },
+    { clave: 'hoy', etiqueta: 'Detectados hoy', valor: cuenta(deHoy, 'foco'),
+      activo: foco === 'hoy',
+      alPulsar: () => alternar('hoy', foco, setFoco, null) },
+  ]
+
+  const facetas = [
+    {
+      titulo: 'Etapa', activa: stage, neutro: 'todas', poner: setStage,
+      opciones: [
+        { valor: 'todas', texto: 'Todas', total: prospects.filter((p) => pasa(p, 'etapa')).length },
+        ...Object.entries(stages).map(([valor, texto]) => ({
+          valor, texto, total: cuenta((p) => p.etapa === valor, 'etapa'),
+        })),
+      ],
+    },
+    {
+      titulo: 'Origen', activa: origin, neutro: 'todos', poner: setOrigin,
+      opciones: [
+        { valor: 'todos', texto: 'Todos', total: prospects.filter((p) => pasa(p, 'origen')).length },
+        { valor: 'outbound', texto: 'Búsqueda activa', total: cuenta((p) => p.origen === 'outbound', 'origen') },
+        { valor: 'inbound', texto: 'Llegaron solos', total: cuenta((p) => p.origen === 'inbound', 'origen') },
+      ],
+    },
+  ]
+
+  // Las filas se agrupan por etapa del embudo. Una lista plana no dice nada;
+  // agrupada, la forma del embudo se lee en la propia columna.
   const porEtapa = Object.entries(stages)
-    .map(([clave, titulo]) => ({ clave, titulo, items: filteredProspects.filter((p) => p.etapa === clave) }))
+    .map(([clave, titulo]) => ({
+      clave,
+      titulo,
+      items: filteredProspects.filter((p) => p.etapa === clave).sort((a, b) => {
+        if (orden === 'nombre') return getShortName(a).localeCompare(getShortName(b), 'es')
+        if (orden === 'antiguedad') return (a.fechaDeteccion ?? '').localeCompare(b.fechaDeteccion ?? '')
+        if (orden === 'liderazgo') return (b.potencialLiderazgo ?? 0) - (a.potencialLiderazgo ?? 0)
+        return (b.score ?? -1) - (a.score ?? -1)
+      }),
+    }))
     .filter((grupo) => grupo.items.length)
 
   const alTeclado = (evento) => {
@@ -1028,67 +1552,91 @@ function ProspectsView({ data, prospects, filtrosIniciales = {} }) {
   }
 
   return (
-    <div className={`work-split ${enDetalle ? 'work-split--detalle' : 'work-split--lista'}`}>
-      <div className="work-queue" onKeyDown={alTeclado}>
-        <div className="filter-bar">
-          <label className="search-field">
-            <span>Buscar</span>
-            <input onChange={(event) => setQuery(event.target.value)} placeholder="Empresa, fuente, ciudad…" type="search" value={query} />
+    <div className={`vista-prospectos ${enDetalle ? 'vista-prospectos--detalle' : ''}`}>
+      <header className="prospectos-cabecera">
+        <div className="cabecera-linea">
+          <label className="cabecera-buscar">
+            <Icon name="buscar" size={15} />
+            <input
+              onChange={(evento) => setQuery(evento.target.value)}
+              placeholder="Buscar empresa, ciudad o rubro…"
+              type="search"
+              value={query}
+            />
+            {query && (
+              <button aria-label="Limpiar la búsqueda" onClick={() => setQuery('')} type="button">
+                <Icon name="cerrar" size={12} />
+              </button>
+            )}
           </label>
-          {/* Primero de todo: es la pregunta central del sistema comercial. */}
-          <label>
-            <span>Tipo de oportunidad</span>
-            <select onChange={(event) => setTipo(event.target.value)} value={tipo}>
-              <option value="todos">Todos</option>
-              <option value="Agencia completa">Agencia completa</option>
-              <option value="Soporte especializado">Soporte especializado</option>
-            </select>
-          </label>
-          <label>
-            <span>Origen</span>
-            <select onChange={(event) => setOrigin(event.target.value)} value={origin}>
-              <option value="todos">Todos</option>
-              <option value="outbound">Búsqueda activa</option>
-              <option value="inbound">Llegaron solos</option>
-            </select>
-          </label>
-          <label>
-            <span>Etapa</span>
-            <select onChange={(event) => setStage(event.target.value)} value={stage}>
-              <option value="todas">Todas</option>
-              {Object.entries(stages).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          {/* Ordenar no es filtrar: no recorta nada, solo cambia el turno. Por
+              eso vive aparte del rail y no mezclado entre las medidas. */}
+          <label className="cabecera-orden">
+            <span>Ordenar</span>
+            <select onChange={(evento) => setOrden(evento.target.value)} value={orden}>
+              <option value="score">Oportunidad</option>
+              <option value="liderazgo">Podemos liderar</option>
+              <option value="antiguedad">Más antiguos</option>
+              <option value="nombre">Nombre</option>
             </select>
           </label>
         </div>
 
-        {porEtapa.map((grupo) => (
-          <section className="work-group" key={grupo.clave}>
-            <header><h2>{grupo.titulo}</h2><span>{grupo.items.length}</span></header>
-            <ul>
-              {grupo.items.map((prospect) => (
-                <li key={prospect.id}>
-                  <WorkRow
-                    metric="score"
-                    onSelect={abrir}
-                    prospect={prospect}
-                    selected={selectedProspect?.id === prospect.id}
-                  />
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+        <div className="rail-medidas">
+          {medidas.map((m) => (
+            <button
+              aria-pressed={m.activo}
+              className={`medida ${m.activo ? 'is-activa' : ''} ${m.oro ? 'medida--oro' : ''}`}
+              key={m.clave}
+              onClick={m.alPulsar}
+              type="button"
+            >
+              <strong><Rueda valor={m.valor} /></strong>
+              <span>{m.etiqueta}</span>
+            </button>
+          ))}
+        </div>
 
-        {!filteredProspects.length && (
-          <div className="empty-state empty-state--compact">
-            <div><h3>Sin resultados</h3><p>Ninguna fila del mock coincide con estos filtros.</p></div>
-          </div>
-        )}
-      </div>
+        <div className="cabecera-facetas">
+          {facetas.map((f) => <RailFaceta key={f.titulo} {...f} />)}
+        </div>
+      </header>
 
-      <div className="work-detail" key={selectedProspect?.id ?? 'empty'}>
-        {selectedProspect && <BotonVolver onClick={() => setEnDetalle(false)} titulo={getShortName(selectedProspect)} />}
-        <ProspectDetail data={data} prospect={selectedProspect} />
+      <div className={`work-split ${enDetalle ? 'work-split--detalle' : 'work-split--lista'}`}>
+        <div className="work-queue" onKeyDown={alTeclado}>
+          {porEtapa.map((grupo) => (
+            <section className="work-group" key={grupo.clave}>
+              <header><h2>{grupo.titulo}</h2><span><Rueda valor={grupo.items.length} /></span></header>
+              <ul>
+                {grupo.items.map((prospect) => (
+                  <li key={prospect.id}>
+                    <WorkRow
+                      metric="score"
+                      onSelect={abrir}
+                      prospect={prospect}
+                      selected={selectedProspect?.id === prospect.id}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+
+          {!filteredProspects.length && (
+            <div className="empty-state empty-state--compact">
+              <div>
+                <h3>Sin resultados</h3>
+                <p>Ninguna empresa coincide con estos filtros.</p>
+                <button className="retry-button" onClick={limpiar} type="button">Quitar los filtros</button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="work-detail" key={selectedProspect?.id ?? 'empty'}>
+          {selectedProspect && <BotonVolver onClick={() => setEnDetalle(false)} titulo={getShortName(selectedProspect)} />}
+          <ProspectDetail data={data} prospect={selectedProspect} />
+        </div>
       </div>
     </div>
   )
@@ -1303,6 +1851,8 @@ function App() {
     }
   }, [])
 
+  const releer = useCallback(() => setRequestKey((key) => key + 1), [])
+
   useEffect(() => {
     let cancelled = false
     setResource({ status: 'loading', data: null })
@@ -1373,13 +1923,20 @@ function App() {
         <h1>{activeView.label}</h1>
         {data && <span className="header-meta">{getSnapshotDate(data)}</span>}
         <span className="header-spacer" />
-        {data?.meta.esMock && <Badge tone="mock">Datos de ejemplo</Badge>}
+        {/* Mientras carga NO se dice nada. La primera version caia al `else`
+            con `data` en null y anunciaba «En vivo» antes de haber leido una
+            sola fila — justo la mentira que esta insignia existe para evitar. */}
+        {data && (data.meta.esMock
+          ? <Badge title={data.meta.motivoMock ?? undefined} tone="mock">Datos de ejemplo</Badge>
+          : <Badge tone="oro">En vivo</Badge>)}
       </header>
+      <Recarga.Provider value={releer}>
       <main className={`main-content main-content--${renderedView}`}>
         {resource.status === 'loading' && <LoadingState />}
-        {resource.status === 'error' && <ErrorState onRetry={() => setRequestKey((key) => key + 1)} />}
+        {resource.status === 'error' && <ErrorState onRetry={releer} />}
         {resource.status === 'ready' && <div className={`view-frame view-frame--${viewPhase}`} key={renderedView}>{viewContent}</div>}
       </main>
+      </Recarga.Provider>
     </div>
     </>
   )
