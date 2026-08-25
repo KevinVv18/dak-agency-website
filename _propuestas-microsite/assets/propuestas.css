@@ -316,3 +316,66 @@ tr.subraya td.destaca{background:var(--calado)!important;color:var(--senal-texto
   cursor:pointer;transition:background .2s var(--exp),color .2s var(--exp)}
 .btn.linea{background:transparent;border-color:var(--calado);color:var(--calado)}
 .btn:hover,.btn:focus-visible{background:var(--calado);border-color:var(--calado);color:var(--tinta)}
+
+/* ── Componentes de cotización formal ─────────────────────────────────────── */
+
+/* Ficha de cabecera: de quién, para quién, número, fecha y validez. */
+.ficha{display:grid;gap:0;border:4px solid var(--calado);margin-top:clamp(1.4rem,3vw,2.2rem)}
+@media(min-width:640px){.ficha{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.ficha{grid-template-columns:1fr 1fr 1fr}}
+.ficha div{padding:.85rem 1.1rem;border-top:2px solid #3B6153}
+.ficha div:first-child{border-top:0}
+@media(min-width:640px){
+  .ficha div{border-top:2px solid #3B6153;border-left:2px solid #3B6153}
+  .ficha div:nth-child(-n+2){border-top:0}
+  .ficha div:nth-child(odd){border-left:0}
+}
+@media(min-width:1000px){
+  .ficha div:nth-child(-n+3){border-top:0}
+  .ficha div:nth-child(odd){border-left:2px solid #3B6153}
+  .ficha div:nth-child(3n+1){border-left:0}
+}
+.ficha dt{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.72rem;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:#9FB3A9;margin-bottom:.22rem}
+.ficha dd{font-size:.98rem;line-height:1.4;color:var(--calado)}
+.ficha dd b{font-weight:700}
+
+/* Partidas: las lineas de la cotizacion. El numero es referencia, no adorno. */
+.partidas{margin-top:2rem;counter-reset:partida}
+.partida{display:grid;grid-template-columns:auto 1fr;gap:clamp(.9rem,2.2vw,1.8rem);
+  border-top:3px solid var(--regla);padding:1.2rem 0 1.35rem}
+.flood .partida{border-top-color:#3B6153}
+.partida .cod{font-family:'Archivo Black',system-ui,sans-serif;font-size:clamp(1.5rem,1.1rem + 1.4vw,2.1rem);
+  line-height:.85;color:var(--senal-texto)}
+.flood .partida .cod{color:var(--calado)}
+.partida h3{margin-bottom:.4rem}
+.partida p{max-width:62ch}
+.partida .detalle{margin-top:.7rem;display:grid;gap:.5rem}
+.partida .detalle span{position:relative;padding-left:1.5rem;font-family:'Archivo Narrow',system-ui,sans-serif;
+  font-size:.9rem;letter-spacing:.02em;line-height:1.5;color:#4A5D52;max-width:60ch}
+.flood .partida .detalle span{color:#C6D2CB}
+.partida .detalle span::before{content:"";position:absolute;left:0;top:.5em;width:9px;height:9px;
+  background:var(--senal);transform:rotate(45deg)}
+.flood .partida .detalle span::before{background:var(--calado)}
+
+/* Bloque de aceptacion, con sus lineas de firma. */
+.aceptacion{margin-top:2.4rem;border:5px solid var(--regla);padding:clamp(1.3rem,3vw,2.2rem);background:var(--calado)}
+.aceptacion h3{border-bottom:3px solid var(--regla);padding-bottom:.5rem;margin-bottom:1rem}
+.rubricas{display:grid;gap:clamp(1.6rem,4vw,3rem);margin-top:2.2rem}
+@media(min-width:640px){.rubricas{grid-template-columns:1fr 1fr}}
+.rubrica{border-top:2px solid var(--tinta);padding-top:.6rem}
+.rubrica b{display:block;font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.78rem;
+  font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.rubrica span{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.82rem;color:#4A5D52}
+
+/* Total destacado al pie del alcance. */
+.total{margin-top:2rem;border:5px solid var(--senal);background:var(--senal);color:#fff;
+  padding:clamp(1.1rem,2.6vw,1.6rem) clamp(1.2rem,3vw,1.9rem);
+  display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap}
+.total .rot{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.85rem;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase}
+.total .imp{font-family:'Archivo Black',system-ui,sans-serif;font-size:clamp(1.9rem,1.3rem + 2.6vw,3rem);
+  letter-spacing:-.035em;line-height:.95}
+.total .imp sup{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:max(11px,.3em);
+  letter-spacing:.1em;vertical-align:.95em;font-weight:700;margin-right:.16em}
+.total .per{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.85rem;letter-spacing:.06em;display:block;margin-top:.2rem}
