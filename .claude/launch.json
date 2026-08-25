@@ -4,34 +4,67 @@
     {
       "name": "dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000
     },
     {
       "//": "Sirve dist/ tal cual: es la unica forma de probar el HTML prerenderizado y la hidratacion. `dev` no sirve para esto porque el servidor de desarrollo nunca ve los volcados.",
       "name": "preview",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["vite", "preview", "--port", "4173", "--strictPort", "--host", "127.0.0.1"],
+      "runtimeArgs": [
+        "vite",
+        "preview",
+        "--port",
+        "4173",
+        "--strictPort",
+        "--host",
+        "127.0.0.1"
+      ],
       "port": 4173
     },
     {
       "name": "american-vault",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "5174", "--directory", "C:/Users/kevin/OneDrive/Desktop/american vault"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5174",
+        "--directory",
+        "C:/Users/kevin/OneDrive/Desktop/american vault"
+      ],
       "port": 5174
     },
     {
       "name": "analisis",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["_analisis-microsite/server.cjs"],
+      "runtimeArgs": [
+        "_analisis-microsite/server.cjs"
+      ],
       "port": 4320
     },
     {
       "//": "Panel de ventas. App Vite aparte, con su propio package.json: por eso se invoca su propio vite en vez de `npm run dev`, que correria contra la SPA de la raiz.",
       "name": "ventas",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["_sales-center/node_modules/vite/bin/vite.js", "_sales-center", "--port", "4330", "--strictPort"],
+      "runtimeArgs": [
+        "_sales-center/node_modules/vite/bin/vite.js",
+        "_sales-center",
+        "--port",
+        "4330",
+        "--strictPort"
+      ],
       "port": 4330
+    },
+    {
+      "name": "socios",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "_socios-microsite/server.cjs"
+      ],
+      "port": 4321
     }
   ]
 }

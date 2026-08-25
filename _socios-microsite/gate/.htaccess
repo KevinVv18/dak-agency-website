@@ -1,0 +1,45 @@
+# socios.dakagency.net — documentos internos de socios de DAK.
+#
+# El muro es la sesion de Google que gestiona index.php, restringida al dominio
+# Workspace. Y es un muro de verdad, no un login pintado en el navegador: los
+# documentos viven en app/, que este archivo bloquea por completo, asi que el
+# unico camino hacia el HTML pasa por la comprobacion de sesion.
+#
+# Aqui dentro hay honorarios, margenes y la posicion de repliegue en
+# negociaciones abiertas. Que esto llegue al cliente cuesta la negociacion.
+
+DirectoryIndex index.php
+
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "no-referrer"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Dotfiles y archivos de servicio, fuera. Va primero de todo.
+  RewriteRule (^|/)\. - [F,L]
+  RewriteRule \.(tar\.gz|tgz|sql|zip|bak|csv)$ - [F,L]
+
+  # app/ NO se sirve nunca directamente. Es donde viven los documentos, y llegar
+  # ahi sin pasar por index.php seria saltarse la puerta entera.
+  RewriteRule ^app(/|$) - [F,L]
+
+  # Todo lo demas entra por index.php, que comprueba la sesion y decide si sirve
+  # el documento o la pantalla de acceso.
+  #
+  # robots.txt queda exento y se sirve tal cual, sin sesion: es lo que un
+  # rastreador viene a leer, y decirle que se vaya es mas util que darle un 401.
+  # Se EXCLUYE en vez de reescribirlo a app/, porque una reescritura vuelve a
+  # entrar en este ruleset y la corta la regla que protege app/.
+  RewriteCond %{REQUEST_URI} !^/(index\.php|robots\.txt)$
+  RewriteRule . /index.php [L]
+</IfModule>
+
+# El config y la pantalla de acceso son includes de PHP, no paginas sueltas.
+<FilesMatch "^(config|acceso)\.php$">
+  Require all denied
+</FilesMatch>

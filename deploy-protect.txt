@@ -20,6 +20,7 @@ blog/
 blog-demo/
 inmobiliaria/
 analisis/
+socios/
 guias/
 agro/
 ventas/

@@ -1,0 +1,5 @@
+# socios.dakagency.net contiene documentos internos de la sociedad.
+# Detras de sesion de Google, ningun rastreador deberia llegar aqui — pero si
+# llega, que sea explicito.
+User-agent: *
+Disallow: /
