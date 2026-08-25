@@ -379,3 +379,100 @@ tr.subraya td.destaca{background:var(--calado)!important;color:var(--senal-texto
 .total .imp sup{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:max(11px,.3em);
   letter-spacing:.1em;vertical-align:.95em;font-weight:700;margin-right:.16em}
 .total .per{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.85rem;letter-spacing:.06em;display:block;margin-top:.2rem}
+
+/* ═══ El papel ════════════════════════════════════════════════════════════════
+   Una cotizacion se firma en papel, asi que la ruta de impresion es una
+   superficie de primera clase y no un descarte. El bloque de impresion que
+   viene heredado del documento interno no conoce .ficha, .partida, .total ni
+   .aceptacion; este los cubre y corrige la portada, que en pantalla usa una
+   rejilla de dos columnas y un numeral de 432px que se salia de la hoja. */
+@media print{
+  @page{ size:A4; margin:15mm 14mm; }
+
+  html,body{background:#fff!important;font-size:10.5pt}
+  body{overflow:visible}
+
+  /* Texturas fuera: gastan tinta y en trama fina salen sucias. */
+  .trama,.grano::after,.trama::before{display:none!important}
+
+  /* Cromo de pantalla que en papel no hace nada. */
+  .cinta,.acciones,.desliza{display:none!important}
+
+  .plancha{page-break-inside:auto;padding:9mm 0 7mm;border-top:4px solid var(--tinta)}
+  .plancha:first-of-type{border-top:0;padding-top:0}
+  .caja{width:100%}
+
+  /* Portada: una sola columna, y el numeral a una medida que cabe en la hoja. */
+  .cabecera,.dicho{display:block}
+  .portada{padding-top:0}
+  .golpe{display:flex;align-items:flex-end;gap:6mm;padding-top:0;page-break-inside:avoid}
+  .numWrap{padding-top:4mm;padding-bottom:2mm;line-height:.82}
+  .numeral{font-size:52pt!important;letter-spacing:-.04em}
+  .numeral.largo{font-size:38pt!important}
+  .numFantasma{transform:translate(2px,2px)!important;transition:none!important}
+  .golpe .glosa{max-width:none;padding-bottom:1mm}
+  .golpe .glosa strong{font-size:11pt;color:var(--tinta)!important}
+  .golpe .glosa span{font-size:9.5pt;color:#3E4F46!important}
+  .portada h1{font-size:19pt;max-width:none;margin:6mm 0 2mm}
+  .portada .entrada{max-width:none}
+  .reglaDoble{margin:4mm 0 0}
+
+  /* Un titular nunca cierra pagina: se va con su contenido. */
+  h2,h3{page-break-after:avoid;break-after:avoid}
+  h2{font-size:15pt;max-width:none;margin-bottom:3mm}
+  h3{font-size:10pt}
+  .plancha > .caja > h2:first-child{page-break-before:auto}
+  .entrada{font-size:11pt;max-width:none}
+  p{max-width:none}
+  p,li{orphans:3;widows:3}
+
+  /* Ficha de cabecera: rejilla en tinta sobre papel. */
+  .ficha{border-color:var(--tinta);page-break-inside:avoid;margin-top:5mm}
+  .ficha div{border-color:var(--tinta)!important;padding:3mm 4mm}
+  .ficha dt{color:#5B6B62!important}
+  .ficha dd{color:var(--tinta)!important;font-size:10pt}
+
+  /* Partidas y clausulas: nunca partidas a la mitad. */
+  .partida,.clausula,.lista li,.rubrica{page-break-inside:avoid}
+  .partida{border-top-color:var(--tinta)!important;padding:4mm 0 4.5mm}
+  .partida .cod{color:var(--senal-texto)!important;font-size:16pt}
+  .partida .detalle span,.lista li span{color:#3E4F46!important;font-size:9.5pt}
+  .partida .detalle span::before,.lista li::before{background:var(--senal-texto)!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .clausula{border-top-color:var(--tinta)!important;padding:4mm 0 4.5mm}
+  .clausula .orden{color:var(--senal-texto)!important}
+  .clausula p,.lista li b{color:var(--tinta)!important}
+
+  /* El total y la aceptacion viajan enteros. */
+  .total{page-break-inside:avoid;margin-top:6mm;background:var(--senal)!important;
+    border-color:var(--senal)!important;color:#fff!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .total .rot,.total .per,.total .imp{color:#fff!important}
+  .aceptacion{page-break-inside:avoid;margin-top:6mm;background:#fff!important;
+    border-color:var(--tinta)!important;padding:5mm}
+  .aceptacion h3,.aceptacion p{color:var(--tinta)!important}
+  .rubricas{margin-top:14mm;gap:8mm}
+  .rubrica{border-top-color:var(--tinta)!important}
+  .rubrica b{color:var(--tinta)!important}
+  .rubrica span{color:#5B6B62!important}
+
+  /* Tablas: en papel no hay scroll, asi que se dejan fluir. */
+  .marco{overflow:visible!important;max-height:none!important;border-color:var(--tinta)!important;
+    page-break-inside:avoid;margin-top:5mm}
+  table{min-width:0!important;font-size:9.5pt}
+  caption{background:var(--tinta)!important;color:#fff!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  th{background:#EAE4D5!important;color:var(--tinta)!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  td{color:var(--tinta)!important}
+  /* La fila entintada lleva su texto CALADO en blanco. El td de arriba se lo
+     comia y la fila salia en verde sobre verde, es decir en blanco. */
+  tr.subraya td,tr.subraya td b,tr.subraya td strong{color:#fff!important}
+  tr.subraya td.destaca{background:var(--calado)!important;color:var(--senal-texto)!important}
+
+  .pie{color:#5B6B62!important;border-top-color:var(--tinta)!important;max-width:none;font-size:9pt}
+  .firma{border-top-color:var(--tinta)!important;color:#5B6B62!important;font-size:8.5pt}
+
+  /* La entrada animada no debe dejar nada invisible en el PDF. */
+  .js .ap,.js .ap.dentro{opacity:1!important;transform:none!important}
+}
