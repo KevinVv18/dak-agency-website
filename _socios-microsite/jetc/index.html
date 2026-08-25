@@ -141,14 +141,14 @@ b,strong{font-weight:700}
 .instrumento .cab{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:1.1rem}
 .instrumento .cab h3{color:var(--calado)}
 .lectura{font-family:'Archivo Black',sans-serif;font-size:clamp(1.6rem,1.1rem + 2vw,2.4rem);letter-spacing:-.03em;color:var(--calado)}
-.lectura small{font-family:'Archivo Narrow',sans-serif;font-size:.42em;letter-spacing:.14em;color:#9FB3A9;margin-left:.5rem;font-weight:700}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;background:transparent;cursor:ew-resize;display:block}
+.lectura small{font-family:'Archivo Narrow',sans-serif;font-size:max(11px,.42em);letter-spacing:.14em;color:#9FB3A9;margin-left:.5rem;font-weight:700}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:40px;background:transparent;cursor:ew-resize;display:block}
 input[type=range]::-webkit-slider-runnable-track{height:14px;background:
   repeating-linear-gradient(90deg,#3B6153 0 2px,transparent 2px 5px),#0C2A1E;border:2px solid var(--calado)}
 input[type=range]::-moz-range-track{height:14px;background:
   repeating-linear-gradient(90deg,#3B6153 0 2px,transparent 2px 5px),#0C2A1E;border:2px solid var(--calado)}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:34px;background:var(--senal);
-  border:3px solid var(--calado);margin-top:-13px}
+  border:3px solid var(--calado);margin-top:-8px}
 input[type=range]::-moz-range-thumb{width:20px;height:34px;background:var(--senal);border:3px solid var(--calado);
   border-radius:0}
 .escala{display:flex;justify-content:space-between;font-family:'Archivo Narrow',sans-serif;font-size:.72rem;
@@ -156,6 +156,21 @@ input[type=range]::-moz-range-thumb{width:20px;height:34px;background:var(--sena
 .veredicto{margin-top:1.15rem;border-top:2px solid #3B6153;padding-top:.9rem;font-family:'Archivo Narrow',sans-serif;
   font-size:.95rem;letter-spacing:.03em;line-height:1.5;color:#DDD6C4}
 .veredicto b{color:#fff}
+
+/* --- panel de mandos: cada parametro con su escala impresa --- */
+.mandos{display:grid;gap:1.1rem;margin:.4rem 0 1.3rem}
+@media(min-width:720px){.mandos{grid-template-columns:1fr 1fr;gap:1.1rem 2rem}}
+.mando label{display:flex;justify-content:space-between;gap:.7rem;align-items:baseline;
+  font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.79rem;letter-spacing:.1em;
+  text-transform:uppercase;color:#C6D2CB;margin-bottom:.42rem}
+.mando label .val{font-family:'Archivo Black',system-ui,sans-serif;font-size:1.1rem;
+  letter-spacing:-.02em;color:var(--calado);text-transform:none}
+.mando .lim{display:flex;justify-content:space-between;font-family:'Archivo Narrow',system-ui,sans-serif;
+  font-size:.7rem;letter-spacing:.09em;color:#9FB3A9;margin-top:.32rem}
+.reponer{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.76rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--calado);background:transparent;
+  border:2px solid #3B6153;padding:.5rem .9rem;cursor:pointer}
+.reponer:hover,.reponer:focus-visible{border-color:var(--calado)}
 
 /* --- estallido, una sola vez en toda la pieza --- */
 .estallido{position:absolute;top:0;right:0;width:clamp(92px,11vw,138px);z-index:4;color:var(--senal)}
@@ -325,24 +340,52 @@ tr.subraya td.destaca{background:var(--calado)!important;color:var(--senal-texto
       <div class="bloque" id="blqA">
         <span class="tit"><span>Modelo A · Híbrido</span><span id="etqA">A</span></span>
         <span class="cifra"><sup>S/</sup><span id="cifA">9,600</span></span>
-        <span class="desg">Piso de S/ 4,000 al mes más S/ 700 por lote vendido, que es cerca del 2% del lote promedio.</span>
+        <span class="desg" id="desgA">Piso de S/ 4,000 al mes más S/ 710 por lote vendido, que es el 2% del lote promedio.</span>
       </div>
       <div class="bloque" id="blqB">
         <span class="tit"><span>Modelo B · Fijo</span><span id="etqB">B</span></span>
         <span class="cifra"><sup>S/</sup><span id="cifB">9,500</span></span>
-        <span class="desg">Tarifa plana mensual, sin comisión. Cobramos lo mismo vendan cuatro lotes o cuarenta.</span>
+        <span class="desg" id="desgB">Tarifa plana mensual, sin comisión. Cobramos lo mismo vendan cuatro lotes o cuarenta.</span>
       </div>
     </div>
 
     <div class="instrumento">
       <div class="cab">
-        <h3>Mueve el ritmo de venta y mira cuál gana</h3>
+        <h3>Mueve cualquier parámetro y mira cuál gana</h3>
         <span class="lectura"><span id="lecN">8</span><small>lotes / mes</small></span>
       </div>
-      <label for="ritmo" class="menor" style="display:block;margin-bottom:.55rem">Lotes vendidos al mes atribuibles a la campaña</label>
-      <input type="range" id="ritmo" min="0" max="40" step="1" value="8"
-             aria-describedby="veredicto" />
-      <div class="escala"><span>0</span><span>10</span><span>20</span><span>30</span><span>40</span></div>
+
+      <div class="mandos">
+        <div class="mando">
+          <label for="ritmo">Lotes vendidos al mes <span class="val" id="vRitmo">8</span></label>
+          <input type="range" id="ritmo" min="0" max="40" step="1" value="8" aria-describedby="veredicto" />
+          <div class="lim"><span>0</span><span>40</span></div>
+        </div>
+        <div class="mando">
+          <label for="mLote">Precio promedio del lote <span class="val" id="vLote">S/ 35,500</span></label>
+          <input type="range" id="mLote" min="15000" max="150000" step="500" value="35500" />
+          <div class="lim"><span>S/ 15,000</span><span>S/ 150,000</span></div>
+        </div>
+        <div class="mando">
+          <label for="mPiso">Modelo A · piso mensual <span class="val" id="vPiso">S/ 4,000</span></label>
+          <input type="range" id="mPiso" min="0" max="12000" step="250" value="4000" />
+          <div class="lim"><span>S/ 0</span><span>S/ 12,000</span></div>
+        </div>
+        <div class="mando">
+          <label for="mCom">Modelo A · comisión por lote <span class="val" id="vCom">S/ 700</span></label>
+          <input type="range" id="mCom" min="0" max="5000" step="10" value="700" />
+          <div class="lim"><span>S/ 0</span><span id="limCom">2.0% del lote</span><span>S/ 5,000</span></div>
+        </div>
+        <div class="mando">
+          <label for="mFijo">Modelo B · tarifa plana <span class="val" id="vFijo">S/ 9,500</span></label>
+          <input type="range" id="mFijo" min="0" max="30000" step="500" value="9500" />
+          <div class="lim"><span>S/ 0</span><span>S/ 30,000</span></div>
+        </div>
+        <div class="mando" style="display:flex;align-items:flex-end">
+          <button class="reponer" type="button" id="reponer">Volver a la propuesta</button>
+        </div>
+      </div>
+
       <p class="veredicto" id="veredicto"></p>
     </div>
 
@@ -362,10 +405,10 @@ tr.subraya td.destaca{background:var(--calado)!important;color:var(--senal-texto
         <caption>Valor de los 373 lotes según el supuesto de mezcla</caption>
         <thead><tr><th scope="col">Supuesto</th><th scope="col" class="n">Lote promedio</th><th scope="col" class="n">Cartera total</th></tr></thead>
         <tbody>
-          <tr><td>Todo Las Palmeras, el proyecto más barato</td><td class="n">S/ 22,750</td><td class="n">S/ 8.485,750</td></tr>
-          <tr class="subraya"><td>Ponderado hacia el lote chico <b>· escenario de trabajo</b></td><td class="n">S/ 35,500</td><td class="n destaca">S/ 13.247,717</td></tr>
-          <tr><td>Promedio simple de las doce filas publicadas</td><td class="n">S/ 48,650</td><td class="n">S/ 18.146,450</td></tr>
-          <tr><td>Todo Villa Bobadilla, el más caro</td><td class="n">S/ 66,500</td><td class="n">S/ 24.804,500</td></tr>
+          <tr><td>Todo Las Palmeras, el proyecto más barato</td><td class="n">S/ 22,750</td><td class="n">S/ 8,485,750</td></tr>
+          <tr class="subraya"><td>Ponderado hacia el lote chico <b>· escenario de trabajo</b></td><td class="n">S/ 35,500</td><td class="n destaca">S/ 13,247,717</td></tr>
+          <tr><td>Promedio simple de las doce filas publicadas</td><td class="n">S/ 48,650</td><td class="n">S/ 18,146,450</td></tr>
+          <tr><td>Todo Villa Bobadilla, el más caro</td><td class="n">S/ 66,500</td><td class="n">S/ 24,804,500</td></tr>
         </tbody>
       </table>
     </div>
@@ -692,30 +735,92 @@ document.documentElement.className+=' js';
   }
 
   /* el instrumento */
-  var PISO=4000, COM=700, FIJO=9500, LOTE=35517;
-  var r=document.getElementById('ritmo'), lecN=document.getElementById('lecN'),
+  /* Todos los parametros del acuerdo son movibles: los de la propuesta son solo
+     el punto de partida, y en la reunion se negocian moviendolos aqui. */
+  var BASE = { ritmo:8, lote:35500, piso:4000, com:700, fijo:9500 };
+  var m = {
+    ritmo: document.getElementById('ritmo'),
+    lote:  document.getElementById('mLote'),
+    piso:  document.getElementById('mPiso'),
+    com:   document.getElementById('mCom'),
+    fijo:  document.getElementById('mFijo')
+  };
+  if(!m.ritmo) return;
+  var v = {
+    ritmo: document.getElementById('vRitmo'), lote: document.getElementById('vLote'),
+    piso:  document.getElementById('vPiso'),  com:  document.getElementById('vCom'),
+    fijo:  document.getElementById('vFijo')
+  };
+  var lecN=document.getElementById('lecN'),
       cifA=document.getElementById('cifA'), cifB=document.getElementById('cifB'),
       blqA=document.getElementById('blqA'), blqB=document.getElementById('blqB'),
       etqA=document.getElementById('etqA'), etqB=document.getElementById('etqB'),
+      desgA=document.getElementById('desgA'), desgB=document.getElementById('desgB'),
       ver=document.getElementById('veredicto');
+
   function mil(n){ return Math.round(n).toLocaleString('es-PE'); }
+
   function pinta(){
-    var n=+r.value, a=PISO+COM*n, b=FIJO, ventas=LOTE*n;
-    lecN.textContent=n;
-    cifA.textContent=mil(a); cifB.textContent=mil(b);
-    var ganaA=a>b, empate=a===b;
-    blqA.classList.toggle('gana',ganaA&&!empate);
-    blqB.classList.toggle('gana',!ganaA&&!empate);
-    etqA.textContent=ganaA&&!empate?'+ S/ '+mil(a-b):'';
-    etqB.textContent=!ganaA&&!empate?'+ S/ '+mil(b-a):'';
+    var ritmo=+m.ritmo.value, lote=+m.lote.value, piso=+m.piso.value,
+        comision=+m.com.value, fijo=+m.fijo.value;
+    var pct = lote > 0 ? comision / lote * 100 : 0,
+        a = piso + comision * ritmo,
+        b = fijo,
+        ventas = lote * ritmo;
+
+    v.ritmo.textContent = ritmo;  lecN.textContent = ritmo;
+    v.lote.textContent  = 'S/ ' + mil(lote);
+    v.piso.textContent  = 'S/ ' + mil(piso);
+    v.com.textContent   = 'S/ ' + mil(comision);
+    var lc = document.getElementById('limCom');
+    if (lc) lc.textContent = pct.toFixed(1) + '% del lote';
+    v.fijo.textContent  = 'S/ ' + mil(fijo);
+
+    cifA.textContent = mil(a); cifB.textContent = mil(b);
+    desgA.textContent = 'Piso de S/ ' + mil(piso) + ' al mes más S/ ' + mil(comision) +
+      ' por lote vendido, que es el ' + pct.toFixed(1) + '% del lote promedio.';
+    desgB.textContent = 'Tarifa plana de S/ ' + mil(fijo) + ' al mes, sin comisión. Cobramos lo mismo vendan cuatro lotes o cuarenta.';
+
+    var ganaA = a > b, empate = a === b;
+    blqA.classList.toggle('gana', ganaA && !empate);
+    blqB.classList.toggle('gana', !ganaA && !empate);
+    etqA.textContent = ganaA && !empate ? '+ S/ ' + mil(a-b) : '';
+    etqB.textContent = !ganaA && !empate ? '+ S/ ' + mil(b-a) : '';
+
+    var equilibrio = comision > 0 ? (fijo - piso) / comision : null;
+    var eqTxt = '';
+    if (equilibrio !== null && equilibrio > 0 && equilibrio <= 40) {
+      eqTxt = ' El punto de equilibrio está en <b>' + (Math.round(equilibrio*10)/10) + ' lotes al mes</b>.';
+    } else if (equilibrio !== null && equilibrio <= 0) {
+      eqTxt = ' Con este piso, el híbrido ya parte por encima del fijo.';
+    }
+
     var txt;
-    if(n===0){ txt='Con cero ventas atribuidas cobramos <b>S/ 4,000</b> con el híbrido y <b>S/ 9,500</b> con el fijo. Ese es exactamente el riesgo que asumimos al aceptar comisión: el piso tiene que aguantar un trimestre malo.'; }
-    else if(empate||Math.abs(a-b)<COM/2){ txt='Punto de equilibrio. En <b>7,9 lotes al mes</b> los dos modelos pagan lo mismo, y de ahí en adelante cada lote vendido son <b>S/ 700</b> que el fijo deja sobre la mesa.'; }
-    else if(ganaA){ txt='A <b>'+n+' lotes al mes</b> el híbrido nos paga <b>S/ '+mil(a-b)+' más</b> cada mes que la tarifa plana. Sobre ventas de S/ '+mil(ventas)+', nuestro honorario pesa <b>'+(a/ventas*100).toFixed(1)+'%</b>.'; }
-    else { txt='A <b>'+n+' lotes al mes</b> la tarifa plana nos paga <b>S/ '+mil(b-a)+' más</b> cada mes. Por debajo del equilibrio, la comisión nos hace financiar su curva de aprendizaje.'; }
-    ver.innerHTML=txt;
+    if (ritmo === 0) {
+      txt = 'Con cero ventas atribuidas cobramos <b>S/ ' + mil(piso) + '</b> con el híbrido y <b>S/ ' + mil(fijo) +
+            '</b> con el fijo. Ese es exactamente el riesgo que asumimos al aceptar comisión: el piso tiene que aguantar un trimestre malo.';
+    } else if (comision <= 0) {
+      txt = 'Sin comisión por lote, el híbrido es una tarifa plana de <b>S/ ' + mil(piso) + '</b>, y la comparación deja de tener sentido.';
+    } else if (empate) {
+      txt = 'Punto de equilibrio exacto: a <b>' + ritmo + ' lotes al mes</b> los dos modelos pagan <b>S/ ' + mil(a) + '</b>.';
+    } else if (ganaA) {
+      txt = 'A <b>' + ritmo + ' lotes al mes</b> el híbrido nos paga <b>S/ ' + mil(a-b) + ' más</b> cada mes que la tarifa plana. Sobre ventas de S/ ' +
+            mil(ventas) + ', nuestro honorario pesa <b>' + (a/ventas*100).toFixed(1) + '%</b>.' + eqTxt;
+    } else {
+      txt = 'A <b>' + ritmo + ' lotes al mes</b> la tarifa plana nos paga <b>S/ ' + mil(b-a) +
+            ' más</b> cada mes. Por debajo del equilibrio, la comisión nos hace financiar su curva de aprendizaje.' + eqTxt;
+    }
+    ver.innerHTML = txt;
   }
-  if(r){ r.addEventListener('input',pinta); pinta(); }
+
+  Object.keys(m).forEach(function(k){ m[k].addEventListener('input', pinta); });
+  var rep = document.getElementById('reponer');
+  if (rep) rep.addEventListener('click', function(){
+    Object.keys(BASE).forEach(function(k){ m[k].value = BASE[k]; });
+    pinta();
+  });
+  pinta();
+
 })();
 </script>
 </body>

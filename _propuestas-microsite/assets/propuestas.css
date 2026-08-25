@@ -1,0 +1,318 @@
+/* Archivo (Omnibus-Type), subconjunto latino. Archivos aparte y no base64: las
+   dos cotizaciones comparten la misma copia y el navegador la cachea una vez. */
+@font-face{font-family:'Archivo';font-style:normal;font-weight:400;font-display:swap;src:url(archivo-400.woff2) format('woff2')}
+@font-face{font-family:'Archivo';font-style:normal;font-weight:700;font-display:swap;src:url(archivo-700.woff2) format('woff2')}
+@font-face{font-family:'Archivo Black';font-style:normal;font-weight:400;font-display:swap;src:url(archivo-black.woff2) format('woff2')}
+@font-face{font-family:'Archivo Narrow';font-style:normal;font-weight:400;font-display:swap;src:url(archivo-narrow-400.woff2) format('woff2')}
+@font-face{font-family:'Archivo Narrow';font-style:normal;font-weight:700;font-display:swap;src:url(archivo-narrow-700.woff2) format('woff2')}
+
+:root{
+  --tinta:#123A2A;
+  --senal:#D93A14;          /* tinta 2: rellenos, estallido, cinta */
+  --senal-texto:#A82A0B;    /* la misma tinta, legible como TEXTO sobre papel (4,83:1 en el peor fondo) */
+  --papel:#DDD6C4;
+  --papel-alto:#EAE4D5;
+  --calado:#F1ECDE;
+  --regla:#123A2A;
+  --exp:cubic-bezier(.16,1,.3,1);
+  --medida:68ch;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--papel);
+  color:var(--tinta);
+  font-family:'Archivo',system-ui,sans-serif;
+  font-size:clamp(1rem,.96rem + .2vw,1.09rem);
+  line-height:1.62;
+  font-variant-numeric:tabular-nums;
+  overflow-x:hidden;
+}
+
+/* --- superficies del navegador: también son del diseño --- */
+::selection{background:var(--senal);color:var(--calado)}
+:focus-visible{outline:3px solid var(--senal);outline-offset:3px}
+html{scrollbar-color:var(--tinta) var(--papel-alto)}
+::-webkit-scrollbar{width:13px}
+::-webkit-scrollbar-track{background:var(--papel-alto)}
+::-webkit-scrollbar-thumb{background:var(--tinta);border:3px solid var(--papel-alto)}
+a{color:inherit;text-underline-offset:.22em;text-decoration-thickness:.09em}
+
+/* --- materiales --- */
+.trama::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(currentColor .9px,transparent .9px);
+  background-size:7px 7px;opacity:.10;
+}
+.grano::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+}
+
+/* --- planchas --- */
+.plancha{position:relative;padding:clamp(3.4rem,7vw,6.6rem) 0;border-top:6px solid var(--regla)}
+.plancha:first-of-type{border-top:0}
+.plancha.flood{background:var(--tinta);color:var(--calado);border-top-color:var(--tinta)}
+.flood .trama::before{opacity:.14}
+.caja{width:min(1180px,92vw);margin-inline:auto;position:relative;z-index:2}
+
+/* --- tipografía --- */
+h1,h2,h3,.numeral,.bloque .cifra{font-family:'Archivo Black',system-ui,sans-serif;font-weight:400;letter-spacing:-.028em;text-transform:uppercase;line-height:.94}
+h2{font-size:clamp(1.95rem,1.2rem + 3.1vw,3.6rem);max-width:19ch;text-wrap:balance;margin-bottom:1.5rem}
+h3{font-family:'Archivo Narrow',system-ui,sans-serif;font-weight:700;font-size:1.03rem;letter-spacing:.09em;line-height:1.24;text-transform:uppercase}
+p{max-width:var(--medida)}
+.entrada{font-size:clamp(1.09rem,1.02rem + .34vw,1.32rem);line-height:1.5;max-width:56ch}
+.flood .entrada{color:#DDD6C4}
+.menor{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.86rem;letter-spacing:.06em;line-height:1.5;max-width:60ch}
+.flood .menor{color:#B9C7BF}
+.pie{margin-top:1.9rem;font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.83rem;line-height:1.55;letter-spacing:.03em;color:#4A5D52;max-width:74ch;border-top:2px solid var(--regla);padding-top:.75rem}
+.flood .pie{color:#A8BAB0;border-top-color:#3B6153}
+b,strong{font-weight:700}
+
+/* --- cabecera fija --- */
+.cinta{position:sticky;top:0;z-index:60;background:var(--tinta);color:var(--calado);
+  border-bottom:3px solid var(--senal);display:flex;align-items:center;gap:1rem;
+  padding:.52rem clamp(1rem,4vw,2rem);font-family:'Archivo Narrow',sans-serif;
+  font-size:.78rem;letter-spacing:.15em;text-transform:uppercase}
+.cinta .sello{background:var(--senal);color:#fff;padding:.2rem .5rem;font-weight:700;letter-spacing:.12em;white-space:nowrap}
+.cinta .dst{margin-left:auto;color:#9FB3A9;letter-spacing:.1em;font-size:.72rem}
+@media(max-width:640px){.cinta .dst{display:none}}
+
+/* --- portada: titular a la izquierda, la cifra como golpe de afiche a la derecha --- */
+.portada{padding-top:clamp(1rem,1.8vw,1.6rem);padding-bottom:clamp(2.2rem,4vw,3.2rem)}
+.portada h1{font-size:clamp(1.65rem,1.05rem + 2.1vw,2.75rem);max-width:22ch;margin-bottom:0}
+.cabecera{display:grid;gap:clamp(1rem,2.2vw,1.7rem)}
+.dicho{display:grid;gap:clamp(.9rem,2.4vw,2.2rem)}
+@media(min-width:900px){.dicho{grid-template-columns:.95fr 1.05fr;align-items:start}}
+.reglaDoble{border-top:6px solid var(--calado);border-bottom:2px solid var(--calado);height:11px;margin:clamp(1rem,2vw,1.5rem) 0 0}
+
+/* --- el numeral de afiche, con su fuera de registro permanente --- */
+.golpe{position:relative;display:flex;align-items:flex-end;gap:clamp(.9rem,2vw,1.6rem);flex-wrap:wrap;padding-top:clamp(1.4rem,3vw,2.2rem)}
+/* line-height .8 recorta la caja: la coma pinta por debajo y caia sobre la glosa */
+.numWrap{position:relative;line-height:.8;padding-top:.12em;padding-bottom:clamp(1rem,2.4vw,2.2rem)}
+.numeral{font-size:clamp(6.8rem,2rem + 28vw,27rem);letter-spacing:-.055em;display:block;position:relative;z-index:2}
+/* El tamaño de arriba está calculado para 2 o 3 caracteres («7,9», «10%»). Una
+   cifra larga como «10,000» se sale de la plancha, así que lleva su propia escala. */
+.numeral.largo{font-size:clamp(3.1rem,.6rem + 10.5vw,10.5rem);letter-spacing:-.045em}
+.numFantasma{position:absolute;inset:0;padding-top:.12em;color:var(--senal);z-index:1;transform:translate(11px,9px)}
+.js .numFantasma{transition:transform 1.15s var(--exp)}
+.js .registrado .numFantasma{transform:translate(3px,3px)}
+.golpe .glosa{padding-bottom:clamp(.8rem,2.4vw,2.4rem);max-width:21ch}
+.golpe .glosa strong{display:block;font-family:'Archivo Narrow',sans-serif;font-size:clamp(1rem,.9rem + .5vw,1.3rem);
+  letter-spacing:.19em;text-transform:uppercase;color:var(--calado);margin-bottom:.45rem}
+.golpe .glosa span{font-size:.92rem;line-height:1.5;color:#C6D2CB;display:block}
+
+/* --- bloques de precio calados --- */
+.bloques{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:clamp(1rem,2.4vw,1.7rem);margin-top:clamp(1.1rem,2.4vw,1.8rem)}
+.bloque{border:4px solid var(--calado);padding:1.3rem 1.4rem 1.5rem;position:relative;background:transparent;color:var(--calado)}
+/* el que conviene va INKED: campo solido de bermellon con la cifra calada en
+   blanco de papel. La tinta dice cual gana; no hace falta una pestana. */
+.bloque.gana{background:var(--senal);border-color:var(--senal);color:#fff}
+.bloque .tit{font-family:'Archivo Narrow',sans-serif;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;
+  border-bottom:2px solid currentColor;padding-bottom:.42rem;margin-bottom:.85rem;display:flex;justify-content:space-between;gap:.6rem;align-items:baseline}
+.bloque .cifra{font-size:clamp(2.7rem,1.6rem + 4.6vw,4.6rem);letter-spacing:-.04em;display:block}
+.bloque .cifra sup{font-family:'Archivo Narrow',sans-serif;font-size:.3em;letter-spacing:.1em;vertical-align:.9em;font-weight:700;margin-right:.16em}
+.bloque .desg{font-family:'Archivo Narrow',sans-serif;font-size:.83rem;letter-spacing:.04em;margin-top:.55rem;line-height:1.45;color:#B9C7BF}
+.bloque.gana .desg{color:#fff}
+
+/* --- el instrumento: escala impresa --- */
+.instrumento{margin-top:clamp(2rem,4vw,3rem);border:4px solid var(--calado);padding:clamp(1.1rem,2.5vw,1.7rem)}
+.instrumento .cab{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:1.1rem}
+.instrumento .cab h3{color:var(--calado)}
+.lectura{font-family:'Archivo Black',sans-serif;font-size:clamp(1.6rem,1.1rem + 2vw,2.4rem);letter-spacing:-.03em;color:var(--calado)}
+.lectura small{font-family:'Archivo Narrow',sans-serif;font-size:max(11px,.42em);letter-spacing:.14em;color:#9FB3A9;margin-left:.5rem;font-weight:700}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:40px;background:transparent;cursor:ew-resize;display:block}
+input[type=range]::-webkit-slider-runnable-track{height:14px;background:
+  repeating-linear-gradient(90deg,#3B6153 0 2px,transparent 2px 5px),#0C2A1E;border:2px solid var(--calado)}
+input[type=range]::-moz-range-track{height:14px;background:
+  repeating-linear-gradient(90deg,#3B6153 0 2px,transparent 2px 5px),#0C2A1E;border:2px solid var(--calado)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:34px;background:var(--senal);
+  border:3px solid var(--calado);margin-top:-8px}
+input[type=range]::-moz-range-thumb{width:20px;height:34px;background:var(--senal);border:3px solid var(--calado);
+  border-radius:0}
+.escala{display:flex;justify-content:space-between;font-family:'Archivo Narrow',sans-serif;font-size:.72rem;
+  letter-spacing:.1em;color:#9FB3A9;margin-top:.5rem}
+.veredicto{margin-top:1.15rem;border-top:2px solid #3B6153;padding-top:.9rem;font-family:'Archivo Narrow',sans-serif;
+  font-size:.95rem;letter-spacing:.03em;line-height:1.5;color:#DDD6C4}
+.veredicto b{color:#fff}
+
+/* --- estallido, una sola vez en toda la pieza --- */
+.estallido{position:absolute;top:0;right:0;width:clamp(92px,11vw,138px);z-index:4;color:var(--senal)}
+.estallido svg{display:block;width:100%;height:auto}
+.estallido b{position:absolute;inset:0;display:grid;place-content:center;text-align:center;
+  font-family:'Archivo Narrow',sans-serif;font-size:clamp(.56rem,.5rem + .3vw,.72rem);font-weight:700;
+  letter-spacing:.1em;line-height:1.16;text-transform:uppercase;color:#fff;padding:0 12%}
+@media(max-width:1000px){.estallido{width:96px}}
+/* en columna estrecha el estallido entra en flujo, encima de la cifra: absoluto pisaba la glosa */
+@media(max-width:760px){
+  .golpe{padding-top:0}
+  .estallido{position:relative;top:auto;right:auto;width:86px;flex:0 0 86px;order:-1;margin-bottom:.4rem}
+}
+
+/* --- tablas --- */
+.marco{margin-top:2rem;border:4px solid var(--regla);background:var(--calado);overflow-x:auto}
+.flood .marco{border-color:var(--calado)}
+table{border-collapse:collapse;width:100%;min-width:520px;color:var(--tinta)}
+caption{caption-side:top;text-align:left;font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:.82rem;
+  letter-spacing:.15em;text-transform:uppercase;background:var(--tinta);color:var(--calado);padding:.55rem .9rem}
+th{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;
+  text-align:left;padding:.62rem .9rem;border-bottom:3px solid var(--regla);background:var(--papel-alto);vertical-align:bottom}
+td{padding:.6rem .9rem;border-bottom:1px solid rgba(18,58,42,.26);vertical-align:top;font-size:.94rem}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:nth-child(even) td{background:rgba(18,58,42,.045)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.destaca{color:var(--senal-texto);font-weight:700}
+tr.subraya td{background:var(--tinta)!important;color:var(--calado);font-weight:700}
+/* La celda se cala en papel y encima va la tinta: un bermellon mas claro que
+   #D93A14 no sale de ninguna prensa a dos tintas. */
+tr.subraya td.destaca{background:var(--calado)!important;color:var(--senal-texto)}
+.desliza{font-family:'Archivo Narrow',sans-serif;font-size:.76rem;letter-spacing:.11em;text-transform:uppercase;
+  color:#4A5D52;margin-top:.55rem}
+.flood .desliza{color:#9FB3A9}
+@media(min-width:860px){.desliza{display:none}}
+
+/* --- dos columnas de lectura --- */
+.par{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(1.4rem,3vw,2.6rem);margin-top:2rem}
+.par > div > h3{border-bottom:3px solid var(--regla);padding-bottom:.45rem;margin-bottom:.75rem}
+.flood .par > div > h3{border-bottom-color:#3B6153;color:var(--calado)}
+.par p{max-width:46ch}
+
+/* --- hallazgos numerados de precio --- */
+.hallazgos{margin-top:2.2rem;display:grid;gap:1.5rem}
+.hallazgo{display:grid;grid-template-columns:auto 1fr;gap:clamp(.9rem,2vw,1.7rem);align-items:start;
+  border-top:3px solid var(--regla);padding-top:1.1rem}
+.hallazgo .idx{font-family:'Archivo Black',sans-serif;font-size:clamp(2rem,1.4rem + 2vw,3rem);line-height:.8;color:var(--senal-texto)}
+.hallazgo h3{margin-bottom:.45rem}
+
+/* --- cláusulas --- */
+.clausulas{margin-top:2rem;counter-reset:cl}
+.clausula{border-top:3px solid var(--regla);padding:1rem 0 1.15rem;display:grid;
+  grid-template-columns:minmax(90px,120px) 1fr;gap:clamp(.8rem,2vw,1.8rem)}
+.flood .clausula{border-top-color:#3B6153}
+.clausula .orden{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:.79rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--senal-texto)}
+.flood .clausula .orden{color:var(--calado)}
+.clausula h3{margin-bottom:.4rem}
+.clausula p{max-width:60ch}
+@media(max-width:560px){.clausula{grid-template-columns:1fr;gap:.3rem}}
+
+/* --- ruta --- */
+/* Reglas horizontales con la lozenge montada encima, como las clausulas y los
+   hallazgos. Antes era un filete vertical de 4px: mismo dibujo que el acento
+   lateral de tarjeta que delata una interfaz generada. */
+.ruta{margin-top:2.1rem}
+.tramo{position:relative;border-top:3px solid var(--regla);padding:1.25rem 0 1.4rem 2.4rem}
+.tramo:last-child{padding-bottom:0}
+.tramo::before{content:"";position:absolute;left:0;top:-9px;width:17px;height:17px;
+  background:var(--senal);transform:rotate(45deg)}
+.tramo .cuando{font-family:'Archivo Narrow',sans-serif;font-size:.77rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--senal-texto);margin-bottom:.28rem}
+.tramo h3{margin-bottom:.35rem}
+
+/* --- preguntas --- */
+.preguntas{margin-top:2rem;display:grid;gap:0}
+.preg{display:grid;grid-template-columns:auto 1fr;gap:1.1rem;align-items:baseline;
+  border-bottom:2px solid #3B6153;padding:1rem 0}
+.preg:first-child{border-top:2px solid #3B6153}
+.preg .q{font-family:'Archivo Black',sans-serif;font-size:1.6rem;color:var(--calado);line-height:1}
+.preg p{max-width:58ch}
+.preg .porque{display:block;font-family:'Archivo Narrow',sans-serif;font-size:.83rem;letter-spacing:.04em;color:#9FB3A9;margin-top:.25rem}
+
+/* --- recomendación con manecilla --- */
+.recomienda{display:grid;grid-template-columns:auto 1fr;gap:clamp(1rem,3vw,2.2rem);align-items:start;
+  border:5px solid var(--regla);padding:clamp(1.3rem,3vw,2.2rem);background:var(--calado);margin-top:2rem}
+.recomienda svg{width:clamp(46px,7vw,74px);height:auto;color:var(--senal);flex:none}
+.recomienda h2{margin-bottom:.7rem}
+@media(max-width:560px){.recomienda{grid-template-columns:1fr}}
+
+/* --- cierre --- */
+.firma{margin-top:clamp(2.4rem,5vw,3.6rem);border-top:6px solid var(--calado);padding-top:1.3rem;
+  display:flex;justify-content:space-between;gap:1.2rem;flex-wrap:wrap;
+  font-family:'Archivo Narrow',sans-serif;font-size:.8rem;letter-spacing:.11em;text-transform:uppercase;color:#9FB3A9}
+
+/* --- entrada, un solo momento --- */
+.js .ap{opacity:0;transform:translateY(20px)}
+.js .ap.dentro{opacity:1;transform:none;transition:opacity .72s var(--exp),transform .72s var(--exp)}
+@media(prefers-reduced-motion:reduce){
+  .js .ap,.js .ap.dentro{opacity:1;transform:none;transition:none}
+  .js .numFantasma{transition:none;transform:translate(0,0)}
+}
+
+@media print{
+  /* Sin print-color-adjust la impresora tira los fondos: el bloque ganador
+     saldria en blanco sobre blanco y con el se irian todos sus calados. */
+  .bloque.gana,.instrumento,thead th,caption,tr.subraya td,tr.subraya td.destaca,
+  .cinta .sello,.estallido svg,.numFantasma,.tramo::before{
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+  .cinta,.instrumento input,.desliza{display:none}
+  .plancha.flood{background:#fff!important;color:var(--tinta)!important;border-top:5px solid var(--tinta)}
+  .flood h2,.flood h3,.flood .entrada,.flood .menor,.flood .pie,.flood .veredicto,
+  .flood .clausula .orden,.flood .par > div > h3,.preg .q,.lectura,.golpe .glosa strong,
+  .golpe .glosa span,.bloque,.bloque .desg,.bloque .tit,.firma,.escala span,
+  .flood .par p,.clausula p,.preg p,.preg .porque{color:var(--tinta)!important}
+  /* el <b> hereda el blanco del calado y se volvia invisible sobre papel:
+     eran justo las dos cifras del punto de equilibrio */
+  .veredicto b{color:var(--senal-texto)!important}
+  .bloque{border-color:var(--tinta)}
+  .bloque.gana{background:var(--senal);border-color:var(--senal);color:#fff}
+  .bloque.gana .desg{color:#fff}
+  .instrumento{border-color:var(--tinta)}
+  .reglaDoble{border-color:var(--tinta)}
+  .numeral{color:var(--tinta)}
+  .numFantasma{color:var(--senal)}
+  .plancha{page-break-inside:avoid;padding:1.4rem 0}
+}
+
+/* ── Componentes propios de una cotización ────────────────────────────────── */
+
+/* Lista de inclusiones: la lozenge de tinta que ya usa la hoja de ruta. */
+.lista{list-style:none;margin-top:1.4rem;display:grid;gap:.85rem}
+.lista li{position:relative;padding-left:1.85rem;max-width:62ch}
+.lista li::before{content:"";position:absolute;left:0;top:.52em;width:11px;height:11px;
+  background:var(--senal);transform:rotate(45deg)}
+.flood .lista li::before{background:var(--calado)}
+.lista li b{display:block}
+.lista li span{color:#4A5D52;font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.87rem;letter-spacing:.03em;line-height:1.5}
+.flood .lista li span{color:#B9C7BF}
+/* Lo que NO entra: la lozenge se vacía. Se lee distinto sin cambiar de tinta. */
+.lista.no li::before{background:transparent;border:2px solid var(--senal-texto);width:10px;height:10px}
+.flood .lista.no li::before{border-color:var(--calado)}
+
+/* Panel de mandos: varios parámetros a la vez, cada uno con su escala impresa. */
+.mandos{display:grid;gap:1.15rem;margin-top:1.2rem}
+@media(min-width:760px){.mandos{grid-template-columns:1fr 1fr;gap:1.15rem 2rem}}
+.mando label{display:block;font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.8rem;
+  letter-spacing:.1em;text-transform:uppercase;color:#C6D2CB;margin-bottom:.45rem;
+  display:flex;justify-content:space-between;gap:.7rem;align-items:baseline}
+.mando label .val{font-family:'Archivo Black',system-ui,sans-serif;font-size:1.15rem;
+  letter-spacing:-.02em;color:var(--calado);text-transform:none}
+.mando .lim{display:flex;justify-content:space-between;font-family:'Archivo Narrow',system-ui,sans-serif;
+  font-size:.7rem;letter-spacing:.09em;color:#9FB3A9;margin-top:.35rem}
+
+/* Resultado del panel: bloques calados, como los de precio. */
+.salida{display:grid;gap:1rem;margin-top:1.5rem;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.salida .caso{border:4px solid var(--calado);padding:1rem 1.15rem 1.15rem}
+.salida .caso.inked{background:var(--senal);border-color:var(--senal);color:#fff}
+.salida .caso p:first-child{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.78rem;
+  letter-spacing:.13em;text-transform:uppercase;border-bottom:2px solid currentColor;
+  padding-bottom:.38rem;margin-bottom:.7rem}
+.salida .caso .monto{font-family:'Archivo Black',system-ui,sans-serif;font-size:clamp(1.7rem,1.2rem + 2vw,2.5rem);
+  letter-spacing:-.035em;line-height:.95;display:block}
+.salida .caso .monto sup{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.32em;
+  letter-spacing:.1em;vertical-align:.95em;font-weight:700;margin-right:.16em;font-size:max(11px,.32em)}
+.salida .caso .nota{font-family:'Archivo Narrow',system-ui,sans-serif;font-size:.82rem;
+  letter-spacing:.03em;line-height:1.45;margin-top:.5rem;color:#B9C7BF}
+.salida .caso.inked .nota{color:#fff}
+
+/* Sello de cotización en la cinta superior: no es un documento interno. */
+.cinta .sello.cot{background:var(--calado);color:var(--tinta)}
+
+/* Botón de acción, en la gramática del bloque de precio. */
+.acciones{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:1.8rem}
+.btn{display:inline-block;font-family:'Archivo Narrow',system-ui,sans-serif;font-weight:700;
+  font-size:.88rem;letter-spacing:.13em;text-transform:uppercase;padding:.85rem 1.5rem;
+  border:4px solid var(--senal);background:var(--senal);color:#fff;text-decoration:none;
+  cursor:pointer;transition:background .2s var(--exp),color .2s var(--exp)}
+.btn.linea{background:transparent;border-color:var(--calado);color:var(--calado)}
+.btn:hover,.btn:focus-visible{background:var(--calado);border-color:var(--calado);color:var(--tinta)}

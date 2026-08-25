@@ -21,6 +21,7 @@ blog-demo/
 inmobiliaria/
 analisis/
 socios/
+propuestas/
 guias/
 agro/
 ventas/
