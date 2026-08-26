@@ -1,14 +1,17 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    Cotizaciones de DAK Agency.
 
-   Paleta e identidad de la marca, según los compromisos vinculantes de
-   PRODUCT.md: fondo #030106, morado #B024FF, teal #00C8C8 y Poppins
-   autoalojada. El morado de marca da 4,49:1 sobre el fondo y no llega al
-   mínimo de texto pequeño, así que como TEXTO va #B93EFF (5,14:1); #B024FF
-   queda para rellenos, bordes y piezas grandes.
+   La escena decide el fondo: una gerenta de inmobiliaria lee esto en su
+   oficina y lo imprime para firmarlo. Por eso el documento es papel con
+   tinta, y no una pantalla oscura. El #030106 de la paleta de DAK entra
+   aquí como TINTA, que es donde hace su trabajo en un documento; el morado
+   #B024FF queda como único acento estructural, y el teal #00C8C8 se reserva
+   a la plancha oscura de portada, porque sobre papel no tiene contraste.
 
-   La estructura del documento —ficha, partidas numeradas, total, cláusulas y
-   aceptación con rúbricas— se conserva. Lo que cambia es la piel.
+   Disciplina heredada del documento interno de socios: campos planos,
+   reglas estructurales de distinto peso, texto calado sobre campo sólido.
+   Cero degradados, cero sombras, cero radios. La jerarquía la hacen el
+   peso, el tamaño y el aire — nunca un brillo.
    ═════════════════════════════════════════════════════════════════════════ */
 
 @font-face{font-family:'Poppins';font-style:normal;font-weight:400;font-display:swap;src:url(poppins-400.woff2) format('woff2')}
@@ -17,328 +20,329 @@
 @font-face{font-family:'Poppins';font-style:normal;font-weight:800;font-display:swap;src:url(poppins-800.woff2) format('woff2')}
 
 :root{
-  --fondo:#030106;
-  --panel:#0A0612;
-  --card:#120B1E;
-  --purp:#B024FF;        /* rellenos, bordes y piezas grandes */
-  --purp-tx:#B93EFF;     /* el mismo morado como TEXTO: 5,14:1 sobre el fondo */
-  --teal:#00C8C8;        /* la segunda luz */
-  --tx:#FFFFFF;
-  --tx2:rgba(255,255,255,.80);
-  --tx3:rgba(255,255,255,.62);
-  --linea:rgba(255,255,255,.12);
-  --linea-viva:rgba(255,255,255,.22);
-  --exp:cubic-bezier(.19,1,.22,1);
+  --ink:#030106;          /* el fondo de la paleta DAK, aquí como tinta */
+  --ink-2:#2A2430;        /* cuerpo: gris entintado de morado, no gris neutro */
+  --ink-3:#5C5468;        /* secundario */
+  --purp:#B024FF;         /* acento único: 4,62:1 sobre el papel, sirve como texto */
+  --purp-d:#7A1FB8;       /* el mismo morado cargado, para fondos tramados */
+  --teal:#00C8C8;         /* solo sobre la plancha oscura */
+  --papel:#F5F3F7;        /* papel con una gota de morado, no crema */
+  --papel-2:#EBE8F0;
+  --linea:#D6D0E0;
+  --linea-fuerte:#030106;
+  --exp:cubic-bezier(.22,1,.36,1);
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{
-  background:var(--fondo);
-  color:var(--tx2);
+  background:var(--papel);
+  color:var(--ink-2);
   font-family:'Poppins',system-ui,sans-serif;
-  font-size:clamp(.97rem,.93rem + .2vw,1.05rem);
+  font-size:clamp(.95rem,.92rem + .16vw,1.02rem);
   font-weight:400;
-  line-height:1.62;
+  line-height:1.65;
   font-variant-numeric:tabular-nums;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
 
-/* ── Superficies del navegador: también son del diseño ────────────────────── */
+/* ── Superficies del navegador ────────────────────────────────────────────── */
 ::selection{background:var(--purp);color:#fff}
-:focus-visible{outline:2px solid var(--purp-tx);outline-offset:3px;border-radius:2px}
-html{scrollbar-color:var(--purp) var(--panel)}
+:focus-visible{outline:2px solid var(--purp);outline-offset:2px}
+html{scrollbar-color:var(--ink) var(--papel-2)}
 ::-webkit-scrollbar{width:12px}
-::-webkit-scrollbar-track{background:var(--panel)}
-::-webkit-scrollbar-thumb{background:var(--purp);border:3px solid var(--panel);border-radius:8px}
-a{color:inherit;text-underline-offset:.22em;text-decoration-thickness:.08em}
+::-webkit-scrollbar-track{background:var(--papel-2)}
+::-webkit-scrollbar-thumb{background:var(--ink);border:3px solid var(--papel-2)}
+a{color:inherit;text-underline-offset:.2em;text-decoration-thickness:.07em}
 
-/* ── El logo, en línea para poder recolorearlo en papel ───────────────────── */
-.dakLogo{display:block;width:auto;color:var(--tx)}
+/* ── El logotipo, en línea para poder entintarlo según el fondo ───────────── */
+.dakLogo{display:block;width:auto;color:var(--ink)}
 .dakLogo .d{fill:currentColor}
 .dakLogo .a{fill:var(--purp)}
+.flood .dakLogo{color:#fff}
 
-/* ── Planchas: una luz de sección propia en cada una ──────────────────────── */
-.plancha{position:relative;padding:clamp(3.2rem,6.5vw,6rem) 0;isolation:isolate}
-.plancha::before{
-  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
-  background:radial-gradient(60% 55% at var(--luz-x,25%) var(--luz-y,15%),
-             rgba(176,36,255,.16), transparent 68%);
-}
-.plancha:nth-of-type(2)::before{--luz-x:80%;--luz-y:25%;
-  background:radial-gradient(58% 52% at var(--luz-x) var(--luz-y),rgba(0,200,200,.11),transparent 66%)}
-.plancha:nth-of-type(3)::before{--luz-x:15%;--luz-y:70%}
-.plancha:nth-of-type(4)::before{--luz-x:88%;--luz-y:60%;
-  background:radial-gradient(58% 52% at var(--luz-x) var(--luz-y),rgba(0,200,200,.10),transparent 66%)}
-.plancha:nth-of-type(5)::before{--luz-x:35%;--luz-y:30%}
-.plancha:nth-of-type(6)::before{--luz-x:70%;--luz-y:75%}
-
-/* El divisor de sección: filete que se desvanece por los extremos, con un
-   punto luminoso centrado. Es el recurso estructural de la marca. */
-.plancha + .plancha::after{
-  content:"";position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--linea-viva) 22%,
-             var(--purp) 50%,var(--linea-viva) 78%,transparent);
-  opacity:.55;
-}
-.caja{width:min(1120px,92vw);margin-inline:auto;position:relative;z-index:1}
+/* ── Planchas ─────────────────────────────────────────────────────────────── */
+.plancha{position:relative;padding:clamp(2.8rem,5.5vw,4.6rem) 0}
+.plancha + .plancha{border-top:3px solid var(--linea-fuerte)}
+/* La única plancha oscura del documento: la portada. Es donde la marca toma
+   la palabra; el resto es papel para leer y firmar. */
+.plancha.flood{background:var(--ink);color:#fff;border-top:0}
+.caja{width:min(1080px,92vw);margin-inline:auto;position:relative}
+.trama,.grano{display:none}
 
 /* ── Tipografía ───────────────────────────────────────────────────────────── */
-h1,h2{font-weight:800;letter-spacing:-.03em;line-height:1.04;color:var(--tx)}
-h2{font-size:clamp(1.7rem,1.15rem + 2.4vw,2.9rem);max-width:20ch;text-wrap:balance;margin-bottom:1.2rem}
-h3{font-weight:700;font-size:1.02rem;letter-spacing:-.01em;line-height:1.3;color:var(--tx)}
-p{max-width:68ch}
-.entrada{font-size:clamp(1.03rem,.98rem + .3vw,1.2rem);line-height:1.55;max-width:58ch;color:var(--tx2)}
-.menor{font-size:.86rem;line-height:1.55;color:var(--tx3);max-width:60ch}
-.pie{margin-top:1.8rem;padding-top:.8rem;border-top:1px solid var(--linea);
-  font-size:.82rem;line-height:1.55;color:var(--tx3);max-width:74ch}
-b,strong{font-weight:600;color:var(--tx)}
+h1,h2{font-weight:700;letter-spacing:-.025em;line-height:1.1;color:var(--ink)}
+.flood h1,.flood h2{color:#fff}
+h2{font-size:clamp(1.45rem,1.05rem + 1.8vw,2.2rem);max-width:24ch;text-wrap:balance;margin-bottom:.9rem}
+h3{font-weight:600;font-size:1rem;letter-spacing:-.005em;line-height:1.35;color:var(--ink)}
+.flood h3{color:#fff}
+p{max-width:70ch}
+.entrada{font-size:clamp(1rem,.96rem + .26vw,1.12rem);line-height:1.6;max-width:62ch;color:var(--ink-2)}
+.flood .entrada{color:rgba(255,255,255,.84)}
+.menor{font-size:.86rem;line-height:1.55;color:var(--ink-3);max-width:60ch}
+.pie{margin-top:1.7rem;padding-top:.75rem;border-top:1px solid var(--linea);
+  font-size:.81rem;line-height:1.55;color:var(--ink-3);max-width:76ch}
+.flood .pie{color:rgba(255,255,255,.66);border-top-color:rgba(255,255,255,.22)}
+b,strong{font-weight:600;color:var(--ink)}
+.flood b,.flood strong{color:#fff}
 
 /* ── Cinta superior ───────────────────────────────────────────────────────── */
-.cinta{position:sticky;top:0;z-index:60;background:rgba(3,1,6,.86);backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--linea);display:flex;align-items:center;gap:.9rem;
-  padding:.6rem clamp(1rem,4vw,2rem);font-size:.76rem;letter-spacing:.02em;color:var(--tx3)}
-.cinta .dakLogo{height:17px;flex:none}
-.cinta .sello{background:var(--purp);color:#fff;padding:.24rem .6rem;border-radius:999px;
-  font-weight:600;font-size:.7rem;letter-spacing:.06em;white-space:nowrap}
-.cinta .quien{color:var(--tx2);font-weight:500}
+.cinta{position:sticky;top:0;z-index:60;background:var(--ink);color:rgba(255,255,255,.72);
+  display:flex;align-items:center;gap:.85rem;
+  padding:.62rem clamp(1rem,4vw,2rem);font-size:.76rem;letter-spacing:.01em}
+.cinta .dakLogo{height:16px;flex:none;color:#fff}
+.cinta .sello{background:var(--purp);color:#fff;padding:.22rem .58rem;
+  font-weight:600;font-size:.71rem;letter-spacing:.05em;white-space:nowrap}
+.cinta .quien{color:#fff;font-weight:500}
 .cinta .dst{margin-left:auto;font-size:.72rem}
 @media(max-width:720px){.cinta .dst{display:none}}
 @media(max-width:520px){.cinta .quien{display:none}}
 
 /* ── Portada ──────────────────────────────────────────────────────────────── */
-.portada{padding-top:clamp(2rem,4vw,3.2rem)}
-.marcaPortada{height:clamp(30px,4.5vw,42px);margin-bottom:clamp(1.6rem,4vw,2.6rem)}
-.cabecera{display:grid;gap:clamp(1.2rem,3vw,2.2rem)}
-.dicho{display:grid;gap:clamp(.8rem,2.2vw,1.9rem)}
-@media(min-width:920px){.dicho{grid-template-columns:.92fr 1.08fr;align-items:start}}
-.portada h1{font-size:clamp(1.7rem,1.1rem + 2.3vw,2.85rem);max-width:22ch}
+.portada{padding-top:clamp(2rem,4vw,3rem);padding-bottom:clamp(2.4rem,4.6vw,3.6rem)}
+.marcaPortada{height:clamp(28px,4vw,38px);margin-bottom:clamp(1.8rem,4vw,2.8rem)}
+.cabecera{display:grid;gap:clamp(1.2rem,3vw,2rem)}
+.dicho{display:grid;gap:clamp(.7rem,2vw,1.7rem)}
+@media(min-width:920px){.dicho{grid-template-columns:.9fr 1.1fr;align-items:start}}
+.portada h1{font-size:clamp(1.55rem,1.05rem + 2vw,2.5rem);max-width:24ch;font-weight:700}
 
-/* El numeral, con su eco morado. El eco es decorativo y va oculto a lectores. */
-.golpe{position:relative;display:flex;align-items:flex-end;gap:clamp(1rem,2.4vw,1.9rem);flex-wrap:wrap}
-.numWrap{position:relative;line-height:.84;padding-bottom:clamp(.5rem,1.4vw,1.1rem)}
-.numeral{font-size:clamp(5.4rem,1.6rem + 22vw,21rem);font-weight:800;letter-spacing:-.055em;
-  display:block;position:relative;z-index:2;color:var(--tx)}
-.numeral.largo{font-size:clamp(3rem,.6rem + 10vw,10rem);letter-spacing:-.045em}
-.numFantasma{position:absolute;inset:0;color:var(--purp);z-index:1;transform:translate(10px,8px);opacity:.9}
-.js .numFantasma{transition:transform 1.1s var(--exp)}
-.js .registrado .numFantasma{transform:translate(4px,3px)}
-.golpe .glosa{padding-bottom:clamp(.5rem,1.4vw,1.3rem);max-width:24ch}
-.golpe .glosa strong{display:block;font-size:clamp(.95rem,.88rem + .4vw,1.15rem);font-weight:700;
-  letter-spacing:.01em;color:var(--teal);margin-bottom:.4rem}
-.golpe .glosa span{font-size:.92rem;line-height:1.5;color:var(--tx3);display:block}
+/* La cifra, con un eco plano de tinta morada. Es un desplazamiento de
+   impresión, no un resplandor: sin desenfoque y sin animación. */
+.golpe{position:relative;display:flex;align-items:flex-end;gap:clamp(1rem,2.4vw,1.8rem);flex-wrap:wrap}
+.numWrap{position:relative;line-height:.86;padding-bottom:clamp(.4rem,1.2vw,.9rem)}
+.numeral{font-size:clamp(4.6rem,1.4rem + 18vw,16rem);font-weight:800;letter-spacing:-.05em;
+  display:block;position:relative;z-index:2;color:#fff}
+.numeral.largo{font-size:clamp(2.7rem,.6rem + 8.6vw,8.4rem);letter-spacing:-.04em}
+.numFantasma{position:absolute;inset:0;color:var(--purp);z-index:1;transform:translate(6px,5px)}
+.golpe .glosa{padding-bottom:clamp(.4rem,1.2vw,1rem);max-width:26ch}
+.golpe .glosa strong{display:block;font-size:clamp(.9rem,.85rem + .3vw,1.05rem);font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--teal);margin-bottom:.4rem}
+.golpe .glosa span{font-size:.92rem;line-height:1.55;color:rgba(255,255,255,.72);display:block}
 
-.reglaDoble{height:1px;margin:clamp(1.4rem,3vw,2.2rem) 0 0;
-  background:linear-gradient(90deg,var(--purp),var(--teal) 55%,transparent)}
+.reglaDoble{height:0;margin:clamp(1.4rem,3vw,2rem) 0 0;
+  border-top:4px solid #fff;border-bottom:1px solid rgba(255,255,255,.4);padding-bottom:4px}
 
 /* ── Ficha de cabecera ────────────────────────────────────────────────────── */
-.ficha{display:grid;gap:1px;background:var(--linea);border:1px solid var(--linea);
-  border-radius:14px;overflow:hidden;margin-top:clamp(1.4rem,3vw,2.2rem)}
+.ficha{display:grid;border:1px solid rgba(255,255,255,.28);margin-top:clamp(1.4rem,3vw,2rem)}
 @media(min-width:620px){.ficha{grid-template-columns:1fr 1fr}}
 @media(min-width:980px){.ficha{grid-template-columns:1fr 1fr 1fr}}
-.ficha div{background:var(--panel);padding:.95rem 1.15rem}
-.ficha dt{font-size:max(11px,.68rem);font-weight:600;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--purp-tx);margin-bottom:.28rem}
-.ficha dd{font-size:.96rem;line-height:1.42;color:var(--tx2)}
-.ficha dd b{font-weight:600;color:var(--tx)}
+.ficha div{padding:.9rem 1.1rem;border-top:1px solid rgba(255,255,255,.18)}
+.ficha div:first-child{border-top:0}
+@media(min-width:620px){
+  .ficha div{border-left:1px solid rgba(255,255,255,.18)}
+  .ficha div:nth-child(-n+2){border-top:0}
+  .ficha div:nth-child(odd){border-left:0}
+}
+@media(min-width:980px){
+  .ficha div:nth-child(-n+3){border-top:0}
+  .ficha div:nth-child(odd){border-left:1px solid rgba(255,255,255,.18)}
+  .ficha div:nth-child(3n+1){border-left:0}
+}
+.ficha dt{font-size:max(11px,.68rem);font-weight:600;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:.26rem}
+.ficha dd{font-size:.95rem;line-height:1.42;color:rgba(255,255,255,.84)}
+.ficha dd b{font-weight:600;color:#fff}
 
 /* ── Partidas ─────────────────────────────────────────────────────────────── */
-.partidas{margin-top:2rem}
-.partida{display:grid;grid-template-columns:auto 1fr;gap:clamp(.9rem,2.2vw,1.8rem);
-  border-top:1px solid var(--linea);padding:1.35rem 0 1.5rem}
-.partida .cod{font-size:clamp(1.3rem,1rem + 1.2vw,1.8rem);font-weight:800;line-height:1;
-  letter-spacing:-.03em;color:var(--purp-tx)}
-.partida h3{margin-bottom:.4rem}
-.partida p{max-width:62ch;color:var(--tx2)}
-.partida .detalle{margin-top:.75rem;display:grid;gap:.5rem}
-.partida .detalle span{position:relative;padding-left:1.4rem;font-size:.9rem;line-height:1.5;
-  color:var(--tx3);max-width:60ch}
-.partida .detalle span::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;
-  border-radius:50%;background:var(--teal)}
+.partidas{margin-top:1.9rem}
+.partida{display:grid;grid-template-columns:auto 1fr;gap:clamp(.9rem,2.2vw,1.7rem);
+  border-top:1px solid var(--linea);padding:1.3rem 0 1.45rem}
+.partida .cod{font-size:clamp(1.15rem,.95rem + .9vw,1.55rem);font-weight:700;line-height:1.1;
+  letter-spacing:-.02em;color:var(--purp);font-variant-numeric:tabular-nums}
+.partida h3{margin-bottom:.38rem}
+.partida p{max-width:64ch}
+.partida .detalle{margin-top:.7rem;display:grid;gap:.42rem}
+.partida .detalle span{position:relative;padding-left:1.15rem;font-size:.9rem;line-height:1.55;
+  color:var(--ink-3);max-width:62ch}
+.partida .detalle span::before{content:"";position:absolute;left:0;top:.66em;width:7px;height:2px;
+  background:var(--purp)}
 
 /* ── Lista de aportes ─────────────────────────────────────────────────────── */
-.lista{list-style:none;margin-top:1.4rem;display:grid;gap:.9rem}
-.lista li{position:relative;padding-left:1.6rem;max-width:62ch}
-.lista li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;
-  border-radius:50%;background:var(--purp)}
-.lista li b{display:block;color:var(--tx)}
-.lista li span{color:var(--tx3);font-size:.9rem;line-height:1.5}
+.lista{list-style:none;margin-top:1.3rem;display:grid;gap:.9rem}
+.lista li{position:relative;padding-left:1.4rem;max-width:64ch}
+.lista li::before{content:"";position:absolute;left:0;top:.68em;width:9px;height:2px;background:var(--purp)}
+.lista li b{display:block;color:var(--ink)}
+.lista li span{color:var(--ink-3);font-size:.9rem;line-height:1.55}
 
-/* ── Total ────────────────────────────────────────────────────────────────── */
-.total{margin-top:2rem;background:linear-gradient(120deg,var(--purp),#8B15D6);
-  border-radius:16px;padding:clamp(1.15rem,2.6vw,1.7rem) clamp(1.3rem,3vw,2rem);
-  display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
-  box-shadow:0 14px 40px -18px rgba(176,36,255,.75)}
-.total .rot{font-size:.84rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff}
-.total .per{display:block;margin-top:.24rem;font-size:.8rem;font-weight:400;letter-spacing:0;
-  text-transform:none;color:rgba(255,255,255,.88)}
-.total .imp{font-size:clamp(1.9rem,1.3rem + 2.4vw,2.9rem);font-weight:800;letter-spacing:-.035em;
+/* ── Total: campo plano de tinta morada con la cifra calada ───────────────── */
+.total{margin-top:1.9rem;background:var(--purp);color:#fff;
+  padding:clamp(1.1rem,2.4vw,1.5rem) clamp(1.2rem,2.8vw,1.8rem);
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.total .rot{font-size:.8rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#fff}
+.total .per{display:block;margin-top:.24rem;font-size:.82rem;font-weight:400;letter-spacing:0;
+  text-transform:none;color:#fff}
+.total .imp{font-size:clamp(1.75rem,1.25rem + 2vw,2.5rem);font-weight:700;letter-spacing:-.03em;
   line-height:1;color:#fff}
-.total .imp sup{font-size:max(11px,.34em);font-weight:600;vertical-align:.9em;margin-right:.14em;
-  letter-spacing:.02em}
+.total .imp sup{font-size:max(11px,.34em);font-weight:600;vertical-align:.85em;margin-right:.14em}
 
 /* ── Cláusulas ────────────────────────────────────────────────────────────── */
-.clausulas{margin-top:2rem}
-.clausula{display:grid;grid-template-columns:minmax(88px,116px) 1fr;gap:clamp(.8rem,2vw,1.8rem);
-  border-top:1px solid var(--linea);padding:1.2rem 0 1.35rem}
-.clausula .orden{font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--purp-tx)}
-.clausula h3{margin-bottom:.35rem}
-.clausula p{max-width:62ch;color:var(--tx2)}
-@media(max-width:560px){.clausula{grid-template-columns:1fr;gap:.35rem}}
+.clausulas{margin-top:1.9rem}
+.clausula{display:grid;grid-template-columns:minmax(84px,110px) 1fr;gap:clamp(.8rem,2vw,1.7rem);
+  border-top:1px solid var(--linea);padding:1.15rem 0 1.3rem}
+.clausula .orden{font-size:.73rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--purp-d)}
+.clausula h3{margin-bottom:.32rem}
+.clausula p{max-width:64ch}
+@media(max-width:560px){.clausula{grid-template-columns:1fr;gap:.3rem}}
 
 /* ── Tablas ───────────────────────────────────────────────────────────────── */
-.marco{margin-top:1.8rem;border:1px solid var(--linea);border-radius:14px;overflow-x:auto;
-  background:var(--panel);-webkit-overflow-scrolling:touch}
-table{border-collapse:collapse;width:100%;min-width:520px;color:var(--tx2)}
-caption{caption-side:top;text-align:left;font-size:.74rem;font-weight:600;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--purp-tx);padding:.85rem 1.1rem .1rem;background:var(--panel)}
-th{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;text-align:left;
-  padding:.7rem 1.1rem;color:var(--tx3);border-bottom:1px solid var(--linea);vertical-align:bottom}
-td{padding:.75rem 1.1rem;border-bottom:1px solid var(--linea);vertical-align:top;font-size:.93rem}
+.marco{margin-top:1.7rem;border:1px solid var(--linea-fuerte);overflow-x:auto;
+  -webkit-overflow-scrolling:touch;background:#fff}
+table{border-collapse:collapse;width:100%;min-width:520px;color:var(--ink-2)}
+caption{caption-side:top;text-align:left;font-size:.72rem;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;color:#fff;background:var(--ink);padding:.6rem 1.05rem}
+th{font-size:.71rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;text-align:left;
+  padding:.68rem 1.05rem;color:var(--ink);background:var(--papel-2);
+  border-bottom:2px solid var(--linea-fuerte);vertical-align:bottom}
+td{padding:.72rem 1.05rem;border-bottom:1px solid var(--linea);vertical-align:top;font-size:.92rem}
 tbody tr:last-child td{border-bottom:0}
 td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-td.destaca{color:var(--purp-tx);font-weight:600}
-tr.subraya td{background:rgba(176,36,255,.13)}
-tr.subraya td b{color:var(--tx)}
-tr.subraya td.destaca{color:var(--purp-tx)}
-.desliza{font-size:.76rem;letter-spacing:.02em;color:var(--tx3);margin-top:.6rem}
+td.destaca{color:var(--purp-d);font-weight:600}
+tr.subraya td{background:var(--ink);color:#fff}
+tr.subraya td b{color:#fff}
+tr.subraya td.destaca{background:#fff;color:var(--purp-d)}
+.desliza{font-size:.76rem;color:var(--ink-3);margin-top:.55rem}
 @media(min-width:880px){.desliza{display:none}}
 
 /* ── Aceptación ───────────────────────────────────────────────────────────── */
-.aceptacion{margin-top:2.4rem;background:var(--panel);border:1px solid var(--linea);
-  border-radius:18px;padding:clamp(1.3rem,3vw,2.2rem)}
-.aceptacion h3{margin-bottom:.7rem;color:var(--tx)}
-.aceptacion p{color:var(--tx2)}
-.rubricas{display:grid;gap:clamp(1.6rem,4vw,3rem);margin-top:2.4rem}
+.aceptacion{margin-top:2.2rem;background:#fff;border:3px solid var(--linea-fuerte);
+  padding:clamp(1.3rem,3vw,2rem)}
+.aceptacion h3{margin-bottom:.6rem;padding-bottom:.5rem;border-bottom:1px solid var(--linea)}
+.rubricas{display:grid;gap:clamp(1.6rem,4vw,3rem);margin-top:2.6rem}
 @media(min-width:620px){.rubricas{grid-template-columns:1fr 1fr}}
-.rubrica{border-top:1px solid var(--linea-viva);padding-top:.65rem}
-.rubrica b{display:block;font-size:.78rem;font-weight:600;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--tx)}
-.rubrica span{font-size:.82rem;color:var(--tx3)}
+.rubrica{border-top:1px solid var(--linea-fuerte);padding-top:.6rem}
+.rubrica b{display:block;font-size:.77rem;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink)}
+.rubrica span{font-size:.82rem;color:var(--ink-3)}
 
-/* ── Bloques de la portada del índice ─────────────────────────────────────── */
+/* ── Bloques del índice ───────────────────────────────────────────────────── */
 .bloques{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:clamp(1rem,2.4vw,1.6rem);margin-top:clamp(1.4rem,3vw,2.2rem)}
-.bloque{background:var(--panel);border:1px solid var(--linea);border-radius:18px;
-  padding:1.35rem 1.5rem 1.5rem;transition:border-color .25s var(--exp),transform .25s var(--exp)}
-a.bloque:hover,a.bloque:focus-visible{border-color:var(--purp);transform:translateY(-3px)}
+  gap:clamp(1rem,2.2vw,1.5rem);margin-top:clamp(1.4rem,3vw,2rem)}
+.bloque{background:#fff;border:1px solid rgba(255,255,255,.28);padding:1.3rem 1.45rem 1.45rem;
+  transition:background .2s var(--exp)}
+.flood .bloque{background:transparent}
+a.bloque:hover,a.bloque:focus-visible{background:rgba(255,255,255,.07)}
 .bloque .tit{display:flex;justify-content:space-between;gap:.7rem;align-items:baseline;
-  font-size:max(11px,.74rem);font-weight:600;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--purp-tx);padding-bottom:.5rem;margin-bottom:.85rem;border-bottom:1px solid var(--linea)}
-.bloque .cifra{display:block;font-size:clamp(2rem,1.4rem + 2.4vw,2.9rem);font-weight:800;
-  letter-spacing:-.04em;line-height:1;color:var(--tx)}
-.bloque .cifra sup{font-size:max(11px,.32em);font-weight:600;vertical-align:.9em;margin-right:.14em}
-.bloque .desg{display:block;margin-top:.7rem;font-size:.9rem;line-height:1.5;color:var(--tx3)}
+  font-size:max(11px,.72rem);font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--teal);padding-bottom:.5rem;margin-bottom:.8rem;border-bottom:1px solid rgba(255,255,255,.24)}
+.bloque .cifra{display:block;font-size:clamp(1.9rem,1.35rem + 2.2vw,2.7rem);font-weight:700;
+  letter-spacing:-.035em;line-height:1;color:#fff}
+.bloque .cifra sup{font-size:max(11px,.32em);font-weight:600;vertical-align:.85em;margin-right:.13em}
+.bloque .desg{display:block;margin-top:.65rem;font-size:.89rem;line-height:1.55;color:rgba(255,255,255,.74)}
+.bloque .desg b{color:#fff}
 
 /* ── Acciones ─────────────────────────────────────────────────────────────── */
-.acciones{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.9rem}
-.btn{display:inline-flex;align-items:center;min-height:44px;padding:.7rem 1.4rem;border-radius:999px;
-  font-family:inherit;font-size:.88rem;font-weight:600;letter-spacing:.01em;
-  background:var(--purp);color:#fff;border:1px solid var(--purp);text-decoration:none;cursor:pointer;
-  transition:background .22s var(--exp),border-color .22s var(--exp),color .22s var(--exp)}
-.btn:hover,.btn:focus-visible{background:#C555FF;border-color:#C555FF}
-.btn.linea{background:transparent;border-color:var(--linea-viva);color:var(--tx)}
-.btn.linea:hover,.btn.linea:focus-visible{border-color:var(--purp);background:rgba(176,36,255,.12)}
+.acciones{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.8rem}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:.68rem 1.35rem;
+  font-family:inherit;font-size:.86rem;font-weight:600;letter-spacing:.01em;
+  background:var(--ink);color:#fff;border:2px solid var(--ink);text-decoration:none;cursor:pointer;
+  transition:background .2s var(--exp),color .2s var(--exp),border-color .2s var(--exp)}
+.btn:hover,.btn:focus-visible{background:var(--purp);border-color:var(--purp)}
+.btn.linea{background:transparent;color:var(--ink)}
+.btn.linea:hover,.btn.linea:focus-visible{background:var(--ink);color:#fff;border-color:var(--ink)}
 
 /* ── Firma de pie ─────────────────────────────────────────────────────────── */
-.firma{margin-top:clamp(2.2rem,5vw,3.4rem);padding-top:1.1rem;border-top:1px solid var(--linea);
+.firma{margin-top:clamp(2rem,4.5vw,3rem);padding-top:1rem;border-top:1px solid var(--linea);
   display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
-  font-size:.8rem;color:var(--tx3)}
+  font-size:.8rem;color:var(--ink-3)}
+.flood .firma{border-top-color:rgba(255,255,255,.22);color:rgba(255,255,255,.66)}
 
-/* ── Entrada, un solo momento ─────────────────────────────────────────────── */
-.js .ap{opacity:0;transform:translateY(16px)}
-.js .ap.dentro{opacity:1;transform:none;transition:opacity .68s var(--exp),transform .68s var(--exp)}
+/* ── Un solo momento de entrada, corto ────────────────────────────────────── */
+.js .ap{opacity:0;transform:translateY(12px)}
+.js .ap.dentro{opacity:1;transform:none;transition:opacity .5s var(--exp),transform .5s var(--exp)}
 @media(prefers-reduced-motion:reduce){
   .js .ap,.js .ap.dentro{opacity:1;transform:none;transition:none}
-  .js .numFantasma{transition:none;transform:translate(4px,3px)}
 }
 
 /* ═══ El papel ════════════════════════════════════════════════════════════════
-   Una cotización se firma en papel. Se invierte a blanco con la tinta de marca:
-   el morado #B024FF da 4,62:1 sobre blanco, así que ahí sí sirve como texto. */
+   Como el documento ya es papel con tinta, la impresión es casi el mismo
+   objeto: solo cambia la plancha de portada, que se entinta en blanco para
+   no vaciar el tóner, y se fija la paginación. */
 @media print{
   @page{ size:A4; margin:15mm 14mm; }
 
-  html,body{background:#fff!important;color:#1A1420!important;font-size:10.5pt}
+  html,body{background:#fff!important;color:#1A1520!important;font-size:10.5pt}
   body{overflow:visible}
-
-  .plancha::before,.plancha + .plancha::after{display:none!important}
   .cinta,.acciones,.desliza{display:none!important}
 
-  .plancha{padding:9mm 0 7mm;border-top:1.5pt solid #030106;page-break-inside:auto}
-  .plancha:first-of-type{border-top:0;padding-top:0}
+  .plancha{padding:7mm 0 5mm;page-break-inside:auto}
+  .plancha + .plancha{border-top:1.5pt solid #030106}
+  .plancha:first-of-type{padding-top:0}
+  .plancha.flood{background:#fff!important;color:#1A1520!important;border-bottom:1.5pt solid #030106}
   .caja{width:100%}
 
-  .dakLogo{color:#030106!important}
-  .marcaPortada{height:12mm;margin-bottom:6mm}
+  .flood h1,.flood h2,.flood h3,.flood b,.flood strong,.flood .ficha dd b{color:#030106!important}
+  .flood .entrada,.flood .pie,.flood .ficha dd,.flood .firma,
+  .flood .golpe .glosa span,.flood .bloque .desg{color:#2A2430!important}
+  .flood .dakLogo{color:#030106!important}
+  .flood .ficha,.flood .ficha div{border-color:#030106!important}
+  .flood .pie,.flood .firma{border-top-color:#030106!important}
+  .golpe .glosa strong,.ficha dt,.bloque .tit{color:#0E7A7A!important}
 
-  h1,h2,h3,b,strong{color:#030106!important}
+  .marcaPortada{height:11mm;margin-bottom:5mm}
   h2,h3{page-break-after:avoid;break-after:avoid}
-  h2{font-size:15pt;max-width:none;margin-bottom:3mm}
+  h2{font-size:14.5pt;max-width:none;margin-bottom:3mm}
   h3{font-size:10.5pt}
-  p,.entrada,.menor{color:#2A2233!important;max-width:none}
-  .entrada{font-size:11pt}
+  .entrada{font-size:10.8pt;max-width:none}
+  p{max-width:none}
   p,li{orphans:3;widows:3}
 
   .cabecera,.dicho{display:block}
-  .portada{padding-top:0}
+  .portada{padding:0 0 6mm}
   .golpe{display:flex;align-items:flex-end;gap:6mm;page-break-inside:avoid}
-  .numWrap{padding-top:4mm;padding-bottom:2mm;line-height:.84}
-  .numeral{font-size:52pt!important;color:#030106!important}
-  .numeral.largo{font-size:38pt!important}
+  .numWrap{padding-top:3mm;padding-bottom:2mm}
+  .numeral{font-size:50pt!important;color:#030106!important}
+  .numeral.largo{font-size:36pt!important}
   .numFantasma{color:var(--purp)!important;transform:translate(2px,2px)!important;
-    transition:none!important;opacity:1;
     -webkit-print-color-adjust:exact;print-color-adjust:exact}
   .golpe .glosa{max-width:none}
-  .golpe .glosa strong{color:#0F7A7A!important;font-size:11pt}
-  .golpe .glosa span{color:#2A2233!important;font-size:9.5pt}
-  .portada h1{font-size:19pt;max-width:none;margin:5mm 0 2mm}
+  .portada h1{font-size:18pt;max-width:none;margin:5mm 0 2mm}
   .reglaDoble{display:none}
 
-  .ficha{border:1pt solid #030106;border-radius:0;gap:0;background:none;page-break-inside:avoid;margin-top:5mm}
-  .ficha div{background:none;border-top:.75pt solid #030106;border-left:.75pt solid #030106;padding:3mm 4mm}
-  .ficha div:nth-child(-n+3){border-top:0}
-  .ficha div:nth-child(3n+1){border-left:0}
-  .ficha dt{color:#7A1FB8!important}
-  .ficha dd,.ficha dd b{color:#030106!important;font-size:10pt}
+  .ficha{page-break-inside:avoid;margin-top:5mm}
+  .ficha div{padding:3mm 4mm}
+  .ficha dd{font-size:10pt}
 
   .partida,.clausula,.lista li,.rubrica{page-break-inside:avoid}
   .partida,.clausula{border-top:.75pt solid #030106;padding:4mm 0 4.5mm}
   .partida .cod,.clausula .orden{color:#7A1FB8!important}
-  .partida .cod{font-size:16pt}
-  .partida .detalle span,.lista li span{color:#2A2233!important;font-size:9.5pt}
-  .partida .detalle span::before{background:#0F7A7A!important;
-    -webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .lista li::before{background:var(--purp)!important;
+  .partida .cod{font-size:15pt}
+  .partida .detalle span,.lista li span{color:#4A4155!important;font-size:9.5pt}
+  .partida .detalle span::before,.lista li::before{background:#7A1FB8!important;
     -webkit-print-color-adjust:exact;print-color-adjust:exact}
 
-  .total{page-break-inside:avoid;margin-top:6mm;background:var(--purp)!important;
-    border-radius:0;box-shadow:none;padding:4mm 5mm;
+  .total{page-break-inside:avoid;margin-top:6mm;background:var(--purp)!important;padding:4mm 5mm;
     -webkit-print-color-adjust:exact;print-color-adjust:exact}
   .total .rot,.total .per,.total .imp{color:#fff!important}
 
   .aceptacion{page-break-inside:avoid;margin-top:6mm;background:none!important;
-    border:1pt solid #030106;border-radius:0;padding:5mm}
+    border:1.5pt solid #030106;padding:5mm}
   .rubricas{margin-top:14mm;gap:8mm}
   .rubrica{border-top:.75pt solid #030106}
   .rubrica b{color:#030106!important}
   .rubrica span{color:#4A4155!important}
 
-  .marco{border:.75pt solid #030106;border-radius:0;background:none;page-break-inside:avoid;margin-top:5mm}
-  .marco{overflow:visible!important}
+  /* La tabla FLUYE entre paginas repitiendo su cabecera, que es lo que hace un
+     documento. Con page-break-inside:avoid saltaba entera y dejaba un hueco de
+     un tercio de hoja detras del titular. Lo que no se parte es la fila. */
+  .marco{border:.75pt solid #030106;background:none;margin-top:5mm;overflow:visible!important}
+  thead{display:table-header-group}
+  tr{page-break-inside:avoid;break-inside:avoid}
   table{min-width:0!important;font-size:9.5pt}
-  caption{background:none;color:#7A1FB8!important;padding:2.5mm 3mm .5mm}
-  th{color:#4A4155!important;border-bottom:.75pt solid #030106}
-  td{color:#2A2233!important;border-bottom:.5pt solid #B9B2C2}
-  td b{color:#030106!important}
-  td.destaca,tr.subraya td.destaca{color:#7A1FB8!important;font-weight:600}
-  tr.subraya td{background:#F1E6FB!important;
+  caption{background:#030106!important;color:#fff!important;padding:2.5mm 3mm;
     -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  th{background:#EBE8F0!important;color:#030106!important;border-bottom:1pt solid #030106;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  td{color:#2A2430!important;border-bottom:.5pt solid #B9B2C2}
+  td b{color:#030106!important}
+  tr.subraya td{background:#030106!important;color:#fff!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr.subraya td b{color:#fff!important}
+  tr.subraya td.destaca{background:#fff!important;color:#7A1FB8!important}
+  td.destaca{color:#7A1FB8!important}
 
-  /* La nota al pie pertenece a lo que la precede: no abre pagina sola. */
-  .pie,.firma{page-break-before:avoid;break-before:avoid}
-  .pie,.firma{color:#4A4155!important;border-top-color:#030106!important;max-width:none;font-size:9pt}
+  .pie,.firma{page-break-before:avoid;break-before:avoid;color:#4A4155!important;
+    border-top-color:#030106!important;max-width:none;font-size:9pt}
   .js .ap,.js .ap.dentro{opacity:1!important;transform:none!important}
 }
