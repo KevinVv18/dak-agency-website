@@ -25,6 +25,20 @@ agro/
 ventas/
 .builds/
 
+# Detectadas el 26-ago-2026 por la guarda, que aborto el deploy en vez de
+# borrarlas. Son carpetas-subdominio creadas a mano en hPanel y sin repo:
+#
+#   socios/     -> HTTP 401, «DAK · Documentos de socios». Micrositio de
+#                  documentos de socios detras de Basic Auth. Contenido real
+#                  y sin copia en el repositorio.
+#   propuestas/ -> HTTP 403 (listado de directorio bloqueado). La carpeta se
+#                  sirve y responde tambien como propuestas.dakagency.net.
+#
+# Las dos respondian ya como subdominio, asi que estaban en produccion. Si el
+# deploy hubiera seguido, --delete se las llevaba y no habia vuelta atras.
+socios/
+propuestas/
+
 # Backups automaticos que crea el panel de Hostinger (tarballs del WordPress).
 # No los produce el build y borrarlos destruiria copias de seguridad.
 # Aparecio el 07-ago-2026 y la guarda lo detuvo antes de que el deploy se lo

@@ -37,7 +37,9 @@ secretos debe vivir fuera del frontend público.
   existe porque ya se perdieron tres carpetas por saltársela: el demo inmobiliario, el micrositio
   de análisis y —detectado a tiempo— el demo de agroinsumos.
 - Carpetas protegidas hoy: `blog/`, `blog-demo/`, `inmobiliaria/`, `analisis/`, `guias/`, `agro/`,
-  `.builds/`, `application_backups/`. Ninguna se quita.
+  `ventas/`, `socios/`, `propuestas/`, `.builds/`, `application_backups/`. Ninguna se quita.
+  La lista viva es `deploy-protect.txt`; esta línea es solo el reflejo y ya se quedó atrás una vez
+  (le faltaba `ventas/`). Ante la duda, manda el archivo.
 - Si se agrega una ruta pública real a la SPA, revisar también `scripts/prerender.mjs`,
   `public/sitemap.xml` y la estrategia de robots/canonical.
 
