@@ -1,0 +1,159 @@
+/* ═══════════════════════════════════════════════════════════════
+   PORTADA — la tapa del catálogo, el índice de secciones, el
+   recuadro de la entrada más reciente y las ocho secciones con
+   sus filas. Solo se carga en la portada.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── La tapa ──────────────────────────────────────────────────
+   No es un héroe: es la portada de un catálogo. Dice qué es esto,
+   de cuándo es y cuánto trae. Sin imagen de fondo, sin degradado.
+   ─────────────────────────────────────────────────────────── */
+.tapa {
+  background: var(--papel-fila);
+  border-bottom: 3px solid var(--tinta);
+}
+.tapa .contenedor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 2rem 3rem;
+  padding-block: 3.25rem 2.5rem;
+}
+.tapa-rotulo { color: var(--casa-texto); margin-bottom: 1.15rem; }
+.tapa h1 {
+  font-size: clamp(2.1rem, 5.2vw, 3.9rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+.tapa-bajada {
+  font-family: var(--f-prosa);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--tinta-2);
+  max-width: 54ch;
+  margin-top: 1.15rem;
+}
+
+/* Bloque de edición: la caja de datos que todo catálogo lleva */
+.edicion {
+  border: 1px solid var(--tinta);
+  min-width: 15rem;
+}
+.edicion-titulo {
+  background: var(--tinta); color: #fff;
+  padding: 0.45rem 0.85rem;
+}
+.edicion dl { display: grid; grid-template-columns: auto 1fr; }
+.edicion dt {
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--tinta-3);
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--filete);
+}
+.edicion dd {
+  font-size: 0.9375rem; font-weight: 600; text-align: right;
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--filete);
+  font-variant-numeric: tabular-nums;
+}
+.edicion dl > :nth-last-child(-n + 2) { border-bottom: 0; }
+
+/* ── Índice de secciones ──────────────────────────────────────
+   Es la navegación primaria y vive sobre el pliegue.
+   ─────────────────────────────────────────────────────────── */
+.indice { padding-block: 2.75rem 0; }
+.indice-titulo {
+  display: flex; align-items: baseline; gap: 1rem;
+  border-bottom: 1px solid var(--tinta);
+  padding-bottom: 0.6rem; margin-bottom: 1.25rem;
+}
+.indice-titulo h2 { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; }
+.indice-titulo .cuenta { font-size: 0.75rem; color: var(--tinta-3); margin-left: auto; }
+
+.indice-rejilla { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--filete); }
+.indice-item {
+  display: flex; flex-direction: column; gap: 0.4rem;
+  background: var(--papel-fila);
+  padding: 0.95rem 1rem 1.05rem;
+  border-top: 3px solid var(--sec);
+  transition: background var(--avance);
+}
+.indice-item:hover { background: var(--papel-tinte); }
+.indice-item .codigo { font-size: 0.6875rem; font-weight: 700; color: var(--sec); letter-spacing: 0.06em; }
+.indice-item .nombre { font-size: 0.9375rem; font-weight: 600; line-height: 1.25; }
+.indice-item .cuenta { font-size: 0.75rem; color: var(--tinta-3); margin-top: auto; padding-top: 0.35rem; }
+
+/* ── Recuadro de la entrada más reciente ──────────────────────
+   El equivalente al recuadro de oferta: un catálogo destaca una
+   referencia por página, no todas. Es la ÚNICA imagen con
+   prioridad de carga de toda la portada.
+   ─────────────────────────────────────────────────────────── */
+.destacada { margin-block: 2.75rem 0; }
+.destacada-marco {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  border: 3px solid var(--tinta);
+  background: var(--papel-fila);
+}
+/* Una entrada sin imagen destacada no puede dejar media columna vacía:
+   el recuadro pasa a una sola columna. Pasa en un WordPress recién montado
+   y pasaría si alguien publica sin miniatura. */
+.destacada-marco.sin-imagen { grid-template-columns: 1fr; }
+
+.destacada-figura { position: relative; background: var(--papel-tinte); }
+.destacada-figura img { width: 100%; height: 100%; object-fit: cover; }
+.destacada-sello {
+  position: absolute; left: 0; top: 0;
+  background: var(--casa); color: #fff;
+  padding: 0.4rem 0.8rem;
+}
+.destacada-cuerpo { display: flex; flex-direction: column; padding: 1.75rem 2rem 1.6rem; }
+.destacada-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.destacada-cuerpo h2 {
+  font-size: clamp(1.4rem, 2.4vw, 1.95rem);
+  font-weight: 700; line-height: 1.16; letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.destacada-cuerpo h2 a { transition: color var(--avance); }
+.destacada-cuerpo h2 a:hover { color: var(--casa-texto); }
+.destacada-extracto {
+  font-family: var(--f-prosa);
+  font-size: 1.0625rem; line-height: 1.62;
+  color: var(--tinta-2);
+  margin-top: 0.9rem;
+}
+.destacada-pie {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem;
+  margin-top: auto; padding-top: 1.4rem;
+  border-top: 1px solid var(--filete);
+}
+.destacada-leer {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--casa-texto);
+}
+.destacada-leer span { transition: transform var(--avance); }
+.destacada-leer:hover span { transform: translateX(4px); }
+
+/* La banda de sección, la fila de catálogo y la etiqueta de sección son
+   primitivas compartidas con el archivo y la búsqueda: viven en style.css. */
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 1000px) {
+  .indice-rejilla { grid-template-columns: repeat(2, 1fr); }
+  .destacada-marco { grid-template-columns: 1fr; }
+  .destacada-figura { aspect-ratio: 16 / 9; }
+}
+
+@media (max-width: 900px) {
+  .tapa .contenedor { grid-template-columns: 1fr; align-items: start; padding-block: 2.25rem 2rem; }
+  .edicion { min-width: 0; width: 100%; }
+  .destacada-cuerpo { padding: 1.35rem 1.25rem 1.25rem; }
+}
+
+@media (max-width: 420px) {
+  .indice-rejilla { grid-template-columns: 1fr; }
+}

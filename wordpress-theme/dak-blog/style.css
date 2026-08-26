@@ -1,0 +1,554 @@
+/*
+Theme Name: DAK Blog — Catálogo
+Theme URI: https://dakagency.net/blog
+Author: DAK Agency
+Author URI: https://dakagency.net
+Description: El blog de DAK como catálogo comercial: cada artículo es una entrada con su código, su sección y su dato. Archivo + Faustina autoalojadas, ocho vidriados de sección, cero scripts de terceros.
+Version: 1.0.0
+Requires at least: 6.0
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: dak-blog
+Tags: blog, custom-menu, featured-images, translation-ready
+*/
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE — tokens, reset, tipografía y chrome. Se carga en todas las
+   vistas. Lo específico de cada plantilla vive en assets/css/.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Tipografía autoalojada ───────────────────────────────────── */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 700;
+  src: url('assets/fonts/archivo-latin-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Faustina';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 600;
+  src: url('assets/fonts/faustina-latin-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Faustina';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400 600;
+  src: url('assets/fonts/faustina-latin-var-italic.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ── Tokens ───────────────────────────────────────────────────────
+   Contrastes medidos, no estimados (ver DESIGN.md):
+   tinta 16.4:1 · tinta-2 9.3:1 · tinta-3 5.7:1 · casa-texto 6.1:1
+   sobre papel. --casa da 4.12:1 y NO se usa nunca como texto.
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  /* Papel */
+  --papel:        #F2F2F0;
+  --papel-fila:   #FFFFFF;
+  --papel-tinte:  #E9E9E5;
+
+  /* Tinta */
+  --tinta:    #141416;
+  --tinta-2:  #3F3F47;
+  --tinta-3:  #5E5E68;
+
+  /* Tinta de la casa — DAK */
+  --casa:        #B024FF;  /* rellenos, filetes, códigos, pestaña activa */
+  --casa-texto:  #8B1CC7;  /* la misma tinta cuando es texto sobre papel */
+  --casa-clara:  #D89BFF;  /* la misma tinta cuando es texto sobre tinta */
+
+  /* Filetes de retícula */
+  --filete:        #D4D4CE;
+  --filete-fuerte: #9A9A93;
+
+  /* Ocho vidriados de sección — todos ≥5.9:1 con blanco encima */
+  --sec-seo-buscadores: #7B1FA2;
+  --sec-diseno-web:     #0F4C9C;
+  --sec-redes-sociales: #B3123F;
+  --sec-publicidad:     #AA4400;
+  --sec-automatizacion: #00695C;
+  --sec-branding:       #1F1F26;
+  --sec-por-rubro:      #4A5D23;
+  --sec-guias-precios:  #1B5E20;
+  --sec-defecto:        #3F3F47;
+
+  /* Sección activa: cada bloque la redefine, todo lo de dentro la hereda */
+  --sec: var(--sec-defecto);
+
+  /* Tipografía */
+  --f-estructura: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --f-prosa:      'Faustina', Georgia, 'Times New Roman', serif;
+
+  /* Retícula */
+  --ancho:  78rem;
+  --margen: 2rem;
+
+  /* Movimiento — un solo easing, sin rebote */
+  --avance: 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+
+  --z-canto: 900;
+  --z-fijo:  1000;
+}
+
+/* ── Reset ────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--f-estructura);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, svg { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+ul, ol { list-style: none; }
+
+/* Un catálogo alinea columnas: cifras tabulares en toda la estructura */
+.codigo, .dato, .rotulo, .edicion, .cuenta, time { font-variant-numeric: tabular-nums; }
+
+:focus-visible { outline: 3px solid var(--casa); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Primitivas compartidas ───────────────────────────────────── */
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho);
+  margin-inline: auto;
+  padding-inline: var(--margen);
+}
+
+/* Rótulo: la versal de catálogo, el recurso tipográfico más repetido */
+.rotulo {
+  font-size: 0.6875rem;      /* 11px — piso de texto funcional */
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  line-height: 1.35;
+}
+
+.solo-lectores {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+.salta-al-contenido {
+  position: absolute; left: var(--margen); top: -100%;
+  z-index: var(--z-fijo);
+  background: var(--tinta); color: #fff;
+  padding: 0.75rem 1.25rem;
+  transition: top var(--avance);
+}
+.salta-al-contenido:focus { top: 0.5rem; }
+
+/* ═══ PRIMITIVAS DEL CATÁLOGO ═════════════════════════════════
+   La banda de sección y la fila son la unidad de este mundo y las
+   reutilizan portada, archivo de sección y búsqueda. Por eso viven
+   en la base y no en la hoja de una plantilla.
+   ═══════════════════════════════════════════════════════════ */
+
+/* Etiqueta de sección: el rótulo de color que clasifica cada entrada */
+.etiqueta-seccion {
+  display: inline-block;
+  background: var(--sec); color: #fff;
+  padding: 0.22rem 0.55rem;
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; line-height: 1.35;
+}
+.meta-dato { font-size: 0.75rem; color: var(--tinta-3); font-variant-numeric: tabular-nums; }
+
+/* Banda de color a sangre: donde vive el color de este mundo */
+.seccion { margin-top: 3rem; scroll-margin-top: 1rem; }
+
+.seccion-banda { background: var(--sec); color: #fff; }
+.seccion-banda .contenedor {
+  display: flex; align-items: baseline; flex-wrap: wrap;
+  gap: 0.85rem 1.25rem; padding-block: 0.8rem;
+}
+.seccion-banda .codigo { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.02em; }
+.seccion-banda h1, .seccion-banda h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.01em; }
+.seccion-banda .cuenta { font-size: 0.75rem; color: rgba(255,255,255,0.82); font-variant-numeric: tabular-nums; }
+.seccion-ver {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  border-bottom: 1px solid rgba(255,255,255,0.45);
+  padding-bottom: 2px;
+  transition: border-color var(--avance);
+}
+.seccion-ver:hover { border-bottom-color: #fff; }
+.seccion-ver span { transition: transform var(--avance); }
+.seccion-ver:hover span { transform: translateX(3px); }
+
+.seccion-filas { background: var(--papel-fila); border-bottom: 1px solid var(--filete); }
+
+/* La fila: referencia | descripción | precio */
+.fila { border-top: 1px solid var(--filete); }
+.fila:first-child { border-top: 0; }
+.fila > a {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) 4.25rem;
+  align-items: start;
+  gap: 0 1.35rem;
+  padding: 1rem var(--margen);
+  max-width: var(--ancho);
+  margin-inline: auto;
+  transition: background var(--avance);
+}
+
+/* La miniatura: la referencia ilustrada del catálogo. Cuadrada y
+   pequeña a propósito — ilustra la fila, no compite con el recuadro
+   destacado, que es la única imagen prioritaria de la página. */
+.fila-figura {
+  display: block; position: relative;
+  width: 4.5rem; aspect-ratio: 1;
+  background: var(--papel-tinte);
+  overflow: hidden;
+}
+.fila-figura img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: saturate(0.92);
+  transition: filter var(--avance);
+}
+.fila > a:hover .fila-figura img { filter: saturate(1); }
+
+/* Sin miniatura, el número de sección hace de referencia */
+.fila-sin-imagen {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sec); color: #fff;
+  font-size: 1.15rem; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+/* El único movimiento del sitio: una regla que avanza bajo el renglón que
+   estás leyendo, como el canto de una hoja puesto debajo de la línea.
+   Solo transform, y nunca un filete lateral: el borde de acento en un
+   costado está prohibido en este proyecto. */
+.fila > a::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 2px; background: var(--casa);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--avance);
+}
+.fila > a:hover { background: var(--papel-tinte); }
+.fila > a:hover::after,
+.fila > a:focus-visible::after { transform: scaleX(1); }
+
+.fila-descripcion { min-width: 0; }
+.fila-meta {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.7rem;
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--tinta-3);
+  font-variant-numeric: tabular-nums;
+}
+.fila-rotulo { color: var(--sec); }
+.fila h3 {
+  font-size: 1.0625rem; font-weight: 600; line-height: 1.32;
+  letter-spacing: -0.01em; margin-top: 0.35rem;
+}
+.fila-extracto {
+  font-family: var(--f-prosa);
+  font-size: 0.9375rem; line-height: 1.55; color: var(--tinta-3);
+  margin-top: 0.3rem;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* El precio de la fila: lo que le cuesta al lector, que son minutos */
+.fila .dato {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--tinta-2);
+  text-align: right; white-space: nowrap;
+  padding-top: 0.05rem;
+}
+
+/* Pie de sección */
+.seccion-resto {
+  display: block;
+  max-width: var(--ancho); margin-inline: auto;
+  padding: 0.85rem var(--margen);
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--tinta-3);
+  border-top: 1px solid var(--filete);
+  transition: color var(--avance), background var(--avance);
+}
+.seccion-resto:hover { color: var(--casa-texto); background: var(--papel-tinte); }
+
+@media (max-width: 620px) {
+  /* La miniatura se queda a la izquierda y el precio sube al renglón de
+     metadatos: la fila mantiene su lectura sin apretar el título. */
+  .fila > a { grid-template-columns: 3.5rem minmax(0, 1fr); gap: 0 0.9rem; padding-block: 0.9rem; }
+  .fila-figura { width: 3.5rem; }
+  .fila .dato {
+    grid-column: 2; grid-row: 1;
+    justify-self: end; align-self: start;
+    text-align: right;
+  }
+  .fila-descripcion { grid-column: 2; grid-row: 1; padding-right: 3.5rem; }
+  .fila-extracto { -webkit-line-clamp: 3; }
+  .seccion-banda .contenedor { padding-block: 0.7rem; }
+  .seccion-ver { margin-left: 0; flex-basis: 100%; }
+}
+
+/* ═══ CHROME: cabecera ════════════════════════════════════════ */
+.cabecera { background: var(--papel-fila); border-bottom: 1px solid var(--tinta); }
+
+/* Cintillo superior: la línea de identificación del catálogo */
+.cabecera-cintillo { background: var(--tinta); color: rgba(255,255,255,0.75); }
+.cabecera-cintillo .contenedor {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; min-height: 2.25rem;
+}
+.cabecera-cintillo a { color: #fff; }
+.cabecera-cintillo a:hover { color: var(--casa-clara); }
+
+.cabecera-principal .contenedor {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1.5rem; padding-block: 1.15rem;
+}
+.marca { display: flex; align-items: center; gap: 0.85rem; }
+.marca-logo { width: auto; height: 1.75rem; }
+.marca-rotulo {
+  color: var(--tinta-3);
+  border-left: 1px solid var(--filete);
+  padding-left: 0.85rem;
+}
+
+/* Navegación de secciones en la cabecera */
+.nav-secciones { display: flex; flex-wrap: wrap; gap: 0.25rem 1.15rem; }
+.nav-secciones a {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--tinta-2);
+  padding-block: 0.35rem;
+  border-bottom: 2px solid transparent;
+  transition: color var(--avance), border-color var(--avance);
+}
+.nav-secciones a::before {
+  content: ''; width: 0.6rem; height: 0.6rem; flex: none;
+  background: var(--sec);
+}
+.nav-secciones a:hover,
+.nav-secciones a[aria-current='page'] { color: var(--tinta); border-bottom-color: var(--sec); }
+
+.cabecera-menu { display: none; }
+
+/* ═══ PESTAÑAS DE CANTO ═══════════════════════════════════════
+   El gesto de firma: el pulgar metido en un catálogo grueso. La
+   pestaña de la sección donde estás sobresale y se tiñe.
+   Solo transform — nunca width ni margin.
+   ═══════════════════════════════════════════════════════════ */
+.canto {
+  position: fixed; right: 0; top: 50%;
+  transform: translateY(-50%);
+  z-index: var(--z-canto);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.canto-pestana {
+  display: flex; align-items: center; gap: 0.6rem;
+  background: var(--sec); color: #fff;
+  padding: 0.5rem 0.7rem 0.5rem 0.6rem;
+  transform: translateX(calc(100% - 2rem));
+  transition: transform var(--avance);
+  white-space: nowrap;
+}
+.canto-pestana .codigo { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em; }
+.canto-pestana .nombre { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+.canto-pestana:hover,
+.canto-pestana:focus-visible { transform: translateX(0); }
+.canto-pestana.es-activa { transform: translateX(calc(100% - 2.55rem)); }
+.canto-pestana.es-activa:hover,
+.canto-pestana.es-activa:focus-visible { transform: translateX(0); }
+
+@media (max-width: 1240px) { .canto { display: none; } }
+
+/* ═══ LA CONTRAPORTADA ════════════════════════════════════════
+   En un catálogo la contraportada es la superficie de venta más
+   fuerte: dice cómo se pide, quién lo vende y en qué condiciones.
+   Cuatro bandas, no una rejilla de enlaces.
+   ═══════════════════════════════════════════════════════════ */
+.pie { background: var(--tinta); color: rgba(255,255,255,0.75); margin-top: 4rem; }
+.pie a { color: #fff; }
+.pie a:hover { color: var(--casa-clara); }
+.pie-kicker { color: var(--casa-clara); }
+
+/* ── Banda 1: el cierre ──────────────────────────────────────── */
+.pie-cierre { border-bottom: 1px solid rgba(255,255,255,0.16); }
+.pie-cierre .contenedor { padding-block: 3.25rem 3rem; }
+.pie-cierre-rejilla {
+  display: grid; gap: 2.5rem 3.5rem;
+  grid-template-columns: minmax(0, 1fr) 20rem;
+  align-items: start;
+}
+
+.pie-cierre h2 {
+  font-size: clamp(1.5rem, 3vw, 2.15rem);
+  font-weight: 700; line-height: 1.18; letter-spacing: -0.025em;
+  color: #fff; max-width: 24ch;
+  margin-top: 1.1rem;
+  text-wrap: balance;
+}
+/* La segunda frase es la que gira hacia la venta: se distingue en tinta clara */
+.pie-cierre h2 em { font-style: normal; color: var(--casa-clara); }
+
+/* Cómo pedir: el procedimiento numerado, con la misma cifra que las secciones */
+.pie-pasos { margin-top: 2rem; display: grid; gap: 1rem; max-width: 46ch; }
+.pie-pasos li { display: grid; grid-template-columns: 2.25rem 1fr; gap: 0.9rem; align-items: start; }
+.paso-num {
+  display: flex; align-items: center; justify-content: center;
+  width: 2.25rem; height: 1.75rem;
+  background: var(--casa); color: #fff;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.paso-texto { font-family: var(--f-prosa); font-size: 1rem; line-height: 1.6; }
+.paso-texto b { font-family: var(--f-estructura); font-weight: 600; color: #fff; }
+
+.pie-acciones { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 2rem; }
+.pie-boton {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--casa); color: #fff;
+  padding: 0.75rem 1.15rem;
+  font-size: 0.875rem; font-weight: 600;
+  transition: background var(--avance);
+}
+/* La tinta se densifica al pulsar, no se aclara: aclarar el morado dejaba el
+   texto blanco en 3.62:1. Con --casa-texto sube a 6.80:1. */
+.pie-boton:hover { background: var(--casa-texto); color: #fff; }
+.pie-boton.es-secundario { background: transparent; border: 1px solid rgba(255,255,255,0.32); }
+.pie-boton.es-secundario:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.55); }
+
+/* Ficha de la casa: el mismo objeto que la caja de edición de la tapa.
+   Abre y cierra la página con la misma pieza. */
+.ficha-casa { border: 1px solid rgba(255,255,255,0.28); }
+.ficha-casa-titulo { background: rgba(255,255,255,0.1); color: #fff; padding: 0.5rem 0.9rem; }
+.ficha-casa dl { display: grid; grid-template-columns: auto 1fr; }
+.ficha-casa dt {
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,0.6);
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+}
+.ficha-casa dd {
+  font-size: 0.875rem; font-weight: 600; text-align: right; color: #fff;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+  font-variant-numeric: tabular-nums;
+}
+.ficha-casa dl > :nth-last-child(-n + 2) { border-bottom: 0; }
+
+/* ── Banda 2: el índice repetido ─────────────────────────────── */
+.pie-indice { border-bottom: 1px solid rgba(255,255,255,0.16); }
+.pie-indice .contenedor { padding-block: 1.75rem; }
+.pie-indice-titulo { color: var(--casa-clara); margin-bottom: 1rem; }
+.pie-indice ul { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,0.16); }
+.pie-indice li { background: var(--tinta); }
+.pie-indice a {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: baseline;
+  gap: 0.7rem; padding: 0.65rem 0.85rem;
+  border-top: 2px solid var(--sec);
+  transition: background var(--avance);
+}
+.pie-indice a:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.pie-indice .codigo { font-size: 0.6875rem; font-weight: 700; color: var(--casa-clara); }
+.pie-indice .nombre { font-size: 0.875rem; font-weight: 600; color: #fff; }
+.pie-indice .cuenta { font-size: 0.75rem; color: rgba(255,255,255,0.6); font-variant-numeric: tabular-nums; }
+
+/* ── Banda 3: condiciones ────────────────────────────────────── */
+.pie-condiciones { border-bottom: 1px solid rgba(255,255,255,0.16); }
+.pie-condiciones .contenedor { padding-block: 1.5rem; }
+.pie-condiciones .rotulo { color: var(--casa-clara); margin-bottom: 0.75rem; }
+.pie-condiciones ul {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem 2.5rem;
+  font-size: 0.8125rem; line-height: 1.55;
+}
+.pie-condiciones li { position: relative; padding-left: 0.9rem; }
+.pie-condiciones li::before {
+  content: ''; position: absolute; left: 0; top: 0.55em;
+  width: 5px; height: 5px; background: rgba(255,255,255,0.4);
+}
+
+/* ── Banda 4: pie de imprenta ────────────────────────────────── */
+.pie-legal { padding-block: 1.25rem; font-size: 0.8125rem; }
+.pie-legal .contenedor { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.5rem; }
+.pie-legal .pie-volver { margin-left: auto; }
+.pie-marca { display: block; }
+.pie-logo { height: 1.4rem; width: auto; }
+
+/* ═══ MIGAS ═══════════════════════════════════════════════════
+   Visibles a propósito: los datos estructurados nunca van sobre
+   contenido oculto. El BreadcrumbList lo emite Rank Math.
+   ═══════════════════════════════════════════════════════════ */
+.migas { border-bottom: 1px solid var(--filete); background: var(--papel-fila); }
+.migas ol { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding-block: 0.7rem; }
+.migas li { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--tinta-3); }
+.migas li + li::before { content: '/'; color: var(--filete-fuerte); }
+.migas a {
+  color: var(--tinta-2); text-decoration: underline;
+  text-decoration-color: var(--filete-fuerte); text-underline-offset: 2px;
+}
+.migas a:hover { color: var(--casa-texto); text-decoration-color: currentColor; }
+.migas [aria-current='page'] { color: var(--tinta-3); }
+
+/* ═══ RESPONSIVE DEL CHROME ══════════════════════════════════ */
+@media (max-width: 1000px) {
+  .pie-cierre-rejilla { grid-template-columns: 1fr; }
+  .ficha-casa { max-width: 26rem; }
+  .pie-indice ul { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 900px) {
+  :root { --margen: 1.25rem; }
+  .cabecera-principal .contenedor { flex-wrap: wrap; gap: 1rem; }
+  .nav-secciones { display: none; }
+  .cabecera-menu {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    border: 1px solid var(--tinta); padding: 0.5rem 0.85rem;
+  }
+  .pie-cierre .contenedor { padding-block: 2.25rem 2rem; }
+  .pie-condiciones ul { grid-template-columns: 1fr; }
+  .pie-acciones .pie-boton { flex: 1 1 100%; justify-content: center; }
+}
+
+@media (max-width: 520px) {
+  .pie-indice ul { grid-template-columns: 1fr; }
+  .pie-legal .pie-volver { margin-left: 0; }
+}
+
+@media (max-width: 560px) {
+  .cabecera-cintillo .contenedor { min-height: 2rem; }
+  .cintillo-opcional { display: none; }
+}

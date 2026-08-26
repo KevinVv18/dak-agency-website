@@ -1,0 +1,74 @@
+/* ═══════════════════════════════════════════════════════════════
+   ARCHIVO DE SECCIÓN, BÚSQUEDA Y 404.
+   Una sección del catálogo abierta: la misma banda y las mismas
+   filas de la portada, sin recuadro destacado.
+   ═══════════════════════════════════════════════════════════════ */
+
+.archivo { margin-top: 0; }
+.archivo .seccion-banda .contenedor { padding-block: 1.15rem; }
+
+.archivo-intro { background: var(--papel-fila); border-bottom: 1px solid var(--filete); }
+.archivo-intro .contenedor { padding-block: 1.5rem; }
+.archivo-intro p {
+  font-family: var(--f-prosa);
+  font-size: 1.0625rem; line-height: 1.62; color: var(--tinta-2);
+  max-width: 60ch;
+}
+
+.archivo-vacio { background: var(--papel-fila); border-bottom: 1px solid var(--filete); }
+.archivo-vacio .contenedor { padding-block: 3rem; text-align: center; }
+.archivo-vacio p { color: var(--tinta-3); }
+
+/* ── Paginación: sellos numerados, cifras tabulares ──────────── */
+.paginacion { padding-block: 2rem; }
+.paginacion .contenedor { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; }
+.paginacion .page-numbers {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 2.5rem; min-height: 2.5rem; padding: 0 0.7rem;
+  border: 1px solid var(--filete-fuerte);
+  background: var(--papel-fila);
+  font-size: 0.875rem; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: border-color var(--avance), background var(--avance);
+}
+.paginacion .page-numbers:hover { border-color: var(--tinta); background: var(--papel-tinte); }
+.paginacion .page-numbers.current {
+  background: var(--casa); border-color: var(--casa); color: #fff;
+}
+.paginacion .page-numbers.dots { border-color: transparent; background: none; }
+
+/* ── Búsqueda ────────────────────────────────────────────────── */
+.buscador { display: flex; gap: 0; max-width: 32rem; margin-top: 1.25rem; }
+.buscador input[type='search'] {
+  flex: 1 1 auto; min-width: 0;
+  border: 1px solid var(--tinta); border-right: 0;
+  background: var(--papel-fila);
+  padding: 0.7rem 0.9rem;
+  font: inherit; font-size: 0.9375rem; color: var(--tinta);
+}
+.buscador input[type='search']::placeholder { color: var(--tinta-3); }
+.buscador button {
+  flex: none;
+  background: var(--tinta); color: #fff;
+  padding: 0.7rem 1.15rem;
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  transition: background var(--avance);
+}
+.buscador button:hover { background: var(--casa); }
+
+/* ── 404 ─────────────────────────────────────────────────────── */
+.error-404 { background: var(--papel-fila); border-bottom: 3px solid var(--tinta); }
+.error-404 .contenedor { padding-block: 3.5rem 3rem; }
+.error-404 .codigo {
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em;
+  text-transform: uppercase; color: var(--casa-texto);
+}
+.error-404 h1 {
+  font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 700;
+  line-height: 1.12; letter-spacing: -0.03em;
+  max-width: 20ch; margin-top: 1rem;
+}
+.error-404 p {
+  font-family: var(--f-prosa); font-size: 1.0625rem; line-height: 1.62;
+  color: var(--tinta-2); max-width: 56ch; margin-top: 1rem;
+}

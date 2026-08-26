@@ -172,3 +172,25 @@ jobs:
           remote_port: 65002
           remote_user: u567580447
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Tema nuevo «dak-blog» (rediseño «El Catálogo»). Se instala JUNTO al
+      # anterior y NO se activa: WordPress solo lo sirve a quien lo abra desde
+      # Apariencia → Temas → Vista previa en vivo, con sesión de administrador.
+      # El visitante sigue recibiendo dak-informando hasta que se active a mano.
+      #
+      # Es puramente aditivo: -avz SIN --delete y apuntado a su propia carpeta,
+      # así que no puede tocar dak-informando, ni plugins, ni uploads, ni
+      # wp-config.php. Y `blog/` sigue en deploy-protect.txt, de modo que el
+      # rsync --delete de la SPA continúa excluyendo el blog entero.
+      #
+      # Rollback tras activarlo: reactivar dak-informando desde wp-admin.
+      - name: Deploy WordPress theme «dak-blog» via SSH (rsync)
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz
+          path: wordpress-theme/dak-blog/
+          remote_path: /home/u567580447/domains/dakagency.net/public_html/blog/wp-content/themes/dak-blog/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}

@@ -1,0 +1,176 @@
+/* ═══════════════════════════════════════════════════════════════
+   ARTÍCULO Y PÁGINA — cimientos del mundo.
+
+   NOTA DE ALCANCE: el rediseño editorial a fondo del artículo (índice
+   lateral, progreso de lectura, ficha de autoría, recirculación) es la
+   Fase 2, y va junto con el contrato de contenido de _blog-content/,
+   porque hoy el corpus tiene 165 <ul> y un solo <ol>: cualquier recurso
+   nuevo sería invisible sin tocar el generador.
+
+   Lo que hay aquí es el mundo aplicado y la lectura resuelta: medida,
+   jerarquía, contraste y el marcado que llega de WordPress sin clases.
+   ═══════════════════════════════════════════════════════════════ */
+
+.articulo { background: var(--papel-fila); }
+
+/* ── Ficha de la entrada ─────────────────────────────────────── */
+.articulo-ficha { border-bottom: 3px solid var(--tinta); }
+.articulo-ficha .contenedor { padding-block: 2.5rem 2rem; }
+
+.articulo-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem 1rem; margin-bottom: 1.25rem; }
+.articulo-meta .codigo {
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--casa-texto);
+}
+
+.articulo h1 {
+  font-size: clamp(1.85rem, 4.4vw, 3rem);
+  font-weight: 700; line-height: 1.09; letter-spacing: -0.03em;
+  max-width: 22ch; text-wrap: balance;
+}
+
+.articulo-datos {
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem;
+  margin-top: 1.25rem; padding-top: 1rem;
+  border-top: 1px solid var(--filete);
+  font-size: 0.75rem; color: var(--tinta-3);
+  font-variant-numeric: tabular-nums;
+}
+.articulo-datos b { color: var(--tinta-2); font-weight: 600; }
+
+/* ── Imagen de portada ───────────────────────────────────────── */
+.articulo-figura { background: var(--papel-tinte); border-bottom: 1px solid var(--filete); }
+.articulo-figura img {
+  width: 100%; max-width: var(--ancho);
+  margin-inline: auto;
+  aspect-ratio: 16 / 9; object-fit: cover;
+}
+
+/* ── Cuerpo ──────────────────────────────────────────────────── */
+.articulo-cuerpo {
+  max-width: 42rem;              /* ~68 caracteres con Faustina */
+  margin-inline: auto;
+  padding: 2.5rem var(--margen) 3rem;
+  font-family: var(--f-prosa);
+  font-size: 1.125rem;
+  line-height: 1.72;
+  color: var(--tinta-2);
+}
+
+.articulo-cuerpo > * + * { margin-top: 1.15em; }
+
+.articulo-cuerpo h2,
+.articulo-cuerpo h3,
+.articulo-cuerpo h4 {
+  font-family: var(--f-estructura);
+  color: var(--tinta);
+  letter-spacing: -0.02em;
+  line-height: 1.24;
+}
+/* Más aire encima de un título que debajo: un solo ritmo en toda la página */
+.articulo-cuerpo h2 { font-size: 1.6rem; font-weight: 700; margin-top: 2.4em; }
+.articulo-cuerpo h3 { font-size: 1.22rem; font-weight: 700; margin-top: 2em; }
+.articulo-cuerpo h4 { font-size: 1.05rem; font-weight: 700; margin-top: 1.8em; }
+.articulo-cuerpo h2 + *, .articulo-cuerpo h3 + *, .articulo-cuerpo h4 + * { margin-top: 0.7em; }
+
+/* El filete de la casa abre cada sección del artículo */
+.articulo-cuerpo h2 { padding-top: 0.7em; border-top: 2px solid var(--casa); }
+
+.articulo-cuerpo a {
+  color: var(--casa-texto);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.articulo-cuerpo a:hover { text-decoration-thickness: 2px; }
+
+.articulo-cuerpo strong { color: var(--tinta); font-weight: 600; }
+
+.articulo-cuerpo ul, .articulo-cuerpo ol { padding-left: 1.6em; }
+.articulo-cuerpo li + li { margin-top: 0.5em; }
+.articulo-cuerpo ul > li { list-style: none; position: relative; }
+.articulo-cuerpo ul > li::before {
+  content: ''; position: absolute; left: -1.15em; top: 0.62em;
+  width: 6px; height: 6px; background: var(--casa);
+}
+.articulo-cuerpo ol { list-style: decimal; }
+.articulo-cuerpo ol > li::marker {
+  font-family: var(--f-estructura); font-weight: 700;
+  color: var(--casa-texto); font-variant-numeric: tabular-nums;
+}
+
+/* Una nota apartada en un catálogo va encajonada, no con un filete al
+   costado: el borde de acento lateral está prohibido en este proyecto y es
+   además el tic más reconocible de una interfaz generada. La jerarquía la
+   da el filete superior en tinta de la casa. */
+.articulo-cuerpo blockquote {
+  border: 1px solid var(--filete);
+  border-top: 2px solid var(--casa);
+  background: var(--papel);
+  padding: 1.15rem 1.35rem;
+  font-size: 1.0625rem;
+}
+.articulo-cuerpo blockquote > * + * { margin-top: 0.7em; }
+
+/* El bloque «Servicio relacionado» que cierra cada entrada del circuito.
+   Es la única clase que el contenido trae, y su nombre no se toca. */
+.articulo-cuerpo blockquote.servicio-relacionado {
+  border: 1px solid var(--tinta);
+  border-top: 0;
+  background: var(--papel-fila);
+  padding-top: 1.35rem;
+  position: relative;
+}
+/* Rótulo de cintillo: el «siguiente paso» del catálogo */
+.articulo-cuerpo blockquote.servicio-relacionado::before {
+  content: 'Siguiente paso';
+  display: block;
+  background: var(--casa); color: #fff;
+  margin: -1.35rem -1.35rem 1rem;
+  padding: 0.4rem 1.35rem;
+  font-family: var(--f-estructura);
+  font-size: 0.6875rem; font-weight: 700;
+  letter-spacing: 0.13em; text-transform: uppercase;
+}
+
+.articulo-cuerpo img { margin-block: 1.6em; border: 1px solid var(--filete); }
+.articulo-cuerpo figcaption { font-size: 0.8125rem; color: var(--tinta-3); margin-top: 0.5em; }
+
+/* Las tablas tienen que sobrevivir a un móvil sin romper la página */
+.articulo-cuerpo table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--f-estructura); font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+}
+.articulo-cuerpo :is(th, td) {
+  border: 1px solid var(--filete);
+  padding: 0.6rem 0.75rem; text-align: left; vertical-align: top;
+}
+.articulo-cuerpo th { background: var(--papel); font-weight: 700; color: var(--tinta); }
+
+.articulo-cuerpo hr { border: 0; border-top: 1px solid var(--filete); margin-block: 2.2em; }
+
+/* ── Cierre y recirculación ──────────────────────────────────── */
+.articulo-cierre {
+  max-width: 42rem; margin-inline: auto;
+  padding: 0 var(--margen) 2.5rem;
+}
+.articulo-volver {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--tinta-3);
+  border-bottom: 1px solid var(--filete-fuerte); padding-bottom: 3px;
+}
+.articulo-volver:hover { color: var(--casa-texto); border-bottom-color: currentColor; }
+
+@media (max-width: 900px) {
+  .articulo-ficha .contenedor { padding-block: 1.75rem 1.5rem; }
+  .articulo-cuerpo { font-size: 1.0625rem; padding-block: 2rem 2.25rem; }
+  .articulo-cuerpo h2 { font-size: 1.4rem; }
+}
+
+/* Un artículo largo se lee mejor si las tablas anchas hacen su propio
+   scroll en vez de estirar la página */
+@media (max-width: 620px) {
+  .articulo-cuerpo table { display: block; overflow-x: auto; white-space: nowrap; }
+}
