@@ -1139,3 +1139,104 @@ PLACEHOLDER
      que fuiste a leer. Es la regla del resto del movil — una cosa cada vez. */
   .vista-prospectos--detalle .prospectos-cabecera { display: none; }
 }
+
+/* ═══ La guía rápida ════════════════════════════════════════════════════════
+   Para alguien que no es técnico, lo que hace falta no es un indice de las
+   pantallas: es saber que se espera de ella. Por eso la guia va anclada a los
+   elementos de verdad y no es un carrusel de pantallazos — un carrusel se
+   entiende mientras se mira y se olvida al cerrarlo, porque no enseña donde
+   estan las cosas.
+
+   Y por eso el foco VIAJA en vez de apagarse y encenderse: lo que se sigue con
+   la vista es un objeto que se mueve, no dos que parpadean. Es el mismo recurso
+   que la marca de las facetas en Prospectos. */
+
+.tour { position: fixed; inset: 0; z-index: 90; }
+
+/* Un solo elemento hace de velo y de foco: el agujero es su propia caja y la
+   penumbra es su sombra. Se traga los clics a proposito — durante la guia lo
+   unico que se toca son sus botones.
+
+   Se animan `inset` y el tamaño, que normalmente no se tocan; aqui es correcto
+   porque el elemento esta en `fixed`, no tiene hijos y no arrastra a nada del
+   documento: el reflujo se queda dentro de su propia caja. */
+.tour-foco {
+  position: fixed; top: 50%; left: 50%; width: 0; height: 0;
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px rgba(232, 181, 98, .5), 0 0 0 9999px rgba(3, 1, 6, .84);
+  transition:
+    top 520ms var(--ease-suave), left 520ms var(--ease-suave),
+    width 520ms var(--ease-suave), height 520ms var(--ease-suave),
+    box-shadow var(--t-corta) var(--ease-suave);
+}
+/* Sin nada a lo que apuntar, el foco deja de ser un recuadro y se vuelve solo
+   penumbra: un marco de 0×0 en mitad de la pantalla señalaria la nada. */
+.tour-foco--sinAncla { box-shadow: 0 0 0 9999px rgba(3, 1, 6, .88); }
+
+.tour-tarjeta {
+  position: fixed; width: min(360px, calc(100vw - 28px));
+  padding: 20px 22px 16px;
+  border: 1px solid var(--linea-viva); border-radius: 16px;
+  background: var(--elevada); box-shadow: var(--sombra-elevada);
+  /* La tarjeta NO viaja: aparece donde toca. El que se desplaza es el foco, y
+     con los dos moviendose a la vez no se sigue a ninguno — se acaba mirando el
+     texto deslizarse en vez de mirar lo que señala. */
+  opacity: 0; transform: translateY(6px);
+  transition: opacity var(--t-corta) var(--ease-suave), transform var(--t-corta) var(--ease-suave);
+}
+/* Hasta que no se ha medido no se enseña: si no, se ve un fotograma en la
+   esquina antes de saltar a su sitio. */
+.tour-tarjeta.is-puesta { opacity: 1; transform: none; }
+
+.tour-cuenta { margin: 0 0 9px; color: var(--muted); font-size: 11px; font-weight: 500; letter-spacing: .13em; text-transform: uppercase; }
+.tour-tarjeta h2 { margin: 0 0 8px; color: var(--text); font-size: 17px; font-weight: 500; line-height: 1.3; letter-spacing: -.01em; }
+.tour-texto { margin: 0; color: var(--secondary); font-size: 14px; line-height: 1.6; }
+
+.tour-botones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; }
+.tour-boton {
+  min-height: 40px; padding: 0 15px;
+  border: 1px solid var(--linea-viva); border-radius: 10px;
+  background: transparent; color: var(--secondary); font-size: 14px; font-weight: 500;
+  transition: border-color var(--t-corta) var(--ease-suave), color var(--t-corta) var(--ease-suave), background-color var(--t-corta) var(--ease-suave);
+}
+.tour-boton:hover { border-color: var(--oro); color: var(--text); }
+.tour-boton--principal { border-color: var(--oro); background: var(--oro); color: #241803; font-weight: 600; }
+.tour-boton--principal:hover { background: #F2C77C; border-color: #F2C77C; color: #241803; }
+/* «Saltar» se va a la derecha y sin marco: tiene que estar siempre visible
+   —un tutorial del que no se puede salir es un obstaculo— pero no competir con
+   el camino que la guia propone. */
+.tour-boton--salir { margin-left: auto; border-color: transparent; color: var(--muted); }
+.tour-boton--salir:hover { border-color: transparent; color: var(--secondary); background: rgba(255, 255, 255, .05); }
+
+/* Los puntos crecian de 5px a 16px al llegarles el turno, y animar el ancho
+   recalcula el layout de la fila en cada fotograma. Ahora cambia el color y ya:
+   cuantos pasos quedan lo dice la linea de arriba con todas sus letras, asi que
+   estos solo tienen que decir por donde vas. */
+.tour-puntos { display: flex; gap: 6px; margin-top: 16px; }
+.tour-puntos i {
+  width: 6px; height: 6px; border-radius: 50%; background: rgba(244, 241, 248, .18);
+  transition: background-color var(--t-corta) var(--ease-suave);
+}
+.tour-puntos i.is-aqui { background: var(--oro); }
+
+/* El movimiento aqui es la explicacion —enseña a donde mirar—, asi que no se
+   quita: se acorta hasta dejar de ser movimiento y pasar a ser un cambio. */
+@media (prefers-reduced-motion: reduce) {
+  .tour-foco, .tour-tarjeta, .tour-puntos i { transition-duration: 1ms; }
+}
+
+@media (max-width: 700px) {
+  .tour-tarjeta { padding: 17px 18px 14px; }
+  .tour-tarjeta h2 { font-size: 16px; }
+  .tour-boton { flex: 1 1 auto; }
+  .tour-boton--salir { flex: 0 0 auto; }
+}
+
+/* El enlace para volver a verla, en «Cómo funciona». */
+.tour-repetir {
+  min-height: 40px; margin-top: 16px; padding: 0 15px;
+  border: 1px solid var(--linea-viva); border-radius: 10px;
+  background: transparent; color: var(--secondary); font-size: 14px;
+  transition: border-color var(--t-corta) var(--ease-suave), color var(--t-corta) var(--ease-suave);
+}
+.tour-repetir:hover { border-color: var(--oro); color: var(--text); }

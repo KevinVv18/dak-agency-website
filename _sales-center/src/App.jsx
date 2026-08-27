@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import Intro, { tocaIntro } from './Intro'
+import Tour, { tocaTour } from './Tour'
 import {
   getBaseHealth,
   getDisplayName,
@@ -303,7 +304,7 @@ function AccionesHoja({ prospect, readyToSend, aMano = false }) {
   const trabajando = estado.fase === 'enviando'
 
   return (
-    <div className="sheet-actions">
+    <div className="sheet-actions" data-tour="decidir">
       <span className="context-label">Registrar en la hoja</span>
       <div className="sheet-actions__row">
         {readyToSend ? (
@@ -634,7 +635,7 @@ function MessageCard({ prospect, message, readyToSend = false }) {
 
       <EditorMensaje aMano={Boolean(message?.aMano)} empresa={prospect.empresa} texto={message?.texto} />
 
-      <div className="message-card__actions">
+      <div className="message-card__actions" data-tour="enviar">
         {readyToSend && message?.enlaceWhatsApp ? (
           <a className="whatsapp-button" href={message.enlaceWhatsApp} rel="noreferrer" target="_blank">
             <span>Abrir WhatsApp con el mensaje</span>
@@ -994,7 +995,7 @@ function TodayView({ todayActions }) {
           </p>
         )}
         {grupos.map((grupo) => (
-          <section className="work-group" key={grupo.id}>
+          <section className="work-group" data-grupo={grupo.id} key={grupo.id}>
             <header>
               <h2>{grupo.titulo}</h2>
               <span>{grupo.items.length}</span>
@@ -1720,7 +1721,7 @@ const flow = [
  * explicacion vive en el hover, igual que en el embudo: se ven las cuatro
  * etapas de golpe y el texto aparece donde estas mirando.
  */
-function HowItWorksView() {
+function HowItWorksView({ alVerGuia }) {
   const [activa, setActiva] = useState(null)
   const mostrada = activa === null ? flow.length - 1 : activa
 
@@ -1750,9 +1751,14 @@ function HowItWorksView() {
         <span className={activa === null ? '' : 'is-on'}>{flow[mostrada].copy}</span>
       </p>
 
+      {/* Esto decia «no se escribe ningun dato desde aqui», y dejo de ser
+          verdad en cuanto el panel pudo aprobar y redactar. Una nota que
+          describe una version anterior es peor que no tener nota: quien la lee
+          se fia. */}
       <aside className="scope-note">
-        <p className="section-label">Límite de esta fase</p>
-        <p>No se escribe ningún dato desde aquí. Aprobar sigue ocurriendo en la hoja; enviar abre WhatsApp con el texto preparado. El panel no reemplaza a Twin ni a DAK LEADS MASTER.</p>
+        <p className="section-label">Qué mueve el panel y qué no</p>
+        <p>Aprobar, rechazar y marcar como enviado sí escriben en DAK LEADS MASTER — es la misma casilla que marcarías a mano en la hoja. Enviar nunca es automático: abre WhatsApp con el texto preparado y el mensaje sale cuando tú le das. El panel no reemplaza a Twin ni a la hoja; solo evita tener que abrirlas.</p>
+        <button className="tour-repetir" onClick={alVerGuia} type="button">Ver otra vez la guía rápida</button>
       </aside>
     </div>
   )
@@ -1786,6 +1792,9 @@ function App() {
   const [renderedView, setRenderedView] = useState(getCurrentView)
   const [viewPhase, setViewPhase] = useState('entered')
   const [resource, setResource] = useState({ status: 'loading', data: null })
+  // La guia espera a que haya datos: arrancarla sobre un panel vacio señalaria
+  // huecos. Y espera a que la intro termine, o se pisarian las dos.
+  const [tour, setTour] = useState(false)
   const [requestKey, setRequestKey] = useState(0)
   // 'corriendo' mientras se ve la intro, 'fuera' despues. `vieneDeIntro` deja
   // que el chasis se dibuje solo cuando de verdad hubo intro; si se entro
@@ -1854,6 +1863,16 @@ function App() {
   const releer = useCallback(() => setRequestKey((key) => key + 1), [])
 
   useEffect(() => {
+    if (resource.status !== 'ready' || faseIntro === 'corriendo') return undefined
+    if (!tocaTour()) return undefined
+    // Un respiro antes de empezar. Que la guia salte encima del panel en el
+    // mismo instante en que aparece no deja ver que hay debajo, y entonces no
+    // se esta señalando nada: se esta tapando.
+    const reloj = setTimeout(() => setTour(true), 900)
+    return () => clearTimeout(reloj)
+  }, [faseIntro, resource.status])
+
+  useEffect(() => {
     let cancelled = false
     setResource({ status: 'loading', data: null })
     loadSalesData().then((data) => {
@@ -1890,7 +1909,7 @@ function App() {
         ? <ProspectsView data={data} filtrosIniciales={leerRuta().filtros} key={window.location.pathname + window.location.search} prospects={prospects} />
         : renderedView === 'base'
           ? <BaseView baseHealth={baseHealth} />
-          : <HowItWorksView />
+          : <HowItWorksView alVerGuia={() => setTour(true)} />
 
   return (
     <>
@@ -1915,7 +1934,7 @@ function App() {
             </svg>
           </span>
         </a>
-        <div className="rail-actions">
+        <div className="rail-actions" data-tour="rail">
           {VIEWS.map((view) => <button aria-current={currentView === view.id ? 'page' : undefined} aria-label={view.label} className={currentView === view.id ? 'is-active' : ''} data-view={view.id} key={view.id} onClick={() => selectView(view.id)} type="button"><Icon name={view.icon} size={17} /><span aria-hidden="true">{view.label}</span></button>)}
         </div>
       </nav>
@@ -1937,6 +1956,7 @@ function App() {
         {resource.status === 'ready' && <div className={`view-frame view-frame--${viewPhase}`} key={renderedView}>{viewContent}</div>}
       </main>
       </Recarga.Provider>
+      {tour && <Tour alSalir={() => setTour(false)} irAVista={selectView} />}
     </div>
     </>
   )
