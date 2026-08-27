@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-26T00:00:00Z",
+  "title": "Design System: DAK Blog — El Catálogo",
+  "extensions": {
+    "provenance": {
+      "artifact": "wordpress-theme/dak-blog/",
+      "derivedFrom": "Shipped source: style.css, assets/css/{portada,articulo,seccion}.css, inc/*.php, template-parts/*.php. Values read from the built code, not from the direction contract.",
+      "productTruth": "wordpress-theme/dak-informando/PRODUCT.md — still filed under the OUTGOING theme's folder. Accurate as product record; not moved or rewritten by this pass.",
+      "verifiedState": "Finish review disposition: ship, nothing open. 20/20 PHP files compile. Front page, single, category and search render in real WordPress (Playground, WP 7.1 / PHP 8.3) with WP_DEBUG on and zero warnings. detect.mjs returns []. Exactly one h1 per template, no level skips.",
+      "limitation": "No screenshots exist for this build — the harness's browser pane could not composite frames. Every visual judgement in the review was derived from source and computed values, not from seeing the render. The user confirmed the live result matches the static preview.",
+      "forwardNote": "Phase 2 (deferred, not recorded here): the single-post editorial redesign (side index, reading progress, authorship record, recirculation) and the _blog-content/ content contract. Deferred because the corpus currently has 165 <ul> and one <ol>; new prose devices would be invisible without touching the generator.",
+      "deployConstraint": "The theme folder is the only versioned part of this blog. The WordPress install is administered live and has no repository; the main site deploys with rsync --delete and only spares the blog via deploy-protect.txt. Changes to this system land as theme files, never as live edits."
+    },
+    "colorMeta": {
+      "casa": {
+        "role": "primary",
+        "displayName": "Tinta de la Casa",
+        "canonical": "#B024FF",
+        "usage": "Fill only. 4.12:1 as text on paper — structurally barred from being a letter.",
+        "tonalRamp": ["#25004A", "#3C007A", "#5600AC", "#7400DC", "#9200F5", "#B024FF", "#C864FF", "#E3B4FF"]
+      },
+      "casa-texto": {
+        "role": "primary",
+        "displayName": "Tinta de la Casa, escrita",
+        "canonical": "#8B1CC7",
+        "usage": "The house purple when it must be read as text on paper (6.1:1). Also the pressed state of the purple button (white on it: 6.80:1).",
+        "tonalRamp": ["#1D0429", "#2F0745", "#460A66", "#5F0E8B", "#7715AC", "#8B1CC7", "#A94FDB", "#CE9AEC"]
+      },
+      "casa-clara": {
+        "role": "primary",
+        "displayName": "Tinta de la Casa, clara",
+        "canonical": "#D89BFF",
+        "usage": "The house purple when it must be read as text on dark ink — footer links on hover, footer band titles, the closing statement's second sentence.",
+        "tonalRamp": ["#2C0F44", "#451766", "#5F2189", "#7B2FAD", "#9A55CC", "#B978E6", "#D89BFF", "#EDCEFF"]
+      },
+      "papel": {
+        "role": "neutral",
+        "displayName": "Papel Bond Gris",
+        "canonical": "#F2F2F0",
+        "usage": "The page itself; also the fill of callout boxes and table headers, so a boxed note reads as paper set into the white sheet.",
+        "tonalRamp": ["#262624", "#3D3D3A", "#575753", "#74746F", "#96968F", "#B9B9B2", "#DADAD5", "#F2F2F0"]
+      },
+      "papel-fila": {
+        "role": "neutral",
+        "displayName": "Papel de Fila",
+        "canonical": "#FFFFFF",
+        "usage": "The white of every row band, the header, the cover, the archive masthead and the article body. Content sits on white; the page around it is grey.",
+        "tonalRamp": ["#242424", "#3B3B3B", "#555555", "#727272", "#949494", "#B8B8B8", "#DEDEDE", "#FFFFFF"]
+      },
+      "papel-tinte": {
+        "role": "neutral",
+        "displayName": "Papel Entintado",
+        "canonical": "#E9E9E5",
+        "usage": "Hover fill for rows and index cells; the placeholder behind an image that has not loaded.",
+        "tonalRamp": ["#232320", "#393935", "#52524D", "#6E6E68", "#909089", "#B2B2AB", "#D0D0CA", "#E9E9E5"]
+      },
+      "tinta": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#141416",
+        "usage": "Body text, the footer's whole ground, the top identification strip, the 3px cover rules, and the outer ring of the focus halo.",
+        "tonalRamp": ["#141416", "#26262A", "#3A3A40", "#525258", "#6D6D74", "#8D8D94", "#B4B4BA", "#DEDEE1"]
+      },
+      "tinta-2": {
+        "role": "neutral",
+        "displayName": "Tinta Media",
+        "canonical": "#3F3F47",
+        "usage": "Long-form prose colour, the minutes figure, header nav at rest, bold text inside metadata.",
+        "tonalRamp": ["#16161A", "#252529", "#333339", "#3F3F47", "#585862", "#787883", "#A0A0A9", "#CFCFD4"]
+      },
+      "tinta-3": {
+        "role": "neutral",
+        "displayName": "Tinta Clara",
+        "canonical": "#5E5E68",
+        "usage": "Secondary metadata, excerpts, column headers, placeholders, breadcrumb current item. Nothing quieter than this exists as text.",
+        "tonalRamp": ["#18181B", "#28282D", "#38383F", "#4A4A53", "#5E5E68", "#7E7E88", "#A6A6AE", "#D2D2D7"]
+      },
+      "filete": {
+        "role": "neutral",
+        "displayName": "Filete",
+        "canonical": "#D4D4CE",
+        "usage": "The hairline grid: between rows, around callouts and tables, under record-box pairs, as the 1px gutter showing through index grids.",
+        "tonalRamp": ["#22221F", "#373734", "#4F4F4A", "#6A6A64", "#8A8A83", "#ABABA4", "#C5C5BF", "#D4D4CE"]
+      },
+      "filete-fuerte": {
+        "role": "neutral",
+        "displayName": "Filete Fuerte",
+        "canonical": "#9A9A93",
+        "usage": "The stronger hairline: input and pagination borders, scrollbar thumb, breadcrumb separators, the rule under the back link.",
+        "tonalRamp": ["#1F1F1D", "#333331", "#494946", "#61615D", "#7B7B75", "#9A9A93", "#BEBEB8", "#DFDFDB"]
+      },
+      "sec-seo-buscadores": {
+        "role": "secondary",
+        "displayName": "Vidriado 01 — SEO y Buscadores",
+        "canonical": "#7B1FA2",
+        "contrastWithWhite": "7.63:1",
+        "tonalRamp": ["#1A0722", "#2B0B38", "#3F1053", "#55166F", "#68198A", "#7B1FA2", "#A63FD1", "#CE8AE9"]
+      },
+      "sec-diseno-web": {
+        "role": "secondary",
+        "displayName": "Vidriado 02 — Diseño Web",
+        "canonical": "#0F4C9C",
+        "contrastWithWhite": "8.15:1",
+        "tonalRamp": ["#03111F", "#051D36", "#082B4F", "#0B3A6B", "#0D4384", "#0F4C9C", "#3579CE", "#86B0E8"]
+      },
+      "sec-redes-sociales": {
+        "role": "secondary",
+        "displayName": "Vidriado 03 — Redes Sociales",
+        "canonical": "#B3123F",
+        "contrastWithWhite": "6.86:1",
+        "tonalRamp": ["#26040D", "#3D0616", "#590A20", "#780D2B", "#960F35", "#B3123F", "#DC3C68", "#EE90A9"]
+      },
+      "sec-publicidad": {
+        "role": "secondary",
+        "displayName": "Vidriado 04 — Publicidad",
+        "canonical": "#AA4400",
+        "contrastWithWhite": "5.94:1",
+        "tonalRamp": ["#240E00", "#3A1700", "#552100", "#722C00", "#8E3800", "#AA4400", "#D96A1E", "#EDA779"]
+      },
+      "sec-automatizacion": {
+        "role": "secondary",
+        "displayName": "Vidriado 05 — Automatización",
+        "canonical": "#00695C",
+        "contrastWithWhite": "6.32:1",
+        "tonalRamp": ["#001714", "#002520", "#00362F", "#004840", "#00584D", "#00695C", "#0F9C8B", "#71D0C3"]
+      },
+      "sec-branding": {
+        "role": "secondary",
+        "displayName": "Vidriado 06 — Branding",
+        "canonical": "#1F1F26",
+        "contrastWithWhite": "16.38:1",
+        "tonalRamp": ["#0B0B0E", "#131317", "#1F1F26", "#33333E", "#4B4B5A", "#6B6B7C", "#9A9AA8", "#CBCBD4"]
+      },
+      "sec-por-rubro": {
+        "role": "secondary",
+        "displayName": "Vidriado 07 — Por Rubro",
+        "canonical": "#4A5D23",
+        "contrastWithWhite": "7.31:1",
+        "tonalRamp": ["#121709", "#1E250E", "#2C3715", "#3B4A1C", "#4A5D23", "#688337", "#8DAC5A", "#BDD199"]
+      },
+      "sec-guias-precios": {
+        "role": "secondary",
+        "displayName": "Vidriado 08 — Guías y Precios",
+        "canonical": "#1B5E20",
+        "contrastWithWhite": "7.35:1",
+        "tonalRamp": ["#061407", "#0A210C", "#0F3212", "#154518", "#1B5E20", "#278C2E", "#3FBF49", "#8FDF95"]
+      },
+      "sec-defecto": {
+        "role": "secondary",
+        "displayName": "Vidriado por Defecto",
+        "canonical": "#3F3F47",
+        "usage": "Fallback glaze for any category outside the eight-section map. It orders last and never breaks the layout.",
+        "tonalRamp": ["#16161A", "#252529", "#333339", "#3F3F47", "#585862", "#787883", "#A0A0A9", "#CFCFD4"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Portada", "purpose": "The single h1 of any template: front-page cover, archive masthead, article title. Capped at 21–22ch with text-wrap: balance. Composes the LCP." },
+      "headline": { "displayName": "Titular", "purpose": "The featured entry's title and the footer's closing statement." },
+      "banda": { "displayName": "Banda", "purpose": "Section number and name inside a full-bleed glazed band; both at one size so the band reads as a single line of type." },
+      "title": { "displayName": "Renglón", "purpose": "The catalogue row title — the reader's own question written out. The most repeated type in the system." },
+      "body": { "displayName": "Prosa", "purpose": "Faustina article body at 42rem (~68 characters). Steps to 1.0625rem below 900px." },
+      "body-corto": { "displayName": "Prosa breve", "purpose": "Faustina in excerpts, cover subhead, archive intro and 404 copy." },
+      "rotulo": { "displayName": "Rótulo", "purpose": "The catalogue small-cap at the 11px functional floor. Column headers, box captions, identification strip, image stamp, footer band titles. NOT for eyebrows above headings." },
+      "dato": { "displayName": "Dato", "purpose": "The price column (minutes), dates, counts and article metadata. Always tabular figures." }
+    },
+    "fonts": [
+      { "family": "Archivo", "file": "assets/fonts/archivo-latin-var.woff2", "variable": true, "weightRange": "400 700", "styles": ["normal"], "display": "swap", "subset": "latin", "preloaded": true, "note": "Preloaded because it composes the entire first viewport; the LCP is the h1 text." },
+      { "family": "Faustina", "file": "assets/fonts/faustina-latin-var.woff2", "variable": true, "weightRange": "400 600", "styles": ["normal", "italic (faustina-latin-var-italic.woff2)"], "display": "swap", "subset": "latin", "preloaded": false, "note": "Not preloaded: first appears in excerpts below the fold; swap is sufficient." }
+    ],
+    "shadows": [
+      { "name": "none", "value": "none", "purpose": "This system ships zero surface shadows, zero radii and zero gradients. Depth is tonal layering, hairline rules and rule weight (1px → 2px → 3px)." },
+      { "name": "focus-halo", "value": "outline: 2px solid #fff; outline-offset: 0; box-shadow: 0 0 0 5px var(--tinta)", "purpose": "The only box-shadow in the theme, and it is a solid ring rather than a shadow. Two tones because a single-tone ring in --casa measured 1.70:1 against the green band and 1.77:1 against the SEO purple, below WCAG 1.4.11's 3:1. Verified across all 13 real backgrounds: paper, white row, eight glazes, dark footer, dark strip." }
+    ],
+    "motion": [
+      { "name": "avance", "value": "0.22s cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The system's single easing token. No bounce, no second curve. Every transition in the theme uses it." },
+      { "name": "canto-activo", "value": "transform: translateX(calc(100% - 3.6rem)); opacity: 1", "purpose": "The one authored gesture: the edge tab of the section you are reading protrudes and saturates while its neighbours stay at 0.5 opacity. Driven by IntersectionObserver toggling one class; displacement is transform only, never width or margin. Below 1240px it is replaced by a sticky section band." },
+      { "name": "filete-avanza", "value": "transform: scaleX(0) → scaleX(1); transform-origin: left", "purpose": "A 2px --casa rule grows across the bottom of a hovered or focused catalogue row — a straightedge advancing under the line you are reading." },
+      { "name": "reduced-motion", "value": "@media (prefers-reduced-motion: reduce) { animation-duration: 0.01ms; transition-duration: 0.01ms; scroll-behavior: auto }", "purpose": "Honoured globally. The edge tabs remain working links with no movement." }
+    ],
+    "breakpoints": [
+      { "name": "canto", "value": "1240px", "purpose": "Edge tabs are removed; the section band becomes position: sticky instead." },
+      { "name": "rejillas", "value": "1000px", "purpose": "Section index drops to two columns; the featured box stacks and its image takes 16:9; footer index halves." },
+      { "name": "movil", "value": "900px", "purpose": "--margen drops from 2rem to 1.25rem; header nav is replaced by a bordered link to the on-page index; article type steps down; footer buttons go full-width." },
+      { "name": "fila", "value": "620px", "purpose": "Column header is removed; the row reflows to two columns with the minutes figure on the metadata line; wide tables scroll horizontally." },
+      { "name": "cintillo", "value": "560px", "purpose": "The optional half of the top identification strip is dropped." },
+      { "name": "indice-pie", "value": "520px", "purpose": "Footer index goes single-column." },
+      { "name": "indice", "value": "420px", "purpose": "Section index goes single-column." }
+    ],
+    "sectionMap": {
+      "mechanism": "dak_var_seccion($slug) in inc/helpers.php emits style=\"--sec:#HEX\" once on the outermost element of a block. Bands, chips, edge tabs, row labels, index numbers and nav squares all read that inherited variable. No component hard-codes a section hex.",
+      "order": ["01 seo-buscadores", "02 diseno-web", "03 redes-sociales", "04 publicidad", "05 automatizacion", "06 branding", "07 por-rubro", "08 guias-precios"],
+      "fallback": "An unmapped category gets numero '—' and --sec-defecto, and sorts last."
+    }
+  },
+  "components": [
+    {
+      "name": "Fila de catálogo",
+      "kind": "custom",
+      "refersTo": "fila",
+      "description": "The system's atom: reference, description, price (minutes). Shared verbatim by front page, section archive, search and article recirculation.",
+      "html": "<ul class=\"ds-filas\"><li class=\"ds-fila\" style=\"--sec:#7B1FA2\"><a href=\"#\"><span class=\"ds-fila-figura\"><span class=\"ds-fila-sin-imagen\" aria-hidden=\"true\">01</span></span><div class=\"ds-fila-desc\"><p class=\"ds-fila-meta\"><span class=\"ds-fila-rotulo\">SEO Y BUSCADORES</span><span>AGO 26, 2026</span></p><h3>¿Cuánto cuesta posicionar una web en Google desde Chiclayo?</h3><p class=\"ds-fila-extracto\">Lo que realmente se paga cuando contratas posicionamiento, desglosado por partida y con los plazos que nadie te dice al firmar.</p></div><span class=\"ds-dato\">7 min</span></a></li></ul>",
+      "css": ".ds-filas { list-style: none; margin: 0; padding: 0; background: #FFFFFF; border-bottom: 1px solid #D4D4CE; font-family: Archivo, sans-serif; } .ds-fila { border-top: 1px solid #D4D4CE; } .ds-fila:first-child { border-top: 0; } .ds-fila > a { position: relative; display: grid; grid-template-columns: 4.5rem minmax(0,1fr) 4.25rem; align-items: start; gap: 0 1.35rem; padding: 1rem 2rem; color: #141416; text-decoration: none; transition: background 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-fila > a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: #B024FF; transform: scaleX(0); transform-origin: left; transition: transform 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-fila > a:hover { background: #E9E9E5; } .ds-fila > a:hover::after, .ds-fila > a:focus-visible::after { transform: scaleX(1); } .ds-fila > a:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } .ds-fila-figura { display: block; position: relative; width: 4.5rem; aspect-ratio: 1; background: #E9E9E5; overflow: hidden; } .ds-fila-sin-imagen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--sec,#3F3F47); color: #fff; font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-fila-desc { min-width: 0; } .ds-fila-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.7rem; margin: 0; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5E5E68; font-variant-numeric: tabular-nums; } .ds-fila-rotulo { color: var(--sec,#3F3F47); } .ds-fila h3 { font-size: 1.0625rem; font-weight: 600; line-height: 1.32; letter-spacing: -0.01em; margin: 0.35rem 0 0; } .ds-fila-extracto { font-family: Faustina, Georgia, serif; font-size: 0.9375rem; line-height: 1.55; color: #5E5E68; margin: 0.3rem 0 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } .ds-dato { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #3F3F47; text-align: right; white-space: nowrap; padding-top: 0.05rem; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Banda de sección",
+      "kind": "nav",
+      "refersTo": "seccion-banda",
+      "description": "Full-bleed glaze carrying the section number, name, count and the link into its archive. Opens every section of the catalogue.",
+      "html": "<div class=\"ds-banda\" style=\"--sec:#1B5E20\"><div class=\"ds-banda-int\"><span class=\"ds-codigo\">08</span><h2 class=\"ds-banda-nombre\">Guías y Precios</h2><span class=\"ds-cuenta\">12 entradas</span><a class=\"ds-banda-ver\" href=\"#\">Ver sección <span>&rsaquo;</span></a></div></div>",
+      "css": ".ds-banda { background: var(--sec,#3F3F47); color: #fff; font-family: Archivo, sans-serif; } .ds-banda-int { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.85rem 1.25rem; max-width: 78rem; margin-inline: auto; padding: 0.8rem 2rem; } .ds-codigo { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; } .ds-banda-nombre { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.01em; margin: 0; } .ds-cuenta { font-size: 0.75rem; color: rgba(255,255,255,0.82); font-variant-numeric: tabular-nums; } .ds-banda-ver { margin-left: auto; display: inline-flex; align-items: center; gap: 0.45rem; color: #fff; text-decoration: none; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.45); padding-bottom: 2px; transition: border-color 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-banda-ver:hover { border-bottom-color: #fff; } .ds-banda-ver span { display: inline-block; transition: transform 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-banda-ver:hover span { transform: translateX(3px); } .ds-banda-ver:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; }"
+    },
+    {
+      "name": "Encabezado de columnas",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Sits once per section directly above the rows, on the row's own grid tracks. It is what makes a list of links read as the table of a catalogue. aria-hidden on purpose: the rows are a list, not a table. Removed below 620px.",
+      "html": "<div class=\"ds-columnas\" aria-hidden=\"true\"><span>Ref.</span><span>Descripción</span><span class=\"ds-col-dato\">Min</span></div>",
+      "css": ".ds-columnas { display: grid; grid-template-columns: 4.5rem minmax(0,1fr) 4.25rem; gap: 0 1.35rem; max-width: 78rem; margin-inline: auto; padding: 0.5rem 2rem; background: #FFFFFF; border-bottom: 1px solid #141416; font-family: Archivo, sans-serif; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: #5E5E68; } .ds-col-dato { text-align: right; } @media (max-width: 620px) { .ds-columnas { display: none; } }"
+    },
+    {
+      "name": "Pestaña de canto",
+      "kind": "nav",
+      "refersTo": "canto-pestana",
+      "description": "The signature gesture. Eight fixed tabs at the right edge; the active one protrudes and saturates while its neighbours dim — a thumb pushed into a thick catalogue. Hidden below 1240px, where a sticky section band takes over.",
+      "html": "<nav class=\"ds-canto\" aria-label=\"Índice lateral de secciones\"><a class=\"ds-pestana ds-es-activa\" href=\"#\" style=\"--sec:#7B1FA2\"><span class=\"ds-p-codigo\">01</span><span class=\"ds-p-nombre\">SEO y Buscadores</span></a><a class=\"ds-pestana\" href=\"#\" style=\"--sec:#0F4C9C\"><span class=\"ds-p-codigo\">02</span><span class=\"ds-p-nombre\">Diseño Web</span></a><a class=\"ds-pestana\" href=\"#\" style=\"--sec:#B3123F\"><span class=\"ds-p-codigo\">03</span><span class=\"ds-p-nombre\">Redes Sociales</span></a></nav>",
+      "css": ".ds-canto { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 2px; font-family: Archivo, sans-serif; } .ds-pestana { display: flex; align-items: center; gap: 0.6rem; background: var(--sec,#3F3F47); color: #fff; text-decoration: none; padding: 0.5rem 0.7rem 0.5rem 0.6rem; transform: translateX(calc(100% - 1.9rem)); opacity: 0.5; white-space: nowrap; transition: transform 0.22s cubic-bezier(0.22,1,0.36,1), opacity 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-p-codigo { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em; font-variant-numeric: tabular-nums; } .ds-p-nombre { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; } .ds-pestana.ds-es-activa { transform: translateX(calc(100% - 3.6rem)); opacity: 1; } .ds-pestana:hover, .ds-pestana:focus-visible, .ds-pestana.ds-es-activa:hover, .ds-pestana.ds-es-activa:focus-visible { transform: translateX(0); opacity: 1; } .ds-pestana:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } @media (prefers-reduced-motion: reduce) { .ds-pestana { transition-duration: 0.01ms; } }"
+    },
+    {
+      "name": "Ficha de edición",
+      "kind": "card",
+      "refersTo": null,
+      "description": "The boxed record: a 1px ink outline over a two-column definition list with a filled title bar. The same object opens the front page (edition box, --casa bar) and closes it in the footer (house record, 10% white bar).",
+      "html": "<div class=\"ds-ficha\"><p class=\"ds-ficha-titulo\">Edición vigente</p><dl><dt>Actualizado</dt><dd>AGO 26, 2026</dd><dt>Secciones</dt><dd>8</dd><dt>Entradas</dt><dd>55</dd></dl></div>",
+      "css": ".ds-ficha { border: 1px solid #141416; min-width: 15rem; background: #FFFFFF; font-family: Archivo, sans-serif; } .ds-ficha-titulo { background: #B024FF; color: #fff; padding: 0.45rem 0.85rem; margin: 0; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; line-height: 1.35; } .ds-ficha dl { display: grid; grid-template-columns: auto 1fr; margin: 0; } .ds-ficha dt { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5E5E68; padding: 0.55rem 0.85rem; border-bottom: 1px solid #D4D4CE; } .ds-ficha dd { font-size: 0.9375rem; font-weight: 600; text-align: right; color: #141416; margin: 0; padding: 0.55rem 0.85rem; border-bottom: 1px solid #D4D4CE; font-variant-numeric: tabular-nums; } .ds-ficha dl > :nth-last-child(-n + 2) { border-bottom: 0; }"
+    },
+    {
+      "name": "Botón de la casa",
+      "kind": "button",
+      "refersTo": "boton-casa",
+      "description": "The footer's call to action. Square, filled with the house purple, and it DARKENS on press — lightening dropped white text to 3.62:1.",
+      "html": "<a class=\"ds-btn-casa\" href=\"#\">Pedir una propuesta</a> <a class=\"ds-btn-fantasma\" href=\"#\">Ver servicios</a>",
+      "css": ".ds-btn-casa { display: inline-flex; align-items: center; gap: 0.5rem; background: #B024FF; color: #fff; text-decoration: none; padding: 0.75rem 1.15rem; font-family: Archivo, sans-serif; font-size: 0.875rem; font-weight: 600; border: 0; border-radius: 0; transition: background 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-btn-casa:hover { background: #8B1CC7; color: #fff; } .ds-btn-casa:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } .ds-btn-fantasma { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: #fff; text-decoration: none; padding: 0.75rem 1.15rem; font-family: Archivo, sans-serif; font-size: 0.875rem; font-weight: 600; border: 1px solid rgba(255,255,255,0.32); border-radius: 0; transition: background 0.22s cubic-bezier(0.22,1,0.36,1), border-color 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-btn-fantasma:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.55); } .ds-btn-fantasma:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; }"
+    },
+    {
+      "name": "Buscador",
+      "kind": "input",
+      "refersTo": "campo-busqueda",
+      "description": "Field and button welded into one square object: zero gap, the field's right border removed. Capped at 32rem.",
+      "html": "<form class=\"ds-buscador\" role=\"search\"><input type=\"search\" placeholder=\"Buscar en el catálogo\" aria-label=\"Buscar\"><button type=\"submit\">Buscar</button></form>",
+      "css": ".ds-buscador { display: flex; gap: 0; max-width: 32rem; font-family: Archivo, sans-serif; } .ds-buscador input[type='search'] { flex: 1 1 auto; min-width: 0; border: 1px solid #141416; border-right: 0; border-radius: 0; background: #FFFFFF; padding: 0.7rem 0.9rem; font: inherit; font-size: 0.9375rem; color: #141416; } .ds-buscador input[type='search']::placeholder { color: #5E5E68; } .ds-buscador input[type='search']:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } .ds-buscador button { flex: none; background: #141416; color: #fff; border: 0; border-radius: 0; padding: 0.7rem 1.15rem; font-family: inherit; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-buscador button:hover { background: #B024FF; } .ds-buscador button:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; }"
+    },
+    {
+      "name": "Paginación",
+      "kind": "nav",
+      "refersTo": "pagina-numero",
+      "description": "Square numbered stamps in tabular figures. Hover darkens the rule and tints the paper; the current page fills with the house purple; the ellipsis loses its border.",
+      "html": "<nav class=\"ds-paginacion\" aria-label=\"Paginación\"><a class=\"ds-pg\" href=\"#\">1</a><span class=\"ds-pg ds-pg-actual\" aria-current=\"page\">2</span><a class=\"ds-pg\" href=\"#\">3</a><span class=\"ds-pg ds-pg-dots\">…</span><a class=\"ds-pg\" href=\"#\">7</a></nav>",
+      "css": ".ds-paginacion { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; font-family: Archivo, sans-serif; } .ds-pg { display: inline-flex; align-items: center; justify-content: center; min-width: 2.5rem; min-height: 2.5rem; padding: 0 0.7rem; border: 1px solid #9A9A93; border-radius: 0; background: #FFFFFF; color: #141416; text-decoration: none; font-size: 0.875rem; font-weight: 600; font-variant-numeric: tabular-nums; transition: border-color 0.22s cubic-bezier(0.22,1,0.36,1), background 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-pg:hover { border-color: #141416; background: #E9E9E5; } .ds-pg:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } .ds-pg-actual { background: #B024FF; border-color: #B024FF; color: #fff; } .ds-pg-dots { border-color: transparent; background: none; }"
+    },
+    {
+      "name": "Nota encajonada",
+      "kind": "card",
+      "refersTo": null,
+      "description": "The callout inside article prose. Boxed with a hairline and a 2px house rule ACROSS THE TOP — the side accent bar is banned in this project. The .servicio-relacionado variant carries a bled caption tab reading 'Siguiente paso'; that class name comes from the content pipeline and must not be renamed.",
+      "html": "<blockquote class=\"ds-nota\"><p>El presupuesto de un proyecto de posicionamiento se reparte entre contenido, técnica y autoridad — y las tres partidas se pagan en meses, no en semanas.</p></blockquote><blockquote class=\"ds-nota ds-nota-servicio\"><p><b>Servicio relacionado:</b> auditoría SEO y plan de contenidos para negocios de Lambayeque.</p></blockquote>",
+      "css": ".ds-nota { border: 1px solid #D4D4CE; border-top: 2px solid #B024FF; border-radius: 0; background: #F2F2F0; margin: 0 0 1.15em; padding: 1.15rem 1.35rem; font-family: Faustina, Georgia, serif; font-size: 1.0625rem; line-height: 1.72; color: #3F3F47; } .ds-nota p { margin: 0; } .ds-nota-servicio { border: 1px solid #141416; border-top: 0; background: #FFFFFF; padding-top: 1.35rem; position: relative; } .ds-nota-servicio::before { content: 'Siguiente paso'; display: block; background: #B024FF; color: #fff; margin: -1.35rem -1.35rem 1rem; padding: 0.4rem 1.35rem; font-family: Archivo, sans-serif; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; } .ds-nota-servicio b { font-family: Archivo, sans-serif; font-weight: 600; color: #141416; }"
+    },
+    {
+      "name": "Índice de secciones",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "The front page's primary navigation, above the fold. Four columns whose 1px gutters ARE the rules (gap: 1px over a --filete ground). This is where the world shows its colour: eight fields of flat ink, not eight 3px rules on white.",
+      "html": "<div class=\"ds-indice\"><a class=\"ds-indice-item\" href=\"#\" style=\"--sec:#7B1FA2\"><span class=\"ds-i-codigo\">01</span><span class=\"ds-i-nombre\">SEO y Buscadores</span><span class=\"ds-i-cuenta\">9 entradas</span></a><a class=\"ds-indice-item\" href=\"#\" style=\"--sec:#0F4C9C\"><span class=\"ds-i-codigo\">02</span><span class=\"ds-i-nombre\">Diseño Web</span><span class=\"ds-i-cuenta\">7 entradas</span></a><a class=\"ds-indice-item\" href=\"#\" style=\"--sec:#B3123F\"><span class=\"ds-i-codigo\">03</span><span class=\"ds-i-nombre\">Redes Sociales</span><span class=\"ds-i-cuenta\">6 entradas</span></a><a class=\"ds-indice-item\" href=\"#\" style=\"--sec:#AA4400\"><span class=\"ds-i-codigo\">04</span><span class=\"ds-i-nombre\">Publicidad</span><span class=\"ds-i-cuenta\">5 entradas</span></a></div>",
+      "css": ".ds-indice { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #D4D4CE; font-family: Archivo, sans-serif; } .ds-indice-item { display: grid; grid-template-columns: 2.5rem minmax(0,1fr); grid-template-rows: auto auto; column-gap: 0.75rem; background: #FFFFFF; color: #141416; text-decoration: none; padding: 0.8rem 0.9rem 0.85rem; transition: background 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-indice-item:hover { background: #E9E9E5; } .ds-indice-item:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } .ds-i-codigo { grid-row: 1 / 3; display: flex; align-items: center; justify-content: center; background: var(--sec,#3F3F47); color: #fff; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; } .ds-i-nombre { font-size: 0.9375rem; font-weight: 600; line-height: 1.25; align-self: end; } .ds-i-cuenta { font-size: 0.75rem; color: #5E5E68; align-self: start; padding-top: 0.2rem; font-variant-numeric: tabular-nums; } @media (max-width: 1000px) { .ds-indice { grid-template-columns: repeat(2, 1fr); } } @media (max-width: 420px) { .ds-indice { grid-template-columns: 1fr; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El Catálogo del Distribuidor",
+    "overview": "This is a printed trade catalogue rendered in HTML. Not a magazine, not a documentation site, not the card grid with a photo on top and a category pill that every agency blog ships. The reader is on a phone, arrived from Google, and is deciding whether to hire DAK; the catalogue answers that by behaving like an index — sections numbered 01 through 08, each opening with a full-bleed colour band, each listing entries as rows of a table: reference, description, price. The price is minutes of reading. That single conceit governs everything below.\n\nThe material is paper and ink. Grey bond paper (#F2F2F0) carries white rows (#FFFFFF); rules are hairlines (#D4D4CE), never gaps. There are no shadows, no radii, no gradients anywhere in the shipped CSS — one box-shadow exists in the whole theme and it is the outer halo of the focus ring. Depth is entirely tonal and structural: paper behind, white row in front, black or glazed band as a hard edge. Colour is flat fill and never a tint of a tint.\n\nThe eight section glazes are the world's saturation budget, and they are spent in one place at a time: a band, a numbered chip, an edge tab. The house purple #B024FF is a separate voice from those glazes — it marks DAK itself (the edition seal, the \"next step\" caption, the article's section rules, the current page number) and it is a fill, never a letter.",
+    "keyCharacteristics": [
+      "Grey paper with white rows; hairline rules instead of whitespace gaps.",
+      "Eight section glazes propagated through a single inherited --sec custom property.",
+      "Zero radius, zero shadow, zero gradient — the flatness is the identity, not a shortcut.",
+      "Archivo with tabular figures for all structure; Faustina for all prose.",
+      "One authored motion gesture in the entire site (the edge tab), plus one rule that grows.",
+      "Self-hosted variable fonts, latin subset, zero third-party origins."
+    ],
+    "rules": [
+      { "name": "The Fill-Only Rule", "body": "--casa is a surface, never a letter. Any purple that has to be read as text is --casa-texto on paper or --casa-clara on ink. There is no third option.", "section": "colors" },
+      { "name": "The One Glaze Per Block Rule", "body": "A section colour is declared exactly once, on the outermost element of its block, as --sec. Bands, chips, edge tabs, row labels and index numbers all read that same variable. Never hard-code a section hex into a component.", "section": "colors" },
+      { "name": "The Darkening Press Rule", "body": "Interactive purple gets darker on hover, never lighter. Lightening #B024FF puts white text below 4.5:1; --casa-texto holds 6.80:1.", "section": "colors" },
+      { "name": "The Two-Job Rule", "body": "Archivo for structure, Faustina for prose. A heading inside article prose switches back to Archivo; an excerpt inside a structural row switches to Faustina. The face announces which job the text is doing.", "section": "typography" },
+      { "name": "The Tabular Figures Rule", "body": "Every number in the catalogue — codes, counts, dates, minutes, page numbers, table cells — runs font-variant-numeric: tabular-nums. Columns of figures that do not align are not a catalogue.", "section": "typography" },
+      { "name": "The Air-Above Rule", "body": "In article prose, headings take more space above than below (h2 2.4em top, 0.7em to the next element). One rhythm, whole page.", "section": "typography" },
+      { "name": "The Full-Bleed Band Rule", "body": "Section colour reaches the edges of the viewport; the type inside it does not. Never box a section colour inside the container.", "section": "layout" },
+      { "name": "The Hairline Gutter Rule", "body": "Grid gaps in index surfaces are 1px of --filete showing through, not empty space. The catalogue is ruled, not spaced.", "section": "layout" },
+      { "name": "The Flat-Ink Rule", "body": "No shadow, no radius, no gradient, no blur. If something needs to separate from what is behind it, it gets a rule or a change of paper tone.", "section": "elevation" },
+      { "name": "The Two-Tone Focus Rule", "body": "Focus is a white 2px outline with a --tinta 5px halo outside it. A single-tone ring in the house purple measured 1.70:1 against the green section band — below the 3:1 that WCAG 1.4.11 requires for non-text — so the ring carries both a light and a dark tone and survives all thirteen real backgrounds in the build: paper, white row, eight glazes, dark footer and dark strip.", "section": "elevation" },
+      { "name": "The No-Side-Rule Rule", "body": "An accent rule on the left or right edge of a block is banned in this project. Callouts get a full 1px box with a 2px --casa rule across the top. The left accent bar is the most recognisable tell of a generated interface and this world does not use it.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do set the section colour once per block as --sec (via dak_var_seccion()) and let every child inherit it.",
+      "Do use --casa (#B024FF) as fill only, --casa-texto (#8B1CC7) for purple text on paper, --casa-clara (#D89BFF) for purple text on ink.",
+      "Do keep the two-tone focus ring exactly as it is: white 2px outline plus a --tinta 5px halo. It is the only ring that clears 3:1 on all thirteen real backgrounds.",
+      "Do run tabular figures on every number: codes, counts, dates, minutes, page numbers, tables.",
+      "Do use Archivo for structure and Faustina for prose, switching face whenever the job changes.",
+      "Do separate with hairlines and paper-tone changes; escalate emphasis by making a rule heavier (1px → 2px → 3px), not by adding depth.",
+      "Do keep 0.6875rem (11px) as the floor for functional text.",
+      "Do keep prose at 42rem and use text-wrap: balance with a ch cap on every large heading.",
+      "Do keep exactly one h1 per template with no heading-level skips.",
+      "Do self-host fonts, latin subset, and preload only the face that composes the first viewport.",
+      "Do move motion through transform and opacity, honour prefers-reduced-motion, and drive scroll state with IntersectionObserver.",
+      "Do give a missing image a filled section-coloured square with its number, not an empty cell."
+    ],
+    "donts": [
+      "Don't add a border-radius, a box-shadow on a surface, or a gradient. The one shadow in the theme is the focus halo.",
+      "Don't put an accent rule on the left or right edge of a block. Callouts are boxed with a top rule.",
+      "Don't write text in #B024FF on paper — it measures 4.12:1.",
+      "Don't lighten purple on hover; darken it.",
+      "Don't put a small uppercase label above a heading. No eyebrows, no kickers anywhere; the rótulo style exists for box captions, column headers and the image stamp only.",
+      "Don't ship the card grid with a photo on top and a category pill. Entries are rows in a table.",
+      "Don't let a row thumbnail compete with the featured box: thumbnails are thumbnail-size, lazy and desaturated at rest; exactly one image per page loads eagerly.",
+      "Don't hide breadcrumbs or any element that carries structured data.",
+      "Don't hard-code a section hex into a component; read --sec.",
+      "Don't register add_image_size(). WordPress's proportional defaults already exist on the server for all 55 live posts and give a real srcset immediately; a custom crop would force a full thumbnail regeneration on a live install that has no repository.",
+      "Don't reintroduce a per-entry catalogue code. The 01–08 section numbering is the ordering device; a database ID printed on a row was noise and was removed at the user's request.",
+      "Don't animate width or margin, and don't add a second authored motion gesture — the edge tab is the site's one flourish."
+    ]
+  }
+}
