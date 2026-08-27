@@ -13,7 +13,6 @@ get_header();
 <main id="contenido">
 	<section class="error-404">
 		<div class="contenedor">
-			<p class="codigo">Error 404 · Referencia no encontrada</p>
 			<h1>Esa entrada no está en el catálogo</h1>
 			<p>
 				Puede que el enlace esté mal escrito o que la entrada haya cambiado de sitio.
@@ -42,6 +41,8 @@ get_header();
 					<h2 id="recientes-404">Lo más reciente del catálogo</h2>
 				</div>
 			</div>
+
+			<?php get_template_part( 'template-parts/columnas' ); ?>
 
 			<ul class="seccion-filas">
 				<?php

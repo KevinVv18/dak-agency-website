@@ -27,8 +27,6 @@ $dak_ultima        = get_lastpostmodified( 'blog' );
 		<div class="contenedor">
 			<div class="pie-cierre-rejilla">
 				<div class="pie-cierre-texto">
-					<p class="rotulo pie-kicker">Contraportada</p>
-
 					<h2 id="pie-cierre-titulo">
 						Este catálogo existe para que puedas hacerlo tú.
 						<em>Si prefieres que lo hagamos nosotros, se pide así.</em>
@@ -145,7 +143,7 @@ $dak_ultima        = get_lastpostmodified( 'blog' );
 					alt="DAK Agency" width="76" height="22" loading="lazy">
 			</a>
 
-			<p>&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> DAK Agency &mdash; Chiclayo, Perú.</p>
+			<p>&copy; <?php echo esc_html( wp_date( 'Y' ) ); ?> DAK Agency &mdash; Chiclayo, Perú.</p>
 
 			<p class="pie-volver"><a href="#contenido">Volver arriba &uarr;</a></p>
 		</div>

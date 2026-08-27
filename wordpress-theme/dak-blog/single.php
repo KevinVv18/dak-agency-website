@@ -109,6 +109,8 @@ while ( have_posts() ) :
 					</div>
 				</div>
 
+				<?php get_template_part( 'template-parts/columnas' ); ?>
+
 				<ul class="seccion-filas">
 					<?php
 					foreach ( $dak_relacionadas->posts as $dak_relacionada ) {

@@ -16,16 +16,15 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  gap: 2rem 3rem;
-  padding-block: 3.25rem 2.5rem;
+  gap: 1.5rem 3rem;
+  padding-block: 2.15rem 1.85rem;
 }
-.tapa-rotulo { color: var(--casa-texto); margin-bottom: 1.15rem; }
 .tapa h1 {
-  font-size: clamp(2.1rem, 5.2vw, 3.9rem);
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
   font-weight: 700;
   line-height: 1.06;
   letter-spacing: -0.03em;
-  max-width: 18ch;
+  max-width: 21ch;
   text-wrap: balance;
 }
 .tapa-bajada {
@@ -34,7 +33,7 @@
   line-height: 1.6;
   color: var(--tinta-2);
   max-width: 54ch;
-  margin-top: 1.15rem;
+  margin-top: 0.9rem;
 }
 
 /* Bloque de edición: la caja de datos que todo catálogo lleva */
@@ -42,8 +41,14 @@
   border: 1px solid var(--tinta);
   min-width: 15rem;
 }
+/* El sello de edición lleva la tinta de la casa.
+   Es el único compromiso que el blog hereda del sitio principal, y tiene que
+   aparecer SOBRE el pliegue. Antes lo llevaba el rótulo que había encima del
+   h1; al retirar ese eyebrow —prohibido— el púrpura se fue abajo del todo.
+   Aquí vuelve, y en un objeto que le corresponde: el sello de la edición
+   vigente. Blanco sobre #B024FF mide 4.62:1. */
 .edicion-titulo {
-  background: var(--tinta); color: #fff;
+  background: var(--casa); color: #fff;
   padding: 0.45rem 0.85rem;
 }
 .edicion dl { display: grid; grid-template-columns: auto 1fr; }
@@ -64,27 +69,38 @@
 /* ── Índice de secciones ──────────────────────────────────────
    Es la navegación primaria y vive sobre el pliegue.
    ─────────────────────────────────────────────────────────── */
-.indice { padding-block: 2.75rem 0; }
+.indice { padding-block: 1.75rem 0; }
 .indice-titulo {
   display: flex; align-items: baseline; gap: 1rem;
   border-bottom: 1px solid var(--tinta);
-  padding-bottom: 0.6rem; margin-bottom: 1.25rem;
+  padding-bottom: 0.55rem; margin-bottom: 1rem;
 }
 .indice-titulo h2 { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; }
 .indice-titulo .cuenta { font-size: 0.75rem; color: var(--tinta-3); margin-left: auto; }
 
 .indice-rejilla { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--filete); }
+/* El vidriado de cada sección entra AQUÍ, sobre el pliegue.
+   El índice es lo primero que se ve después de la tapa, así que es donde
+   este mundo tiene que enseñar su color: ocho campos de tinta plana, no
+   ocho filetes de 3px sobre papel blanco. */
 .indice-item {
-  display: flex; flex-direction: column; gap: 0.4rem;
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 0.75rem;
   background: var(--papel-fila);
-  padding: 0.95rem 1rem 1.05rem;
-  border-top: 3px solid var(--sec);
+  padding: 0.8rem 0.9rem 0.85rem;
   transition: background var(--avance);
 }
 .indice-item:hover { background: var(--papel-tinte); }
-.indice-item .codigo { font-size: 0.6875rem; font-weight: 700; color: var(--sec); letter-spacing: 0.06em; }
-.indice-item .nombre { font-size: 0.9375rem; font-weight: 600; line-height: 1.25; }
-.indice-item .cuenta { font-size: 0.75rem; color: var(--tinta-3); margin-top: auto; padding-top: 0.35rem; }
+.indice-item .codigo {
+  grid-row: 1 / 3;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sec); color: #fff;
+  font-size: 0.875rem; font-weight: 700; letter-spacing: 0.02em;
+}
+.indice-item .nombre { font-size: 0.9375rem; font-weight: 600; line-height: 1.25; align-self: end; }
+.indice-item .cuenta { font-size: 0.75rem; color: var(--tinta-3); align-self: start; padding-top: 0.2rem; }
 
 /* ── Recuadro de la entrada más reciente ──────────────────────
    El equivalente al recuadro de oferta: un catálogo destaca una
@@ -149,7 +165,9 @@
 }
 
 @media (max-width: 900px) {
-  .tapa .contenedor { grid-template-columns: 1fr; align-items: start; padding-block: 2.25rem 2rem; }
+  /* Nunca por encima del valor de escritorio: el pliegue del móvil es más
+     corto, así que la tapa tiene que ocupar menos, no más. */
+  .tapa .contenedor { grid-template-columns: 1fr; align-items: start; padding-block: 1.75rem 1.5rem; }
   .edicion { min-width: 0; width: 100%; }
   .destacada-cuerpo { padding: 1.35rem 1.25rem 1.25rem; }
 }

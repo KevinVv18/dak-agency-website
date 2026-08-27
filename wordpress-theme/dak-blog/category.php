@@ -19,8 +19,14 @@ $dak_descripcion = term_description( $dak_termino );
 		<div class="seccion-banda">
 			<div class="contenedor">
 				<span class="codigo"><?php echo esc_html( $dak_datos['numero'] ); ?></span>
-				<h1><?php echo esc_html( $dak_termino->name ); ?></h1>
+				<p class="banda-nombre"><?php echo esc_html( $dak_termino->name ); ?></p>
 				<span class="cuenta"><?php echo esc_html( dak_cifra( $dak_termino->count, 'entrada', 'entradas' ) ); ?></span>
+			</div>
+		</div>
+
+		<div class="archivo-portada">
+			<div class="contenedor">
+				<h1><?php echo esc_html( $dak_termino->name ); ?></h1>
 			</div>
 		</div>
 
@@ -31,6 +37,8 @@ $dak_descripcion = term_description( $dak_termino );
 		<?php endif; ?>
 
 		<?php if ( have_posts() ) : ?>
+			<?php get_template_part( 'template-parts/columnas' ); ?>
+
 			<ul class="seccion-filas">
 				<?php
 				while ( have_posts() ) {

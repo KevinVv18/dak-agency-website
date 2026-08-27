@@ -24,8 +24,6 @@ $dak_ultima    = get_lastpostmodified( 'blog' );
 	<section class="tapa">
 		<div class="contenedor">
 			<div>
-				<p class="rotulo tapa-rotulo">Catálogo de contenidos · DAK Agency</p>
-
 				<h1>Marketing digital explicado para negocios de Chiclayo</h1>
 
 				<p class="tapa-bajada">
@@ -91,19 +89,25 @@ $dak_ultima    = get_lastpostmodified( 'blog' );
 						<figure class="destacada-figura">
 							<?php
 							/*
-							 * La ÚNICA imagen prioritaria de la portada. Se pide «large» para
-							 * que WordPress arme el srcset con los tamaños proporcionales que
-							 * ya existen en el servidor, y el encuadre lo decide object-fit.
+							 * Se pide «large» para que WordPress arme el srcset con los tamaños
+							 * proporcionales que ya existen en el servidor; el encuadre lo
+							 * decide object-fit.
+							 *
+							 * Sin fetchpriority a propósito: este recuadro queda por debajo del
+							 * pliegue —seguro en móvil, y también en escritorio con la tapa y el
+							 * índice delante—, así que marcarlo como prioritario solo le robaba
+							 * ancho de banda a la precarga de Archivo, que sí compone la LCP
+							 * real de esta página: el h1. Se queda en «eager» para que no se
+							 * difiera, pero sin adelantar a la fuente.
 							 */
 							echo wp_get_attachment_image(
 								$dak_miniatura,
 								'large',
 								false,
 								array(
-									'sizes'         => '(min-width: 1000px) 40vw, 100vw',
-									'loading'       => 'eager',
-									'fetchpriority' => 'high',
-									'decoding'      => 'async',
+									'sizes'    => '(min-width: 1000px) 40vw, 100vw',
+									'loading'  => 'eager',
+									'decoding' => 'async',
 								)
 							);
 							?>
@@ -164,6 +168,8 @@ $dak_ultima    = get_lastpostmodified( 'blog' );
 					</a>
 				</div>
 			</div>
+
+			<?php get_template_part( 'template-parts/columnas' ); ?>
 
 			<ul class="seccion-filas">
 				<?php

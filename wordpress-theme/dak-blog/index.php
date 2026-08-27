@@ -8,17 +8,36 @@
 defined( 'ABSPATH' ) || exit;
 
 get_header();
+
+/*
+ * Sin tag.php, author.php ni date.php en el tema, TODOS los archivos de
+ * etiqueta, autor y fecha caen aqui, y son URLs rastreables. Asi que esta
+ * plantilla necesita un h1 de verdad que diga de que archivo se trata.
+ */
+$dak_titulo = get_the_archive_title();
+
+if ( ! $dak_titulo ) {
+	$dak_titulo = 'Catálogo';
+}
 ?>
 
 <main id="contenido">
 	<section class="seccion archivo" style="--sec:var(--tinta)">
 		<div class="seccion-banda">
 			<div class="contenedor">
-				<h1><?php echo esc_html( wp_get_document_title() ); ?></h1>
+				<p class="banda-nombre">Catálogo</p>
+			</div>
+		</div>
+
+		<div class="archivo-portada">
+			<div class="contenedor">
+				<h1><?php echo wp_kses_post( $dak_titulo ); ?></h1>
 			</div>
 		</div>
 
 		<?php if ( have_posts() ) : ?>
+			<?php get_template_part( 'template-parts/columnas' ); ?>
+
 			<ul class="seccion-filas">
 				<?php
 				while ( have_posts() ) {

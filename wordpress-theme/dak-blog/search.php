@@ -17,8 +17,14 @@ $dak_total    = (int) $GLOBALS['wp_query']->found_posts;
 	<section class="seccion archivo" style="--sec:var(--tinta)">
 		<div class="seccion-banda">
 			<div class="contenedor">
-				<h1>Búsqueda en el catálogo</h1>
+				<p class="banda-nombre">Búsqueda</p>
 				<span class="cuenta"><?php echo esc_html( dak_cifra( $dak_total, 'resultado', 'resultados' ) ); ?></span>
+			</div>
+		</div>
+
+		<div class="archivo-portada">
+			<div class="contenedor">
+				<h1>Búsqueda en el catálogo</h1>
 			</div>
 		</div>
 
@@ -32,6 +38,8 @@ $dak_total    = (int) $GLOBALS['wp_query']->found_posts;
 		</div>
 
 		<?php if ( have_posts() ) : ?>
+			<?php get_template_part( 'template-parts/columnas' ); ?>
+
 			<ul class="seccion-filas">
 				<?php
 				while ( have_posts() ) {

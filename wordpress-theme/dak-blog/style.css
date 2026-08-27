@@ -3,7 +3,7 @@ Theme Name: DAK Blog — Catálogo
 Theme URI: https://dakagency.net/blog
 Author: DAK Agency
 Author URI: https://dakagency.net
-Description: El blog de DAK como catálogo comercial: cada artículo es una entrada con su código, su sección y su dato. Archivo + Faustina autoalojadas, ocho vidriados de sección, cero scripts de terceros.
+Description: El blog de DAK como catálogo comercial: cada artículo es una entrada con su miniatura, su sección y los minutos que cuesta leerla. Archivo + Faustina autoalojadas, ocho vidriados de sección, cero orígenes de terceros. Probado en WordPress 7.1 / PHP 8.3.
 Version: 1.0.0
 Requires at least: 6.0
 Requires PHP: 7.4
@@ -127,7 +127,29 @@ ul, ol { list-style: none; }
 /* Un catálogo alinea columnas: cifras tabulares en toda la estructura */
 .codigo, .dato, .rotulo, .edicion, .cuenta, time { font-variant-numeric: tabular-nums; }
 
-:focus-visible { outline: 3px solid var(--casa); outline-offset: 2px; }
+/* Anillo de foco a dos tonos.
+   Uno solo no sirve en este mundo: el morado de la casa mide 1.70:1 contra el
+   verde de «Guías y Precios» y 1.77:1 contra el morado de «SEO», muy por debajo
+   del 3:1 que pide WCAG 1.4.11 para elementos no textuales. Con blanco dentro y
+   tinta fuera, el anillo se ve sobre el papel, sobre las ocho bandas de color y
+   sobre el pie oscuro. */
+:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 0;
+  box-shadow: 0 0 0 5px var(--tinta);
+}
+
+/* ── Superficies del navegador ────────────────────────────────
+   Selección, cursor y barra de scroll también son del catálogo.
+   ─────────────────────────────────────────────────────────── */
+::selection { background: var(--casa); color: #fff; }
+:where(input, textarea) { caret-color: var(--casa); }
+
+* { scrollbar-color: var(--filete-fuerte) var(--papel); scrollbar-width: thin; }
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--papel); }
+::-webkit-scrollbar-thumb { background: var(--filete-fuerte); border: 3px solid var(--papel); }
+::-webkit-scrollbar-thumb:hover { background: var(--tinta-3); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -195,7 +217,8 @@ ul, ol { list-style: none; }
   gap: 0.85rem 1.25rem; padding-block: 0.8rem;
 }
 .seccion-banda .codigo { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.02em; }
-.seccion-banda h1, .seccion-banda h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.01em; }
+.seccion-banda h2,
+.seccion-banda .banda-nombre { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.01em; }
 .seccion-banda .cuenta { font-size: 0.75rem; color: rgba(255,255,255,0.82); font-variant-numeric: tabular-nums; }
 .seccion-ver {
   margin-left: auto;
@@ -208,6 +231,24 @@ ul, ol { list-style: none; }
 .seccion-ver:hover { border-bottom-color: #fff; }
 .seccion-ver span { transition: transform var(--avance); }
 .seccion-ver:hover span { transform: translateX(3px); }
+
+/* Encabezado de columnas: alineado a la retícula de la fila, una vez por
+   sección. Sin él las filas son una lista con estilo; con él son la tabla
+   de un catálogo, que es lo que dice la tesis. Se retira bajo 620px, donde
+   la fila deja de tener tres columnas. */
+.seccion-columnas {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) 4.25rem;
+  gap: 0 1.35rem;
+  max-width: var(--ancho);
+  margin-inline: auto;
+  padding: 0.5rem var(--margen);
+  background: var(--papel-fila);
+  border-bottom: 1px solid var(--tinta);
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em;
+  text-transform: uppercase; color: var(--tinta-3);
+}
+.seccion-columnas .col-dato { text-align: right; }
 
 .seccion-filas { background: var(--papel-fila); border-bottom: 1px solid var(--filete); }
 
@@ -306,6 +347,8 @@ ul, ol { list-style: none; }
 .seccion-resto:hover { color: var(--casa-texto); background: var(--papel-tinte); }
 
 @media (max-width: 620px) {
+  .seccion-columnas { display: none; }
+
   /* La miniatura se queda a la izquierda y el precio sube al renglón de
      metadatos: la fila mantiene su lectura sin apretar el título. */
   .fila > a { grid-template-columns: 3.5rem minmax(0, 1fr); gap: 0 0.9rem; padding-block: 0.9rem; }
@@ -379,19 +422,33 @@ ul, ol { list-style: none; }
   display: flex; align-items: center; gap: 0.6rem;
   background: var(--sec); color: #fff;
   padding: 0.5rem 0.7rem 0.5rem 0.6rem;
-  transform: translateX(calc(100% - 2rem));
-  transition: transform var(--avance);
+  transform: translateX(calc(100% - 1.9rem));
+  opacity: 0.5;
+  transition: transform var(--avance), opacity var(--avance);
   white-space: nowrap;
 }
 .canto-pestana .codigo { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em; }
 .canto-pestana .nombre { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
 .canto-pestana:hover,
-.canto-pestana:focus-visible { transform: translateX(0); }
-.canto-pestana.es-activa { transform: translateX(calc(100% - 2.55rem)); }
+.canto-pestana:focus-visible { transform: translateX(0); opacity: 1; }
+
+/* La sección en la que estás: sale del canto y se satura. El resto se apaga.
+   Es el pulgar metido en el catálogo, y es el único gesto autorado del sitio. */
+.canto-pestana.es-activa {
+  transform: translateX(calc(100% - 3.6rem));
+  opacity: 1;
+}
 .canto-pestana.es-activa:hover,
 .canto-pestana.es-activa:focus-visible { transform: translateX(0); }
 
 @media (max-width: 1240px) { .canto { display: none; } }
+
+/* Bajo 1240px no hay canto donde meter el pulgar, así que la banda de la
+   sección se queda pegada arriba mientras la recorres: el mismo dato —en qué
+   sección estás— por el recurso que sí cabe en un móvil. */
+@media (max-width: 1240px) {
+  .seccion-banda { position: sticky; top: 0; z-index: 500; }
+}
 
 /* ═══ LA CONTRAPORTADA ════════════════════════════════════════
    En un catálogo la contraportada es la superficie de venta más
@@ -401,7 +458,6 @@ ul, ol { list-style: none; }
 .pie { background: var(--tinta); color: rgba(255,255,255,0.75); margin-top: 4rem; }
 .pie a { color: #fff; }
 .pie a:hover { color: var(--casa-clara); }
-.pie-kicker { color: var(--casa-clara); }
 
 /* ── Banda 1: el cierre ──────────────────────────────────────── */
 .pie-cierre { border-bottom: 1px solid rgba(255,255,255,0.16); }
