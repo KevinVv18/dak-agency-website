@@ -1,16 +1,46 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-26T00:00:00Z",
+  "generatedAt": "2026-08-27T00:00:00Z",
   "title": "Design System: DAK Blog — El Catálogo",
   "extensions": {
     "provenance": {
       "artifact": "wordpress-theme/dak-blog/",
-      "derivedFrom": "Shipped source: style.css, assets/css/{portada,articulo,seccion}.css, inc/*.php, template-parts/*.php. Values read from the built code, not from the direction contract.",
+      "derivedFrom": "Shipped source: style.css, assets/css/{portada,articulo,seccion}.css, assets/js/blog.js, single.php, header.php, inc/*.php, template-parts/*.php. Values read from the built code, not from the direction contract.",
       "productTruth": "wordpress-theme/dak-informando/PRODUCT.md — still filed under the OUTGOING theme's folder. Accurate as product record; not moved or rewritten by this pass.",
       "verifiedState": "Finish review disposition: ship, nothing open. 20/20 PHP files compile. Front page, single, category and search render in real WordPress (Playground, WP 7.1 / PHP 8.3) with WP_DEBUG on and zero warnings. detect.mjs returns []. Exactly one h1 per template, no level skips.",
-      "limitation": "No screenshots exist for this build — the harness's browser pane could not composite frames. Every visual judgement in the review was derived from source and computed values, not from seeing the render. The user confirmed the live result matches the static preview.",
-      "forwardNote": "Phase 2 (deferred, not recorded here): the single-post editorial redesign (side index, reading progress, authorship record, recirculation) and the _blog-content/ content contract. Deferred because the corpus currently has 165 <ul> and one <ol>; new prose devices would be invisible without touching the generator.",
+      "limitation": "No screenshots exist for this build, and none for the «registro de canto» entry surface either — the harness's browser pane could not composite frames. Every visual judgement was derived from source and computed values, not from seeing the render. The user confirmed the earlier live result matches the static preview; the entry surface has no such confirmation on record.",
+      "typeRampReconciliation": "Second pass, 2026-08-27. detect.mjs raised 24 advisories against the 8-step ramp of the first record. A full literal inventory of the stylesheets found 13 distinct font-size literals plus 5 clamp() expressions. The record was short, not the CSS: 0.9375rem (7 uses), 0.875rem (6), 0.8125rem (5), 1rem (2) and 1.2rem (1) were genuine, pre-existing registers that the first pass skipped, and they are now named steps (secundario, control, fino, base, subtitulo). Two literals were snapped rather than blessed: .articulo-cuerpo h2 moved from 1.75rem to the documented Headline clamp and lost its mobile override, and 1.45rem was deleted as the clamp covers it. One literal remains unrecorded on purpose — see openDrift.",
+      "openDrift": [
+        {
+          "selector": ".fila-sin-imagen",
+          "value": "1.15rem",
+          "uses": 1,
+          "verdict": "drift, not a step",
+          "action": "Snap to 1.05rem (Banda). It prints the section code inside the thumbnail square, which is exactly the role Banda already names; a single-use literal 0.1rem away from an existing step is not a system step and was not canonized to make an advisory disappear."
+        }
+      ],
+      "newSurface": {
+        "name": "El registro de canto",
+        "files": ["single.php", "assets/css/articulo.css", "assets/js/blog.js", "header.php"],
+        "seed": "surface seed 1f94094b, --scope surface --mode read, assigned candidate 6",
+        "relationship": "The entry's index is NOT a new component. It is .canto-pestana — the front page's edge tab — re-pointed from the eight catalogue sections to this entry's own h2 sections, restyled for an in-grid column instead of a viewport edge. One IntersectionObserver and one es-activa class serve both pointings; header.php suppresses the section rail on is_singular('post') so exactly one canto renders per page. A future edit must not fork these into two components.",
+        "grounding": "Sections are built from h2 (median 9, max 13 per entry across 58 published posts) so the surface works on the existing corpus without touching the _blog-content/ generator. The generated section counter was cleared against the corpus first: only 9 of 501 h2 (2%) carry their own 'N.' prefix, so the counter does not collide."
+      },
+      "forwardNote": "The _blog-content/ content contract remains deferred. The entry redesign that was previously deferred with it has now shipped as «el registro de canto» and is recorded above.",
       "deployConstraint": "The theme folder is the only versioned part of this blog. The WordPress install is administered live and has no repository; the main site deploys with rsync --delete and only spares the blog via deploy-protect.txt. Changes to this system land as theme files, never as live edits."
+    },
+    "typeRamp": {
+      "note": "The closed set of size literals the theme ships, for literal-checking tools. Two rungs carry two roles each on purpose. Any value not listed here is drift.",
+      "fluid": [
+        "clamp(2rem, 4.6vw, 3.4rem)",
+        "clamp(2rem, 4.8vw, 3.4rem)",
+        "clamp(1.9rem, 4.4vw, 3rem)",
+        "clamp(1.8rem, 4vw, 2.6rem)",
+        "clamp(1.5rem, 3vw, 2.15rem)",
+        "clamp(1.4rem, 2.4vw, 1.95rem)"
+      ],
+      "fixed": ["1.2rem", "1.125rem", "1.0625rem", "1.05rem", "1rem", "0.9375rem", "0.875rem", "0.8125rem", "0.75rem", "0.6875rem"],
+      "floor": "0.6875rem (11px) is the floor for functional text."
     },
     "colorMeta": {
       "casa": {
@@ -24,14 +54,14 @@
         "role": "primary",
         "displayName": "Tinta de la Casa, escrita",
         "canonical": "#8B1CC7",
-        "usage": "The house purple when it must be read as text on paper (6.1:1). Also the pressed state of the purple button (white on it: 6.80:1).",
+        "usage": "The house purple when it must be read as text on paper (6.1:1). Prose links, the folded index's disclosure marker, the share control's hover fill, and the pressed state of the purple button (white on it: 6.80:1).",
         "tonalRamp": ["#1D0429", "#2F0745", "#460A66", "#5F0E8B", "#7715AC", "#8B1CC7", "#A94FDB", "#CE9AEC"]
       },
       "casa-clara": {
         "role": "primary",
         "displayName": "Tinta de la Casa, clara",
         "canonical": "#D89BFF",
-        "usage": "The house purple when it must be read as text on dark ink — footer links on hover, footer band titles, the closing statement's second sentence.",
+        "usage": "The house purple when it must be read as text on dark ink — footer links on hover, footer band titles, and the field names of the entry's data strip.",
         "tonalRamp": ["#2C0F44", "#451766", "#5F2189", "#7B2FAD", "#9A55CC", "#B978E6", "#D89BFF", "#EDCEFF"]
       },
       "papel": {
@@ -45,150 +75,111 @@
         "role": "neutral",
         "displayName": "Papel de Fila",
         "canonical": "#FFFFFF",
-        "usage": "The white of every row band, the header, the cover, the archive masthead and the article body. Content sits on white; the page around it is grey.",
+        "usage": "The white of every row band, the header, the cover, the archive masthead, the article body and the share control at rest. Content sits on white; the page around it is grey.",
         "tonalRamp": ["#242424", "#3B3B3B", "#555555", "#727272", "#949494", "#B8B8B8", "#DEDEDE", "#FFFFFF"]
       },
       "papel-tinte": {
         "role": "neutral",
         "displayName": "Papel Entintado",
         "canonical": "#E9E9E5",
-        "usage": "Hover fill for rows and index cells; the placeholder behind an image that has not loaded.",
+        "usage": "Hover fill for rows, index cells and the entry's canto tabs; the placeholder behind an image that has not loaded.",
         "tonalRamp": ["#232320", "#393935", "#52524D", "#6E6E68", "#909089", "#B2B2AB", "#D0D0CA", "#E9E9E5"]
       },
       "tinta": {
         "role": "neutral",
         "displayName": "Tinta",
         "canonical": "#141416",
-        "usage": "Body text, the footer's whole ground, the top identification strip, the 3px cover rules, and the outer ring of the focus halo.",
+        "usage": "Body text, the footer's whole ground, the top identification strip, the entry's full-bleed data strip, the 3px cover rules, and the outer ring of the focus halo.",
         "tonalRamp": ["#141416", "#26262A", "#3A3A40", "#525258", "#6D6D74", "#8D8D94", "#B4B4BA", "#DEDEE1"]
       },
       "tinta-2": {
         "role": "neutral",
         "displayName": "Tinta Media",
         "canonical": "#3F3F47",
-        "usage": "Long-form prose colour, the minutes figure, header nav at rest, bold text inside metadata.",
+        "usage": "Long-form prose colour, the minutes figure, header nav at rest, the resting canto tab and share control, bold text inside metadata.",
         "tonalRamp": ["#16161A", "#252529", "#333339", "#3F3F47", "#585862", "#787883", "#A0A0A9", "#CFCFD4"]
       },
       "tinta-3": {
         "role": "neutral",
         "displayName": "Tinta Clara",
         "canonical": "#5E5E68",
-        "usage": "Secondary metadata, excerpts, column headers, placeholders, breadcrumb current item. Nothing quieter than this exists as text.",
+        "usage": "Secondary metadata, excerpts, column headers, placeholders, the register and canto captions, breadcrumb current item. Nothing quieter than this exists as text.",
         "tonalRamp": ["#18181B", "#28282D", "#38383F", "#4A4A53", "#5E5E68", "#7E7E88", "#A6A6AE", "#D2D2D7"]
       },
       "filete": {
         "role": "neutral",
         "displayName": "Filete",
         "canonical": "#D4D4CE",
-        "usage": "The hairline grid: between rows, around callouts and tables, under record-box pairs, as the 1px gutter showing through index grids.",
+        "usage": "The hairline grid: between rows and canto tabs, around callouts, share controls and tables, under record pairs, as the register's vertical divider, and as the 1px gutter showing through index grids.",
         "tonalRamp": ["#22221F", "#373734", "#4F4F4A", "#6A6A64", "#8A8A83", "#ABABA4", "#C5C5BF", "#D4D4CE"]
       },
       "filete-fuerte": {
         "role": "neutral",
         "displayName": "Filete Fuerte",
         "canonical": "#9A9A93",
-        "usage": "The stronger hairline: input and pagination borders, scrollbar thumb, breadcrumb separators, the rule under the back link.",
+        "usage": "The stronger hairline and the resting fill of the entry canto's number stamp: input and pagination borders, scrollbar thumb, breadcrumb separators, the rule under the back link.",
         "tonalRamp": ["#1F1F1D", "#333331", "#494946", "#61615D", "#7B7B75", "#9A9A93", "#BEBEB8", "#DFDFDB"]
       },
-      "sec-seo-buscadores": {
-        "role": "secondary",
-        "displayName": "Vidriado 01 — SEO y Buscadores",
-        "canonical": "#7B1FA2",
-        "contrastWithWhite": "7.63:1",
-        "tonalRamp": ["#1A0722", "#2B0B38", "#3F1053", "#55166F", "#68198A", "#7B1FA2", "#A63FD1", "#CE8AE9"]
-      },
-      "sec-diseno-web": {
-        "role": "secondary",
-        "displayName": "Vidriado 02 — Diseño Web",
-        "canonical": "#0F4C9C",
-        "contrastWithWhite": "8.15:1",
-        "tonalRamp": ["#03111F", "#051D36", "#082B4F", "#0B3A6B", "#0D4384", "#0F4C9C", "#3579CE", "#86B0E8"]
-      },
-      "sec-redes-sociales": {
-        "role": "secondary",
-        "displayName": "Vidriado 03 — Redes Sociales",
-        "canonical": "#B3123F",
-        "contrastWithWhite": "6.86:1",
-        "tonalRamp": ["#26040D", "#3D0616", "#590A20", "#780D2B", "#960F35", "#B3123F", "#DC3C68", "#EE90A9"]
-      },
-      "sec-publicidad": {
-        "role": "secondary",
-        "displayName": "Vidriado 04 — Publicidad",
-        "canonical": "#AA4400",
-        "contrastWithWhite": "5.94:1",
-        "tonalRamp": ["#240E00", "#3A1700", "#552100", "#722C00", "#8E3800", "#AA4400", "#D96A1E", "#EDA779"]
-      },
-      "sec-automatizacion": {
-        "role": "secondary",
-        "displayName": "Vidriado 05 — Automatización",
-        "canonical": "#00695C",
-        "contrastWithWhite": "6.32:1",
-        "tonalRamp": ["#001714", "#002520", "#00362F", "#004840", "#00584D", "#00695C", "#0F9C8B", "#71D0C3"]
-      },
-      "sec-branding": {
-        "role": "secondary",
-        "displayName": "Vidriado 06 — Branding",
-        "canonical": "#1F1F26",
-        "contrastWithWhite": "16.38:1",
-        "tonalRamp": ["#0B0B0E", "#131317", "#1F1F26", "#33333E", "#4B4B5A", "#6B6B7C", "#9A9AA8", "#CBCBD4"]
-      },
-      "sec-por-rubro": {
-        "role": "secondary",
-        "displayName": "Vidriado 07 — Por Rubro",
-        "canonical": "#4A5D23",
-        "contrastWithWhite": "7.31:1",
-        "tonalRamp": ["#121709", "#1E250E", "#2C3715", "#3B4A1C", "#4A5D23", "#688337", "#8DAC5A", "#BDD199"]
-      },
-      "sec-guias-precios": {
-        "role": "secondary",
-        "displayName": "Vidriado 08 — Guías y Precios",
-        "canonical": "#1B5E20",
-        "contrastWithWhite": "7.35:1",
-        "tonalRamp": ["#061407", "#0A210C", "#0F3212", "#154518", "#1B5E20", "#278C2E", "#3FBF49", "#8FDF95"]
-      },
-      "sec-defecto": {
-        "role": "secondary",
-        "displayName": "Vidriado por Defecto",
-        "canonical": "#3F3F47",
-        "usage": "Fallback glaze for any category outside the eight-section map. It orders last and never breaks the layout.",
-        "tonalRamp": ["#16161A", "#252529", "#333339", "#3F3F47", "#585862", "#787883", "#A0A0A9", "#CFCFD4"]
-      }
+      "sec-seo-buscadores": { "role": "secondary", "displayName": "Vidriado 01 — SEO y Buscadores", "canonical": "#7B1FA2", "contrastWithWhite": "7.63:1", "tonalRamp": ["#1A0722", "#2B0B38", "#3F1053", "#55166F", "#68198A", "#7B1FA2", "#A63FD1", "#CE8AE9"] },
+      "sec-diseno-web": { "role": "secondary", "displayName": "Vidriado 02 — Diseño Web", "canonical": "#0F4C9C", "contrastWithWhite": "8.15:1", "tonalRamp": ["#03111F", "#051D36", "#082B4F", "#0B3A6B", "#0D4384", "#0F4C9C", "#3579CE", "#86B0E8"] },
+      "sec-redes-sociales": { "role": "secondary", "displayName": "Vidriado 03 — Redes Sociales", "canonical": "#B3123F", "contrastWithWhite": "6.86:1", "tonalRamp": ["#26040D", "#3D0616", "#590A20", "#780D2B", "#960F35", "#B3123F", "#DC3C68", "#EE90A9"] },
+      "sec-publicidad": { "role": "secondary", "displayName": "Vidriado 04 — Publicidad", "canonical": "#AA4400", "contrastWithWhite": "5.94:1", "tonalRamp": ["#240E00", "#3A1700", "#552100", "#722C00", "#8E3800", "#AA4400", "#D96A1E", "#EDA779"] },
+      "sec-automatizacion": { "role": "secondary", "displayName": "Vidriado 05 — Automatización", "canonical": "#00695C", "contrastWithWhite": "6.32:1", "tonalRamp": ["#001714", "#002520", "#00362F", "#004840", "#00584D", "#00695C", "#0F9C8B", "#71D0C3"] },
+      "sec-branding": { "role": "secondary", "displayName": "Vidriado 06 — Branding", "canonical": "#1F1F26", "contrastWithWhite": "16.38:1", "tonalRamp": ["#0B0B0E", "#131317", "#1F1F26", "#33333E", "#4B4B5A", "#6B6B7C", "#9A9AA8", "#CBCBD4"] },
+      "sec-por-rubro": { "role": "secondary", "displayName": "Vidriado 07 — Por Rubro", "canonical": "#4A5D23", "contrastWithWhite": "7.31:1", "tonalRamp": ["#121709", "#1E250E", "#2C3715", "#3B4A1C", "#4A5D23", "#688337", "#8DAC5A", "#BDD199"] },
+      "sec-guias-precios": { "role": "secondary", "displayName": "Vidriado 08 — Guías y Precios", "canonical": "#1B5E20", "contrastWithWhite": "7.35:1", "tonalRamp": ["#061407", "#0A210C", "#0F3212", "#154518", "#1B5E20", "#278C2E", "#3FBF49", "#8FDF95"] },
+      "sec-defecto": { "role": "secondary", "displayName": "Vidriado por Defecto", "canonical": "#3F3F47", "usage": "Fallback glaze for any category outside the eight-section map. It orders last and never breaks the layout.", "tonalRamp": ["#16161A", "#252529", "#333339", "#3F3F47", "#585862", "#787883", "#A0A0A9", "#CFCFD4"] }
     },
     "typographyMeta": {
-      "display": { "displayName": "Portada", "purpose": "The single h1 of any template: front-page cover, archive masthead, article title. Capped at 21–22ch with text-wrap: balance. Composes the LCP." },
-      "headline": { "displayName": "Titular", "purpose": "The featured entry's title and the footer's closing statement." },
-      "banda": { "displayName": "Banda", "purpose": "Section number and name inside a full-bleed glazed band; both at one size so the band reads as a single line of type." },
+      "display": { "displayName": "Portada", "purpose": "The front-page cover h1, with near-identical clamp variants on the archive masthead and the 404. Composes the LCP." },
+      "display-entrada": { "displayName": "Portada · entrada", "purpose": "The article h1, tracked tighter and steeper than the cover because it sits inside the 42rem reading column rather than across the container." },
+      "headline": { "displayName": "Titular", "purpose": "Two roles, one clamp: the featured entry's title on the cover and the numbered h2 section heading inside an article. The clamp is the mobile behaviour; no breakpoint override." },
+      "subtitulo": { "displayName": "Subtítulo", "purpose": "The prose h3 — the rung between a numbered section and a labelled paragraph group. h4 drops to the Banda step." },
+      "banda": { "displayName": "Banda", "purpose": "The section-code step: the code and name inside a glazed band, and the prose h4. Any figure printed at band-code scale uses it." },
+      "body": { "displayName": "Prosa", "purpose": "Faustina article body in a 42rem column (~68 characters). Steps to 1.0625rem below 900px." },
       "title": { "displayName": "Renglón", "purpose": "The catalogue row title — the reader's own question written out. The most repeated type in the system." },
-      "body": { "displayName": "Prosa", "purpose": "Faustina article body at 42rem (~68 characters). Steps to 1.0625rem below 900px." },
-      "body-corto": { "displayName": "Prosa breve", "purpose": "Faustina in excerpts, cover subhead, archive intro and 404 copy." },
-      "rotulo": { "displayName": "Rótulo", "purpose": "The catalogue small-cap at the 11px functional floor. Column headers, box captions, identification strip, image stamp, footer band titles. NOT for eyebrows above headings." },
-      "dato": { "displayName": "Dato", "purpose": "The price column (minutes), dates, counts and article metadata. Always tabular figures." }
+      "body-corto": { "displayName": "Prosa breve", "purpose": "Faustina at the Title size: excerpts, cover subhead, archive intro, 404 copy and callout text." },
+      "base": { "displayName": "Base", "purpose": "The document's own font-size, inherited by anything that does not opt out, and the Faustina step text of the footer's ordering procedure." },
+      "secundario": { "displayName": "Secundario", "purpose": "The secondary reading register: row excerpts, index entry names, the values in every data record (.edicion, .ficha-tira), the folded index, the search field, prose tables. Read after the heading, before the fine print." },
+      "control": { "displayName": "Control", "purpose": "Compact controls and stamps: footer buttons and record values, pagination numbers, the cover index code chip, the generated article-section counter. Tabular." },
+      "fino": { "displayName": "Fino", "purpose": "Fine print: footer conditions and imprint, figure captions, the empty-archive notice, the entry canto's section name, the 'read entry' affordance." },
+      "dato": { "displayName": "Dato", "purpose": "The price column (minutes), dates, counts and the back link. Always tabular figures." },
+      "rotulo": { "displayName": "Rótulo", "purpose": "The catalogue small-cap at the 11px functional floor. Column headers, box captions, data-strip field names, identification strip, register and canto captions, image stamp, footer band titles. NOT for eyebrows above headings." }
     },
     "fonts": [
       { "family": "Archivo", "file": "assets/fonts/archivo-latin-var.woff2", "variable": true, "weightRange": "400 700", "styles": ["normal"], "display": "swap", "subset": "latin", "preloaded": true, "note": "Preloaded because it composes the entire first viewport; the LCP is the h1 text." },
       { "family": "Faustina", "file": "assets/fonts/faustina-latin-var.woff2", "variable": true, "weightRange": "400 600", "styles": ["normal", "italic (faustina-latin-var-italic.woff2)"], "display": "swap", "subset": "latin", "preloaded": false, "note": "Not preloaded: first appears in excerpts below the fold; swap is sufficient." }
     ],
     "shadows": [
-      { "name": "none", "value": "none", "purpose": "This system ships zero surface shadows, zero radii and zero gradients. Depth is tonal layering, hairline rules and rule weight (1px → 2px → 3px)." },
+      { "name": "none", "value": "none", "purpose": "This system ships zero surface shadows, zero radii and zero gradients — verified by grep across all four stylesheets. Depth is tonal layering, hairline rules and rule weight (1px → 2px → 3px). A sticky column or band stays flat and never grows a shadow to prove it is fixed." },
       { "name": "focus-halo", "value": "outline: 2px solid #fff; outline-offset: 0; box-shadow: 0 0 0 5px var(--tinta)", "purpose": "The only box-shadow in the theme, and it is a solid ring rather than a shadow. Two tones because a single-tone ring in --casa measured 1.70:1 against the green band and 1.77:1 against the SEO purple, below WCAG 1.4.11's 3:1. Verified across all 13 real backgrounds: paper, white row, eight glazes, dark footer, dark strip." }
     ],
     "motion": [
       { "name": "avance", "value": "0.22s cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The system's single easing token. No bounce, no second curve. Every transition in the theme uses it." },
-      { "name": "canto-activo", "value": "transform: translateX(calc(100% - 3.6rem)); opacity: 1", "purpose": "The one authored gesture: the edge tab of the section you are reading protrudes and saturates while its neighbours stay at 0.5 opacity. Driven by IntersectionObserver toggling one class; displacement is transform only, never width or margin. Below 1240px it is replaced by a sticky section band." },
+      { "name": "canto-activo-borde", "value": "transform: translateX(calc(100% - 3.6rem)); opacity: 1", "purpose": "The signature gesture in its edge pointing: the tab of the section you are reading protrudes and saturates while its neighbours stay at 0.5 opacity. Displacement is transform only, never width or margin." },
+      { "name": "canto-activo-columna", "value": ".canto-pestana.es-activa { color: var(--tinta) } .canto-pestana.es-activa .codigo { background: var(--sec) }", "purpose": "The same gesture in its column pointing, inside the entry's grid. A column has no edge to protrude from, so the identical active/resting distinction is carried by fill and ink weight instead of translation. Same class, same observer." },
       { "name": "filete-avanza", "value": "transform: scaleX(0) → scaleX(1); transform-origin: left", "purpose": "A 2px --casa rule grows across the bottom of a hovered or focused catalogue row — a straightedge advancing under the line you are reading." },
-      { "name": "reduced-motion", "value": "@media (prefers-reduced-motion: reduce) { animation-duration: 0.01ms; transition-duration: 0.01ms; scroll-behavior: auto }", "purpose": "Honoured globally. The edge tabs remain working links with no movement." }
+      { "name": "copiado", "value": ".compartir-boton.es-copiado { background: var(--sec); color: #fff } — 1600ms, then removed", "purpose": "The copy-link confirmation: the control fills with the entry's own section glaze and returns. No toast, no overlay." },
+      { "name": "reduced-motion", "value": "@media (prefers-reduced-motion: reduce) { animation-duration: 0.01ms; transition-duration: 0.01ms; scroll-behavior: auto }", "purpose": "Honoured globally. Every canto tab remains a working link with no movement, and the folded index covers navigation if the script never runs." }
     ],
     "breakpoints": [
-      { "name": "canto", "value": "1240px", "purpose": "Edge tabs are removed; the section band becomes position: sticky instead." },
-      { "name": "rejillas", "value": "1000px", "purpose": "Section index drops to two columns; the featured box stacks and its image takes 16:9; footer index halves." },
-      { "name": "movil", "value": "900px", "purpose": "--margen drops from 2rem to 1.25rem; header nav is replaced by a bordered link to the on-page index; article type steps down; footer buttons go full-width." },
+      { "name": "canto-borde", "value": "1240px", "purpose": "Front-page edge tabs are removed; the section band becomes position: sticky instead." },
+      { "name": "canto-entrada", "value": "1180px", "purpose": "The entry's canto column is removed; a <details> folded index takes over above the body. The grid drops to register + reading column." },
+      { "name": "rejillas", "value": "1000px", "purpose": "Cover index drops to two columns; the featured box stacks and its image takes 16:9; footer index halves." },
+      { "name": "movil", "value": "900px", "purpose": "--margen drops from 2rem to 1.25rem; header nav is replaced by a bordered link; the entry's register is removed and its share controls reappear as a ruled row at the close; the data strip becomes a two-column grid; the article-section number track narrows to 2.15rem; article type steps down; footer buttons go full-width." },
       { "name": "fila", "value": "620px", "purpose": "Column header is removed; the row reflows to two columns with the minutes figure on the metadata line; wide tables scroll horizontally." },
       { "name": "cintillo", "value": "560px", "purpose": "The optional half of the top identification strip is dropped." },
       { "name": "indice-pie", "value": "520px", "purpose": "Footer index goes single-column." },
-      { "name": "indice", "value": "420px", "purpose": "Section index goes single-column." }
+      { "name": "ficha-tira", "value": "480px", "purpose": "The entry's data strip goes single-column." },
+      { "name": "indice", "value": "420px", "purpose": "Cover section index goes single-column." }
     ],
+    "grids": {
+      "fila": { "value": "4.5rem | minmax(0, 1fr) | 4.25rem, gap 0 1.35rem", "purpose": "The index unit: thumbnail, description, minutes. Shared by the column header so a list of links reads as a table. Reflows to 3.5rem | 1fr at 620px." },
+      "entrada": { "value": "3.5rem | minmax(0, 42rem) | 15rem, gap 0 2.5rem, justify-content: center", "purpose": "The reading unit: register, reading column, canto — 65.5rem inside a 78rem container, so neither margin is dead. The title header uses the same grid in column 2 so the h1 starts where the body starts. Both side columns are sticky at top: 1.5rem. Drops the canto at 1180px and the register at 900px." },
+      "apartado": { "value": "2.5rem | minmax(0, 1fr), gap 0.9rem", "purpose": "The numbered article section: counter stamp in the left track, heading in the right. Narrows to 2.15rem | 1fr at 900px." }
+    },
     "sectionMap": {
-      "mechanism": "dak_var_seccion($slug) in inc/helpers.php emits style=\"--sec:#HEX\" once on the outermost element of a block. Bands, chips, edge tabs, row labels, index numbers and nav squares all read that inherited variable. No component hard-codes a section hex.",
+      "mechanism": "dak_var_seccion($slug) in inc/helpers.php emits style=\"--sec:#HEX\" once on the outermost element of a block. Bands, chips, both kinds of canto tab, row labels, index numbers, nav squares, the numbered-article-section stamp and the copied-link confirmation all read that same inherited variable. No component hard-codes a section hex.",
       "order": ["01 seo-buscadores", "02 diseno-web", "03 redes-sociales", "04 publicidad", "05 automatizacion", "06 branding", "07 por-rubro", "08 guias-precios"],
       "fallback": "An unmapped category gets numero '—' and --sec-defecto, and sorts last."
     }
@@ -198,40 +189,72 @@
       "name": "Fila de catálogo",
       "kind": "custom",
       "refersTo": "fila",
-      "description": "The system's atom: reference, description, price (minutes). Shared verbatim by front page, section archive, search and article recirculation.",
+      "description": "The system's atom: reference, description, price (minutes). Shared by front page, section archive, search and the entry's recirculation block.",
       "html": "<ul class=\"ds-filas\"><li class=\"ds-fila\" style=\"--sec:#7B1FA2\"><a href=\"#\"><span class=\"ds-fila-figura\"><span class=\"ds-fila-sin-imagen\" aria-hidden=\"true\">01</span></span><div class=\"ds-fila-desc\"><p class=\"ds-fila-meta\"><span class=\"ds-fila-rotulo\">SEO Y BUSCADORES</span><span>AGO 26, 2026</span></p><h3>¿Cuánto cuesta posicionar una web en Google desde Chiclayo?</h3><p class=\"ds-fila-extracto\">Lo que realmente se paga cuando contratas posicionamiento, desglosado por partida y con los plazos que nadie te dice al firmar.</p></div><span class=\"ds-dato\">7 min</span></a></li></ul>",
-      "css": ".ds-filas { list-style: none; margin: 0; padding: 0; background: #FFFFFF; border-bottom: 1px solid #D4D4CE; font-family: Archivo, sans-serif; } .ds-fila { border-top: 1px solid #D4D4CE; } .ds-fila:first-child { border-top: 0; } .ds-fila > a { position: relative; display: grid; grid-template-columns: 4.5rem minmax(0,1fr) 4.25rem; align-items: start; gap: 0 1.35rem; padding: 1rem 2rem; color: #141416; text-decoration: none; transition: background 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-fila > a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: #B024FF; transform: scaleX(0); transform-origin: left; transition: transform 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-fila > a:hover { background: #E9E9E5; } .ds-fila > a:hover::after, .ds-fila > a:focus-visible::after { transform: scaleX(1); } .ds-fila > a:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } .ds-fila-figura { display: block; position: relative; width: 4.5rem; aspect-ratio: 1; background: #E9E9E5; overflow: hidden; } .ds-fila-sin-imagen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--sec,#3F3F47); color: #fff; font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-fila-desc { min-width: 0; } .ds-fila-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.7rem; margin: 0; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5E5E68; font-variant-numeric: tabular-nums; } .ds-fila-rotulo { color: var(--sec,#3F3F47); } .ds-fila h3 { font-size: 1.0625rem; font-weight: 600; line-height: 1.32; letter-spacing: -0.01em; margin: 0.35rem 0 0; } .ds-fila-extracto { font-family: Faustina, Georgia, serif; font-size: 0.9375rem; line-height: 1.55; color: #5E5E68; margin: 0.3rem 0 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } .ds-dato { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #3F3F47; text-align: right; white-space: nowrap; padding-top: 0.05rem; font-variant-numeric: tabular-nums; }"
+      "css": ".ds-filas { list-style: none; margin: 0; padding: 0; background: #FFFFFF; border-bottom: 1px solid #D4D4CE; font-family: Archivo, sans-serif; } .ds-fila { border-top: 1px solid #D4D4CE; } .ds-fila:first-child { border-top: 0; } .ds-fila > a { position: relative; display: grid; grid-template-columns: 4.5rem minmax(0,1fr) 4.25rem; align-items: start; gap: 0 1.35rem; padding: 1rem 2rem; color: #141416; text-decoration: none; transition: background 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-fila > a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: #B024FF; transform: scaleX(0); transform-origin: left; transition: transform 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-fila > a:hover { background: #E9E9E5; } .ds-fila > a:hover::after, .ds-fila > a:focus-visible::after { transform: scaleX(1); } .ds-fila > a:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } .ds-fila-figura { display: block; position: relative; width: 4.5rem; aspect-ratio: 1; background: #E9E9E5; overflow: hidden; } .ds-fila-sin-imagen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--sec,#3F3F47); color: #fff; font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; } .ds-fila-desc { min-width: 0; } .ds-fila-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.7rem; margin: 0; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5E5E68; font-variant-numeric: tabular-nums; } .ds-fila-rotulo { color: var(--sec,#3F3F47); } .ds-fila h3 { font-size: 1.0625rem; font-weight: 600; line-height: 1.32; letter-spacing: -0.01em; margin: 0.35rem 0 0; } .ds-fila-extracto { font-family: Faustina, Georgia, serif; font-size: 0.9375rem; line-height: 1.55; color: #5E5E68; margin: 0.3rem 0 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } .ds-dato { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #3F3F47; text-align: right; white-space: nowrap; padding-top: 0.05rem; font-variant-numeric: tabular-nums; }"
     },
     {
       "name": "Banda de sección",
       "kind": "nav",
       "refersTo": "seccion-banda",
-      "description": "Full-bleed glaze carrying the section number, name, count and the link into its archive. Opens every section of the catalogue.",
+      "description": "Full-bleed glaze carrying the section number, name, count and the link into its archive. Opens every section of the catalogue and the entry's recirculation block.",
       "html": "<div class=\"ds-banda\" style=\"--sec:#1B5E20\"><div class=\"ds-banda-int\"><span class=\"ds-codigo\">08</span><h2 class=\"ds-banda-nombre\">Guías y Precios</h2><span class=\"ds-cuenta\">12 entradas</span><a class=\"ds-banda-ver\" href=\"#\">Ver sección <span>&rsaquo;</span></a></div></div>",
       "css": ".ds-banda { background: var(--sec,#3F3F47); color: #fff; font-family: Archivo, sans-serif; } .ds-banda-int { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.85rem 1.25rem; max-width: 78rem; margin-inline: auto; padding: 0.8rem 2rem; } .ds-codigo { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; } .ds-banda-nombre { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.01em; margin: 0; } .ds-cuenta { font-size: 0.75rem; color: rgba(255,255,255,0.82); font-variant-numeric: tabular-nums; } .ds-banda-ver { margin-left: auto; display: inline-flex; align-items: center; gap: 0.45rem; color: #fff; text-decoration: none; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.45); padding-bottom: 2px; transition: border-color 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-banda-ver:hover { border-bottom-color: #fff; } .ds-banda-ver span { display: inline-block; transition: transform 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-banda-ver:hover span { transform: translateX(3px); } .ds-banda-ver:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; }"
     },
     {
-      "name": "Encabezado de columnas",
-      "kind": "custom",
-      "refersTo": null,
-      "description": "Sits once per section directly above the rows, on the row's own grid tracks. It is what makes a list of links read as the table of a catalogue. aria-hidden on purpose: the rows are a list, not a table. Removed below 620px.",
-      "html": "<div class=\"ds-columnas\" aria-hidden=\"true\"><span>Ref.</span><span>Descripción</span><span class=\"ds-col-dato\">Min</span></div>",
-      "css": ".ds-columnas { display: grid; grid-template-columns: 4.5rem minmax(0,1fr) 4.25rem; gap: 0 1.35rem; max-width: 78rem; margin-inline: auto; padding: 0.5rem 2rem; background: #FFFFFF; border-bottom: 1px solid #141416; font-family: Archivo, sans-serif; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: #5E5E68; } .ds-col-dato { text-align: right; } @media (max-width: 620px) { .ds-columnas { display: none; } }"
+      "name": "Tira de ficha técnica",
+      "kind": "card",
+      "refersTo": "ficha-tira",
+      "description": "The entry's record, flattened into a full-bleed ink strip under the title: Firma / Publicado / Revisado / Lectura / Apartados. Third appearance of the bordered data object (.edicion on the cover, .ficha-casa on the back cover). 'Revisado' only prints when the post was modified more than a day after publication; 'Apartados' is filled by script from the section count.",
+      "html": "<div class=\"ds-tira\"><div class=\"ds-tira-int\"><dl><div><dt>Firma</dt><dd>DAK Agency</dd></div><div><dt>Publicado</dt><dd>AGO 26, 2026</dd></div><div><dt>Revisado</dt><dd>AGO 27, 2026</dd></div><div><dt>Lectura</dt><dd>9 min</dd></div><div><dt>Apartados</dt><dd>11</dd></div></dl></div></div>",
+      "css": ".ds-tira { background: #141416; color: rgba(255,255,255,0.75); font-family: Archivo, sans-serif; } .ds-tira-int { max-width: 78rem; margin-inline: auto; padding-inline: 2rem; } .ds-tira dl { display: flex; flex-wrap: wrap; margin: 0; padding-block: 0.85rem; } .ds-tira dl > div { display: flex; flex-direction: column; gap: 0.15rem; padding-right: 2.5rem; margin-right: 2.5rem; border-right: 1px solid rgba(255,255,255,0.18); } .ds-tira dl > div:last-child { border-right: 0; margin-right: 0; padding-right: 0; } .ds-tira dt { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: #D89BFF; } .ds-tira dd { margin: 0; font-size: 0.9375rem; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; } @media (max-width: 900px) { .ds-tira dl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem 1.5rem; } .ds-tira dl > div { padding-right: 0; margin-right: 0; border-right: 0; } } @media (max-width: 480px) { .ds-tira dl { grid-template-columns: 1fr; } }"
     },
     {
-      "name": "Pestaña de canto",
+      "name": "Canto de apartados",
+      "kind": "nav",
+      "refersTo": "canto-pestana-apartado",
+      "description": "The signature component in its column pointing. Same .canto-pestana element as the front page's edge rail, re-aimed at this entry's own h2 sections and restyled for an in-grid sticky column — the edge of the sheet, not the edge of the screen. Do not fork this into a separate component.",
+      "html": "<aside class=\"ds-canto-col\"><div class=\"ds-canto-peg\"><p class=\"ds-canto-titulo\">Apartados</p><a class=\"ds-pest-col ds-es-activa\" href=\"#\" style=\"--sec:#0F4C9C\"><span class=\"ds-codigo\">01</span><span class=\"ds-nombre\">Qué cubre realmente un presupuesto de posicionamiento</span></a><a class=\"ds-pest-col\" href=\"#\" style=\"--sec:#0F4C9C\"><span class=\"ds-codigo\">02</span><span class=\"ds-nombre\">Las tres partidas y lo que pesa cada una</span></a><a class=\"ds-pest-col\" href=\"#\" style=\"--sec:#0F4C9C\"><span class=\"ds-codigo\">03</span><span class=\"ds-nombre\">Cómo lo hacemos en DAK</span></a></div></aside>",
+      "css": ".ds-canto-col { width: 15rem; font-family: Archivo, sans-serif; } .ds-canto-peg { position: sticky; top: 1.5rem; } .ds-canto-titulo { margin: 0 0 0.35rem; padding-bottom: 0.5rem; border-bottom: 1px solid #141416; color: #5E5E68; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; } .ds-pest-col { display: grid; grid-template-columns: 1.75rem minmax(0,1fr); gap: 0.65rem; align-items: baseline; padding: 0.5rem 0.5rem 0.5rem 0; border-bottom: 1px solid #D4D4CE; background: none; color: #3F3F47; text-decoration: none; transition: color 0.22s cubic-bezier(0.22,1,0.36,1), background 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-pest-col .ds-codigo { font-size: 0.6875rem; font-weight: 700; color: #fff; background: #9A9A93; text-align: center; padding: 0.15rem 0; font-variant-numeric: tabular-nums; transition: background 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-pest-col .ds-nombre { font-size: 0.8125rem; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } .ds-pest-col:hover { color: #141416; background: #E9E9E5; } .ds-pest-col:hover .ds-codigo { background: #5E5E68; } .ds-pest-col:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } .ds-pest-col.ds-es-activa { color: #141416; } .ds-pest-col.ds-es-activa .ds-codigo { background: var(--sec,#3F3F47); }"
+    },
+    {
+      "name": "Canto de secciones",
       "kind": "nav",
       "refersTo": "canto-pestana",
-      "description": "The signature gesture. Eight fixed tabs at the right edge; the active one protrudes and saturates while its neighbours dim — a thumb pushed into a thick catalogue. Hidden below 1240px, where a sticky section band takes over.",
+      "description": "The same component in its edge pointing, on the front page and archives: eight tabs fixed to the right of the viewport, the active one protruding and saturated while its neighbours dim. header.php suppresses this rail on single posts so only one canto renders per page.",
       "html": "<nav class=\"ds-canto\" aria-label=\"Índice lateral de secciones\"><a class=\"ds-pestana ds-es-activa\" href=\"#\" style=\"--sec:#7B1FA2\"><span class=\"ds-p-codigo\">01</span><span class=\"ds-p-nombre\">SEO y Buscadores</span></a><a class=\"ds-pestana\" href=\"#\" style=\"--sec:#0F4C9C\"><span class=\"ds-p-codigo\">02</span><span class=\"ds-p-nombre\">Diseño Web</span></a><a class=\"ds-pestana\" href=\"#\" style=\"--sec:#B3123F\"><span class=\"ds-p-codigo\">03</span><span class=\"ds-p-nombre\">Redes Sociales</span></a></nav>",
       "css": ".ds-canto { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 2px; font-family: Archivo, sans-serif; } .ds-pestana { display: flex; align-items: center; gap: 0.6rem; background: var(--sec,#3F3F47); color: #fff; text-decoration: none; padding: 0.5rem 0.7rem 0.5rem 0.6rem; transform: translateX(calc(100% - 1.9rem)); opacity: 0.5; white-space: nowrap; transition: transform 0.22s cubic-bezier(0.22,1,0.36,1), opacity 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-p-codigo { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em; font-variant-numeric: tabular-nums; } .ds-p-nombre { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; } .ds-pestana.ds-es-activa { transform: translateX(calc(100% - 3.6rem)); opacity: 1; } .ds-pestana:hover, .ds-pestana:focus-visible, .ds-pestana.ds-es-activa:hover, .ds-pestana.ds-es-activa:focus-visible { transform: translateX(0); opacity: 1; } .ds-pestana:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } @media (prefers-reduced-motion: reduce) { .ds-pestana { transition-duration: 0.01ms; } }"
+    },
+    {
+      "name": "Apartado numerado",
+      "kind": "custom",
+      "refersTo": "apartado-numero",
+      "description": "The article's h2, opened by a 2px --casa rule and numbered by a CSS counter into a --sec-filled stamp. The figure is generated, not authored: only 9 of 501 h2 across the 58-post corpus carry their own 'N.' prefix, so the counter appears on every published entry without touching the generator.",
+      "html": "<div class=\"ds-cuerpo\"><h2 class=\"ds-apartado\" style=\"--sec:#0F4C9C\">Qué cubre realmente un presupuesto de posicionamiento</h2><p>El reparto no es el que se anuncia. Tres partidas, y solo una se paga una vez.</p><h2 class=\"ds-apartado\" style=\"--sec:#0F4C9C\">Las tres partidas y lo que pesa cada una</h2><p>Contenido, técnica y autoridad — en ese orden de gasto y en ese orden de espera.</p></div>",
+      "css": ".ds-cuerpo { counter-reset: apartado; font-family: Faustina, Georgia, serif; font-size: 1.125rem; line-height: 1.72; color: #3F3F47; max-width: 42rem; } .ds-cuerpo p { margin: 0.7em 0 0; } .ds-apartado { counter-increment: apartado; display: grid; grid-template-columns: 2.5rem minmax(0,1fr); gap: 0.9rem; align-items: start; margin: 2.5em 0 0; padding-top: 0.8em; border-top: 2px solid #B024FF; font-family: Archivo, sans-serif; font-size: clamp(1.4rem, 2.4vw, 1.95rem); font-weight: 700; line-height: 1.22; letter-spacing: -0.02em; color: #141416; } .ds-apartado::before { content: counter(apartado, decimal-leading-zero); display: flex; align-items: center; justify-content: center; height: 1.75rem; background: var(--sec,#3F3F47); color: #fff; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; } @media (max-width: 900px) { .ds-apartado { grid-template-columns: 2.15rem minmax(0,1fr); gap: 0.7rem; } }"
+    },
+    {
+      "name": "Registro y controles de compartir",
+      "kind": "button",
+      "refersTo": "compartir-boton",
+      "description": "The entry's left margin made to work: a sticky column with a vertically-set caption over square share controls, closed by a vertical hairline. Below 900px the identical control set (buffered once in PHP, printed twice) becomes a ruled horizontal row at the close. The copy button hides itself when the Clipboard API is absent, and confirms by filling with the entry's own section glaze.",
+      "html": "<aside class=\"ds-registro\"><div class=\"ds-registro-peg\"><p class=\"ds-registro-titulo\">Compartir</p><a class=\"ds-compartir\" href=\"#\" aria-label=\"Compartir en WhatsApp\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20.5 11.7a8.2 8.2 0 0 1-12.3 7.1L3.5 20.5l1.7-4.6a8.2 8.2 0 1 1 15.3-4.2z\"/><path d=\"M8.9 9.1c0 3.3 2.7 6 6 6\"/></svg></a><a class=\"ds-compartir\" href=\"#\" aria-label=\"Compartir en Facebook\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.8 3.5h-2.3a3.4 3.4 0 0 0-3.4 3.4v2.4H7v3.2h2.1v8h3.3v-8h2.4l.5-3.2h-2.9V7.2c0-.5.4-.9.9-.9h1.5z\"/></svg></a><button class=\"ds-compartir ds-es-copiado\" type=\"button\" aria-label=\"Copiar el enlace\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 13.2a4.8 4.8 0 0 0 7.2.5l2.9-2.9A4.8 4.8 0 0 0 13.3 4l-1.6 1.6\"/><path d=\"M14 10.8a4.8 4.8 0 0 0-7.2-.5l-2.9 2.9A4.8 4.8 0 0 0 10.7 20l1.6-1.6\"/></svg></button></div></aside>",
+      "css": ".ds-registro { width: 3.5rem; font-family: Archivo, sans-serif; --sec: #0F4C9C; } .ds-registro-peg { position: sticky; top: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; border-right: 1px solid #D4D4CE; padding-right: 0.75rem; margin-right: -0.75rem; } .ds-registro-titulo { writing-mode: vertical-rl; margin: 0 0 0.5rem; color: #5E5E68; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; } .ds-compartir { display: flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border: 1px solid #D4D4CE; border-radius: 0; background: #FFFFFF; color: #3F3F47; cursor: pointer; padding: 0; transition: color 0.22s cubic-bezier(0.22,1,0.36,1), border-color 0.22s cubic-bezier(0.22,1,0.36,1), background 0.22s cubic-bezier(0.22,1,0.36,1); } .ds-compartir svg { width: 1.05rem; height: 1.05rem; } .ds-compartir:hover { color: #fff; background: #8B1CC7; border-color: #8B1CC7; } .ds-compartir:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } .ds-compartir.ds-es-copiado { color: #fff; background: var(--sec,#3F3F47); border-color: var(--sec,#3F3F47); }"
+    },
+    {
+      "name": "Índice plegado",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "The canto's counterpart where there is no canto: a <details> index of the entry's sections, shown below 1180px above the body. It is also the no-JS and no-IntersectionObserver fallback for navigation within an entry.",
+      "html": "<details class=\"ds-plegado\" open><summary><span class=\"ds-rotulo\">Apartados de esta entrada</span></summary><nav aria-label=\"Índice de la entrada\"><ol><li><a href=\"#\"><span class=\"ds-codigo\">01</span><span>Qué cubre realmente un presupuesto de posicionamiento</span></a></li><li><a href=\"#\"><span class=\"ds-codigo\">02</span><span>Las tres partidas y lo que pesa cada una</span></a></li><li><a href=\"#\"><span class=\"ds-codigo\">03</span><span>Cómo lo hacemos en DAK</span></a></li></ol></nav></details>",
+      "css": ".ds-plegado { font-family: Archivo, sans-serif; } .ds-plegado summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; cursor: pointer; padding: 0.75rem 0; border-top: 1px solid #141416; border-bottom: 1px solid #D4D4CE; color: #3F3F47; list-style: none; } .ds-plegado summary::-webkit-details-marker { display: none; } .ds-plegado summary::after { content: '+'; font-weight: 700; color: #8B1CC7; } .ds-plegado[open] summary::after { content: '−'; } .ds-plegado summary:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; } .ds-rotulo { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; } .ds-plegado ol { list-style: none; margin: 0; padding-block: 0.5rem; } .ds-plegado li { border-bottom: 1px solid #D4D4CE; } .ds-plegado li a { display: grid; grid-template-columns: 2rem 1fr; gap: 0.75rem; padding: 0.6rem 0; font-size: 0.9375rem; line-height: 1.35; color: #3F3F47; text-decoration: none; } .ds-plegado .ds-codigo { font-size: 0.6875rem; font-weight: 700; color: #8B1CC7; font-variant-numeric: tabular-nums; } .ds-plegado li a:hover { color: #141416; } .ds-plegado li a:focus-visible { outline: 2px solid #fff; box-shadow: 0 0 0 5px #141416; }"
     },
     {
       "name": "Ficha de edición",
       "kind": "card",
       "refersTo": null,
-      "description": "The boxed record: a 1px ink outline over a two-column definition list with a filled title bar. The same object opens the front page (edition box, --casa bar) and closes it in the footer (house record, 10% white bar).",
-      "html": "<div class=\"ds-ficha\"><p class=\"ds-ficha-titulo\">Edición vigente</p><dl><dt>Actualizado</dt><dd>AGO 26, 2026</dd><dt>Secciones</dt><dd>8</dd><dt>Entradas</dt><dd>55</dd></dl></div>",
+      "description": "The bordered data object in its boxed form: a 1px ink outline over a two-column definition list with a filled title bar. Opens the front page (edition box, --casa bar) and closes it in the footer (house record, 10% white bar).",
+      "html": "<div class=\"ds-ficha\"><p class=\"ds-ficha-titulo\">Edición vigente</p><dl><dt>Actualizado</dt><dd>AGO 26, 2026</dd><dt>Secciones</dt><dd>8</dd><dt>Entradas</dt><dd>58</dd></dl></div>",
       "css": ".ds-ficha { border: 1px solid #141416; min-width: 15rem; background: #FFFFFF; font-family: Archivo, sans-serif; } .ds-ficha-titulo { background: #B024FF; color: #fff; padding: 0.45rem 0.85rem; margin: 0; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; line-height: 1.35; } .ds-ficha dl { display: grid; grid-template-columns: auto 1fr; margin: 0; } .ds-ficha dt { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #5E5E68; padding: 0.55rem 0.85rem; border-bottom: 1px solid #D4D4CE; } .ds-ficha dd { font-size: 0.9375rem; font-weight: 600; text-align: right; color: #141416; margin: 0; padding: 0.55rem 0.85rem; border-bottom: 1px solid #D4D4CE; font-variant-numeric: tabular-nums; } .ds-ficha dl > :nth-last-child(-n + 2) { border-bottom: 0; }"
     },
     {
@@ -264,7 +287,7 @@
       "refersTo": null,
       "description": "The callout inside article prose. Boxed with a hairline and a 2px house rule ACROSS THE TOP — the side accent bar is banned in this project. The .servicio-relacionado variant carries a bled caption tab reading 'Siguiente paso'; that class name comes from the content pipeline and must not be renamed.",
       "html": "<blockquote class=\"ds-nota\"><p>El presupuesto de un proyecto de posicionamiento se reparte entre contenido, técnica y autoridad — y las tres partidas se pagan en meses, no en semanas.</p></blockquote><blockquote class=\"ds-nota ds-nota-servicio\"><p><b>Servicio relacionado:</b> auditoría SEO y plan de contenidos para negocios de Lambayeque.</p></blockquote>",
-      "css": ".ds-nota { border: 1px solid #D4D4CE; border-top: 2px solid #B024FF; border-radius: 0; background: #F2F2F0; margin: 0 0 1.15em; padding: 1.15rem 1.35rem; font-family: Faustina, Georgia, serif; font-size: 1.0625rem; line-height: 1.72; color: #3F3F47; } .ds-nota p { margin: 0; } .ds-nota-servicio { border: 1px solid #141416; border-top: 0; background: #FFFFFF; padding-top: 1.35rem; position: relative; } .ds-nota-servicio::before { content: 'Siguiente paso'; display: block; background: #B024FF; color: #fff; margin: -1.35rem -1.35rem 1rem; padding: 0.4rem 1.35rem; font-family: Archivo, sans-serif; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; } .ds-nota-servicio b { font-family: Archivo, sans-serif; font-weight: 600; color: #141416; }"
+      "css": ".ds-nota { border: 1px solid #D4D4CE; border-top: 2px solid #B024FF; border-radius: 0; background: #F2F2F0; margin: 0 0 1.15em; padding: 1.15rem 1.35rem; font-family: Faustina, Georgia, serif; font-size: 1.0625rem; line-height: 1.72; color: #3F3F47; } .ds-nota p { margin: 0; } .ds-nota-servicio { border: 1px solid #141416; border-top: 0; background: #FFFFFF; padding-top: 1.35rem; } .ds-nota-servicio::before { content: 'Siguiente paso'; display: block; background: #B024FF; color: #fff; margin: -1.35rem -1.35rem 1rem; padding: 0.4rem 1.35rem; font-family: Archivo, sans-serif; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; } .ds-nota-servicio b { font-family: Archivo, sans-serif; font-weight: 600; color: #141416; }"
     },
     {
       "name": "Índice de secciones",
@@ -283,49 +306,58 @@
       "Eight section glazes propagated through a single inherited --sec custom property.",
       "Zero radius, zero shadow, zero gradient — the flatness is the identity, not a shortcut.",
       "Archivo with tabular figures for all structure; Faustina for all prose.",
-      "One authored motion gesture in the entire site (the edge tab), plus one rule that grows.",
+      "One authored motion gesture, re-pointed rather than duplicated across surfaces.",
       "Self-hosted variable fonts, latin subset, zero third-party origins."
     ],
     "rules": [
       { "name": "The Fill-Only Rule", "body": "--casa is a surface, never a letter. Any purple that has to be read as text is --casa-texto on paper or --casa-clara on ink. There is no third option.", "section": "colors" },
-      { "name": "The One Glaze Per Block Rule", "body": "A section colour is declared exactly once, on the outermost element of its block, as --sec. Bands, chips, edge tabs, row labels and index numbers all read that same variable. Never hard-code a section hex into a component.", "section": "colors" },
+      { "name": "The One Glaze Per Block Rule", "body": "A section colour is declared exactly once, on the outermost element of its block, as --sec. Bands, chips, edge tabs, row labels, index numbers and numbered article sections all read that same variable. Never hard-code a section hex into a component.", "section": "colors" },
       { "name": "The Darkening Press Rule", "body": "Interactive purple gets darker on hover, never lighter. Lightening #B024FF puts white text below 4.5:1; --casa-texto holds 6.80:1.", "section": "colors" },
       { "name": "The Two-Job Rule", "body": "Archivo for structure, Faustina for prose. A heading inside article prose switches back to Archivo; an excerpt inside a structural row switches to Faustina. The face announces which job the text is doing.", "section": "typography" },
-      { "name": "The Tabular Figures Rule", "body": "Every number in the catalogue — codes, counts, dates, minutes, page numbers, table cells — runs font-variant-numeric: tabular-nums. Columns of figures that do not align are not a catalogue.", "section": "typography" },
-      { "name": "The Air-Above Rule", "body": "In article prose, headings take more space above than below (h2 2.4em top, 0.7em to the next element). One rhythm, whole page.", "section": "typography" },
+      { "name": "The Tabular Figures Rule", "body": "Every number in the catalogue — codes, counts, dates, minutes, page numbers, table cells, the numbered-section counter — runs font-variant-numeric: tabular-nums. Columns of figures that do not align are not a catalogue.", "section": "typography" },
+      { "name": "The Air-Above Rule", "body": "In article prose, headings take more space above than below (h2 2.5em top, 0.7em to the next element). One rhythm, whole page.", "section": "typography" },
+      { "name": "The Twelve-Step Rule", "body": "The ramp is closed. A new surface picks the nearest existing step; it does not introduce a thirteenth literal. Two rungs carry two roles each on purpose (Headline serves the cover's featured title and the article's numbered section; Title and Body corto share 1.0625rem across the two faces) — that reuse is what keeps the ramp short.", "section": "typography" },
       { "name": "The Full-Bleed Band Rule", "body": "Section colour reaches the edges of the viewport; the type inside it does not. Never box a section colour inside the container.", "section": "layout" },
       { "name": "The Hairline Gutter Rule", "body": "Grid gaps in index surfaces are 1px of --filete showing through, not empty space. The catalogue is ruled, not spaced.", "section": "layout" },
-      { "name": "The Flat-Ink Rule", "body": "No shadow, no radius, no gradient, no blur. If something needs to separate from what is behind it, it gets a rule or a change of paper tone.", "section": "elevation" },
+      { "name": "The No-Empty-Margin Rule", "body": "A reading column is centred by giving both margins work, not by letting them go blank. On the entry that is the register on the left and the canto on the right; when a breakpoint takes one away, its content relocates into the flow (the canto becomes a folded index above the body, the register becomes a share row at the close) rather than evaporating.", "section": "layout" },
+      { "name": "The Flat-Ink Rule", "body": "No shadow, no radius, no gradient, no blur. If something needs to separate from what is behind it, it gets a rule or a change of paper tone. A sticky element is not an exception.", "section": "elevation" },
       { "name": "The Two-Tone Focus Rule", "body": "Focus is a white 2px outline with a --tinta 5px halo outside it. A single-tone ring in the house purple measured 1.70:1 against the green section band — below the 3:1 that WCAG 1.4.11 requires for non-text — so the ring carries both a light and a dark tone and survives all thirteen real backgrounds in the build: paper, white row, eight glazes, dark footer and dark strip.", "section": "elevation" },
-      { "name": "The No-Side-Rule Rule", "body": "An accent rule on the left or right edge of a block is banned in this project. Callouts get a full 1px box with a 2px --casa rule across the top. The left accent bar is the most recognisable tell of a generated interface and this world does not use it.", "section": "shapes" }
+      { "name": "The No-Side-Rule Rule", "body": "An accent rule on the left or right edge of a block is banned in this project. Callouts get a full 1px box with a 2px --casa rule across the top. The left accent bar is the most recognisable tell of a generated interface and this world does not use it. Structural column dividers — the register's vertical hairline, the data strip's field separators — are grid rules, not accents: they are --filete or 18% white, never --casa or a section glaze.", "section": "shapes" },
+      { "name": "The Third-Appearance Rule", "body": "The bordered data object appears three times and always means the same thing — a record of the thing you are looking at, printed as label/value pairs in tabular figures. .edicion opens the front page, .ficha-tira opens the entry, .ficha-casa closes the back cover. A fourth data surface uses this object; it does not invent one.", "section": "shapes" }
     ],
     "dos": [
       "Do set the section colour once per block as --sec (via dak_var_seccion()) and let every child inherit it.",
       "Do use --casa (#B024FF) as fill only, --casa-texto (#8B1CC7) for purple text on paper, --casa-clara (#D89BFF) for purple text on ink.",
       "Do keep the two-tone focus ring exactly as it is: white 2px outline plus a --tinta 5px halo. It is the only ring that clears 3:1 on all thirteen real backgrounds.",
-      "Do run tabular figures on every number: codes, counts, dates, minutes, page numbers, tables.",
+      "Do pick a size from the twelve recorded steps. If a new surface seems to need a thirteenth, the nearest step is the answer.",
+      "Do run tabular figures on every number: codes, counts, dates, minutes, page numbers, tables, generated section numbers.",
       "Do use Archivo for structure and Faustina for prose, switching face whenever the job changes.",
       "Do separate with hairlines and paper-tone changes; escalate emphasis by making a rule heavier (1px → 2px → 3px), not by adding depth.",
       "Do keep 0.6875rem (11px) as the floor for functional text.",
-      "Do keep prose at 42rem and use text-wrap: balance with a ch cap on every large heading.",
+      "Do keep prose at 42rem and use text-wrap: balance on every large heading.",
+      "Do give both margins of a reading column something to do, and relocate that content into the flow when the breakpoint takes the margin away.",
+      "Do re-point the canto rather than build a second index component; one canto per page, and header.php enforces it.",
       "Do keep exactly one h1 per template with no heading-level skips.",
       "Do self-host fonts, latin subset, and preload only the face that composes the first viewport.",
       "Do move motion through transform and opacity, honour prefers-reduced-motion, and drive scroll state with IntersectionObserver.",
+      "Do derive structure from what the corpus already publishes (sections from h2, counts from the DOM) and verify the frequency before relying on it, as the 2%-collision check did.",
+      "Do hide a control that cannot function (the copy button with no Clipboard API) rather than ship a dead affordance.",
       "Do give a missing image a filled section-coloured square with its number, not an empty cell."
     ],
     "donts": [
-      "Don't add a border-radius, a box-shadow on a surface, or a gradient. The one shadow in the theme is the focus halo.",
-      "Don't put an accent rule on the left or right edge of a block. Callouts are boxed with a top rule.",
+      "Don't add a border-radius, a box-shadow on a surface, or a gradient. The one shadow in the theme is the focus halo, and a sticky element is not an exception.",
+      "Don't put an accent rule on the left or right edge of a block. Callouts are boxed with a top rule. Structural column hairlines are --filete or a white tint, never an accent colour.",
       "Don't write text in #B024FF on paper — it measures 4.12:1.",
       "Don't lighten purple on hover; darken it.",
-      "Don't put a small uppercase label above a heading. No eyebrows, no kickers anywhere; the rótulo style exists for box captions, column headers and the image stamp only.",
+      "Don't put a decorative label above a heading. No eyebrows, no kickers anywhere. The Rótulo style is for box captions, column headers, data-strip field names and the image stamp; the section chip may precede an h1 only because it is a working link to that section's archive.",
       "Don't ship the card grid with a photo on top and a category pill. Entries are rows in a table.",
       "Don't let a row thumbnail compete with the featured box: thumbnails are thumbnail-size, lazy and desaturated at rest; exactly one image per page loads eagerly.",
       "Don't hide breadcrumbs or any element that carries structured data.",
       "Don't hard-code a section hex into a component; read --sec.",
-      "Don't register add_image_size(). WordPress's proportional defaults already exist on the server for all 55 live posts and give a real srcset immediately; a custom crop would force a full thumbnail regeneration on a live install that has no repository.",
-      "Don't reintroduce a per-entry catalogue code. The 01–08 section numbering is the ordering device; a database ID printed on a row was noise and was removed at the user's request.",
-      "Don't animate width or margin, and don't add a second authored motion gesture — the edge tab is the site's one flourish."
+      "Don't add a per-heading size override at a breakpoint when the heading is already set with a clamp() — the clamp is the mobile behaviour.",
+      "Don't register add_image_size(). WordPress's proportional defaults already exist on the server for all live posts and give a real srcset immediately; a custom crop would force a full thumbnail regeneration on a live install that has no repository.",
+      "Don't reintroduce a per-entry catalogue code. The 01–08 section numbering and the generated article-section counter are the ordering devices; a database ID printed on a row was noise and was removed at the user's request.",
+      "Don't animate width or margin, and don't add a second authored motion gesture — the canto is the site's one flourish, in both of its pointings."
     ]
   }
 }

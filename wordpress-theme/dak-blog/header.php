@@ -82,7 +82,15 @@ $dak_seccion_activa = ( is_category() ) ? get_queried_object()->slug : '';
 	</div>
 </header>
 
-<?php if ( ! empty( $dak_secciones_nav ) ) : ?>
+<?php
+/*
+ * El canto derecho es UNA sola cosa por página. En el índice y en los archivos
+ * dice en qué sección estás; dentro de una entrada, single.php lo reconstruye
+ * con los apartados de esa entrada. Por eso aquí se omite en las entradas: el
+ * pulgar no puede señalar dos libros a la vez.
+ */
+?>
+<?php if ( ! empty( $dak_secciones_nav ) && ! is_singular( 'post' ) ) : ?>
 	<nav class="canto" aria-label="Índice lateral de secciones">
 		<?php foreach ( $dak_secciones_nav as $dak_sec ) : ?>
 			<a class="canto-pestana <?php echo ( $dak_seccion_activa === $dak_sec['term']->slug ) ? 'es-activa' : ''; ?>"

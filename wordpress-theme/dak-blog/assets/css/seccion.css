@@ -14,7 +14,7 @@
 .archivo-portada { background: var(--papel-fila); border-bottom: 3px solid var(--tinta); }
 .archivo-portada .contenedor { padding-block: 2rem 1.75rem; }
 .archivo-portada h1 {
-  font-size: clamp(1.9rem, 4.4vw, 3rem);
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
   font-weight: 700; line-height: 1.08; letter-spacing: -0.03em;
   max-width: 20ch; text-wrap: balance;
 }
@@ -72,7 +72,7 @@
 .error-404 { background: var(--papel-fila); border-bottom: 3px solid var(--tinta); }
 .error-404 .contenedor { padding-block: 3.5rem 3rem; }
 .error-404 h1 {
-  font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 700;
+  font-size: clamp(2rem, 4.6vw, 3.4rem); font-weight: 700;
   line-height: 1.12; letter-spacing: -0.03em;
   max-width: 20ch;
 }

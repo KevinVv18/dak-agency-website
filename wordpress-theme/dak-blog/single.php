@@ -1,10 +1,25 @@
 <?php
 /**
- * Entrada individual.
+ * Entrada individual: el registro de canto.
  *
- * Cimientos del mundo aplicados a la lectura. El rediseño editorial a fondo
- * (índice lateral, progreso, ficha de autoría) es la Fase 2 y va junto con el
- * contrato de contenido de _blog-content/.
+ * ESTRUCTURA (seed 1f94094b, candidato 6 de la lista fundamentada).
+ *
+ * La entrada hereda el gesto de firma de la portada en vez de inventar uno:
+ * las pestañas del canto derecho, que en el índice son las ocho secciones,
+ * aquí son LOS APARTADOS DE ESTA ENTRADA. Misma pieza, mismo CSS, contenido
+ * distinto — que es como se comporta el pulgar en un catálogo: siempre dice
+ * dónde estás, solo cambia respecto a qué.
+ *
+ * El margen izquierdo es el REGISTRO: el filete vertical con los controles de
+ * compartir. Entre los dos, la columna de lectura. Ningún lado queda vacío y
+ * ningún componente es nuevo.
+ *
+ * CIRCUITO — esto funciona sobre las 58 entradas ya publicadas sin tocar
+ * _blog-content/: las pestañas se construyen desde los h2, de los que hay
+ * mediana 9 y máximo 13 por entrada. Los dos apartados que el generador
+ * repite —«Cómo lo hacemos en DAK» (45/58) y «Preguntas frecuentes» (41/58)—
+ * se reconocen por su texto y reciben tratamiento propio, tambien sin tocar
+ * el contenido.
  *
  * @package dak-blog
  */
@@ -16,32 +31,77 @@ get_header();
 while ( have_posts() ) :
 	the_post();
 
-	$dak_post     = get_post();
-	$dak_seccion  = dak_seccion_de( $dak_post );
-	$dak_slug     = $dak_seccion ? $dak_seccion->slug : '';
+	$dak_post      = get_post();
+	$dak_seccion   = dak_seccion_de( $dak_post );
+	$dak_slug      = $dak_seccion ? $dak_seccion->slug : '';
+	$dak_datos_sec = dak_seccion_datos( $dak_slug );
 	$dak_miniatura = get_post_thumbnail_id( $dak_post );
+	$dak_url       = get_permalink( $dak_post );
+	$dak_titulo    = get_the_title();
+
+	// Controles de compartir: se definen una vez y se usan en el registro
+	// (escritorio) y al cierre (móvil, donde no hay márgenes que usar).
+	ob_start();
+	?>
+	<a class="compartir-boton" target="_blank" rel="noopener"
+		aria-label="Compartir esta entrada en WhatsApp"
+		href="https://api.whatsapp.com/send?text=<?php echo rawurlencode( $dak_titulo . ' ' . $dak_url ); ?>">
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+			<path d="M20.5 11.7a8.2 8.2 0 0 1-12.3 7.1L3.5 20.5l1.7-4.6a8.2 8.2 0 1 1 15.3-4.2z"/>
+			<path d="M8.9 9.1c0 3.3 2.7 6 6 6"/>
+		</svg>
+	</a>
+	<a class="compartir-boton" target="_blank" rel="noopener"
+		aria-label="Compartir esta entrada en Facebook"
+		href="https://www.facebook.com/sharer/sharer.php?u=<?php echo rawurlencode( $dak_url ); ?>">
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+			<path d="M14.8 3.5h-2.3a3.4 3.4 0 0 0-3.4 3.4v2.4H7v3.2h2.1v8h3.3v-8h2.4l.5-3.2h-2.9V7.2c0-.5.4-.9.9-.9h1.5z"/>
+		</svg>
+	</a>
+	<button class="compartir-boton es-copiar" type="button"
+		aria-label="Copiar el enlace de esta entrada"
+		data-url="<?php echo esc_url( $dak_url ); ?>">
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+			<path d="M10 13.2a4.8 4.8 0 0 0 7.2.5l2.9-2.9A4.8 4.8 0 0 0 13.3 4l-1.6 1.6"/>
+			<path d="M14 10.8a4.8 4.8 0 0 0-7.2-.5l-2.9 2.9A4.8 4.8 0 0 0 10.7 20l1.6-1.6"/>
+		</svg>
+	</button>
+	<?php
+	$dak_compartir = ob_get_clean();
 	?>
 
 	<main id="contenido">
 		<article class="articulo" <?php echo dak_var_seccion( $dak_slug ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
 
+			<?php // ── Cabecera: el titular vive en la columna de lectura ── ?>
 			<div class="articulo-ficha">
 				<div class="contenedor">
-					<div class="articulo-meta">
-						<?php if ( $dak_seccion ) : ?>
-							<a class="etiqueta-seccion" href="<?php echo esc_url( get_category_link( $dak_seccion->term_id ) ); ?>">
-								<?php echo esc_html( $dak_seccion->name ); ?>
-							</a>
+					<div class="articulo-rejilla">
+						<div class="articulo-cabeza">
+							<?php if ( $dak_seccion ) : ?>
+								<a class="etiqueta-seccion" href="<?php echo esc_url( get_category_link( $dak_seccion->term_id ) ); ?>">
+									<?php echo esc_html( $dak_datos_sec['numero'] ); ?> · <?php echo esc_html( $dak_seccion->name ); ?>
+								</a>
+							<?php endif; ?>
+
+							<h1><?php the_title(); ?></h1>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<?php // ── Tira de ficha técnica, a sangre ─────────────────── ?>
+			<div class="ficha-tira">
+				<div class="contenedor">
+					<dl>
+						<div><dt>Firma</dt><dd><?php echo esc_html( get_the_author() ); ?></dd></div>
+						<div><dt>Publicado</dt><dd><?php echo esc_html( dak_fecha_corta( $dak_post->post_date ) ); ?></dd></div>
+						<?php if ( get_post_modified_time( 'U', false, $dak_post ) > get_post_time( 'U', false, $dak_post ) + DAY_IN_SECONDS ) : ?>
+							<div><dt>Revisado</dt><dd><?php echo esc_html( dak_fecha_corta( $dak_post->post_modified ) ); ?></dd></div>
 						<?php endif; ?>
-					</div>
-
-					<h1><?php the_title(); ?></h1>
-
-					<div class="articulo-datos">
-						<span>Por <b><?php echo esc_html( get_the_author() ); ?></b></span>
-						<span><?php echo esc_html( dak_fecha_corta( $dak_post->post_date ) ); ?></span>
-						<span><?php echo esc_html( (string) dak_minutos( $dak_post ) ); ?> min de lectura</span>
-					</div>
+						<div><dt>Lectura</dt><dd><?php echo esc_html( (string) dak_minutos( $dak_post ) ); ?> min</dd></div>
+						<div class="ficha-tira-apartados"><dt>Apartados</dt><dd data-apartados>&mdash;</dd></div>
+					</dl>
 				</div>
 			</div>
 
@@ -63,21 +123,56 @@ while ( have_posts() ) :
 				</figure>
 			<?php endif; ?>
 
-			<div class="articulo-cuerpo">
-				<?php the_content(); ?>
-			</div>
+			<?php // ── El cuerpo, entre el registro y el canto ─────────── ?>
+			<div class="contenedor">
+				<div class="articulo-rejilla es-cuerpo">
 
-			<div class="articulo-cierre">
-				<a class="articulo-volver" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-					<span aria-hidden="true">&larr;</span> Volver al catálogo
-				</a>
+					<aside class="articulo-registro" aria-label="Compartir esta entrada">
+						<div class="registro-pegado">
+							<p class="rotulo registro-titulo">Compartir</p>
+							<?php echo $dak_compartir; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						</div>
+					</aside>
+
+					<div class="articulo-columna">
+						<?php // Índice plegado: la contrapartida del canto donde no hay canto ?>
+						<details class="indice-plegado">
+							<summary><span class="rotulo">Apartados de esta entrada</span></summary>
+							<nav aria-label="Índice de la entrada"><ol></ol></nav>
+						</details>
+
+						<div class="articulo-cuerpo">
+							<?php the_content(); ?>
+						</div>
+
+						<div class="articulo-cierre">
+							<div class="compartir-fila">
+								<p class="rotulo">Compartir</p>
+								<?php echo $dak_compartir; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+							</div>
+
+							<a class="articulo-volver" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+								<span aria-hidden="true">&larr;</span> Volver al catálogo
+							</a>
+						</div>
+					</div>
+
+					<?php
+					/*
+					 * El canto de la entrada. Va DENTRO de la retícula, no fijo al
+					 * viewport: es el canto del pliego, no el borde de la pantalla,
+					 * y así el margen derecho lleva contenido en vez de aire.
+					 * Lo rellena assets/js/blog.js desde los h2 del cuerpo.
+					 */
+					?>
+					<aside class="articulo-canto" aria-label="Apartados de esta entrada"></aside>
+
+				</div>
 			</div>
 		</article>
 
 		<?php
 		// ── Recirculación: entradas de la misma sección ──────────────
-		// Sin sección, category__in vacío devolvería la consulta entera: mejor
-		// caer en «lo más reciente del catálogo» de forma explícita.
 		$dak_args_rel = array(
 			'post_type'              => 'post',
 			'posts_per_page'         => 4,
@@ -98,7 +193,7 @@ while ( have_posts() ) :
 			<section class="seccion" <?php echo dak_var_seccion( $dak_slug ); // phpcs:ignore WordPress.Security.EscapeOutput ?> aria-labelledby="sigue-leyendo">
 				<div class="seccion-banda">
 					<div class="contenedor">
-						<span class="codigo"><?php echo esc_html( dak_seccion_datos( $dak_slug )['numero'] ); ?></span>
+						<span class="codigo"><?php echo esc_html( $dak_datos_sec['numero'] ); ?></span>
 						<h2 id="sigue-leyendo">Más de <?php echo esc_html( $dak_seccion ? $dak_seccion->name : 'el catálogo' ); ?></h2>
 
 						<?php if ( $dak_seccion ) : ?>

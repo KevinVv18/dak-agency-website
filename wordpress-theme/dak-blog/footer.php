@@ -145,7 +145,14 @@ $dak_ultima        = get_lastpostmodified( 'blog' );
 
 			<p>&copy; <?php echo esc_html( wp_date( 'Y' ) ); ?> DAK Agency &mdash; Chiclayo, Perú.</p>
 
-			<p class="pie-volver"><a href="#contenido">Volver arriba &uarr;</a></p>
+			<a class="pie-volver" href="#contenido">
+				<span class="pie-volver-texto">Volver a la tapa</span>
+				<span class="pie-volver-flecha" aria-hidden="true">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+						<path d="M12 19V5"/><path d="M6 11l6-6 6 6"/>
+					</svg>
+				</span>
+			</a>
 		</div>
 	</div>
 </footer>
