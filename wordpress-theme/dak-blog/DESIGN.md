@@ -116,9 +116,10 @@ spacing:
   margen: "2rem"
   margen-movil: "1.25rem"
   ancho: "78rem"
-  medida: "42rem"
+  medida: "40rem"
   registro: "3.5rem"
-  canto: "15rem"
+  canto: "18rem"
+  lamina-tope: "30rem"
   calle: "2.5rem"
 components:
   boton-casa:
@@ -331,7 +332,7 @@ labels, figures and controls have to align across columns rather than scale inde
   in near-identical variants, the archive masthead (`clamp(1.9rem, 4.4vw, 3rem)`) and the 404
   (`clamp(1.8rem, 4vw, 2.6rem)`). Capped at 20–21ch with `text-wrap: balance`.
 - **Display · entrada** (700, `clamp(2rem, 4.8vw, 3.4rem)`, 1.05, `-0.035em`): the article `h1`.
-  Tracked marginally tighter and steeper than the cover because it sits in the 42rem reading
+  Tracked marginally tighter and steeper than the cover because it sits in the 40rem reading
   column rather than across the container; the 3.4rem-against-1.125rem step is deliberate and must
   read at a glance.
 - **Headline** (700, `clamp(1.4rem, 2.4vw, 1.95rem)`, 1.16–1.22, `-0.02em`): the featured entry's
@@ -342,7 +343,7 @@ labels, figures and controls have to align across columns rather than scale inde
   section and a labelled paragraph group. `h4` drops to the Banda step (1.05rem).
 - **Banda** (700, 1.05rem, `0.01em`): the section code and name inside a glazed band, and the prose
   `h4`. The section-code step: any figure printed at the scale of a band code uses it.
-- **Body** (400, 1.125rem, 1.72, Faustina): article prose, in a 42rem column (~68 characters).
+- **Body** (400, 1.125rem, 1.72, Faustina): article prose, in a 40rem column (~70 characters).
   Drops to 1.0625rem under 900px.
 - **Title** (600, 1.0625rem, 1.32, `-0.01em`): the row title — the reader's own question, written
   out. The single most repeated piece of type in the system. At the same size, **Body corto**
@@ -392,12 +393,17 @@ section on the same track definition, which is what makes a list of links read a
 620px the header is removed and the row reflows to two columns (`3.5rem | 1fr`), with the minutes
 figure moving up onto the metadata line rather than being squeezed against the title.
 
-**The entry grid** is the reading unit: `3.5rem | minmax(0, 42rem) | 15rem` with `2.5rem` gutters,
-centred by `justify-content` — the register strip, the reading column, the canto. It totals 65.5rem
-inside a 78rem container, so the block occupies real width instead of leaving two dead margins.
-The title header uses the same grid and sits in column 2, so the `h1` starts exactly where the body
-starts rather than being thrown against the container edge. Both side columns are `position:
-sticky` at `top: 1.5rem`; the register carries a vertical hairline on its right.
+**The entry grid** is the reading unit: `3.5rem | minmax(0, 40rem) | 18rem` with `2.5rem` gutters,
+centred by `justify-content` — the register strip, the reading column, the right rail. It totals
+66.5rem inside a 78rem container, so the block occupies real width instead of leaving two dead
+margins. The title header uses the same grid and sits in column 2, so the `h1` starts exactly where
+the body starts rather than being thrown against the container edge. Both side columns are
+`position: sticky` at `top: 1.5rem`; the register carries a vertical hairline on its right.
+
+The third column is 18rem rather than 15 because it holds **two** pieces stacked, not one: the
+plate at the top of the entry and the canto of sections below it, sharing a left edge so the rail
+reads as a single column — LÁMINA, the image, APARTADOS, the index. The reading column gives up
+2rem for it and settles at 640px, about 70 characters, which is still good measure.
 
 The front page's index of sections is a four-column grid separated by 1px hairline gutters
 (`gap: 1px` over a `--filete` background, so the gaps *are* the rules). It steps to two columns at
@@ -622,7 +628,12 @@ a hole in the grid.
 - **Do** separate with hairlines and paper-tone changes; escalate emphasis by making a rule heavier
   (1px → 2px → 3px), not by adding depth.
 - **Do** keep 0.6875rem (11px) as the floor for functional text.
-- **Do** keep prose at 42rem and use `text-wrap: balance` on every large heading.
+- **Do** keep prose at 40rem and use `text-wrap: balance` on every large heading.
+- **Do** mount a circuit image at its own proportion and never crop it. What `_blog-content/`
+  emits is not photography — it is plates with type printed inside them, 1080×1350 in 50 of the
+  60 — so a band crop cuts the words in half. The box fits the plate; the plate never fits the box.
+  The only concession is a 30rem height ceiling with `object-fit: contain`, sized so it can never
+  bite a 4:5, and two strips of paper are always preferable to one severed word.
 - **Do** give both margins of a reading column something to do, and relocate that content into the
   flow when the breakpoint takes the margin away.
 - **Do** re-point the canto rather than build a second index component; one canto per page, and

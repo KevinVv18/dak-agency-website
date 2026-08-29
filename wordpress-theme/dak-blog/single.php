@@ -86,6 +86,42 @@ while ( have_posts() ) :
 
 							<h1><?php the_title(); ?></h1>
 						</div>
+
+						<?php
+						/*
+						 * LA LÁMINA. Va en la columna 3 —la misma del canto de
+						 * apartados, con la que comparte el filete izquierdo— y a su
+						 * proporción real, sin recortar.
+						 *
+						 * Por qué: el circuito de _blog-content/ no entrega fotografías,
+						 * entrega láminas con tipografía impresa dentro (1080×1350 en 50
+						 * de las 60). Meterlas en una banda a sangre las decapita. Una
+						 * lámina se monta a su medida o no se pone.
+						 *
+						 * Al pintarse a 340 px en vez de a 1248 deja de ser, además, el
+						 * peso muerto del LCP.
+						 */
+						if ( $dak_miniatura ) :
+							?>
+							<figure class="articulo-lamina">
+								<p class="rotulo lamina-rotulo">Lámina</p>
+								<span class="lamina-marco">
+									<?php
+									echo wp_get_attachment_image(
+										$dak_miniatura,
+										'medium_large',
+										false,
+										array(
+											'sizes'         => '(min-width: 1181px) 340px, (min-width: 901px) 352px, 92vw',
+											'loading'       => 'eager',
+											'fetchpriority' => 'high',
+											'decoding'      => 'async',
+										)
+									);
+									?>
+								</span>
+							</figure>
+						<?php endif; ?>
 					</div>
 				</div>
 			</div>
@@ -105,23 +141,6 @@ while ( have_posts() ) :
 				</div>
 			</div>
 
-			<?php if ( $dak_miniatura ) : ?>
-				<figure class="articulo-figura">
-					<?php
-					echo wp_get_attachment_image(
-						$dak_miniatura,
-						'large',
-						false,
-						array(
-							'sizes'         => '(min-width: 1280px) 1248px, 100vw',
-							'loading'       => 'eager',
-							'fetchpriority' => 'high',
-							'decoding'      => 'async',
-						)
-					);
-					?>
-				</figure>
-			<?php endif; ?>
 
 			<?php // ── El cuerpo, entre el registro y el canto ─────────── ?>
 			<div class="contenedor">

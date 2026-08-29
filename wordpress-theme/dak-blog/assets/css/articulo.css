@@ -14,19 +14,30 @@
 .articulo { background: var(--papel-fila); }
 
 /* ── La retícula ─────────────────────────────────────────────────
-   3.5rem de registro + 42rem de lectura + 15rem de canto = 60.5rem,
-   más dos calles de 2.5rem = 65.5rem. En un contenedor de 78rem el
+   3.5rem de registro + 40rem de lectura + 18rem de canto = 61.5rem,
+   más dos calles de 2.5rem = 66.5rem. En un contenedor de 78rem el
    bloque ocupa el ancho real en vez de dejar dos huecos muertos.
+
+   La tercera columna mide 18rem y no 15 porque aloja dos piezas, no una:
+   arriba la lámina de la entrada, debajo el canto de apartados. Ambas
+   comparten filete izquierdo, así que la columna se lee como un solo
+   raíl. La de lectura cede 2rem y se queda en 640 px —unos 70 signos,
+   que sigue siendo medida de lectura buena.
    ─────────────────────────────────────────────────────────────── */
 .articulo-rejilla {
   display: grid;
-  grid-template-columns: 3.5rem minmax(0, 42rem) 15rem;
+  grid-template-columns: 3.5rem minmax(0, 40rem) 18rem;
   gap: 0 2.5rem;
   justify-content: center;
 }
 /* La cabecera usa la misma retícula para que el titular arranque
    exactamente donde arranca el cuerpo, y no tirado contra el borde. */
-.articulo-cabeza { grid-column: 2; }
+.articulo-cabeza { grid-column: 2; grid-row: 1; }
+
+/* Titular y lámina se apoyan los dos en la tira de ficha. Alinear por
+   arriba dejaría aire muerto justo encima del filete, que es donde más
+   se nota. */
+.articulo-ficha .articulo-rejilla { align-items: end; }
 
 /* ── Cabecera ────────────────────────────────────────────────── */
 .articulo-ficha { border-bottom: 1px solid var(--filete); }
@@ -65,12 +76,64 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ── Imagen de portada ───────────────────────────────────────── */
-.articulo-figura { background: var(--papel-tinte); border-bottom: 1px solid var(--filete); }
+/* ── La lámina ───────────────────────────────────────────────────
+   El circuito de _blog-content/ no entrega fotografías: entrega láminas
+   con tipografía impresa dentro, 1080×1350 en 50 de las 60. Recortarlas
+   a una banda les corta las palabras por la mitad, así que aquí NO se
+   recorta nada — la lámina se monta a su proporción real, sea cual sea.
+
+   Va en la columna del canto, con el mismo rótulo y el mismo filete, de
+   modo que el raíl derecho se lee entero: LÁMINA, la imagen, APARTADOS,
+   el índice.
+   ─────────────────────────────────────────────────────────────── */
+.articulo-lamina { grid-column: 3; grid-row: 1; }
+
+/* Mismo tratamiento que .canto-titulo: es el mismo raíl. */
+.lamina-rotulo {
+  color: var(--tinta-3);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--tinta);
+  margin-bottom: 0.75rem;
+}
+
+.lamina-marco {
+  display: block; position: relative;
+  border: 1px solid var(--filete);
+  background: var(--papel-tinte);
+}
+/* El vidriado de la sección firma la lámina por arriba. */
+.lamina-marco::before {
+  content: '';
+  position: absolute; left: -1px; right: -1px; top: -1px;
+  height: 3px; background: var(--sec);
+}
+/* height:auto respeta la proporción del original. El tope está calculado
+   para no morder JAMÁS al 4:5 del circuito: el marco más ancho que existe
+   es el de móvil, 24rem, y 24 × 5/4 = 30rem justos. El contain solo entra
+   en juego con una lámina más alta que 4:5 —hoy hay una de sesenta—, y
+   entonces prefiere dos franjas de papel a cortarle una palabra. */
+.lamina-marco img {
+  display: block;
+  width: 100%; height: auto;
+  max-height: 30rem;
+  object-fit: contain;
+}
+
+/* ── La banda de las páginas pilar ───────────────────────────────
+   page.php no tiene retícula de tres columnas —son seis páginas hechas a
+   mano, no entradas del circuito—, así que ahí la imagen sigue siendo una
+   banda. Pero tampoco se recorta: se monta centrada sobre el papel
+   entintado, a su proporción, con tope de altura.
+   ─────────────────────────────────────────────────────────────── */
+.articulo-figura {
+  background: var(--papel-tinte);
+  border-bottom: 1px solid var(--filete);
+  text-align: center;
+}
 .articulo-figura img {
-  width: 100%; max-width: var(--ancho);
-  margin-inline: auto;
-  aspect-ratio: 16 / 9; object-fit: cover;
+  display: inline-block; vertical-align: top;
+  width: auto; max-width: 100%;
+  height: auto; max-height: 30rem;
 }
 
 /* ── El registro (columna izquierda) ─────────────────────────── */
@@ -311,16 +374,25 @@
 
 /* Sin sitio para el canto: el índice pasa a plegable sobre el cuerpo. */
 @media (max-width: 1180px) {
-  .articulo-rejilla { grid-template-columns: 3.5rem minmax(0, 42rem); }
+  .articulo-rejilla { grid-template-columns: 3.5rem minmax(0, 40rem); }
   .articulo-canto { display: none; }
   .indice-plegado { display: block; margin-top: 2.25rem; }
+
+  /* Sin raíl derecho, la lámina baja bajo el titular. No crece a todo el
+     ancho de lectura: seguiría siendo una lámina, no un cartel. */
+  .articulo-lamina { grid-column: 2; grid-row: auto; margin-top: 1.75rem; max-width: 24rem; }
 }
 
 @media (max-width: 900px) {
   .articulo-rejilla { grid-template-columns: minmax(0, 1fr); }
   .articulo-registro { display: none; }
   .articulo-cabeza,
+  .articulo-lamina,
   .articulo-columna { grid-column: 1; }
+  /* 24rem × 4:5 = 30rem justos, que es el tope: la lámina llena el marco
+     sin dejar franjas. Por debajo de 384 px de ancho manda el contenedor y
+     la altura baja sola. */
+  .articulo-lamina { max-width: 24rem; margin-top: 1.5rem; }
 
   .articulo-ficha .contenedor { padding-block: 1.75rem 1.35rem; }
   .articulo-cuerpo { font-size: 1.0625rem; padding-block: 2rem 1.5rem; }

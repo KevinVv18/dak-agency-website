@@ -35,7 +35,10 @@ while ( have_posts() ) :
 						'large',
 						false,
 						array(
-							'sizes'         => '(min-width: 1280px) 1248px, 100vw',
+							// La banda ya no recorta a 16:9: la imagen se monta a su
+							// proporción con tope de 30rem de alto, así que ni la más
+							// apaisada llega a pedir el ancho entero del contenedor.
+							'sizes'         => '(min-width: 900px) 900px, 100vw',
 							'loading'       => 'eager',
 							'fetchpriority' => 'high',
 							'decoding'      => 'async',

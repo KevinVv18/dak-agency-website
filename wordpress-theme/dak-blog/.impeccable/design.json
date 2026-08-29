@@ -165,7 +165,7 @@
     "breakpoints": [
       { "name": "canto-borde", "value": "1240px", "purpose": "Front-page edge tabs are removed; the section band becomes position: sticky instead." },
       { "name": "canto-entrada", "value": "1180px", "purpose": "The entry's canto column is removed; a <details> folded index takes over above the body. The grid drops to register + reading column." },
-      { "name": "rejillas", "value": "1000px", "purpose": "Cover index drops to two columns; the featured box stacks and its image takes 16:9; footer index halves." },
+      { "name": "rejillas", "value": "1000px", "purpose": "Cover index drops to two columns; the featured box stacks and its plate's height ceiling drops to 26rem so the title stays above the fold; footer index halves." },
       { "name": "movil", "value": "900px", "purpose": "--margen drops from 2rem to 1.25rem; header nav is replaced by a bordered link; the entry's register is removed and its share controls reappear as a ruled row at the close; the data strip becomes a two-column grid; the article-section number track narrows to 2.15rem; article type steps down; footer buttons go full-width." },
       { "name": "fila", "value": "620px", "purpose": "Column header is removed; the row reflows to two columns with the minutes figure on the metadata line; wide tables scroll horizontally." },
       { "name": "cintillo", "value": "560px", "purpose": "The optional half of the top identification strip is dropped." },
@@ -175,7 +175,7 @@
     ],
     "grids": {
       "fila": { "value": "4.5rem | minmax(0, 1fr) | 4.25rem, gap 0 1.35rem", "purpose": "The index unit: thumbnail, description, minutes. Shared by the column header so a list of links reads as a table. Reflows to 3.5rem | 1fr at 620px." },
-      "entrada": { "value": "3.5rem | minmax(0, 42rem) | 15rem, gap 0 2.5rem, justify-content: center", "purpose": "The reading unit: register, reading column, canto — 65.5rem inside a 78rem container, so neither margin is dead. The title header uses the same grid in column 2 so the h1 starts where the body starts. Both side columns are sticky at top: 1.5rem. Drops the canto at 1180px and the register at 900px." },
+      "entrada": { "value": "3.5rem | minmax(0, 40rem) | 18rem, gap 0 2.5rem, justify-content: center", "purpose": "The reading unit: register, reading column, right rail — 66.5rem inside a 78rem container, so neither margin is dead. The third column is 18rem because it stacks two pieces sharing a left edge, the plate over the canto, so the rail reads as one column. The title header uses the same grid in column 2 so the h1 starts where the body starts, and the plate sits in column 3 bottom-aligned with it. Both side columns are sticky at top: 1.5rem. Drops the rail at 1180px and the register at 900px." },
       "apartado": { "value": "2.5rem | minmax(0, 1fr), gap 0.9rem", "purpose": "The numbered article section: counter stamp in the left track, heading in the right. Narrows to 2.15rem | 1fr at 900px." }
     },
     "sectionMap": {
@@ -342,7 +342,8 @@
       "Do move motion through transform and opacity, honour prefers-reduced-motion, and drive scroll state with IntersectionObserver.",
       "Do derive structure from what the corpus already publishes (sections from h2, counts from the DOM) and verify the frequency before relying on it, as the 2%-collision check did.",
       "Do hide a control that cannot function (the copy button with no Clipboard API) rather than ship a dead affordance.",
-      "Do give a missing image a filled section-coloured square with its number, not an empty cell."
+      "Do give a missing image a filled section-coloured square with its number, not an empty cell.",
+      "Do mount a circuit image at its own proportion and never crop it. What _blog-content/ emits is plates with type printed inside them — 1080×1350 in 50 of the 60 — so a band crop severs the words. The box fits the plate, never the reverse: the entry mounts it in the right rail at natural ratio, and the featured box lets the taller of its two columns set the row height. The only concession is a height ceiling with object-fit: contain, sized so it cannot bite a 4:5; two strips of paper beat one severed word."
     ],
     "donts": [
       "Don't add a border-radius, a box-shadow on a surface, or a gradient. The one shadow in the theme is the focus halo, and a sticky element is not an exception.",

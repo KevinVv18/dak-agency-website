@@ -110,7 +110,10 @@
 .destacada { margin-block: 2.75rem 0; }
 .destacada-marco {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  /* La columna de la lámina es la estrecha, no la ancha: a 1.05fr la fila la
+     medía el texto y la imagen salía en formato apaisado —o sea, recortando
+     media lámina del circuito, que viene en 4:5 con tipografía impresa. */
+  grid-template-columns: minmax(0, 0.44fr) minmax(0, 1fr);
   border: 3px solid var(--tinta);
   background: var(--papel-fila);
 }
@@ -119,8 +122,23 @@
    y pasaría si alguien publica sin miniatura. */
 .destacada-marco.sin-imagen { grid-template-columns: 1fr; }
 
-.destacada-figura { position: relative; background: var(--papel-tinte); }
-.destacada-figura img { width: 100%; height: 100%; object-fit: cover; }
+/* Aquí NO se recorta: la caja se ajusta a la lámina, no la lámina a la caja.
+   Es el mismo principio que en la entrada, y por la misma razón —lo que llega
+   del circuito lleva palabras impresas—, con la ventaja de que así sirve
+   igual de bien a los seis formatos que hay hoy en el archivo: la fila la
+   marca la más alta de las dos columnas y la que sobra se apoya en el papel
+   entintado. Con el calzo fijo al 4:5 que probé antes, las láminas apaisadas
+   perdían más de la mitad. */
+.destacada-figura {
+  position: relative;
+  background: var(--papel-tinte);
+  align-self: stretch;
+}
+.destacada-figura img {
+  display: block;
+  width: 100%; height: auto;
+  max-height: 34rem; object-fit: contain;
+}
 .destacada-sello {
   position: absolute; left: 0; top: 0;
   background: var(--casa); color: #fff;
@@ -160,8 +178,22 @@
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 1000px) {
   .indice-rejilla { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* El recuadro aguanta en dos columnas mucho más abajo de lo que aguantaba el
+   índice: apilarlo a 1000 px dejaba una lámina de 4:5 a 800 px de ancho, o
+   sea más de mil de alto. Medido a 680 px se iba a 793 y el titular caía
+   fuera de pantalla. En dos columnas la lámina se queda estrecha y en
+   proporción hasta que la columna de texto ya no cabe. */
+@media (max-width: 620px) {
   .destacada-marco { grid-template-columns: 1fr; }
-  .destacada-figura { aspect-ratio: 16 / 9; }
+  /* Apilada, la lámina se monta centrada sobre el papel entintado en vez de
+     estirarse: por debajo de 416 px de ancho —o sea, en cualquier teléfono—
+     llena el marco sola y no se ve montura ninguna. */
+  .destacada-figura img {
+    max-width: 26rem; max-height: 32.5rem;
+    margin-inline: auto;
+  }
 }
 
 @media (max-width: 900px) {
