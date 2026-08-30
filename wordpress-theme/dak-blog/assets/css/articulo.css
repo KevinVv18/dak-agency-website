@@ -55,6 +55,18 @@
   text-wrap: balance;
 }
 
+/* La entradilla reutiliza el paso de 1.2rem que ya usa el Subtítulo, pero en
+   Faustina y peso normal: mismo escalón, otro papel. Se queda por debajo del
+   ancho del titular para que no compita con él. */
+.articulo-entradilla {
+  font-family: var(--f-prosa);
+  font-size: 1.2rem;
+  line-height: 1.55;
+  color: var(--tinta-2);
+  max-width: 34rem;
+  margin-top: 1.15rem;
+}
+
 /* ── Tira de ficha técnica, a sangre ─────────────────────────── */
 .ficha-tira { background: var(--tinta); color: rgba(255,255,255,0.75); }
 .ficha-tira dl {
@@ -108,14 +120,15 @@
   height: 3px; background: var(--sec);
 }
 /* height:auto respeta la proporción del original. El tope está calculado
-   para no morder JAMÁS al 4:5 del circuito: el marco más ancho que existe
-   es el de móvil, 24rem, y 24 × 5/4 = 30rem justos. El contain solo entra
-   en juego con una lámina más alta que 4:5 —hoy hay una de sesenta—, y
-   entonces prefiere dos franjas de papel a cortarle una palabra. */
+   para no morder JAMÁS al 4:5 del circuito: la lámina más ancha que existe
+   es la de 30rem que se monta al apilarse, y 30 × 5/4 = 37.5rem justos. El
+   contain solo entra en juego con una lámina más alta que 4:5 —hoy hay una
+   de sesenta—, y entonces prefiere dos franjas de papel a una palabra
+   cortada. */
 .lamina-marco img {
   display: block;
   width: 100%; height: auto;
-  max-height: 30rem;
+  max-height: 37.5rem;
   object-fit: contain;
 }
 
@@ -378,9 +391,13 @@
   .articulo-canto { display: none; }
   .indice-plegado { display: block; margin-top: 2.25rem; }
 
-  /* Sin raíl derecho, la lámina baja bajo el titular. No crece a todo el
-     ancho de lectura: seguiría siendo una lámina, no un cartel. */
-  .articulo-lamina { grid-column: 2; grid-row: auto; margin-top: 1.75rem; max-width: 24rem; }
+  /* Sin raíl derecho, la lámina baja bajo el titular. El marco pasa a ocupar
+     la columna entera —a plomo con el filete del rótulo que lo encabeza— y la
+     lámina se monta CENTRADA dentro. Así el papel que sobra queda igual a los
+     dos lados en vez de amontonarse todo a la derecha, que era lo que
+     descuadraba la entrada en tableta. */
+  .articulo-lamina { grid-column: 2; grid-row: auto; margin-top: 1.75rem; }
+  .lamina-marco img { max-width: 30rem; margin-inline: auto; }
 }
 
 @media (max-width: 900px) {
@@ -389,10 +406,8 @@
   .articulo-cabeza,
   .articulo-lamina,
   .articulo-columna { grid-column: 1; }
-  /* 24rem × 4:5 = 30rem justos, que es el tope: la lámina llena el marco
-     sin dejar franjas. Por debajo de 384 px de ancho manda el contenedor y
-     la altura baja sola. */
-  .articulo-lamina { max-width: 24rem; margin-top: 1.5rem; }
+  .articulo-lamina { margin-top: 1.5rem; }
+  .articulo-entradilla { font-size: 1.125rem; max-width: none; }
 
   .articulo-ficha .contenedor { padding-block: 1.75rem 1.35rem; }
   .articulo-cuerpo { font-size: 1.0625rem; padding-block: 2rem 1.5rem; }

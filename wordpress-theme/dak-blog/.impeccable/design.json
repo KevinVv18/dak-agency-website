@@ -136,6 +136,7 @@
       "headline": { "displayName": "Titular", "purpose": "Two roles, one clamp: the featured entry's title on the cover and the numbered h2 section heading inside an article. The clamp is the mobile behaviour; no breakpoint override." },
       "subtitulo": { "displayName": "Subtítulo", "purpose": "The prose h3 — the rung between a numbered section and a labelled paragraph group. h4 drops to the Banda step." },
       "banda": { "displayName": "Banda", "purpose": "The section-code step: the code and name inside a glazed band, and the prose h4. Any figure printed at band-code scale uses it." },
+      "entradilla": { "displayName": "Entradilla", "purpose": "The entry's excerpt under the h1, in Faustina at the Subtítulo size step but normal weight and --tinta-2 — same rung, different job. Capped at 34rem so it never rivals the title's measure; steps down to Body size below 900px. It exists because the header needs three things in its title column to stand beside the plate: with only chip and title the top-left quadrant read as a void." },
       "body": { "displayName": "Prosa", "purpose": "Faustina article body in a 42rem column (~68 characters). Steps to 1.0625rem below 900px." },
       "title": { "displayName": "Renglón", "purpose": "The catalogue row title — the reader's own question written out. The most repeated type in the system." },
       "body-corto": { "displayName": "Prosa breve", "purpose": "Faustina at the Title size: excerpts, cover subhead, archive intro, 404 copy and callout text." },

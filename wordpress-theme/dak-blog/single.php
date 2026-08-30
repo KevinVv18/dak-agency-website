@@ -85,6 +85,22 @@ while ( have_posts() ) :
 							<?php endif; ?>
 
 							<h1><?php the_title(); ?></h1>
+
+							<?php
+							/*
+							 * La entradilla. El circuito ya la escribe para las 59 entradas
+							 * publicadas y no es una metadescripción disfrazada: son 187
+							 * caracteres de media de prosa editorial, y solo 4 de 59 acaban
+							 * en llamada a la acción. Aquí hace dos trabajos: le dice al
+							 * lector de qué va esto antes de que decida entrar, y le da a la
+							 * columna del titular el cuerpo que le faltaba al lado de la
+							 * lámina.
+							 */
+							$dak_entradilla = dak_extracto( $dak_post, 48 );
+							if ( $dak_entradilla ) :
+								?>
+								<p class="articulo-entradilla"><?php echo esc_html( $dak_entradilla ); ?></p>
+							<?php endif; ?>
 						</div>
 
 						<?php

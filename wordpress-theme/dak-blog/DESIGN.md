@@ -119,7 +119,7 @@ spacing:
   medida: "40rem"
   registro: "3.5rem"
   canto: "18rem"
-  lamina-tope: "30rem"
+  lamina-tope: "37.5rem"
   calle: "2.5rem"
 components:
   boton-casa:
@@ -343,6 +343,9 @@ labels, figures and controls have to align across columns rather than scale inde
   section and a labelled paragraph group. `h4` drops to the Banda step (1.05rem).
 - **Banda** (700, 1.05rem, `0.01em`): the section code and name inside a glazed band, and the prose
   `h4`. The section-code step: any figure printed at the scale of a band code uses it.
+- **Standfirst** (400, 1.2rem, 1.55, Faustina, `--tinta-2`): the entry's excerpt under the `h1`,
+  capped at 34rem so it never rivals the title's measure. Shares the Subtítulo size step at a
+  different weight and family — same rung, different job. Steps down to Body size below 900px.
 - **Body** (400, 1.125rem, 1.72, Faustina): article prose, in a 40rem column (~70 characters).
   Drops to 1.0625rem under 900px.
 - **Title** (600, 1.0625rem, 1.32, `-0.01em`): the row title — the reader's own question, written
@@ -404,6 +407,14 @@ The third column is 18rem rather than 15 because it holds **two** pieces stacked
 plate at the top of the entry and the canto of sections below it, sharing a left edge so the rail
 reads as a single column — LÁMINA, the image, APARTADOS, the index. The reading column gives up
 2rem for it and settles at 640px, about 70 characters, which is still good measure.
+
+The title column carries three things, not two — section chip, `h1`, **standfirst** — because two
+were not enough to stand beside a plate. With only the chip and the title the header left a void
+in its top-left quadrant, which is where the eye enters. The standfirst is the excerpt the circuit
+already writes for every entry: 187 characters of editorial prose on average, and only 4 of 59 end
+in a call to action. Below 1180px the plate loses the rail and stacks under the standfirst, where
+its frame spans the full column and the plate is **centred on the mount** — otherwise the leftover
+paper piles up on one side and the header reads crooked.
 
 The front page's index of sections is a four-column grid separated by 1px hairline gutters
 (`gap: 1px` over a `--filete` background, so the gaps *are* the rules). It steps to two columns at
