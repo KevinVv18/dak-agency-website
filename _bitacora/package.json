@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "probar": "node pruebas/continuidad.mjs"
+    "probar": "echo \"Se ejecuta en el servidor: ssh ... /opt/alt/php83/usr/bin/php pruebas/continuidad.php\""
   },
   "dependencies": {
     "react": "^18.3.1",

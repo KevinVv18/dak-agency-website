@@ -97,11 +97,31 @@ sesión. Si algo de eso se rompe, el deploy se cae en vez de publicar la aplicac
 > la entrada `bitacora/` en `deploy-protect.txt`, el siguiente push a `main` se lo lleva por
 > delante. Ya pasó tres veces con otras carpetas.
 
+## Pruebas
+
+[`pruebas/continuidad.php`](pruebas/continuidad.php) recorre el carril entero contra la base de
+verdad: no usa dobles, ejecuta el mismo código que la API y deja los mismos eventos. Se siembra a sí
+misma antes de empezar, así que se puede repetir todas las veces que haga falta.
+
+```bash
+ssh -p 65002 u567580447@89.116.115.11 \
+  "cd /home/u567580447/domains/dakagency.net/public_html/bitacora && /opt/alt/php83/usr/bin/php pruebas/continuidad.php"
+```
+
+Comprueba lo único que de verdad importa de esta aplicación: que una tarea que nadie menciona no
+cambia de estado, que el cierre se niega a completarse a medias, que olvidar un día no pierde
+información, y que la hora de negocio va cinco horas por detrás de UTC.
+
+> ⚠️ **Escribe en la base.** Hoy es correcto porque solo hay datos de demo. El día que entren piezas
+> reales, hay que apuntarla a una base de pruebas antes de volver a ejecutarla.
+
 ## Estado
 
 - **Fase 0 — cimientos: hecha y verificada en vivo.** Subdominio, base, esquema, semilla, puerta,
-  API mínima, workflow. Muro comprobado: cero fugas.
-- **Falta para poder entrar:** crear el ID de cliente OAuth en Google Cloud Console con origen
-  `https://bitacora.dakagency.net` y guardarlo como secreto `DAK_GOOGLE_CLIENT_ID` en GitHub.
-- **Fase 1:** el carril vertical — inicio de jornada → cierre guiado → plan de mañana → informe →
-  dashboard.
+  workflow. Muro comprobado: cero fugas.
+- **Fase 1 — carril vertical: hecha.** Reconciliación de días olvidados, inicio de jornada con plan
+  congelado, cierre guiado, plan de mañana, informe copiable y panorama de los jefes con veredicto
+  de revisión a un toque. 37 comprobaciones en verde contra la base real.
+- **Fase 2:** board/pipeline, alta rápida desde la interfaz, detalle de pieza con historial,
+  configuración del umbral de cola.
+- **Fase 3:** pasada de `/impeccable`, contraste AA, PWA, limpieza de notas con IA.

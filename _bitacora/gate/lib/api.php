@@ -17,6 +17,9 @@ require_once __DIR__ . '/respuesta.php';
 require_once __DIR__ . '/estados.php';
 require_once __DIR__ . '/eventos.php';
 require_once __DIR__ . '/plan.php';
+require_once __DIR__ . '/jornadas.php';
+require_once __DIR__ . '/piezas.php';
+require_once __DIR__ . '/panorama.php';
 
 /**
  * Resuelve la fila de `usuarios` a partir del correo de la sesion de Google.
@@ -120,8 +123,56 @@ function despacharApi(string $metodo, string $ruta, array $sesion): never
         exigirToken($sesion);
     }
 
-    // ── Rutas de Fase 1 en adelante ────────────────────────────────────────
-    // Se registran aqui conforme se construyen. Cada una en su archivo.
+    $cuerpo = $metodo === 'GET' ? [] : cuerpo();
+
+    // ── El carril de Fabián ────────────────────────────────────────────────
+
+    if ($ruta === '/hoy' && $metodo === 'GET') {
+        responder(estadoDeHoy($u));
+    }
+
+    if ($ruta === '/jornada/abrir' && $metodo === 'POST') {
+        responder(abrirJornada($u, $cuerpo['piezas'] ?? []));
+    }
+
+    if ($ruta === '/jornada/cerrar' && $metodo === 'POST') {
+        responder(cerrarJornada($u, $cuerpo));
+    }
+
+    if ($ruta === '/jornada/reconciliar' && $metodo === 'POST') {
+        responder(reconciliar($u, $cuerpo));
+    }
+
+    // ── Piezas ─────────────────────────────────────────────────────────────
+
+    if ($ruta === '/piezas' && $metodo === 'POST') {
+        responder(crearPieza($u, $cuerpo), 201);
+    }
+
+    // El id se saca con una expresion regular anclada, no partiendo la cadena:
+    // asi «/piezas/12/../otra» no puede llegar a ninguna parte.
+    if (preg_match('#^/piezas/(\d+)$#', $ruta, $m)) {
+        $id = (int) $m[1];
+        if ($metodo === 'GET') {
+            responder(detalleDePieza($id));
+        }
+        if ($metodo === 'PATCH') {
+            exigirAdmin($u);
+            responder(editarPieza($u, $id, $cuerpo));
+        }
+    }
+
+    if (preg_match('#^/piezas/(\d+)/revision$#', $ruta, $m) && $metodo === 'POST') {
+        exigirAdmin($u);
+        responder(revisarPieza($u, (int) $m[1], $cuerpo));
+    }
+
+    // ── El panorama de los jefes ───────────────────────────────────────────
+
+    if ($ruta === '/panorama' && $metodo === 'GET') {
+        exigirAdmin($u);
+        responder(panorama());
+    }
 
     fallar("Ruta desconocida: {$metodo} {$ruta}", 404);
 }

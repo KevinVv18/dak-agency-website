@@ -66,6 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['credential'])) {
     }
 
     $errorAcceso = $resultado['error'];
+    // Marca que el fallo fue de cuenta equivocada, no de credencial rota: la
+    // pantalla de acceso enseña entonces el camino para cambiar de cuenta.
+    $ofrecerOtraCuenta = !empty($resultado['otra_cuenta']);
 }
 
 /* ── Caducidad ───────────────────────────────────────────────────────────────
@@ -120,13 +123,16 @@ if ($esApi) {
     }
     try {
         despacharApi($_SERVER['REQUEST_METHOD'], $sub, $_SESSION);
+    } catch (ErrorDeApi $e) {
+        // Fallo esperado y ya explicado en castellano por quien lo lanzo.
+        responder(['error' => $e->getMessage()] + $e->extra, $e->codigo);
     } catch (ErrorDeTransicion $e) {
         // 422: la peticion se entendio pero pedia algo que la maquina de
         // estados no permite. El mensaje ya viene en castellano y se enseña.
-        fallar($e->getMessage(), 422);
+        responder(['error' => $e->getMessage()], 422);
     } catch (Throwable $e) {
         error_log('[bitacora] ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
-        fallar('Algo se rompió por dentro. Ya quedó anotado en el log.', 500);
+        responder(['error' => 'Algo se rompió por dentro. Ya quedó anotado en el log.'], 500);
     }
 }
 
@@ -176,8 +182,19 @@ function verificarConGoogle(string $token): array
     if (($datos['email_verified'] ?? '') !== 'true' && ($datos['email_verified'] ?? false) !== true) {
         return ['ok' => false, 'error' => 'Ese correo no está verificado.'];
     }
+    // El caso mas frecuente de verdad, y el que mas confunde: la persona tiene
+    // varias cuentas de Google abiertas y el navegador elige la personal. El
+    // error tiene que DECIR con cual se intento, o parece que la aplicacion
+    // esta rota cuando lo unico que pasa es que hay que cambiar de cuenta.
     if (($datos['hd'] ?? '') !== DOMINIO_PERMITIDO) {
-        return ['ok' => false, 'error' => 'Bitácora es solo para cuentas de ' . DOMINIO_PERMITIDO . '.'];
+        $intentado = $datos['email'] ?? '';
+        return [
+            'ok'    => false,
+            'error' => $intentado !== ''
+                ? "Entraste con {$intentado}, que no es una cuenta de " . DOMINIO_PERMITIDO . '.'
+                : 'Bitácora es solo para cuentas de ' . DOMINIO_PERMITIDO . '.',
+            'otra_cuenta' => true,
+        ];
     }
 
     return [

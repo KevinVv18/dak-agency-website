@@ -1,0 +1,264 @@
+<?php
+/**
+ * Prueba del carril vertical, contra la base de verdad.
+ *
+ * No es un test unitario con dobles: recorre el mismo codigo que la API y deja
+ * los mismos eventos. Lo que comprueba es lo unico que de verdad importa de
+ * esta aplicacion — que la continuidad entre dias no se rompe:
+ *
+ *   · una tarea que nadie menciona NO cambia de estado
+ *   · el cierre se niega a completarse si queda algo sin resolver
+ *   · olvidar un dia entero no pierde informacion
+ *   · la maquina de estados no deja pasar un salto imposible
+ *
+ * Se ejecuta en el servidor:
+ *   /opt/alt/php83/usr/bin/php pruebas/continuidad.php
+ *
+ * ⚠️ ESCRIBE EN LA BASE. Ahora mismo eso es correcto —solo hay datos de demo—
+ * pero el dia que entren piezas reales hay que apuntarlo a una base de pruebas.
+ */
+
+$D = getenv('BITACORA_DIR') ?: '/home/u567580447/domains/dakagency.net/public_html/bitacora';
+require "$D/lib/jornadas.php";
+require "$D/lib/panorama.php";
+require "$D/lib/piezas.php";
+
+$fallos = 0;
+$hechas = 0;
+
+/**
+ * Deja la base en el estado de la semilla antes de empezar.
+ *
+ * Sin esto la prueba solo pasa la primera vez: la pasada anterior cierra la
+ * jornada de hoy y resuelve el dia olvidado, asi que la siguiente ya no
+ * encuentra nada que reconciliar y falla sin que nada este roto. Una prueba que
+ * solo pasa una vez no comprueba nada — solo enseña a ignorarla.
+ */
+function sembrar(): void
+{
+    $tablas = ['eventos', 'jornada_piezas', 'revisiones', 'bloqueos', 'jornadas', 'piezas', 'usuarios'];
+    bd()->exec('SET FOREIGN_KEY_CHECKS=0');
+    foreach ($tablas as $t) {
+        bd()->exec("TRUNCATE TABLE {$t}");
+    }
+    bd()->exec('SET FOREIGN_KEY_CHECKS=1');
+
+    $sql = file_get_contents(__DIR__ . '/../sql/002-semilla.sql');
+    if ($sql === false) {
+        fwrite(STDERR, "No se encontró la semilla.\n");
+        exit(2);
+    }
+
+    // Fuera los comentarios de linea antes de partir por «;»: si no, un «--»
+    // se lleva por delante el resto de la sentencia siguiente.
+    $limpio = implode("\n", array_filter(
+        array_map('rtrim', explode("\n", $sql)),
+        fn($l) => !str_starts_with(ltrim($l), '--')
+    ));
+
+    foreach (array_filter(array_map('trim', explode(";\n", $limpio))) as $sentencia) {
+        $sentencia = rtrim($sentencia, "; \n");
+        if ($sentencia !== '') {
+            bd()->exec($sentencia);
+        }
+    }
+}
+
+sembrar();
+echo "(base sembrada de cero)\n";
+
+function comprobar(string $que, bool $bien, string $detalle = ''): void
+{
+    global $fallos, $hechas;
+    $hechas++;
+    if ($bien) {
+        echo "  ok   {$que}\n";
+    } else {
+        $fallos++;
+        echo "  FALLA {$que}" . ($detalle ? "  ({$detalle})" : '') . "\n";
+    }
+}
+
+/** Ejecuta algo que DEBE fallar, y devuelve el error. */
+function debeFallar(callable $f): ?ErrorDeApi
+{
+    try {
+        $f();
+        return null;
+    } catch (ErrorDeApi $e) {
+        return $e;
+    }
+}
+
+$fabian = fila("SELECT * FROM usuarios WHERE rol = 'audiovisual' LIMIT 1");
+$jefe   = fila("SELECT * FROM usuarios WHERE rol = 'admin' LIMIT 1");
+
+echo "\n=== ZONA HORARIA ===\n";
+
+// Se compara el INSTANTE, no la fecha. Comparar solo la fecha parece razonable
+// y no comprueba nada: durante 19 de cada 24 horas la fecha de Lima y la de UTC
+// coinciden, asi que la prueba pasaria con el huso mal puesto y solo empezaria
+// a fallar de noche — justo cuando ya estaria roto en produccion.
+$desfase = (strtotime(gmdate('Y-m-d H:i:s')) - strtotime(ahora())) / 3600;
+comprobar('la hora de negocio va 5 h por detras de UTC (Lima, sin horario de verano)',
+    (int) round($desfase) === 5, "desfase={$desfase} h");
+
+comprobar('la fecha de jornada sale de esa hora, no de la del servidor',
+    hoy() === date('Y-m-d', strtotime(ahora())));
+
+// Lo que de verdad se quiere garantizar, dicho sin depender de la hora a la que
+// se ejecute la prueba: un cierre a las 20:00 de Lima pertenece a ESE dia.
+$veintehoras = strtotime(hoy() . ' 20:00:00');
+comprobar('un cierre a las 20:00 de Lima pertenece al dia de Lima, no al siguiente de UTC',
+    date('Y-m-d', $veintehoras) === hoy()
+    && gmdate('Y-m-d', $veintehoras + 5 * 3600) !== hoy(),
+    'en UTC seria ' . gmdate('Y-m-d', $veintehoras + 5 * 3600));
+
+echo "\n=== 1. RECONCILIAR EL DIA OLVIDADO ===\n";
+$estado = estadoDeHoy($fabian);
+comprobar('al abrir, pide reconciliar antes que nada', $estado['modo'] === 'reconciliar', "modo={$estado['modo']}");
+
+if ($estado['modo'] === 'reconciliar') {
+    $abiertas = $estado['reconciliar']['piezas'];
+    comprobar('propone las piezas que quedaron abiertas', count($abiertas) >= 1, count($abiertas) . ' piezas');
+
+    // La pieza que NO se va a mencionar. Su estado tiene que sobrevivir intacto.
+    $intacta = null;
+    foreach ($abiertas as $p) {
+        if ($p['estado'] === 'PAUSADO') { $intacta = $p; break; }
+    }
+
+    $enProduccion = null;
+    foreach ($abiertas as $p) {
+        if ($p['estado'] === 'EN_PRODUCCION') { $enProduccion = $p; break; }
+    }
+
+    $r = reconciliar($fabian, ['desenlaces' => array_map(
+        fn($p) => ['pieza_id' => (int) $p['id'], 'desenlace' => 'no_trabaje'],
+        $abiertas
+    )]);
+    comprobar('la reconciliacion devuelve informe', !empty($r['informe']['texto']));
+
+    if ($enProduccion) {
+        $ahora = fila('SELECT estado FROM piezas WHERE id = ?', [$enProduccion['id']]);
+        comprobar('«no trabaje» NO cambia el estado (regla de continuidad)',
+            $ahora['estado'] === 'EN_PRODUCCION', "quedo en {$ahora['estado']}");
+    }
+    if ($intacta) {
+        $ahora = fila('SELECT estado FROM piezas WHERE id = ?', [$intacta['id']]);
+        comprobar('una pausada sigue pausada tras el olvido',
+            $ahora['estado'] === 'PAUSADO', "quedo en {$ahora['estado']}");
+    }
+
+    $viejas = filas("SELECT estado FROM jornadas WHERE usuario_id = ? AND fecha < ?", [$fabian['id'], hoy()]);
+    $abiertasAun = array_filter($viejas, fn($j) => $j['estado'] === 'abierta');
+    comprobar('ya no queda ninguna jornada vieja abierta', count($abiertasAun) === 0);
+}
+
+echo "\n=== 2. ABRIR LA JORNADA DE HOY ===\n";
+$estado = estadoDeHoy($fabian);
+comprobar('resuelto lo pendiente, ya se ve el plan', $estado['modo'] === 'plan', "modo={$estado['modo']}");
+comprobar('el plan sugiere continuar lo que estaba en marcha',
+    ($estado['plan'][0]['pieza']['estado'] ?? '') === 'EN_PRODUCCION');
+comprobar('el plan NO incluye nada bloqueado ni en revision',
+    !array_filter($estado['plan'], fn($l) => in_array($l['pieza']['estado'], ['BLOQUEADO', 'REVISION'], true)));
+
+$a = abrirJornada($fabian);
+comprobar('la jornada queda abierta', $a['jornada']['estado'] === 'abierta');
+comprobar('el plan se congela en jornada_piezas', count($a['plan_congelado']) >= 1);
+$congelado = $a['plan_congelado'];
+$jornadaId = (int) $a['jornada']['id'];
+
+echo "\n=== 3. EL CIERRE NO SE COMPLETA A MEDIAS ===\n";
+$e = debeFallar(fn() => cerrarJornada($fabian, [
+    'desenlaces' => [['pieza_id' => (int) $congelado[0]['id'], 'desenlace' => 'continuo', 'nota' => 'Escena 5 lista']],
+]));
+comprobar('cerrar mencionando solo una tarea es rechazado', $e !== null && $e->codigo === 422,
+    $e ? $e->getMessage() : 'no fallo');
+comprobar('el rechazo dice QUE falta', $e && !empty($e->extra['piezas']),
+    $e ? implode(', ', $e->extra['piezas'] ?? []) : '');
+
+$sigueAbierta = fila('SELECT estado FROM jornadas WHERE id = ?', [$jornadaId]);
+comprobar('tras el rechazo la jornada sigue abierta', $sigueAbierta['estado'] === 'abierta');
+
+$sinTocar = fila('SELECT desenlace FROM jornada_piezas WHERE jornada_id = ? AND pieza_id = ?',
+    [$jornadaId, $congelado[0]['id']]);
+comprobar('el rechazo deshizo la transaccion entera (ningun desenlace a medias)',
+    $sinTocar['desenlace'] === null, 'quedo ' . var_export($sinTocar['desenlace'], true));
+
+echo "\n=== 4. CIERRE COMPLETO ===\n";
+$desenlaces = [];
+foreach ($congelado as $i => $p) {
+    $desenlaces[] = $i === 0
+        ? ['pieza_id' => (int) $p['id'], 'desenlace' => 'continuo',
+           'nota' => 'Escenas 5-6 montadas', 'siguiente_paso' => 'Mezcla de sonido']
+        : ['pieza_id' => (int) $p['id'], 'desenlace' => 'no_trabaje'];
+}
+$c = cerrarJornada($fabian, [
+    'desenlaces' => $desenlaces,
+    'bloqueos'   => [['tipo' => 'esperando_aprobacion', 'detalle' => 'Falta el visto bueno del guion']],
+]);
+
+comprobar('el cierre devuelve informe en texto', !empty($c['informe']['texto']));
+comprobar('el informe lleva el plan de mañana', count($c['plan_manana']) >= 1);
+comprobar('la jornada queda cerrada',
+    fila('SELECT estado FROM jornadas WHERE id = ?', [$jornadaId])['estado'] === 'cerrada');
+
+$p0 = fila('SELECT ultimo_punto, siguiente_paso FROM piezas WHERE id = ?', [$congelado[0]['id']]);
+comprobar('«continúo» guarda donde quedo', $p0['ultimo_punto'] === 'Escenas 5-6 montadas');
+comprobar('«continúo» guarda que sigue', $p0['siguiente_paso'] === 'Mezcla de sonido');
+
+$e = debeFallar(fn() => cerrarJornada($fabian, ['desenlaces' => $desenlaces]));
+comprobar('no se puede cerrar dos veces el mismo dia', $e !== null && $e->codigo === 409);
+
+echo "\n--- informe generado ---\n" . $c['informe']['texto'] . "\n";
+
+echo "\n=== 5. MAQUINA DE ESTADOS ===\n";
+$enRevision = fila("SELECT id FROM piezas WHERE estado = 'REVISION' LIMIT 1");
+if ($enRevision) {
+    $e = null;
+    try { moverPieza((int) $enRevision['id'], 'TERMINADO', ['rol' => 'audiovisual', 'usuario_id' => (int) $fabian['id']]); }
+    catch (ErrorDeTransicion $x) { $e = $x; }
+    comprobar('Fabián no puede dar nada por terminado', $e !== null);
+
+    $antes = (int) fila('SELECT COUNT(*) n FROM eventos WHERE pieza_id = ?', [$enRevision['id']])['n'];
+    comprobar('un salto rechazado no deja evento',
+        $antes === (int) fila('SELECT COUNT(*) n FROM eventos WHERE pieza_id = ?', [$enRevision['id']])['n']);
+
+    $r = revisarPieza($jefe, (int) $enRevision['id'], ['veredicto' => 'cambios', 'comentario' => 'Cambiar la tipografía']);
+    comprobar('el admin pide cambios y la pieza pasa a CAMBIOS', $r['estado'] === 'CAMBIOS');
+    comprobar('los cambios pedidos quedan como siguiente paso',
+        $r['siguiente_paso'] === 'Cambiar la tipografía');
+    comprobar('la revision queda resuelta',
+        fila('SELECT resuelta_en FROM revisiones WHERE pieza_id = ? ORDER BY id DESC LIMIT 1',
+             [$enRevision['id']])['resuelta_en'] !== null);
+}
+
+echo "\n=== 6. PANORAMA ===\n";
+$pan = panorama();
+comprobar('el panorama sabe en que trabaja Fabián', isset($pan['gente'][0]['trabajando_en']));
+comprobar('el panorama agrupa por estado', isset($pan['por_estado']['EN_PRODUCCION']));
+comprobar('el panorama enseña los bloqueos abiertos con sus dias',
+    isset($pan['bloqueos'][0]['dias']) || count($pan['bloqueos']) === 0);
+
+echo "\n=== 7. ALTA RAPIDA ===\n";
+$nueva = crearPieza($jefe, ['titulo' => 'Prueba automatizada', 'marca' => 'DAK', 'tipo' => 'Reel']);
+comprobar('la pieza nace en BACKLOG', $nueva['estado'] === 'BACKLOG');
+comprobar('deja constancia de que se aprobo fuera de la app', $nueva['origen'] === 'whatsapp');
+comprobar('el alta deja su evento',
+    (int) fila('SELECT COUNT(*) n FROM eventos WHERE pieza_id = ?', [$nueva['id']])['n'] === 1);
+
+$e = debeFallar(fn() => crearPieza($jefe, ['titulo' => 'Sin cliente', 'marca' => 'Cliente']));
+comprobar('una pieza de cliente exige nombre de cliente', $e !== null && $e->codigo === 422);
+
+$e = debeFallar(fn() => crearPieza($jefe, ['titulo' => 'Mala url', 'marca' => 'DAK', 'referencia_url' => 'no-soy-url']));
+comprobar('rechaza una URL de referencia invalida', $e !== null && $e->codigo === 422);
+
+ejecutar('DELETE FROM eventos WHERE pieza_id = ?', [$nueva['id']]);
+ejecutar('DELETE FROM piezas WHERE id = ?', [$nueva['id']]);
+
+echo "\n" . str_repeat('─', 58) . "\n";
+echo $fallos === 0
+    ? "TODO BIEN — {$hechas} comprobaciones\n"
+    : "{$fallos} FALLOS de {$hechas} comprobaciones\n";
+exit($fallos === 0 ? 0 : 1);

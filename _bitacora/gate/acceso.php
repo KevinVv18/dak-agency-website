@@ -47,8 +47,15 @@ h1{font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
 }
 .aviso b{flex:none;width:5px;height:5px;margin-top:8px;border-radius:50%;background:var(--danger)}
 
-.pie{margin-top:30px;color:var(--muted);font-size:14px;line-height:1.55}
+.pie{margin-top:30px;color:var(--muted);font-size:14px;line-height:1.9}
 .pie code{font-family:inherit;color:var(--secondary)}
+.otra-cuenta{
+  display:inline-block;min-height:44px;line-height:44px;
+  color:var(--teal);text-decoration:none;
+  border-bottom:1px solid transparent;
+  transition:border-color var(--t-corta,240ms) var(--ease);
+}
+.otra-cuenta:hover,.otra-cuenta:focus-visible{border-bottom-color:var(--teal)}
 
 .puerta>*{animation:entra 380ms var(--ease) both}
 .puerta>*:nth-child(2){animation-delay:60ms}
@@ -92,9 +99,33 @@ h1{font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
       <p class="aviso"><b></b><span><?= htmlspecialchars($errorAcceso, ENT_QUOTES) ?></span></p>
     <?php endif; ?>
 
-    <p class="pie">Solo cuentas <code>@<?= htmlspecialchars(DOMINIO_PERMITIDO, ENT_QUOTES) ?></code>.</p>
+    <!--
+      La salida a otra cuenta. Va SIEMPRE visible, no solo tras un fallo.
+
+      Casi todo el mundo tiene varias cuentas de Google abiertas a la vez y el
+      navegador elige la personal por defecto. Sin este enlace, quien entra con
+      la equivocada se queda mirando un error sin manera evidente de cambiar:
+      Google recuerda la seleccion y volver a pulsar el boton repite el mismo
+      fallo. AccountChooser fuerza el selector y devuelve aqui.
+    -->
+    <p class="pie">
+      Solo cuentas <code>@<?= htmlspecialchars(DOMINIO_PERMITIDO, ENT_QUOTES) ?></code>.<br>
+      <a class="otra-cuenta" href="https://accounts.google.com/AccountChooser?continue=<?= rawurlencode(URL_ACCESO) ?>">
+        <?= !empty($ofrecerOtraCuenta) ? 'Cambiar de cuenta de Google' : '¿Tienes varias cuentas? Elige otra' ?>
+      </a>
+    </p>
   </main>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    // Que Google no reutilice en silencio la ultima cuenta elegida. Sin esto,
+    // quien se equivoco una vez se queda atrapado repitiendo el mismo error
+    // sin ver siquiera con que cuenta lo esta intentando.
+    window.addEventListener('load', function () {
+      if (window.google && google.accounts && google.accounts.id) {
+        google.accounts.id.disableAutoSelect()
+      }
+    })
+  </script>
 </body>
 </html>

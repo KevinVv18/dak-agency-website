@@ -21,13 +21,34 @@ function responder(array $datos, int $codigo = 200): never
 /**
  * Error de la API.
  *
+ * LANZA, no hace `exit`. La diferencia importa y costo encontrarla:
+ *
+ * Con `exit`, un fallo dentro de una transaccion —una validacion que salta a
+ * mitad de un cierre, por ejemplo— terminaba el script sin pasar por ningun
+ * `catch`, asi que los `rollBack()` de arriba no llegaban a ejecutarse. PDO
+ * acaba deshaciendo la transaccion al cerrar la conexion, de modo que los datos
+ * nunca corrieron peligro, pero el codigo mentia sobre su propio flujo: los
+ * bloques de limpieza estaban escritos y no se ejecutaban nunca.
+ *
+ * Lanzando, la excepcion sube por los `catch (Throwable)` que ya existen, cada
+ * transaccion se deshace donde se abrio, y index.php la convierte en respuesta.
+ * De paso, esto es lo que hace que la API se pueda probar desde CLI.
+ *
  * $mensaje se enseña al usuario tal cual, asi que se escribe en castellano y en
  * lenguaje humano. «No se puede pasar de Por hacer a Terminado» sirve; un
  * «422 Unprocessable Entity» no le dice nada a nadie.
  */
+class ErrorDeApi extends RuntimeException
+{
+    public function __construct(string $mensaje, public readonly int $codigo = 400, public readonly array $extra = [])
+    {
+        parent::__construct($mensaje);
+    }
+}
+
 function fallar(string $mensaje, int $codigo = 400, array $extra = []): never
 {
-    responder(['error' => $mensaje] + $extra, $codigo);
+    throw new ErrorDeApi($mensaje, $codigo, $extra);
 }
 
 /** Lee el cuerpo JSON de la peticion. */

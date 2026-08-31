@@ -62,4 +62,19 @@ async function pedir(ruta, opciones = {}) {
 export const api = {
   sesion: () => pedir('/sesion'),
   salud: () => pedir('/salud'),
+
+  // El carril de Fabián
+  hoy: () => pedir('/hoy'),
+  abrirJornada: (c) => pedir('/jornada/abrir', { metodo: 'POST', cuerpo: c }),
+  cerrarJornada: (c) => pedir('/jornada/cerrar', { metodo: 'POST', cuerpo: c }),
+  reconciliar: (c) => pedir('/jornada/reconciliar', { metodo: 'POST', cuerpo: c }),
+
+  // Piezas
+  crearPieza: (c) => pedir('/piezas', { metodo: 'POST', cuerpo: c }),
+  pieza: (id) => pedir(`/piezas/${id}`),
+  editarPieza: (id, c) => pedir(`/piezas/${id}`, { metodo: 'PATCH', cuerpo: c }),
+  revisar: (id, c) => pedir(`/piezas/${id}/revision`, { metodo: 'POST', cuerpo: c }),
+
+  // Jefes
+  panorama: () => pedir('/panorama'),
 }
