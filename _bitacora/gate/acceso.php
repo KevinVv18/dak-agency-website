@@ -75,7 +75,7 @@ h1{font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
            data-client_id="<?= htmlspecialchars(GOOGLE_CLIENT_ID, ENT_QUOTES) ?>"
            data-context="signin"
            data-ux_mode="popup"
-           data-login_uri="/"
+           data-login_uri="<?= htmlspecialchars(URL_ACCESO, ENT_QUOTES) ?>"
            data-hd="<?= htmlspecialchars(DOMINIO_PERMITIDO, ENT_QUOTES) ?>"
            data-auto_prompt="false"></div>
       <div class="g_id_signin"
@@ -84,6 +84,7 @@ h1{font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
            data-text="continue_with"
            data-shape="pill"
            data-size="large"
+           data-locale="es"
            data-logo_alignment="left"></div>
     </div>
 

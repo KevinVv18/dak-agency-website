@@ -20,6 +20,14 @@ define('GOOGLE_CLIENT_ID', getenv('DAK_GOOGLE_CLIENT_ID') ?: 'PENDIENTE.apps.goo
 // puede falsificar poniendo un alias.
 define('DOMINIO_PERMITIDO', 'dakagency.net');
 
+// A donde manda Google el token al identificarse.
+//
+// Absoluta y escrita a mano, no derivada de $_SERVER['HTTP_HOST']: ese valor lo
+// controla quien hace la peticion, y aqui es donde acaba una credencial. Ademas
+// Google avisa en consola de que una `login_uri` relativa —lo que habia antes—
+// «puede considerarse invalida en el futuro».
+define('URL_ACCESO', 'https://bitacora.dakagency.net/');
+
 /**
  * Caducidad de sesion.
  *
