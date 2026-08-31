@@ -77,4 +77,5 @@ export const api = {
 
   // Jefes
   panorama: () => pedir('/panorama'),
+  pov: (usuarioId) => pedir(`/pov/${usuarioId}`),
 }

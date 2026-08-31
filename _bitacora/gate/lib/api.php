@@ -174,5 +174,26 @@ function despacharApi(string $metodo, string $ruta, array $sesion): never
         responder(panorama());
     }
 
+    /**
+     * El POV: la pantalla exacta que otra persona tiene delante ahora mismo.
+     *
+     * Espejo de SOLO LECTURA, y se hace cumplir en tres sitios a la vez: solo
+     * GET, solo admin, y `estadoDeHoy(..., true)` con la bandera que impide
+     * abrir la jornada de nadie al mirarla.
+     *
+     * Ese tercer cierre es el que importa. Sin el, un jefe abriendo el espejo a
+     * las nueve de la mañana le crearia a Fabian la jornada del dia y le
+     * congelaria un plan que Fabian no ha visto — un evento que el no hizo,
+     * dentro de un historial cuyo unico valor es ser fiable.
+     */
+    if (preg_match('#^/pov/(\d+)$#', $ruta, $m) && $metodo === 'GET') {
+        exigirAdmin($u);
+        $otro = fila('SELECT * FROM usuarios WHERE id = ?', [(int) $m[1]]);
+        if (!$otro) {
+            fallar('Esa persona no existe.', 404);
+        }
+        responder(estadoDeHoy($otro, true));
+    }
+
     fallar("Ruta desconocida: {$metodo} {$ruta}", 404);
 }

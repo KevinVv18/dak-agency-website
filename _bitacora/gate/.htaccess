@@ -38,7 +38,15 @@ DirectoryIndex index.php
   # rastreador viene a leer, y decirle que se vaya es mas util que darle un 401.
   # Se EXCLUYE en vez de reescribirlo a app/, porque una reescritura vuelve a
   # entrar en este ruleset y la corta la regla que protege app/.
+  #
+  # tipo/ lleva la tipografia y tambien queda exenta, porque hace falta que sea
+  # alcanzable SIN sesion: la pantalla de acceso se sirve precisamente a quien
+  # no la tiene, asi que con la fuente tras el muro la puerta se dibujaria con
+  # la letra del sistema mientras la aplicacion de dentro usa la suya. Es un
+  # woff2 y un png de grano: material publico que no revela nada. El patron
+  # admite SOLO esas dos extensiones y solo nombres planos, no una ruta libre.
   RewriteCond %{REQUEST_URI} !^/(index\.php|robots\.txt)$
+  RewriteCond %{REQUEST_URI} !^/tipo/[A-Za-z0-9._-]+\.(woff2|png)$
   RewriteRule . /index.php [L]
 </IfModule>
 

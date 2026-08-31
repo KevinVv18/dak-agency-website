@@ -155,19 +155,33 @@ if ($estado['modo'] === 'reconciliar') {
     comprobar('ya no queda ninguna jornada vieja abierta', count($abiertasAun) === 0);
 }
 
-echo "\n=== 2. ABRIR LA JORNADA DE HOY ===\n";
-$estado = estadoDeHoy($fabian);
-comprobar('resuelto lo pendiente, ya se ve el plan', $estado['modo'] === 'plan', "modo={$estado['modo']}");
-comprobar('el plan sugiere continuar lo que estaba en marcha',
-    ($estado['plan'][0]['pieza']['estado'] ?? '') === 'EN_PRODUCCION');
-comprobar('el plan NO incluye nada bloqueado ni en revision',
-    !array_filter($estado['plan'], fn($l) => in_array($l['pieza']['estado'], ['BLOQUEADO', 'REVISION'], true)));
+echo "\n=== 2. LA JORNADA SE ABRE SOLA ===\n";
+comprobar('antes de mirar, hoy no tiene jornada',
+    fila('SELECT id FROM jornadas WHERE usuario_id = ? AND fecha = ?', [$fabian['id'], hoy()]) === null);
 
-$a = abrirJornada($fabian);
-comprobar('la jornada queda abierta', $a['jornada']['estado'] === 'abierta');
-comprobar('el plan se congela en jornada_piezas', count($a['plan_congelado']) >= 1);
-$congelado = $a['plan_congelado'];
-$jornadaId = (int) $a['jornada']['id'];
+// Apertura implicita: la primera lectura del dia abre la jornada y congela el
+// plan. Fabian ya no tiene que pulsar «Comenzar jornada» — una visita menos.
+$estado = estadoDeHoy($fabian);
+comprobar('la primera lectura del dia abre la jornada', $estado['modo'] === 'jornada', "modo={$estado['modo']}");
+comprobar('el plan queda congelado al abrirse', count($estado['plan_congelado']) >= 1);
+comprobar('lo primero es continuar lo que estaba en marcha',
+    ($estado['plan_congelado'][0]['estado'] ?? '') === 'EN_PRODUCCION');
+comprobar('el plan NO incluye nada bloqueado ni en revision',
+    !array_filter($estado['plan_congelado'], fn($p) => in_array($p['estado'], ['BLOQUEADO', 'REVISION'], true)));
+
+$congelado = $estado['plan_congelado'];
+$jornadaId = (int) $estado['jornada']['id'];
+
+// Leer otra vez no puede duplicar nada.
+$otra = estadoDeHoy($fabian);
+comprobar('mirar dos veces no abre dos jornadas', (int) $otra['jornada']['id'] === $jornadaId);
+
+echo "\n=== 2b. EL ESPEJO NO ESCRIBE ===\n";
+$eventosAntes = (int) fila('SELECT COUNT(*) n FROM eventos')['n'];
+$espejo = estadoDeHoy($fabian, true);
+comprobar('el espejo devuelve lo mismo que ve Fabian', $espejo['modo'] === 'jornada');
+comprobar('mirar por el espejo no escribe ningun evento',
+    (int) fila('SELECT COUNT(*) n FROM eventos')['n'] === $eventosAntes);
 
 echo "\n=== 3. EL CIERRE NO SE COMPLETA A MEDIAS ===\n";
 $e = debeFallar(fn() => cerrarJornada($fabian, [
@@ -233,6 +247,22 @@ if ($enRevision) {
         fila('SELECT resuelta_en FROM revisiones WHERE pieza_id = ? ORDER BY id DESC LIMIT 1',
              [$enRevision['id']])['resuelta_en'] !== null);
 }
+
+echo "\n=== 5b. EL ESPEJO NO ABRE JORNADAS AJENAS ===\n";
+// El caso que de verdad importa: un jefe mirando el espejo por la mañana, antes
+// de que Fabian haya abierto la app. Si el espejo abriera la jornada, le
+// congelaria un plan que Fabian no ha visto y meteria en su historial un evento
+// que el no hizo.
+ejecutar('DELETE FROM jornada_piezas WHERE jornada_id = ?', [$jornadaId]);
+ejecutar('DELETE FROM eventos WHERE jornada_id = ?', [$jornadaId]);
+ejecutar('DELETE FROM jornadas WHERE id = ?', [$jornadaId]);
+comprobar('preparado: hoy vuelve a no tener jornada',
+    fila('SELECT id FROM jornadas WHERE usuario_id = ? AND fecha = ?', [$fabian['id'], hoy()]) === null);
+$mirado = estadoDeHoy($fabian, true);
+comprobar('el espejo NO abre la jornada de quien mira',
+    fila('SELECT id FROM jornadas WHERE usuario_id = ? AND fecha = ?', [$fabian['id'], hoy()]) === null,
+    "modo devuelto={$mirado['modo']}");
+comprobar('y aun asi devuelve algo util que enseñar', in_array($mirado['modo'], ['plan', 'jornada'], true));
 
 echo "\n=== 6. PANORAMA ===\n";
 $pan = panorama();

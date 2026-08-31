@@ -42,7 +42,7 @@ function jornadaDeHoy(int $usuarioId): ?array
  * un dia sin cerrar, no se ve el plan de hoy hasta resolverlo, porque el plan
  * de hoy se calcula a partir de unos estados que todavia no son de fiar.
  */
-function estadoDeHoy(array $u): array
+function estadoDeHoy(array $u, bool $soloLectura = false): array
 {
     $usuarioId = (int) $u['id'];
 
@@ -59,8 +59,27 @@ function estadoDeHoy(array $u): array
 
     $jornada = jornadaDeHoy($usuarioId);
 
+    // Apertura implicita: la primera lectura del dia ABRE la jornada y congela
+    // el plan. Antes hacia falta pulsar «Comenzar jornada», y eso eran dos
+    // visitas diarias en vez de una — un ritual mas que olvidar, y si se
+    // olvidaba, el cierre de esa tarde no tenia plan congelado por el que
+    // preguntar.
+    //
+    // `abierta_en` pasa a significar «cuando abrio la aplicacion», que ademas es
+    // un dato mas honesto que «cuando pulso un boton».
+    //
+    // Solo se abre para quien produce, y nunca desde un espejo de solo lectura:
+    // que un jefe mire la pantalla de Fabian no puede crearle la jornada.
     if (!$jornada) {
-        return $base + ['modo' => 'plan', 'plan' => generarPlan($usuarioId)];
+        if ($soloLectura || $u['rol'] !== 'audiovisual') {
+            return $base + ['modo' => 'plan', 'plan' => generarPlan($usuarioId)];
+        }
+        $abierta = abrirJornada($u);
+        return $base + [
+            'modo'           => 'jornada',
+            'jornada'        => $abierta['jornada'],
+            'plan_congelado' => $abierta['plan_congelado'],
+        ];
     }
 
     if ($jornada['estado'] === 'cerrada' || $jornada['estado'] === 'sin_cierre') {
