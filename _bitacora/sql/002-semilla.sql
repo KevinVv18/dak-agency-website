@@ -26,10 +26,10 @@ SET @hoy   = DATE(@ahora);
 -- en vez de dejarla pasar. Fallar cerrado es lo correcto aqui.
 
 INSERT INTO usuarios (correo, nombre, rol, creado_en) VALUES
-  ('fabian@dakagency.net',    'Fabián',     'audiovisual', @ahora),
+  ('fabian.gonzaga@dakagency.net', 'Fabián',     'audiovisual', @ahora),
   ('marketing@dakagency.net', 'DAK',        'admin',       @ahora);
 
-SET @fabian = (SELECT id FROM usuarios WHERE correo = 'fabian@dakagency.net');
+SET @fabian = (SELECT id FROM usuarios WHERE correo = 'fabian.gonzaga@dakagency.net');
 SET @jefe   = (SELECT id FROM usuarios WHERE correo = 'marketing@dakagency.net');
 
 -- ─── 2. Piezas de demostracion ─────────────────────────────────────────────
