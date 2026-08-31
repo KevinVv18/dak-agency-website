@@ -337,6 +337,31 @@ comprobar('rechaza una URL de referencia invalida', $e !== null && $e->codigo ==
 ejecutar('DELETE FROM eventos WHERE pieza_id = ?', [$nueva['id']]);
 ejecutar('DELETE FROM piezas WHERE id = ?', [$nueva['id']]);
 
+echo "\n=== 8. LA GUIA DE ENTRADA ===\n";
+/*
+ * Saltar y «no volver a mostrarlo» son cosas DISTINTAS, y la diferencia se
+ * comprueba aqui porque es facil de romper sin darse cuenta: si saltar marcara
+ * la guia, alguien que solo queria mirarla luego la perderia para siempre.
+ */
+ejecutar('UPDATE usuarios SET tutorial_visto_en = NULL WHERE id = ?', [$fabian['id']]);
+$u = fila('SELECT * FROM usuarios WHERE id = ?', [$fabian['id']]);
+comprobar('una cuenta nueva tiene la guia pendiente', $u['tutorial_visto_en'] === null);
+
+// Marcar la casilla es lo unico que la da por vista.
+ejecutar('UPDATE usuarios SET tutorial_visto_en = ? WHERE id = ?', [ahora(), $fabian['id']]);
+$u = fila('SELECT * FROM usuarios WHERE id = ?', [$fabian['id']]);
+comprobar('marcar la casilla la da por vista', $u['tutorial_visto_en'] !== null);
+comprobar('y queda registrado en hora de Lima',
+    substr($u['tutorial_visto_en'], 0, 10) === hoy(),
+    $u['tutorial_visto_en']);
+
+// Se guarda por PERSONA, no por navegador ni global.
+$otroVisto = fila('SELECT tutorial_visto_en FROM usuarios WHERE id = ?', [$jefe['id']]);
+comprobar('la de una persona no marca la de otra', $otroVisto['tutorial_visto_en'] === null);
+
+ejecutar('UPDATE usuarios SET tutorial_visto_en = NULL WHERE id = ?', [$fabian['id']]);
+
+
 echo "\n" . str_repeat('─', 58) . "\n";
 echo $fallos === 0
     ? "TODO BIEN — {$hechas} comprobaciones\n"

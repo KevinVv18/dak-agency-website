@@ -114,6 +114,11 @@ function despacharApi(string $metodo, string $ruta, array $sesion): never
             'activo'  => (bool) $u['activo'],
             'token'   => $sesion['token'] ?? '',
             'hoy'     => hoy(),
+            // Si ya dio la guia por vista. Vive en el SERVIDOR y no en el
+            // navegador: «no volver a mostrarlo» tiene que significar nunca mas,
+            // no «nunca mas en este navegador». Fabian entra desde el telefono y
+            // algun dia entrara desde otro.
+            'tutorial_visto' => $u['tutorial_visto_en'] !== null,
         ]);
     }
 
@@ -124,6 +129,19 @@ function despacharApi(string $metodo, string $ruta, array $sesion): never
     }
 
     $cuerpo = $metodo === 'GET' ? [] : cuerpo();
+
+    /**
+     * Dar la guia por vista.
+     *
+     * Solo se llama cuando la persona marca la casilla. Saltar el tutorial sin
+     * marcarla NO escribe aqui: saltar es «ahora no», la casilla es «nunca mas».
+     * Confundir las dos cosas es como se pierde una guia que alguien queria
+     * volver a mirar.
+     */
+    if ($ruta === '/tutorial/visto' && $metodo === 'POST') {
+        ejecutar('UPDATE usuarios SET tutorial_visto_en = ? WHERE id = ?', [ahora(), (int) $u['id']]);
+        responder(['ok' => true]);
+    }
 
     // ── El carril de Fabián ────────────────────────────────────────────────
 

@@ -3,6 +3,7 @@ import { api, guardarToken } from './api.js'
 import { Aviso, Cargando, Logo, fechaCorta } from './ui.jsx'
 import Fabian from './audiovisual/Fabian.jsx'
 import Panorama from './admin/Panorama.jsx'
+import Tutorial from './Tutorial.jsx'
 
 /**
  * La mesa de montaje.
@@ -16,6 +17,7 @@ export default function App() {
   const [sesion, setSesion] = useState(null)
   const [estado, setEstado] = useState(null)
   const [error, setError] = useState(null)
+  const [guia, setGuia] = useState(false)
 
   const recargar = useCallback(async () => {
     setEstado(await api.hoy())
@@ -27,6 +29,9 @@ export default function App() {
         const s = await api.sesion()
         guardarToken(s.token)
         setSesion(s)
+        // La guía solo a quien puede entrar. A una cuenta pendiente de alta se
+        // le explicaría un producto que todavía no puede usar.
+        if (s.activo && s.rol !== 'pendiente' && !s.tutorial_visto) setGuia(true)
         if (s.rol === 'audiovisual') setEstado(await api.hoy())
       } catch (e) {
         setError(e)
@@ -38,6 +43,8 @@ export default function App() {
 
   return (
     <>
+      {guia && sesion ? <Tutorial rol={sesion.rol} alTerminar={() => setGuia(false)} /> : null}
+
       <Hoja sesion={sesion} estado={estado}>
         {sinAlta ? (
           <SinAlta sesion={sesion} />

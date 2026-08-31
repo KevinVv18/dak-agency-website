@@ -75,6 +75,10 @@ export const api = {
   editarPieza: (id, c) => pedir(`/piezas/${id}`, { metodo: 'PATCH', cuerpo: c }),
   revisar: (id, c) => pedir(`/piezas/${id}/revision`, { metodo: 'POST', cuerpo: c }),
 
+  // La guía de entrada. Solo se llama al marcar «no volver a mostrarlo»:
+  // saltarla no escribe nada.
+  tutorialVisto: () => pedir('/tutorial/visto', { metodo: 'POST' }),
+
   // Jefes
   panorama: () => pedir('/panorama'),
   pov: (usuarioId) => pedir(`/pov/${usuarioId}`),

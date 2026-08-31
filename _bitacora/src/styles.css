@@ -1365,3 +1365,137 @@ h1,
   display: grid;
   gap: 3px;
 }
+
+/* ── La guía de entrada ──────────────────────────────────────────────────
+ *
+ * Montada como la cola de arranque de una bobina: la cuenta atrás con su
+ * círculo y su cruz que precede a cualquier proyección. Nativa de este mundo,
+ * y literalmente lo que va antes de que empiece la película.
+ */
+
+.guia {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+  overflow: hidden;
+  animation: enhebrar var(--t-enhebrar) var(--ease-tira) both;
+}
+
+/* El fotograma abraza su contenido y el naranja lo rodea. Estirado dejaba
+   trescientos píxeles de tinta muerta arriba y abajo del texto — el mismo hueco
+   sin componer que ya costó una ronda de revisión en la pantalla de entrada. */
+.guia .hoja__cuerpo {
+  justify-content: center;
+}
+.guia__hoja {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--paso) * 0.6);
+  padding-top: calc(var(--paso) * 1.2);
+  padding-bottom: calc(var(--paso) * 1.2);
+}
+.guia__texto {
+  max-width: 46ch;
+}
+
+/* La cuenta atrás. El número es display; el círculo y la cruz son el dibujo
+   exacto de la cola de arranque. */
+.cuenta {
+  position: relative;
+  display: block;
+  width: 84px;
+  height: 84px;
+  margin-bottom: calc(var(--paso) * 0.4);
+}
+.cuenta svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--naranja);
+  stroke-width: 2.5;
+}
+.cuenta b {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 40px;
+  font-weight: 800;
+  font-stretch: 66%;
+  line-height: 1;
+  color: var(--emulsion);
+}
+
+/* La casilla: un cuadro punzado en el campo, no un control del sistema. */
+.casilla {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 56px;
+  margin: 0 3px 3px;
+  padding: 0 16px;
+  background: var(--sobre-naranja);
+  color: var(--naranja-texto);
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 76%;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+/* El input real sigue ahí para el teclado y el lector de pantalla; lo que se
+   ve es la caja dibujada. */
+.casilla input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.casilla__caja {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--naranja);
+  position: relative;
+}
+.casilla input:checked + .casilla__caja {
+  background: var(--naranja);
+}
+/* La marca es la cruz de graso, la misma que estampa una pieza terminada. */
+.casilla input:checked + .casilla__caja::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background:
+    linear-gradient(to bottom right, transparent 43%, var(--sobre-naranja) 43% 57%, transparent 57%),
+    linear-gradient(to bottom left, transparent 43%, var(--sobre-naranja) 43% 57%, transparent 57%);
+}
+.casilla input:focus-visible + .casilla__caja {
+  outline: 3px solid var(--perforado);
+  outline-offset: 2px;
+}
+
+/* En escritorio el fotograma de la guía se acota. A 1440 px se estiraba a todo
+   el ancho con el texto en el tercio izquierdo: una banda apaisada medio vacía.
+   Un fotograma tiene proporción; una moldura de cinemascope vacía, no. */
+@media (min-width: 760px) {
+  .guia__hoja {
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .guia .casilla,
+  .guia .acciones {
+    max-width: 686px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
