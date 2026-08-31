@@ -1,51 +1,101 @@
 /*
- * DAK Bitácora — base.
+ * DAK Bitácora — la mesa de montaje.
+ * Contrato de dirección: ver el comentario en index.html. Semilla 1d90a862.
  *
- * Fase 0/1: CSS liso y correcto. Los tokens de abajo son los que la pasada de
- * diseño de la Fase 3 va a afinar; la estructura no debería cambiar.
+ * ── Lo que la primera construcción hizo mal, y por qué esto es distinto ────
  *
- * Identidad DAK: fondo oscuro, profundidad por luz y no por brillo, morado y
- * teal con cuentagotas. Nada de sombras de color ni halos.
+ * La primera pasada declaró «el naranja es campo» y luego lo usó como filete:
+ * medido sobre las capturas, el naranja ocupaba el 11 % en móvil y el 5 % en
+ * escritorio. Eso no es esta dirección: es el panel oscuro genérico con un
+ * acento, que es exactamente de lo que veníamos huyendo.
+ *
+ * La regla, ahora construida y no sólo escrita:
+ *
+ *   EL NARANJA ES EL SUELO. Los fotogramas se PUNZAN en negro sobre él.
+ *
+ * No hay filetes naranjas de un píxel dibujados sobre negro. Hay campos de
+ * tinta naranja con agujeros negros dentro.
+ *
+ * Y el grano es un mosaico que vive DENTRO de cada superficie vía
+ * `background-blend-mode`, no un velo por encima del texto. Ver
+ * scripts/hacer-grano.mjs.
  */
 
-:root {
-  /* Tres planos. Se distinguen por claridad de superficie, no por sombras. */
-  --fondo: #030106;
-  --superficie: #0a0612;
-  --elevada: #120c1e;
-
-  --linea: rgba(255, 255, 255, 0.07);
-  --linea-viva: rgba(255, 255, 255, 0.14);
-
-  --texto: #f4f1f8;
-  --secundario: rgba(244, 241, 248, 0.74);
-  --tenue: rgba(244, 241, 248, 0.58);
-
-  --morado: #b93eff;
-  --teal: #3ddad7;
-  --ambar: #e8b562;
-  --alerta: #ff9b9b;
-
-  /* Sombras NEUTRAS. Nunca moradas, nunca teal, nunca con offset 0. */
-  --sombra-reposo: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --sombra-elevada: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
-
-  --ease-suave: cubic-bezier(0.32, 0.72, 0, 1);
-  --ease-salida: cubic-bezier(0.4, 0, 1, 1);
-  --t-micro: 140ms;
-  --t-corta: 240ms;
-  --t-media: 360ms;
-
-  --r-tarjeta: 14px;
-  --r-boton: 12px;
-  --r-chip: 8px;
-
-  /* Fabián usa esto con el pulgar, de pie y con prisa. 56px no es generosidad:
-     es el mínimo para que no falle un toque. */
-  --toque: 56px;
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('./fuentes/archivo-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('./fuentes/archivo-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-* {
+:root {
+  --naranja: #e94007;
+  --naranja-hondo: #c33505; /* el naranja en sombra, para separar planos */
+
+  /*
+   * El naranja de MARCA sobre tinta da 3.6:1 — por debajo de AA para texto.
+   * Sirve como campo y como grafico, no como letra sobre negro. Este es el
+   * mismo naranja subido de valor para que el texto pase: 6.1:1.
+   */
+  --naranja-texto: #ff5a1a;
+  --tinta: #020202;
+  --tinta-quemada: #0d0a09;
+  --perforado: #fdfdfd;
+  --emulsion: #e8e2da;
+
+  /* Sobre naranja se escribe en tinta. Sobre tinta, en emulsión. */
+  --sobre-naranja: #180500;
+  --sobre-naranja-2: rgba(24, 5, 0, 0.7);
+  --sobre-tinta-2: #a79b91;
+
+  /* Paso de perforación: todo el ritmo del sistema es múltiplo de esto. */
+  --paso: 13px;
+
+  /*
+   * TRES tamaños. No nueve.
+   *
+   * La primera pasada llegó a once escalones y marcaba el rango con el cuerpo
+   * de la letra en todas partes. La gramática de este mundo dice lo contrario:
+   * un tamaño de interfaz, y el rango por cuántas celdas ocupa algo y por el
+   * color del campo en el que está.
+   */
+  --t-etiqueta: 12px;
+  --t-interfaz: 16px;
+  --t-display: clamp(32px, 9.5vw, 58px);
+
+  --ease-tira: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-marca: 130ms;
+  --t-avance: 420ms;
+  --t-enhebrar: 820ms;
+
+  /* Profundidad de verdad: desplazamiento y desenfoque. Nunca un halo de color
+     con offset cero, que es decoración disfrazada de relieve. */
+  --sombra-punzada: inset 0 2px 6px rgba(0, 0, 0, 0.55);
+  --sombra-alzada: 0 6px 18px -6px rgba(0, 0, 0, 0.7);
+
+  /* El grano, como mosaico. Se mezcla con el color de CADA superficie. */
+  --grano: url('./grano.png');
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -54,144 +104,1006 @@
 html,
 body,
 #root {
-  min-height: 100%;
+  height: 100%;
 }
 
 body {
-  background: var(--fondo);
-  color: var(--texto);
-  font-family: Poppins, system-ui, -apple-system, sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
+  background: var(--tinta);
+  color: var(--emulsion);
+  font-family: Archivo, system-ui, sans-serif;
+  font-size: var(--t-interfaz);
+  line-height: 1.35;
+  font-stretch: 88%;
   -webkit-font-smoothing: antialiased;
-  /* La barra de gestos de iOS se come lo que haya pegado abajo. */
+  overflow: hidden; /* la aplicación no hace scroll. Nunca. */
+}
+
+/* ── Las dos materias ─────────────────────────────────────────────────────
+   Todo en la aplicación es una de estas dos cosas. El grano vive dentro de
+   ambas: es material de la superficie, no una capa sobre el contenido. */
+
+.tinta {
+  background-color: var(--tinta-quemada);
+  background-image: var(--grano);
+  background-size: 160px 160px;
+  background-blend-mode: soft-light;
+  color: var(--emulsion);
+}
+
+.campo-naranja {
+  background-color: var(--naranja);
+  background-image: var(--grano);
+  background-size: 160px 160px;
+  background-blend-mode: soft-light;
+  color: var(--sobre-naranja);
+}
+
+/* ── Superficies del navegador ────────────────────────────────────────────
+   Lo que no dibujas también viste el diseño. */
+
+::selection {
+  background: var(--sobre-naranja);
+  color: var(--naranja);
+}
+:root {
+  caret-color: var(--naranja);
+  accent-color: var(--naranja);
+  scrollbar-width: thin;
+  scrollbar-color: var(--naranja-hondo) var(--tinta);
+}
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: var(--tinta);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--naranja-hondo);
+}
+
+:where(a, button, input, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--sobre-naranja);
+  outline-offset: -3px;
+}
+.tinta :where(a, button, input, textarea, [tabindex]):focus-visible {
+  outline-color: var(--naranja);
+}
+
+.cifra {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* ── Estructura ───────────────────────────────────────────────────────────
+   100dvh y no 100vh: en iOS la barra de direcciones se retrae y 100vh deja la
+   última fila bajo el pliegue justo cuando aparece el teclado. */
+
+.hoja {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
   padding: env(safe-area-inset-top) env(safe-area-inset-right)
     env(safe-area-inset-bottom) env(safe-area-inset-left);
+  overflow: hidden;
 }
 
-/* Las cifras se alinean en columna. Sin esto, una lista de horas baila. */
-.tabular {
-  font-variant-numeric: tabular-nums;
+.hoja__contenido {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.envoltorio {
-  width: 100%;
-  max-width: 560px;
-  margin: 0 auto;
-  padding: 28px 20px 48px;
+.hoja__cuerpo {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--paso) * 0.7);
+  padding: calc(var(--paso) * 0.9) 18px;
+  overflow: hidden;
 }
 
-.marca {
-  width: 34px;
-  margin-bottom: 26px;
+.riel,
+.contador,
+.acciones,
+.cesto {
+  flex: none;
 }
-.marca svg {
+
+/* ── El riel: la banda de cabecera ────────────────────────────────────────*/
+
+.riel {
+  position: relative;
+  padding: calc(var(--paso) * 0.85) 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  box-shadow: var(--sombra-alzada);
+  z-index: 2;
+}
+
+/* Perforaciones: agujeros de TINTA punzados en la banda naranja. */
+.riel::before,
+.riel::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background-image: radial-gradient(
+    circle at 3.5px 3px,
+    var(--tinta) 0 2.8px,
+    transparent 2.9px
+  );
+  background-size: var(--paso) 6px;
+  background-repeat: repeat-x;
+}
+.riel::before {
+  top: 3px;
+}
+.riel::after {
+  bottom: 3px;
+}
+
+.riel__marca {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+.riel__logo {
+  width: 22px;
+  flex: none;
+}
+.riel__logo svg {
   display: block;
   width: 100%;
   height: auto;
 }
-.marca polygon {
-  fill: var(--texto);
+.riel__logo polygon {
+  fill: currentColor;
 }
 
-.rotulo {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
+.etiqueta {
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--tenue);
+  white-space: nowrap;
 }
-
-h1 {
-  font-size: 26px;
-  font-weight: 200;
-  letter-spacing: -0.015em;
-  line-height: 1.25;
-  margin: 10px 0 22px;
-}
-
-.tarjeta {
-  background: var(--superficie);
-  border: 1px solid var(--linea);
-  border-radius: var(--r-tarjeta);
-  padding: 18px 18px 20px;
-  box-shadow: var(--sombra-reposo);
-}
-
-.tarjeta + .tarjeta {
-  margin-top: 12px;
-}
-
-.dato {
+.riel__derecha {
   display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 9px 0;
-  font-size: 15px;
-  border-bottom: 1px solid var(--linea);
+  align-items: center;
+  gap: 14px;
+  font-size: var(--t-etiqueta);
+  font-weight: 700;
+  font-stretch: 76%;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
-.dato:last-child {
-  border-bottom: 0;
+.riel__derecha a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 2px solid var(--sobre-naranja-2);
 }
-.dato dt {
-  color: var(--tenue);
-  flex: none;
-}
-.dato dd {
-  color: var(--secundario);
-  text-align: right;
-  word-break: break-word;
+.riel__derecha a:hover {
+  border-bottom-color: currentColor;
 }
 
-/* «Sin dato» es un estado de primera clase, no un hueco que se disimula.
-   Un cero inventado es peor que un vacío honesto. */
-.sin-dato {
-  color: var(--tenue);
-  font-style: italic;
+/* ── Tipografía ──────────────────────────────────────────────────────────*/
+
+h1,
+.display {
+  font-size: var(--t-display);
+  font-weight: 800;
+  font-stretch: 62%;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
 }
+
+/* «Sin dato» es un estado de primera clase: un hueco honesto se entiende, un
+   cero inventado engaña. */
+.sin-dato {
+  font-style: italic;
+  opacity: 0.72;
+}
+
+/* ── La ventana de blanco perforado ──────────────────────────────────────
+   La gramática es estricta y la primera pasada la incumplió: el texto corrido
+   y los objetos ajenos viven SÓLO aquí. Ninguna captura de aquella versión
+   contenía un solo blanco. */
+
+.ventana {
+  background: var(--perforado);
+  color: #241f1c;
+  padding: 12px 14px;
+  font-size: var(--t-interfaz);
+  line-height: 1.4;
+  box-shadow: var(--sombra-alzada);
+}
+
+/* ── El fotograma: un agujero de tinta punzado en el naranja ─────────────*/
+
+.fotograma {
+  position: relative;
+  padding: calc(var(--paso) * 0.9) 22px;
+  box-shadow: var(--sombra-punzada);
+}
+
+/* Los dos pinchos que lo sujetan. Sobre campo naranja son agujeros naranjas
+   dentro de la tinta; el material se ve por ellos. */
+.fotograma::before,
+.fotograma::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  background-image: radial-gradient(
+    circle at 5px 5px,
+    var(--naranja) 0 2.6px,
+    transparent 2.7px
+  );
+  background-size: 10px var(--paso);
+  background-repeat: repeat-y;
+}
+.fotograma::before {
+  left: 0;
+}
+.fotograma::after {
+  right: 0;
+}
+
+.fotograma__titulo {
+  font-size: clamp(22px, 6.4vw, 32px);
+  font-weight: 800;
+  font-stretch: 64%;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.fotograma--portada .fotograma__titulo {
+  font-size: var(--t-display);
+}
+
+/*
+ * La banda de cinta: marca y estado.
+ *
+ * NO es un rótulo encima del titular — eso está prohibido sin excepción por el
+ * suelo de calidad, y la primera construcción lo puso en todas las pantallas.
+ * Aquí es una cinta pegada al borde inferior del fotograma, que es donde un
+ * montador escribe en la tira.
+ */
+.cinta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  margin-top: calc(var(--paso) * 0.6);
+  padding: 4px 10px;
+  background: var(--naranja);
+  color: var(--sobre-naranja);
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.cinta--tinta {
+  background: var(--tinta);
+  color: var(--naranja-texto);
+}
+
+/* ── Apuntes ─────────────────────────────────────────────────────────────*/
+
+.apunte {
+  display: grid;
+  grid-template-columns: minmax(0, 8.5em) 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding: calc(var(--paso) * 0.45) 0;
+  border-top: 1px solid currentColor;
+  font-size: var(--t-interfaz);
+}
+.apunte:first-of-type {
+  border-top: 0;
+}
+.apunte__etiqueta {
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+
+/* ── Las marcas: la tira de seleccionados ────────────────────────────────
+ *
+ * Este bloque ES el campo naranja de la pantalla de cierre. Cinco fotogramas
+ * negros punzados en la tinta naranja, uno por desenlace.
+ *
+ * El estado es una MARCA, no un tono: elegir no rellena el botón de color,
+ * estampa el gesto sobre el fotograma de arriba a tamaño de fotograma. Cinco
+ * insignias de color compiten entre sí; cinco marcas distintas se leen sin
+ * pensar, y funcionan igual para quien no distingue el naranja del rojo.
+ */
+
+.marcas {
+  display: grid;
+  gap: 3px;
+  grid-auto-rows: minmax(56px, 1fr);
+  padding: 3px;
+}
+.marcas--llena {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.marca {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 0 16px;
+  border: 0;
+  font-family: inherit;
+  font-size: var(--t-interfaz);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--sombra-punzada);
+  transition:
+    background-color var(--t-marca) var(--ease-tira),
+    color var(--t-marca) var(--ease-tira);
+}
+.marca__glifo {
+  width: 38px;
+  height: 38px;
+  display: block;
+  color: var(--naranja);
+}
+.marca:active {
+  transform: scale(0.99);
+}
+@media (hover: hover) {
+  .marca:hover {
+    background-color: #000;
+  }
+}
+
+/* La marca ya elegida, mostrada de vuelta: cinta, no relleno. */
+.marca--elegida {
+  box-shadow: none;
+  background: transparent;
+  color: var(--sobre-naranja);
+}
+.marca--elegida .marca__glifo {
+  color: var(--sobre-naranja);
+}
+
+/*
+ * El sello: el gesto estampado sobre el fotograma, a tamaño de fotograma.
+ * Es el corazón de la regla «el estado es una marca». Va encima de la tinta,
+ * en naranja, con la mano un poco torcida como una marca hecha a mano.
+ */
+.sello {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: var(--naranja);
+  opacity: 0.95;
+  animation: estampar 260ms var(--ease-tira) both;
+}
+.sello svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+@keyframes estampar {
+  from {
+    opacity: 0;
+    transform: scale(1.09) rotate(-1.5deg);
+  }
+  to {
+    opacity: 0.95;
+    transform: none;
+  }
+}
+
+/* ── El cesto ────────────────────────────────────────────────────────────
+   Lo apartado cuelga de pinchos sobre el campo naranja. Es lo único de la
+   aplicación que se desplaza, y dentro de su propio carril. */
+
+.cesto {
+  padding: calc(var(--paso) * 0.7) 0 calc(var(--paso) * 0.7) 18px;
+}
+/* Sin opacidad: al 72 % sobre el campo naranja daba 3.51:1, por debajo de AA.
+   El texto secundario sobre una superficie de color se tiñe DESDE ese color
+   —aquí el propio `--sobre-naranja`— y nunca se rebaja con transparencia. */
+.cesto__titulo {
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: var(--sobre-naranja);
+}
+.cesto__carril {
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  /* `mandatory`, no `proximity`: la tira nunca descansa entre fotogramas. */
+  scroll-snap-type: x mandatory;
+}
+.trim {
+  flex: none;
+  width: 136px;
+  scroll-snap-align: start;
+  padding: 9px 11px 11px;
+  box-shadow: var(--sombra-punzada);
+  transform-origin: 14px -5px;
+  animation: colgar 620ms var(--ease-tira) both;
+}
+.trim__titulo {
+  font-size: var(--t-interfaz);
+  font-weight: 800;
+  font-stretch: 72%;
+  line-height: 1.08;
+  text-transform: uppercase;
+}
+.trim__pie {
+  margin-top: 4px;
+  font-size: var(--t-etiqueta);
+  font-weight: 700;
+  font-stretch: 76%;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--naranja-texto);
+}
+@keyframes colgar {
+  from {
+    transform: rotate(-4.5deg);
+    opacity: 0;
+  }
+  60% {
+    transform: rotate(1.6deg);
+    opacity: 1;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ── Acciones ────────────────────────────────────────────────────────────*/
+
+.acciones {
+  display: grid;
+  gap: 3px;
+  padding: 3px;
+}
+.acciones--linea {
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+}
+
+.boton {
+  min-height: 56px;
+  padding: 0 20px;
+  border: 0;
+  font-family: inherit;
+  font-size: var(--t-interfaz);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--sombra-punzada);
+  transition:
+    background-color var(--t-marca) var(--ease-tira),
+    color var(--t-marca) var(--ease-tira);
+}
+.boton--principal {
+  background: var(--naranja);
+  color: var(--sobre-naranja);
+  box-shadow: var(--sombra-alzada);
+}
+
+/*
+ * Sobre campo naranja el primario es BLANCO PERFORADO.
+ *
+ * Pasó por dos versiones malas. Naranja sobre naranja: invisible. Tinta sobre
+ * naranja: legible pero del mismo peso que el secundario y casi igual que el
+ * deshabilitado, así que en una página naranja la acción principal era el
+ * elemento más callado de la pantalla — y el primer viewport promete «una sola
+ * acción».
+ *
+ * El blanco es el mayor contraste de esta paleta y además es material del
+ * mundo: la ventana perforada. La acción principal es el agujero por el que se
+ * pasa.
+ */
+.campo-naranja .boton--principal {
+  background: var(--perforado);
+  color: var(--sobre-naranja);
+  box-shadow: var(--sombra-alzada);
+}
+
+/*
+ * Deshabilitado, y aun así legible.
+ *
+ * WCAG exime a los controles inactivos del contraste mínimo, pero aquí el
+ * primario deshabilitado es la ÚNICA forma de avanzar en la pantalla de cierre:
+ * su rótulo es lo que dice qué falta por hacer. Un botón que no se puede leer
+ * no informa de nada.
+ *
+ * Rebajar con opacidad daba 3.6:1 y un manchón sin borde. Un par plano y
+ * medido —tinta de fondo, naranja apagado de letra— da 5.3:1.
+ */
+.boton:disabled {
+  cursor: not-allowed;
+  background: var(--sobre-naranja);
+  color: #c8703f;
+  box-shadow: none;
+}
+.tinta.boton:disabled {
+  background: #171310;
+  color: #a1968c;
+}
+.boton:active:not(:disabled) {
+  transform: scale(0.995);
+}
+@media (hover: hover) {
+  .boton:not(:disabled):hover {
+    background-color: #000;
+    color: var(--naranja-texto);
+  }
+  .boton--principal:not(:disabled):hover {
+    background-color: var(--sobre-naranja);
+    color: var(--naranja-texto);
+  }
+}
+
+/* ── Avisos: van en ventana blanca, que es donde vive la prosa ───────────*/
 
 .aviso {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  border: 1px solid rgba(255, 155, 155, 0.3);
-  border-radius: var(--r-tarjeta);
-  background: var(--superficie);
-  color: var(--alerta);
-  padding: 14px 16px;
-  font-size: 15px;
-  line-height: 1.5;
+  border-left: 0;
+  padding: 12px 14px;
+  background: var(--perforado);
+  color: #241f1c;
+  font-size: var(--t-interfaz);
+  line-height: 1.4;
+  box-shadow: var(--sombra-alzada);
 }
 .aviso b {
-  flex: none;
-  width: 5px;
-  height: 5px;
-  margin-top: 9px;
-  border-radius: 50%;
-  background: var(--alerta);
+  display: block;
+  margin-bottom: 3px;
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--naranja-hondo);
 }
 
-.nota-fase {
-  margin-top: 26px;
-  padding: 13px 15px;
-  border: 1px dashed var(--linea-viva);
-  border-radius: var(--r-tarjeta);
-  color: var(--tenue);
-  font-size: 14px;
-  line-height: 1.55;
-}
+/* ── El informe: la cola de la tira, con corte real ─────────────────────*/
 
-.pie {
-  margin-top: 30px;
-  color: var(--tenue);
+.cola {
+  background: var(--perforado);
+  color: var(--tinta);
+  padding: 14px 16px 24px;
+  --dientes: 9px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--dientes)) no-repeat,
+    radial-gradient(
+        circle at var(--dientes) 0,
+        transparent 0 calc(var(--dientes) - 2px),
+        #000 calc(var(--dientes) - 1px)
+      )
+      bottom left / calc(var(--dientes) * 2) var(--dientes) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--dientes)) no-repeat,
+    radial-gradient(
+        circle at var(--dientes) 0,
+        transparent 0 calc(var(--dientes) - 2px),
+        #000 calc(var(--dientes) - 1px)
+      )
+      bottom left / calc(var(--dientes) * 2) var(--dientes) repeat-x;
+}
+.cola__texto {
+  font-family: inherit;
+  font-stretch: 84%;
   font-size: 13px;
-}
-.pie a {
-  color: var(--secundario);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  color: #241f1c;
+  font-variant-numeric: tabular-nums;
+  overflow-y: auto;
+  max-height: 32vh;
 }
 
-/* Con el movimiento desactivado la interfaz sigue siendo legible y completa:
-   ninguna información depende de que algo se anime para aparecer. */
+/* ── Campos ──────────────────────────────────────────────────────────────*/
+
+.campo {
+  width: 100%;
+  margin-top: 3px;
+  padding: 12px 14px;
+  background: var(--perforado);
+  border: 0;
+  color: #241f1c;
+  font-family: inherit;
+  font-size: var(--t-interfaz); /* 16px o iOS hace zoom al enfocar */
+  font-stretch: 88%;
+  resize: none;
+  box-shadow: var(--sombra-punzada);
+}
+.campo::placeholder {
+  color: #7d736c;
+}
+
+/* ── Fichas ──────────────────────────────────────────────────────────────*/
+
+.fichas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.ficha {
+  min-height: 48px;
+  padding: 0 14px;
+  border: 0;
+  font-family: inherit;
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 76%;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: var(--sombra-punzada);
+}
+.ficha--activa {
+  background: var(--naranja);
+  color: var(--sobre-naranja);
+  box-shadow: none;
+}
+
+/* ── El contador de la tira ─────────────────────────────────────────────*/
+
+.contador {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 3px 3px;
+  height: 7px;
+}
+.contador__tick {
+  height: 100%;
+  flex: 1;
+  background: var(--tinta);
+  opacity: 0.32;
+}
+.contador__tick--hecho {
+  opacity: 1;
+}
+.contador__tick--actual {
+  background: var(--perforado);
+  opacity: 1;
+}
+
+/* ── Movimiento ─────────────────────────────────────────────────────────
+   Un solo momento de autor: la tira se enhebra al entrar y avanza una
+   perforación al marcar. Nada más se anima. */
+
+.enhebra {
+  animation: enhebrar var(--t-enhebrar) var(--ease-tira) both;
+}
+@keyframes enhebrar {
+  from {
+    transform: translate3d(0, calc(var(--paso) * -7), 0);
+    opacity: 0;
+    filter: blur(7px);
+  }
+  70% {
+    filter: blur(0);
+  }
+  to {
+    transform: none;
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.avanza {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--paso) * 0.6);
+  animation: avanzar var(--t-avance) var(--ease-tira) both;
+}
+@keyframes avanzar {
+  from {
+    transform: translate3d(0, calc(var(--paso) * 2.4), 0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.fotograma--crece {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── El panorama ────────────────────────────────────────────────────────
+ *
+ * NO es una columna de tarjetas con scroll. La tesis lo rechaza expresamente y
+ * la primera construcción entregó exactamente eso.
+ *
+ * Es la mesa: un riel vertical a la izquierda, las dos deudas en el centro, y
+ * el estado de la producción como una tira de contadores. Cabe en una pantalla
+ * y no se desplaza, que es lo que «leer la producción en treinta segundos»
+ * quiere decir.
+ */
+
+/*
+ * El suelo de la mesa es naranja y los paneles van punzados encima.
+ *
+ * Antes los paneles se estiraban a la altura disponible, así que con una sola
+ * revisión y un solo bloqueo la región más grande de la pantalla eran trescientos
+ * píxeles de panel vacío. Ahora los paneles miden lo que miden y el sobrante
+ * vuelve a ser suelo: una superficie continua en lugar de dos cajas medio
+ * llenas. Es la regla del mundo —el rango es cuántas celdas ocupas— aplicada a
+ * la composición y no sólo a la tipografía.
+ */
+.mesa {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 3px;
+  padding: 3px;
+  overflow: hidden;
+}
+
+.mesa__centro {
+  min-height: 0;
+  display: grid;
+  gap: 3px;
+  grid-template-rows: auto auto 1fr;
+  overflow: hidden;
+}
+
+.mesa__deudas {
+  min-height: 0;
+  display: grid;
+  gap: 3px;
+  grid-template-columns: 1fr;
+  align-items: start;
+  overflow: hidden;
+}
+
+.panel {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--sombra-punzada);
+}
+.panel__titulo {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.panel__lista {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 16px 14px;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+/*
+ * La tira de estados: un tramo de tira, no una fila de métricas.
+ *
+ * Estuvo como siete celdas de cifra grande sobre etiqueta pequeña, que es el
+ * molde «hero-metric» que el suelo de calidad rechaza expresamente — y estaba
+ * justo en la superficie cuya tesis rechaza leerse como panel de operaciones.
+ * Ademas metia un cuarto tamaño de letra en una escala recién reducida a tres.
+ *
+ * Ahora el rango se marca como lo marca este mundo: por CUÁNTAS CELDAS ocupa
+ * algo. Cada estado crece en proporción a sus piezas, así que «por hacer 3» es
+ * literalmente tres veces más ancho que «en producción 1». Se lee de un vistazo
+ * sin leer un solo número, y todo el texto vuelve al tamaño de etiqueta.
+ */
+.contadores {
+  display: flex;
+  gap: 3px;
+  height: 46px;
+}
+.contadores__celda {
+  flex: var(--peso, 1) 1 0;
+  min-width: 46px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  overflow: hidden;
+  text-align: left;
+  border: 0;
+  font-family: inherit;
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--sombra-punzada);
+}
+.contadores__n {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--naranja-texto);
+}
+.contadores__que {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.contadores__celda[aria-pressed='true'] {
+  background-color: var(--naranja);
+  color: var(--sobre-naranja);
+  box-shadow: none;
+}
+.contadores__celda[aria-pressed='true'] .contadores__n {
+  color: var(--sobre-naranja);
+}
+/* Una celda vacía no se pulsa, pero sigue diciendo algo —«con cambios: 0» es
+   información— así que tiene que leerse. Bajarla al 55 % de opacidad la dejaba
+   en 2.59:1. Se apaga con color, no con transparencia. */
+.contadores__celda:disabled {
+  cursor: default;
+  background-color: var(--tinta);
+  color: var(--sobre-tinta-2);
+}
+.contadores__celda:disabled .contadores__n {
+  color: var(--sobre-tinta-2);
+}
+
+.dias {
+  flex: none;
+  padding: 3px 8px;
+  background: var(--naranja);
+  color: var(--sobre-naranja);
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.tinta .dias {
+  background: var(--naranja);
+}
+
+/* El POV: la luz de la mesa apagada. Se mira, no se toca. */
+.pov {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: rgba(2, 2, 2, 0.86);
+  backdrop-filter: blur(3px);
+}
+.pov__banda {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: var(--sombra-alzada);
+}
+.pov__cerrar {
+  border: 0;
+  background: var(--sobre-naranja);
+  color: var(--naranja-texto);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+.pov__pantalla {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 3px;
+  display: grid;
+  gap: 3px;
+  align-content: start;
+  filter: saturate(0.82) brightness(0.86);
+  pointer-events: none;
+  user-select: none;
+}
+
+.cargando {
+  padding: 32px 18px;
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 76%;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ── Escritorio ─────────────────────────────────────────────────────────*/
+
+@media (min-width: 900px) {
+  .mesa {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+  }
+  .mesa__deudas {
+    grid-template-columns: 1fr 1fr;
+  }
+  /* Tres filas también en escritorio: persona, deudas, y el cesto quedándose lo
+     que sobre. Esta regla decía `auto 1fr`, herencia del layout anterior, y
+     ganaba justo donde el problema se veía: le daba a las deudas el espacio
+     libre y dejaba al cesto con cien píxeles al fondo de un campo naranja
+     vacío. Los contadores ya no son rejilla, así que su regla de columnas
+     también sobraba aquí. */
+  .mesa__centro {
+    grid-template-rows: auto auto 1fr;
+  }
+  .pov__pantalla {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+}
+
+@media (min-width: 720px) {
+  .hoja__cuerpo {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  .cesto {
+    padding-left: 30px;
+  }
+}
+
+/* Con el movimiento desactivado, la tira ya aparece encajada: cero recorrido,
+   misma información. Nada depende de que algo se anime para existir. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -203,260 +1115,189 @@ h1 {
   }
 }
 
-/* ══ Fase 1 ══════════════════════════════════════════════════════════════ */
-
-.envoltorio--ancho { max-width: 860px; }
-
-.entradilla {
-  color: var(--secundario);
-  font-size: 15px;
-  margin: -10px 0 22px;
-}
-
-.rotulo.separador { margin: 26px 0 10px; }
-
-.cuenta {
-  color: var(--tenue);
-  margin-left: 6px;
-  letter-spacing: 0;
-}
-
-.titular {
-  font-size: 21px;
-  font-weight: 300;
-  letter-spacing: -0.01em;
-  margin: 6px 0 14px;
-}
-
-.cargando { color: var(--tenue); padding: 30px 0; }
-
-/* ── Tarjetas ─────────────────────────────────────────────────────────── */
-
-.tarjeta--tenue    { background: transparent; }
-.tarjeta--destacada{ background: var(--elevada); }
-.tarjeta--ambar    { border-color: rgba(232, 181, 98, 0.32); }
-.tarjeta--roja     { border-color: rgba(255, 155, 155, 0.28); }
-
-.pieza__cabecera {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 4px;
-}
-
-.pieza__marca {
-  display: block;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--tenue);
-}
-
-.pieza__titulo {
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 1.3;
-  margin-top: 3px;
-}
-
-.pieza__nota {
-  color: var(--secundario);
-  font-size: 14px;
-  margin-top: 8px;
-}
-
-.dias {
-  flex: none;
-  font-size: 13px;
-  color: var(--ambar);
-  font-variant-numeric: tabular-nums;
-}
-
-.bloque + .bloque { margin-top: 6px; }
-
-/* ── Campos ───────────────────────────────────────────────────────────── */
-
-.campo {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 8px 0;
-  font-size: 15px;
-  border-top: 1px solid var(--linea);
-}
-.campo:first-of-type { border-top: 0; }
-.campo__etiqueta { color: var(--tenue); flex: none; }
-.campo__valor { color: var(--secundario); text-align: right; }
-
-.campo-texto {
-  width: 100%;
-  margin-top: 8px;
-  padding: 13px 14px;
-  min-height: var(--toque);
-  background: var(--fondo);
-  border: 1px solid var(--linea-viva);
-  border-radius: var(--r-boton);
-  color: var(--texto);
+/* La acción del panel: vive en la fila del título, no como un botón solitario
+   a todo lo ancho debajo del contenido. */
+.panel__accion {
+  border: 0;
+  background: var(--naranja);
+  color: var(--sobre-naranja);
   font: inherit;
-  font-size: 16px; /* 16px o iOS hace zoom al enfocar */
-  resize: vertical;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  padding: 6px 12px;
+  cursor: pointer;
 }
-.campo-texto::placeholder { color: var(--tenue); }
-.campo-texto:focus-visible {
-  outline: 2px solid var(--teal);
-  outline-offset: 1px;
-  border-color: transparent;
+.panel__accion:hover {
+  background: var(--sobre-naranja);
+  color: var(--naranja-texto);
 }
 
-.detalle { margin-top: 12px; }
+/* Dos columnas cuando hay ancho: la pieza y sus apuntes en paralelo. En una
+   sola columna el panel de la persona dejaba media pantalla vacía a la derecha. */
+@media (min-width: 900px) {
+  .panel__lista--ancha {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    align-items: start;
+    column-gap: 28px;
+  }
+}
+
+/* Los paneles miden su contenido. El tope evita que uno largo empuje al otro
+   fuera de la pantalla; a partir de ahí su lista se desplaza por dentro. */
+.panel {
+  max-height: 100%;
+}
+.mesa__deudas > .panel {
+  max-height: 46vh;
+}
+
+/*
+ * El cesto alto: en la pantalla de entrada, los descartes cuelgan a altura
+ * completa y se quedan el espacio que antes sobraba dentro del fotograma.
+ *
+ * El vacío estaba dentro del fotograma —360 px de tinta inerte bajo «siguiente
+ * paso»— y estirarlo no lo componía. La regla del mundo es que el rango es
+ * cuántas celdas ocupas: un fotograma con dos apuntes ocupa lo que ocupa, y las
+ * celdas restantes vuelven al cesto, que es donde de verdad cuelga el trabajo
+ * apartado en una moviola.
+ */
+.pie-hoja {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.cesto--alto {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.cesto--alto .cesto__carril {
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: stretch;
+}
+.cesto--alto .trim {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.cesto--alto .trim__pie {
+  margin-top: auto;
+}
+
+/* El cesto de la mesa se queda las celdas que los paneles no piden. */
+.cesto--mesa {
+  padding: calc(var(--paso) * 0.7) 0 calc(var(--paso) * 0.7) 16px;
+  min-height: 0;
+}
+.trim__punto {
+  margin-top: 5px;
+  font-size: var(--t-etiqueta);
+  line-height: 1.3;
+  color: var(--emulsion);
+  opacity: 0.78;
+  overflow: hidden;
+}
+.cesto--mesa .trim {
+  width: 190px;
+}
+
+/* Las celdas nunca cortan su rótulo: crecen en proporción, pero nunca por
+   debajo de lo que su texto necesita. «0 CON CAM…» era una etiqueta rota. */
+.contadores__celda {
+  flex: var(--peso, 1) 1 auto;
+  min-width: max-content;
+}
+
+/* ── Los campos de detalle ───────────────────────────────────────────────*/
+
+.detalles {
+  display: grid;
+  gap: 3px;
+}
+.detalle {
+  display: block;
+  background: var(--perforado);
+  padding: 10px 12px 12px;
+  box-shadow: var(--sombra-alzada);
+}
 .detalle__etiqueta {
   display: block;
-  font-size: 14px;
-  color: var(--secundario);
-  margin-top: 6px;
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 74%;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--naranja-hondo);
 }
-.opcional { color: var(--tenue); font-size: 13px; }
-
-/* ── Desenlaces: los cinco botones del cierre ─────────────────────────── */
-
-.desenlaces {
-  display: grid;
-  gap: 8px;
-  margin-top: 16px;
+/* El valor de ayer, como dato y no como sugerencia dentro del campo. */
+.detalle__previo {
+  display: block;
+  margin-top: 3px;
+  font-size: var(--t-etiqueta);
+  line-height: 1.35;
+  color: #524943;
 }
-
-.desenlace {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  width: 100%;
-  min-height: var(--toque);
-  padding: 0 16px;
-  background: var(--fondo);
-  border: 1px solid var(--linea-viva);
-  border-radius: var(--r-boton);
-  color: var(--texto);
-  font: inherit;
-  font-size: 16px;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color var(--t-corta) var(--ease-suave),
-              border-color var(--t-corta) var(--ease-suave);
-}
-.desenlace__icono { font-size: 17px; }
-.desenlace:active { transform: scale(0.985); transition-duration: var(--t-micro); }
-.desenlace--activo {
-  background: var(--elevada);
-  border-color: var(--teal);
-}
-@media (hover: hover) {
-  .desenlace:hover { background: var(--superficie); border-color: var(--linea-viva); }
-  .desenlace--activo:hover { border-color: var(--teal); }
+.detalle .campo {
+  background: #f0ece7;
+  box-shadow: none;
+  border-bottom: 2px solid var(--naranja);
 }
 
-/* ── Chips ────────────────────────────────────────────────────────────── */
-
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-
-.chip {
-  min-height: 44px;
-  padding: 0 15px;
-  background: transparent;
-  border: 1px solid var(--linea-viva);
-  border-radius: var(--r-chip);
-  color: var(--secundario);
-  font: inherit;
-  font-size: 15px;
-  cursor: pointer;
-  transition: border-color var(--t-corta) var(--ease-suave),
-              color var(--t-corta) var(--ease-suave);
+/* ── El descarte es un fotograma ─────────────────────────────────────────
+ *
+ * Llevaba las esquinas planas y un filete de un píxel: yo afirmaba que su
+ * interior era el área de imagen de un fotograma, pero el render no lo
+ * mostraba. Ahora cuelga de un pincho visible y lleva las mismas columnas de
+ * perforación que el resto de fotogramas, así que el vacío de dentro se ve que
+ * es película y no una caja.
+ */
+.trim {
+  position: relative;
+  border: 0;
+  padding-left: 16px;
+  padding-right: 16px;
 }
-.chip:active { transform: scale(0.985); }
-.chip--activo { color: var(--texto); border-color: var(--teal); }
-
-/* ── Botones ──────────────────────────────────────────────────────────── */
-
-.acciones {
-  display: grid;
-  gap: 10px;
-  margin-top: 26px;
+.trim::before,
+.trim::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  background-image: radial-gradient(
+    circle at 5px 5px,
+    var(--naranja) 0 2.4px,
+    transparent 2.5px
+  );
+  background-size: 10px var(--paso);
+  background-repeat: repeat-y;
 }
-.acciones--linea { grid-auto-flow: column; grid-auto-columns: 1fr; margin-top: 16px; }
-
-.boton {
-  min-height: var(--toque);
-  padding: 0 22px;
-  border-radius: var(--r-boton);
-  border: 1px solid var(--linea-viva);
-  background: transparent;
-  color: var(--texto);
-  font: inherit;
-  font-size: 16px;
-  font-weight: 400;
-  cursor: pointer;
-  transition: background-color var(--t-corta) var(--ease-suave),
-              border-color var(--t-corta) var(--ease-suave),
-              opacity var(--t-corta) var(--ease-suave);
+.trim::before {
+  left: 0;
 }
-.boton:active { transform: scale(0.98); transition-duration: var(--t-micro); }
-.boton--principal {
-  background: var(--texto);
-  border-color: var(--texto);
-  color: var(--fondo);
-  font-weight: 500;
-}
-.boton:disabled {
-  opacity: 0.42;
-  cursor: not-allowed;
-  transform: none;
-}
-@media (hover: hover) {
-  .boton:not(:disabled):hover { border-color: var(--teal); }
-  .boton--principal:not(:disabled):hover { background: #fff; border-color: #fff; }
+.trim::after {
+  right: 0;
 }
 
-/* ── Estados ──────────────────────────────────────────────────────────── */
-
-.estado {
-  flex: none;
-  padding: 5px 10px;
-  border-radius: var(--r-chip);
-  border: 1px solid var(--linea-viva);
-  font-size: 12px;
-  color: var(--secundario);
-  white-space: nowrap;
+/* El pincho del que cuelga: un punto de acero sobre el borde superior. */
+.cesto__carril .trim {
+  margin-top: 9px;
 }
-.estado--EN_PRODUCCION { border-color: rgba(61, 218, 215, 0.45); color: var(--teal); }
-.estado--REVISION      { border-color: rgba(232, 181, 98, 0.45); color: var(--ambar); }
-.estado--CAMBIOS       { border-color: rgba(232, 181, 98, 0.45); color: var(--ambar); }
-.estado--BLOQUEADO     { border-color: rgba(255, 155, 155, 0.42); color: var(--alerta); }
-.estado--TERMINADO     { border-color: rgba(185, 62, 255, 0.4); color: #d79bff; }
-
-/* ── Avisos ───────────────────────────────────────────────────────────── */
-
-.aviso { margin-top: 16px; }
-.aviso--atencion { border-color: rgba(232, 181, 98, 0.34); color: var(--ambar); }
-.aviso--atencion b { background: var(--ambar); }
-.aviso--neutro { border-color: var(--linea-viva); color: var(--secundario); }
-.aviso--neutro b { background: var(--tenue); }
-
-/* ── Informe ──────────────────────────────────────────────────────────── */
-
-.informe { margin-top: 26px; }
-.informe__texto {
-  /* Monoespaciada: es texto que se copia tal cual a WhatsApp y la alineación
-     de las viñetas forma parte de que se lea bien allí. */
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 13px;
-  line-height: 1.65;
-  color: var(--secundario);
-  background: var(--superficie);
-  border: 1px solid var(--linea);
-  border-radius: var(--r-tarjeta);
-  padding: 16px;
-  margin-bottom: 12px;
-  white-space: pre-wrap;
-  overflow-x: auto;
+.cesto__carril .trim > :first-child {
+  position: relative;
+}
+.trim__titulo::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  border-radius: 50%;
+  background: var(--sobre-naranja);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
 }

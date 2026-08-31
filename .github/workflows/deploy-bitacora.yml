@@ -86,6 +86,14 @@ jobs:
           cp -r gate/. publicar/
           mkdir -p publicar/app
           cp -r dist/. publicar/app/
+          # /tipo/ va FUERA de app/: la pantalla de acceso se sirve precisamente
+          # a quien NO tiene sesion, asi que su tipografia y su grano tienen que
+          # ser alcanzables sin ella o la puerta se dibuja con la letra del
+          # sistema mientras la aplicacion de dentro usa la suya. El .htaccess
+          # exime esa ruta, y solo para archivos .woff2 y .png.
+          mkdir -p publicar/tipo
+          cp src/fuentes/archivo-latin.woff2 publicar/tipo/
+          cp src/grano.png publicar/tipo/
           # El CLIENT_ID no es secreto —viaja en el HTML por diseño— pero se
           # inyecta desde el entorno para no tener que tocar codigo al rotarlo.
           if [ -n "${DAK_GOOGLE_CLIENT_ID:-}" ]; then
@@ -117,6 +125,15 @@ jobs:
             || { echo "::error::index.php no restringe por dominio."; exit 1; }
           grep -q 'Disallow: /' publicar/robots.txt \
             || { echo "::error::robots.txt no bloquea a los rastreadores."; exit 1; }
+          # La puerta tiene que dibujarse con la misma letra que la aplicacion.
+          [ -f publicar/tipo/archivo-latin.woff2 ] \
+            || { echo "::error::Falta la tipografia de la pantalla de acceso."; exit 1; }
+          grep -q '/tipo/archivo-latin.woff2' publicar/acceso.php \
+            || { echo "::error::La pantalla de acceso no usa la tipografia autoalojada."; exit 1; }
+          if grep -q 'fonts.googleapis.com' publicar/acceso.php; then
+            echo "::error::La pantalla de acceso sigue pidiendo la fuente a un tercero."
+            exit 1
+          fi
           if grep -q 'PENDIENTE.apps.googleusercontent.com' publicar/config.php; then
             echo "::error::Falta el secreto DAK_GOOGLE_CLIENT_ID. Nadie podria entrar."
             exit 1
@@ -180,6 +197,25 @@ jobs:
           [ "$api" = "401" ] || { echo "::error::/api/salud deberia dar 401 sin sesion y dio $api"; fallos=1; }
           grep -q 'sin_sesion' /tmp/api.json \
             || { echo "::error::La API no contesto el 401 en JSON."; fallos=1; }
+
+          # La tipografia SI debe servirse sin sesion, y es la unica excepcion
+          # junto a robots.txt: la pantalla de acceso se le sirve justamente a
+          # quien no la tiene.
+          tipo=$(curl -s -o /tmp/f.woff2 -w '%{http_code}' --max-time 25 https://bitacora.dakagency.net/tipo/archivo-latin.woff2)
+          echo "GET /tipo/archivo-latin.woff2 -> $tipo"
+          [ "$tipo" = "200" ] || { echo "::error::La tipografia de la puerta no se sirve ($tipo)."; fallos=1; }
+          head -c 4 /tmp/f.woff2 | grep -q 'wOF2' \
+            || { echo "::error::Lo servido en /tipo/ no es un woff2."; fallos=1; }
+
+          # Y esa exencion no puede convertirse en una puerta trasera.
+          for ruta in /tipo/ /tipo/../lib/bd.php /tipo/x.php; do
+            codigo=$(curl -s -o /tmp/t -w '%{http_code}' --max-time 25 "https://bitacora.dakagency.net${ruta}")
+            echo "GET $ruta -> $codigo"
+            if grep -qsE 'DB_PASS|new PDO|moverPieza' /tmp/t; then
+              echo "::error::${ruta} filtro codigo por la exencion de /tipo/."
+              fallos=1
+            fi
+          done
 
           [ "$fallos" = "0" ] || exit 1
           echo "OK: sin sesion no se sirve ni la aplicacion, ni sus assets, ni la API."
