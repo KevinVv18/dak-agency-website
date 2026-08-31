@@ -104,9 +104,12 @@ verdad: no usa dobles, ejecuta el mismo código que la API y deja los mismos eve
 misma antes de empezar, así que se puede repetir todas las veces que haga falta.
 
 ```bash
-ssh -p 65002 u567580447@89.116.115.11 \
-  "cd /home/u567580447/domains/dakagency.net/public_html/bitacora && /opt/alt/php83/usr/bin/php pruebas/continuidad.php"
+./pruebas/ejecutar.sh
 ```
+
+El lanzador sube la prueba a `/tmp` del servidor, la ejecuta **contra el `lib/` publicado** —el
+mismo código que sirve la API, no una copia— y borra los restos. La prueba no se despliega con la
+aplicación a propósito: escribe en la base y no tiene por qué vivir en un docroot.
 
 Comprueba lo único que de verdad importa de esta aplicación: que una tarea que nadie menciona no
 cambia de estado, que el cierre se niega a completarse a medias, que olvidar un día no pierde
