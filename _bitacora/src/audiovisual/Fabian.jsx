@@ -9,9 +9,12 @@ import {
   Contador,
   DESENLACES,
   ETIQUETAS_ESTADO,
+  ETIQUETAS_TRABAJO,
+  MARCAS,
   Marca,
   SelloDe,
   TIPOS_BLOQUEO,
+  TIPOS_TRABAJO,
   fechaLarga,
 } from '../ui.jsx'
 
@@ -110,10 +113,20 @@ function LaTira({ estado, alCerrar }) {
  * equivocado se corrige con «atrás» y no llega nunca a la base.
  */
 
-function Secuencia({ piezas, entradilla, onEnviar, onCancelar, textoFinal, error }) {
+function Secuencia({
+  piezas,
+  entradilla,
+  onEnviar,
+  onCancelar,
+  textoFinal,
+  error,
+  trabajosAyer = [],
+  conTrabajos = false,
+}) {
   const [i, setI] = useState(0)
   const [mapa, setMapa] = useState({})
   const [paso, setPaso] = useState('piezas')
+  const [trabajos, setTrabajos] = useState([])
   const [bloqueo, setBloqueo] = useState(null)
   const [detalleBloqueo, setDetalleBloqueo] = useState('')
   const [enviando, setEnviando] = useState(false)
@@ -135,10 +148,12 @@ function Secuencia({ piezas, entradilla, onEnviar, onCancelar, textoFinal, error
   }
 
   const editar = (parche) => setMapa((m) => ({ ...m, [pieza.id]: { ...d, ...parche } }))
-  const avanzar = () => (i + 1 < piezas.length ? setI(i + 1) : setPaso('bloqueo'))
+  const avanzar = () =>
+    i + 1 < piezas.length ? setI(i + 1) : setPaso(conTrabajos ? 'trabajos' : 'bloqueo')
   const atras = () => {
     clearTimeout(temporizador.current)
-    if (paso === 'bloqueo') setPaso('piezas')
+    if (paso === 'bloqueo') setPaso(conTrabajos ? 'trabajos' : 'piezas')
+    else if (paso === 'trabajos') setPaso('piezas')
     else if (i > 0) setI(i - 1)
     else onCancelar?.()
   }
@@ -147,15 +162,32 @@ function Secuencia({ piezas, entradilla, onEnviar, onCancelar, textoFinal, error
     setEnviando(true)
     await onEnviar(
       piezas.map((p) => ({ pieza_id: p.id, ...mapa[p.id] })),
-      bloqueo && bloqueo !== 'ninguno' ? [{ tipo: bloqueo, detalle: detalleBloqueo || null }] : []
+      bloqueo && bloqueo !== 'ninguno' ? [{ tipo: bloqueo, detalle: detalleBloqueo || null }] : [],
+      trabajos
     )
     setEnviando(false)
+  }
+
+  const totalPasos = piezas.length + (conTrabajos ? 2 : 1)
+
+  if (paso === 'trabajos') {
+    return (
+      <ElResto
+        trabajos={trabajos}
+        setTrabajos={setTrabajos}
+        ayer={trabajosAyer}
+        total={totalPasos}
+        actual={piezas.length}
+        atras={atras}
+        seguir={() => setPaso('bloqueo')}
+      />
+    )
   }
 
   if (paso === 'bloqueo') {
     return (
       <div className="campo-naranja hoja__contenido">
-        <Contador total={piezas.length + 1} actual={piezas.length} />
+        <Contador total={totalPasos} actual={totalPasos - 1} />
         <div className="hoja__cuerpo">
           <h1>¿Algo te frena?</h1>
           <div className="fichas">
@@ -201,7 +233,7 @@ function Secuencia({ piezas, entradilla, onEnviar, onCancelar, textoFinal, error
 
   return (
     <div className="campo-naranja hoja__contenido">
-      <Contador total={piezas.length + 1} actual={i} />
+      <Contador total={totalPasos} actual={i} />
 
       <div className="hoja__cuerpo" key={i}>
         <div className="avanza">
@@ -248,6 +280,135 @@ function Secuencia({ piezas, entradilla, onEnviar, onCancelar, textoFinal, error
         <Boton onClick={atras}>{i === 0 && onCancelar ? 'Salir' : 'Atrás'}</Boton>
         <Boton variante="principal" disabled={!d.desenlace} onClick={avanzar}>
           {i + 1 < piezas.length ? 'Siguiente' : 'Continuar'}
+        </Boton>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * «¿Qué más hiciste?» — el trabajo suelto del día.
+ *
+ * Fabián no produce dos o tres piezas con nombre: sus informes reales llevan
+ * entre tres y nueve salidas, muchas en lote («5 videos para vault con IA»),
+ * más trabajo recurrente que no es una pieza entregable —crear prompts,
+ * investigar temas—. Sin esta pantalla el informe de la aplicación diría menos
+ * que el mensaje que ya escribe a mano, y eso la convierte en un retroceso.
+ *
+ * Lo de ayer va primero y se repite de un toque, porque sus días se parecen
+ * muchísimo entre sí. Recomponer la misma lista cada tarde es justo el trabajo
+ * que esta aplicación existe para quitar.
+ */
+function ElResto({ trabajos, setTrabajos, ayer, total, actual, atras, seguir }) {
+  const [tipo, setTipo] = useState(null)
+  const [marca, setMarca] = useState('DAK')
+  const [cantidad, setCantidad] = useState(1)
+
+  const añadir = () => {
+    if (!tipo) return
+    setTrabajos((t) => [...t, { tipo, marca, cantidad }])
+    setTipo(null)
+    setCantidad(1)
+  }
+
+  const repetirAyer = () =>
+    setTrabajos((t) => [
+      ...t,
+      ...ayer.map((a) => ({ tipo: a.tipo, marca: a.marca, cantidad: Number(a.cantidad) })),
+    ])
+
+  return (
+    <div className="campo-naranja hoja__contenido">
+      <Contador total={total} actual={actual} />
+      <div className="hoja__cuerpo">
+        <h1>¿Qué más hiciste?</h1>
+
+        {trabajos.length > 0 ? (
+          <div className="anotados">
+            {trabajos.map((t, n) => (
+              <button
+                key={n}
+                type="button"
+                className="anotado"
+                onClick={() => setTrabajos((x) => x.filter((_, k) => k !== n))}
+                aria-label={`Quitar ${ETIQUETAS_TRABAJO[t.tipo]} de ${t.marca}`}
+              >
+                {t.cantidad > 1 ? `${t.cantidad} × ` : ''}
+                {ETIQUETAS_TRABAJO[t.tipo]} · {t.marca} <span aria-hidden="true">✕</span>
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        {ayer.length > 0 && trabajos.length === 0 ? (
+          <button type="button" className="repetir tinta" onClick={repetirAyer}>
+            Repetir lo de ayer
+            <span className="repetir__detalle">
+              {ayer
+                .map(
+                  (a) =>
+                    `${Number(a.cantidad) > 1 ? a.cantidad + ' × ' : ''}${ETIQUETAS_TRABAJO[a.tipo]} ${a.marca}`
+                )
+                .join(' · ')}
+            </span>
+          </button>
+        ) : null}
+
+        <div className="fichas">
+          {TIPOS_TRABAJO.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className={tipo === t.id ? 'ficha ficha--activa' : 'ficha tinta'}
+              aria-pressed={tipo === t.id}
+              onClick={() => setTipo(t.id)}
+            >
+              {t.texto}
+            </button>
+          ))}
+        </div>
+
+        {tipo ? (
+          <div className="anadir">
+            <div className="fichas">
+              {MARCAS.map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  className={marca === m ? 'ficha ficha--activa' : 'ficha tinta'}
+                  aria-pressed={marca === m}
+                  onClick={() => setMarca(m)}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+            <div className="fichas">
+              {[1, 2, 3, 5, 8].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  className={cantidad === n ? 'ficha ficha--activa cifra' : 'ficha tinta cifra'}
+                  aria-pressed={cantidad === n}
+                  aria-label={`${n} ${n === 1 ? 'unidad' : 'unidades'}`}
+                  onClick={() => setCantidad(n)}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+            <Boton variante="principal" onClick={añadir}>
+              Anotar {cantidad > 1 ? `${cantidad} × ` : ''}
+              {ETIQUETAS_TRABAJO[tipo]} de {marca}
+            </Boton>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="acciones acciones--linea">
+        <Boton onClick={atras}>Atrás</Boton>
+        <Boton variante="principal" onClick={seguir}>
+          {trabajos.length > 0 ? 'Seguir' : 'Nada más'}
         </Boton>
       </div>
     </div>
@@ -370,10 +531,10 @@ function Cierre({ estado, volver, recargar }) {
   const [error, setError] = useState(null)
   const [hecho, setHecho] = useState(null)
 
-  const enviar = async (desenlaces, bloqueos) => {
+  const enviar = async (desenlaces, bloqueos, trabajos) => {
     setError(null)
     try {
-      setHecho(await api.cerrarJornada({ desenlaces, bloqueos }))
+      setHecho(await api.cerrarJornada({ desenlaces, bloqueos, trabajos }))
     } catch (e) {
       setError(e.message)
     }
@@ -388,6 +549,12 @@ function Cierre({ estado, volver, recargar }) {
       onCancelar={volver}
       textoFinal="Cerrar el día"
       error={error}
+      // El trabajo suelto sólo se pregunta en el cierre del día. La
+      // reconciliación resuelve días PASADOS, y pedirle a alguien que
+      // reconstruya de memoria cuántos videos generó el martes es justo el tipo
+      // de dato inventado que esta aplicación no quiere.
+      conTrabajos
+      trabajosAyer={estado.trabajos_ayer || []}
     />
   )
 }

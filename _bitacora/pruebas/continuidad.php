@@ -19,9 +19,9 @@
  */
 
 $D = getenv('BITACORA_DIR') ?: '/home/u567580447/domains/dakagency.net/public_html/bitacora';
-require "$D/lib/jornadas.php";
-require "$D/lib/panorama.php";
-require "$D/lib/piezas.php";
+require_once "$D/lib/jornadas.php";
+require_once "$D/lib/panorama.php";
+require_once "$D/lib/piezas.php";
 
 $fallos = 0;
 $hechas = 0;
@@ -36,7 +36,11 @@ $hechas = 0;
  */
 function sembrar(): void
 {
-    $tablas = ['eventos', 'jornada_piezas', 'revisiones', 'bloqueos', 'jornadas', 'piezas', 'usuarios'];
+    // La tabla de trabajos va en la lista tambien. Sin ella, el TRUNCATE de
+    // jornadas —hecho con las claves foraneas desactivadas— deja filas
+    // huerfanas que se acumulan entre ejecuciones y falsean cualquier conteo.
+    $tablas = ['eventos', 'jornada_piezas', 'revisiones', 'bloqueos', 'trabajos',
+               'jornadas', 'piezas', 'usuarios'];
     bd()->exec('SET FOREIGN_KEY_CHECKS=0');
     foreach ($tablas as $t) {
         bd()->exec("TRUNCATE TABLE {$t}");
@@ -171,6 +175,7 @@ comprobar('el plan NO incluye nada bloqueado ni en revision',
 
 $congelado = $estado['plan_congelado'];
 $jornadaId = (int) $estado['jornada']['id'];
+$vistaJornada = $estado;   // se guarda: tras cerrar, el modo ya no es 'jornada'
 
 // Leer otra vez no puede duplicar nada.
 $otra = estadoDeHoy($fabian);
@@ -211,6 +216,13 @@ foreach ($congelado as $i => $p) {
 $c = cerrarJornada($fabian, [
     'desenlaces' => $desenlaces,
     'bloqueos'   => [['tipo' => 'esperando_aprobacion', 'detalle' => 'Falta el visto bueno del guion']],
+    // El trabajo suelto del 26 de agosto, tal y como lo describio el.
+    'trabajos'   => [
+        ['tipo' => 'prompts',       'marca' => 'Vault', 'cantidad' => 1],
+        ['tipo' => 'generacion_ia', 'marca' => 'Vault', 'cantidad' => 5],
+        ['tipo' => 'carrusel',      'marca' => 'DAK',   'cantidad' => 2],
+        ['tipo' => 'investigacion', 'marca' => 'DAK',   'cantidad' => 1],
+    ],
 ]);
 
 comprobar('el cierre devuelve informe en texto', !empty($c['informe']['texto']));
@@ -247,6 +259,44 @@ if ($enRevision) {
         fila('SELECT resuelta_en FROM revisiones WHERE pieza_id = ? ORDER BY id DESC LIMIT 1',
              [$enRevision['id']])['resuelta_en'] !== null);
 }
+
+echo "\n=== 4b. EL TRABAJO SUELTO (el dia real de Fabian) ===\n";
+/*
+ * El caso es su informe del 26 de agosto, literal:
+ *
+ *   «edite y cree promnt y edite aparte de generar 5 videos para vault con ia,
+ *    edite un carrusel de video 1 de dak 1 video y una imagen, e investigue
+ *    temas variados para dak y para vault para hacer contenido»
+ *
+ * Nueve salidas, una en lote de cinco, y dos que no son piezas entregables.
+ * Si el informe de la aplicacion dice menos que ese mensaje, la aplicacion es
+ * un retroceso respecto a lo que sustituye.
+ */
+$hoy2 = fila('SELECT * FROM jornadas WHERE usuario_id = ? AND fecha = ?', [$fabian['id'], hoy()]);
+comprobar('el dia de hoy quedo cerrado por la prueba anterior', $hoy2['estado'] === 'cerrada');
+
+$guardados = trabajosDe((int) $hoy2['id']);
+comprobar('el cierre guardo el trabajo suelto', count($guardados) === 4,
+    count($guardados) . ' lineas');
+
+$total = array_sum(array_map(fn($t) => (int) $t['cantidad'], $guardados));
+comprobar('los lotes cuentan por su cantidad, no por su fila', $total === 9, "total={$total}");
+
+$texto = $c['informe']['texto'];
+comprobar('el informe nombra la generacion con IA', str_contains($texto, 'Generación con IA'));
+comprobar('el informe dice CUANTOS eran', str_contains($texto, '5 × '));
+comprobar('el informe recoge el trabajo que no es una pieza',
+    str_contains($texto, 'Prompts') && str_contains($texto, 'Investigación'));
+comprobar('el informe distingue la marca de cada trabajo',
+    str_contains($texto, 'Generación con IA — Vault'));
+
+// Lo de ayer, para repetirlo de un toque. Se comprueba sobre la vista de
+// jornada ABIERTA: una vez cerrado el dia el modo es 'cerrada' y ya no lleva
+// ese campo, que es correcto — a un dia cerrado no se le anota nada.
+comprobar('la vista de la jornada ofrece lo de ayer para repetirlo',
+    array_key_exists('trabajos_ayer', $vistaJornada));
+comprobar('y un dia ya cerrado NO lo ofrece',
+    !array_key_exists('trabajos_ayer', estadoDeHoy($fabian)));
 
 echo "\n=== 5b. EL ESPEJO NO ABRE JORNADAS AJENAS ===\n";
 // El caso que de verdad importa: un jefe mirando el espejo por la mañana, antes

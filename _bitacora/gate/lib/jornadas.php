@@ -11,12 +11,37 @@ require_once __DIR__ . '/bd.php';
 require_once __DIR__ . '/plan.php';
 require_once __DIR__ . '/eventos.php';
 require_once __DIR__ . '/respuesta.php';
+require_once __DIR__ . '/piezas.php';
 
 const DESENLACES = ['termine', 'continuo', 'pause', 'bloqueado', 'no_trabaje'];
 
 const TIPOS_BLOQUEO = [
     'falta_material', 'esperando_aprobacion', 'esperando_cliente',
     'falta_recurso', 'problema_tecnico', 'otro',
+];
+
+/**
+ * Los tipos de trabajo suelto, con las palabras que usa Fabian.
+ *
+ * Salen de sus informes reales, no de una taxonomia inventada: «edite»,
+ * «cree promnt», «generar videos con ia», «carrusel», «videos cortos»,
+ * «animacion de after efects», «investigue temas», «cree imagenes de ia».
+ */
+const TIPOS_TRABAJO = [
+    'edicion', 'prompts', 'generacion_ia', 'carrusel', 'video_corto',
+    'animacion', 'imagenes', 'investigacion', 'otro',
+];
+
+const ETIQUETAS_TRABAJO = [
+    'edicion'       => 'Edición',
+    'prompts'       => 'Prompts',
+    'generacion_ia' => 'Generación con IA',
+    'carrusel'      => 'Carrusel',
+    'video_corto'   => 'Video corto',
+    'animacion'     => 'Animación',
+    'imagenes'      => 'Imágenes',
+    'investigacion' => 'Investigación',
+    'otro'          => 'Otro',
 ];
 
 /** Etiquetas humanas de los bloqueos, para el informe. */
@@ -79,6 +104,7 @@ function estadoDeHoy(array $u, bool $soloLectura = false): array
             'modo'           => 'jornada',
             'jornada'        => $abierta['jornada'],
             'plan_congelado' => $abierta['plan_congelado'],
+            'trabajos_ayer'  => trabajosDeAyer($usuarioId),
         ];
     }
 
@@ -94,6 +120,10 @@ function estadoDeHoy(array $u, bool $soloLectura = false): array
         'modo'            => 'jornada',
         'jornada'         => $jornada,
         'plan_congelado'  => planCongelado((int) $jornada['id']),
+        // Lo de ayer, para poder repetirlo de un toque: sus días se parecen
+        // muchísimo entre sí y recomponer la misma lista cada tarde es
+        // exactamente el trabajo que esta aplicación existe para quitar.
+        'trabajos_ayer'   => trabajosDeAyer($usuarioId),
     ];
 }
 
@@ -294,6 +324,8 @@ function cerrarJornada(array $u, array $cuerpo): array
             );
         }
 
+        guardarTrabajos($u, $jornadaId, $cuerpo['trabajos'] ?? []);
+
         foreach (($cuerpo['bloqueos'] ?? []) as $b) {
             $tipo = $b['tipo'] ?? 'otro';
             if (!in_array($tipo, TIPOS_BLOQUEO, true)) {
@@ -408,6 +440,77 @@ function reconciliar(array $u, array $cuerpo): array
 }
 
 /**
+ * Guarda el trabajo suelto de una jornada.
+ *
+ * Un trabajo suelto no tiene estado ni continuidad: es una linea de actividad
+ * del dia. Lo que se arrastra entre jornadas son las piezas, y eso no cambia.
+ * Por eso esto no pasa por moverPieza() — no hay pieza que mover.
+ *
+ * Aun asi deja su evento, porque el §16 quiere el historial completo y porque
+ * mas adelante estas lineas son las que dicen cuanto se produce de verdad.
+ */
+function guardarTrabajos(array $u, int $jornadaId, array $trabajos): void
+{
+    foreach ($trabajos as $t) {
+        $tipo  = $t['tipo'] ?? 'otro';
+        $marca = $t['marca'] ?? 'DAK';
+
+        if (!in_array($tipo, TIPOS_TRABAJO, true)) {
+            $tipo = 'otro';
+        }
+        if (!in_array($marca, MARCAS, true)) {
+            $marca = 'DAK';
+        }
+        // Tope alto pero real: nadie edita ochenta piezas en una tarde, y un
+        // numero disparado suele ser un dedo, no un dia productivo.
+        $cantidad = max(1, min(50, (int) ($t['cantidad'] ?? 1)));
+
+        ejecutar(
+            'INSERT INTO trabajos (jornada_id, usuario_id, tipo, marca, cantidad, nota, creado_en)
+             VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [$jornadaId, (int) $u['id'], $tipo, $marca, $cantidad, limpiarTexto($t['nota'] ?? null, 300), ahora()]
+        );
+    }
+
+    if ($trabajos) {
+        registrarEvento([
+            'jornada_id' => $jornadaId,
+            'usuario_id' => (int) $u['id'],
+            'tipo'       => 'trabajo_suelto',
+            'datos'      => ['lineas' => count($trabajos)],
+        ]);
+    }
+}
+
+/** Lo que se registro en una jornada, para el informe y para repetirlo. */
+function trabajosDe(int $jornadaId): array
+{
+    return filas(
+        'SELECT tipo, marca, cantidad, nota FROM trabajos WHERE jornada_id = ? ORDER BY id',
+        [$jornadaId]
+    );
+}
+
+/**
+ * El trabajo suelto de la ultima jornada cerrada.
+ *
+ * Es la pieza clave de «menos escribir, mas confirmar» aplicada a lo que de
+ * verdad hace: sus dias se parecen muchisimo entre si —prompts, generar videos
+ * para Vault con IA, un carrusel de DAK— asi que lo de ayer se ofrece para
+ * repetirlo de un toque en vez de recomponerlo cada tarde.
+ */
+function trabajosDeAyer(int $usuarioId): array
+{
+    $ultima = fila(
+        "SELECT id FROM jornadas
+          WHERE usuario_id = ? AND estado = 'cerrada' AND fecha < ?
+          ORDER BY fecha DESC LIMIT 1",
+        [$usuarioId, hoy()]
+    );
+    return $ultima ? trabajosDe((int) $ultima['id']) : [];
+}
+
+/**
  * El informe del §14.
  *
  * Se compone en el servidor —no en el navegador— para que el texto que se copia
@@ -446,6 +549,7 @@ function componerInforme(array $u, int $jornadaId, string $fecha): array
         'fecha'    => $fecha,
         'usuario'  => $u['nombre'],
         'grupos'   => $grupos,
+        'trabajos' => trabajosDe($jornadaId),
         'bloqueos' => $bloqueos,
         'manana'   => $manana,
     ];
@@ -480,6 +584,24 @@ function informeEnTexto(array $i): string
     $t .= $bloque('⏸ Pausado:', $i['grupos']['pause']);
     $t .= $bloque('🚫 Bloqueado:', $i['grupos']['bloqueado']);
     $t .= $bloque('↪ No se trabajó hoy:', $i['grupos']['no_trabaje']);
+
+    /*
+     * El trabajo suelto va DENTRO del informe, y no como apendice.
+     *
+     * Sin esto el mensaje que se pega en WhatsApp diria menos que el que Fabian
+     * escribe hoy a mano —«cree promnt, generé 5 videos para vault con ia,
+     * edite un carrusel de dak»— y la aplicacion seria un retroceso respecto a
+     * lo que sustituye.
+     */
+    if (!empty($i['trabajos'])) {
+        $t .= "\n🎬 Además:\n";
+        foreach ($i['trabajos'] as $x) {
+            $etiqueta = ETIQUETAS_TRABAJO[$x['tipo']] ?? $x['tipo'];
+            $cuantos = (int) $x['cantidad'] > 1 ? $x['cantidad'] . ' × ' : '';
+            $t .= '· ' . $cuantos . $etiqueta . ' — ' . $x['marca']
+                . ($x['nota'] ? ' (' . $x['nota'] . ')' : '') . "\n";
+        }
+    }
 
     if ($i['manana']) {
         $t .= "\n➡️ Mañana:\n";

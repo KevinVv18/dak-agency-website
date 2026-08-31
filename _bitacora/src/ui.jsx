@@ -189,6 +189,35 @@ export const TIPOS_BLOQUEO = [
   { id: 'otro', texto: 'Otro' },
 ]
 
+/**
+ * Los tipos de trabajo suelto, con las palabras que usa Fabián.
+ *
+ * Salen de sus informes reales de WhatsApp, no de una taxonomía inventada:
+ * «edite», «cree promnt», «generar videos para vault con ia», «carrusel»,
+ * «videos cortos», «animacion de after efects», «investigue temas»,
+ * «cree imagenes de ia».
+ *
+ * El orden es el de frecuencia en esos informes: lo que hace todos los días va
+ * primero, para que el toque más probable sea el más cercano al pulgar.
+ */
+export const TIPOS_TRABAJO = [
+  { id: 'generacion_ia', texto: 'Generación IA' },
+  { id: 'edicion', texto: 'Edición' },
+  { id: 'prompts', texto: 'Prompts' },
+  { id: 'carrusel', texto: 'Carrusel' },
+  { id: 'video_corto', texto: 'Video corto' },
+  { id: 'imagenes', texto: 'Imágenes' },
+  { id: 'animacion', texto: 'Animación' },
+  { id: 'investigacion', texto: 'Investigación' },
+  { id: 'otro', texto: 'Otro' },
+]
+
+export const ETIQUETAS_TRABAJO = Object.fromEntries(
+  TIPOS_TRABAJO.map((t) => [t.id, t.texto])
+)
+
+export const MARCAS = ['DAK', 'Vault', 'Cliente']
+
 export const ETIQUETAS_ESTADO = {
   BACKLOG: 'Por hacer',
   PROXIMO: 'Próximo',

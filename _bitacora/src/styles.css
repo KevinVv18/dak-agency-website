@@ -1301,3 +1301,67 @@ h1,
   background: var(--sobre-naranja);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
 }
+
+/* ── El trabajo suelto ───────────────────────────────────────────────────
+ *
+ * Lo que Fabián hace además de las piezas del plan: prompts, lotes de video
+ * generados con IA, carruseles, investigación. Sin esto el informe diría menos
+ * que su mensaje de WhatsApp y la aplicación sería un retroceso.
+ */
+
+.anotados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.anotado {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  background: var(--sobre-naranja);
+  color: var(--naranja-texto);
+  font-family: inherit;
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 76%;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.anotado span {
+  margin-left: 7px;
+  opacity: 0.75;
+}
+
+/* Repetir lo de ayer: sus días se parecen muchísimo, así que lo más rápido es
+   confirmar lo de ayer en vez de recomponerlo. */
+.repetir {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  text-align: left;
+  font-family: inherit;
+  font-size: var(--t-etiqueta);
+  font-weight: 800;
+  font-stretch: 76%;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--naranja-texto);
+  cursor: pointer;
+  box-shadow: var(--sombra-punzada);
+}
+.repetir__detalle {
+  display: block;
+  margin-top: 5px;
+  font-size: var(--t-etiqueta);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--emulsion);
+}
+
+.anadir {
+  display: grid;
+  gap: 3px;
+}
