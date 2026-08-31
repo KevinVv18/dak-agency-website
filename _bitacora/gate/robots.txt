@@ -1,0 +1,5 @@
+# bitacora.dakagency.net es una herramienta interna de produccion.
+# Detras de la sesion de Google ningun rastreador deberia llegar aqui — pero si
+# llega, que sea explicito.
+User-agent: *
+Disallow: /
