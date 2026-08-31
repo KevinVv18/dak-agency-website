@@ -1,0 +1,185 @@
+name: Deploy Bitacora
+
+# Publica _bitacora/ en el docroot de bitacora.dakagency.net
+# (/home/u567580447/domains/dakagency.net/public_html/bitacora).
+#
+# Es una app Vite APARTE de la SPA principal, con su propio package.json. Por eso
+# los pasos de build llevan working-directory y no se mezcla con el build de la raiz.
+#
+# ⚠️ Aqui dentro esta el detalle operativo de como trabaja una persona concreta:
+#    en que quedo cada dia, que dejo a medias, que le bloquea. El muro es la
+#    sesion de Google y sale de la propia puerta PHP (gate/ -> raiz del docroot,
+#    build -> app/, que el .htaccess bloquea). Si alguien rompe ese montaje, la
+#    aplicacion se publica desnuda. Los pasos "Comprobar" de abajo estan para que
+#    eso falle el deploy en vez de pasar desapercibido.
+#
+# ⚠️ 'bitacora/' DEBE seguir en deploy-protect.txt o el deploy de la SPA lo borra:
+#    su docroot vive DENTRO de public_html/ y el rsync de la SPA usa --delete.
+#
+# Dispara:
+#  - manualmente (workflow_dispatch)
+#  - push a main que toque _bitacora/**
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '_bitacora/**'
+      - '.github/workflows/deploy-bitacora.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # La guarda que ya costo tres carpetas. Se comprueba aqui, no solo en el
+      # workflow de la SPA, porque el dia que alguien quite la entrada este
+      # deploy seguiria funcionando y el siguiente push a main borraria todo.
+      - name: Comprobar que bitacora/ esta protegida
+        run: |
+          set -euo pipefail
+          grep -qxF 'bitacora/' deploy-protect.txt || {
+            echo "::error::'bitacora/' no esta en deploy-protect.txt. El deploy de la SPA borraria este subdominio en el siguiente push a main."
+            exit 1
+          }
+          echo "OK: bitacora/ protegida."
+
+      # PHP no se compila, asi que un parentesis mal cerrado no se nota hasta que
+      # alguien abre la pagina y ve un 500. Los runners traen PHP: que falle aqui.
+      - name: Sintaxis de PHP
+        run: |
+          set -euo pipefail
+          php --version | head -1
+          find _bitacora/gate -name '*.php' -print0 | xargs -0 -n1 php -l
+          echo "OK: sintaxis PHP correcta."
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: _bitacora/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+        working-directory: _bitacora
+
+      - name: Build
+        run: npm run build
+        working-directory: _bitacora
+
+      # El docroot se arma aqui: la puerta PHP en la raiz y el build DENTRO de
+      # app/, que el .htaccess bloquea. Asi el unico camino hacia el HTML, el
+      # JavaScript y la API pasa por la comprobacion de sesion.
+      - name: Armar el docroot (puerta + app)
+        working-directory: _bitacora
+        run: |
+          set -euo pipefail
+          rm -rf publicar && mkdir -p publicar
+          cp -r gate/. publicar/
+          mkdir -p publicar/app
+          cp -r dist/. publicar/app/
+          # El CLIENT_ID no es secreto —viaja en el HTML por diseño— pero se
+          # inyecta desde el entorno para no tener que tocar codigo al rotarlo.
+          if [ -n "${DAK_GOOGLE_CLIENT_ID:-}" ]; then
+            sed -i "s#PENDIENTE.apps.googleusercontent.com#${DAK_GOOGLE_CLIENT_ID}#" publicar/config.php
+          fi
+          find publicar -maxdepth 2 -type f | sort
+        env:
+          DAK_GOOGLE_CLIENT_ID: ${{ secrets.DAK_GOOGLE_CLIENT_ID }}
+
+      # Falla cerrado. Una aplicacion con el detalle operativo de una persona
+      # servida sin puerta es peor que un deploy roto, asi que se comprueba
+      # ANTES de subir nada.
+      - name: Comprobar que la puerta viaja armada
+        working-directory: _bitacora
+        run: |
+          set -euo pipefail
+          for archivo in publicar/index.php publicar/acceso.php publicar/config.php \
+                         publicar/.htaccess publicar/robots.txt publicar/app/index.html \
+                         publicar/lib/api.php publicar/lib/bd.php; do
+            [ -f "$archivo" ] || { echo "::error::Falta $archivo"; exit 1; }
+          done
+          grep -q 'RewriteRule \^app(/|\$) - \[F,L\]' publicar/.htaccess \
+            || { echo "::error::El .htaccess no bloquea app/. El build quedaria accesible sin sesion."; exit 1; }
+          grep -q 'RewriteRule \^lib(/|\$) - \[F,L\]' publicar/.htaccess \
+            || { echo "::error::El .htaccess no bloquea lib/. El codigo del servidor quedaria legible."; exit 1; }
+          grep -q 'verificarConGoogle' publicar/index.php \
+            || { echo "::error::index.php no verifica el token contra Google."; exit 1; }
+          grep -q 'DOMINIO_PERMITIDO' publicar/index.php \
+            || { echo "::error::index.php no restringe por dominio."; exit 1; }
+          grep -q 'Disallow: /' publicar/robots.txt \
+            || { echo "::error::robots.txt no bloquea a los rastreadores."; exit 1; }
+          if grep -q 'PENDIENTE.apps.googleusercontent.com' publicar/config.php; then
+            echo "::error::Falta el secreto DAK_GOOGLE_CLIENT_ID. Nadie podria entrar."
+            exit 1
+          fi
+          # Los secretos viven fuera del docroot. Que no se cuele ninguno.
+          if grep -rlq --include='*.php' -E 'DB_PASS *= *["'"'"'][^"'"'"']' publicar/; then
+            echo "::error::Hay credenciales embebidas en el codigo que se va a publicar."
+            exit 1
+          fi
+          echo "OK: puerta armada, app/ y lib/ bloqueadas, dominio restringido."
+
+      # --delete es seguro aqui: este docroot es exclusivo de la aplicacion y no
+      # tiene nada que no produzca el build. De hecho hace falta, para que se
+      # lleve el default.php que deja Hostinger al crear el subdominio.
+      #
+      # Los secretos NO viven aqui dentro (estan en /home/u567580447/secretos/),
+      # asi que --delete no puede llevarselos.
+      - name: Subir al docroot del subdominio (rsync)
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: _bitacora/publicar/
+          remote_path: /home/u567580447/domains/dakagency.net/public_html/bitacora/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Comprobacion en vivo. No basta con que la raiz pida acceso: lo que hay
+      # que demostrar es que ni el build ni la API se alcanzan sin sesion.
+      - name: Verificar en vivo que nada se sirve sin sesion
+        run: |
+          set -uo pipefail
+          sleep 5
+          fallos=0
+
+          raiz=$(curl -s -o /tmp/raiz.html -w '%{http_code}' --max-time 25 https://bitacora.dakagency.net/)
+          echo "GET / -> $raiz"
+          [ "$raiz" = "401" ] || { echo "::error::/ deberia dar 401 y dio $raiz"; fallos=1; }
+          grep -q "accounts.google.com/gsi/client" /tmp/raiz.html \
+            || { echo "::error::La raiz no sirve la pantalla de acceso de Google."; fallos=1; }
+
+          # Lo importante: ni la aplicacion ni sus datos por ninguna de estas rutas.
+          for ruta in /app/index.html /app/ /hoy /cierre /assets/ /lib/bd.php /config.php; do
+            codigo=$(curl -s -o /tmp/x -w '%{http_code}' --max-time 25 "https://bitacora.dakagency.net${ruta}")
+            echo "GET $ruta -> $codigo"
+            if grep -qs 'id="root"' /tmp/x; then
+              echo "::error::${ruta} sirvio la aplicacion SIN sesion. Esta expuesta."
+              fallos=1
+            fi
+            if grep -qsE 'DB_PASS|new PDO|GOOGLE_CLIENT_ID' /tmp/x; then
+              echo "::error::${ruta} sirvio codigo PHP en crudo. Esta expuesto."
+              fallos=1
+            fi
+          done
+
+          # La API tiene que contestar 401 en JSON, no la pantalla de acceso:
+          # es lo que el frontend sabe interpretar cuando caduca la sesion.
+          api=$(curl -s -o /tmp/api.json -w '%{http_code}' --max-time 25 https://bitacora.dakagency.net/api/salud)
+          echo "GET /api/salud -> $api"
+          [ "$api" = "401" ] || { echo "::error::/api/salud deberia dar 401 sin sesion y dio $api"; fallos=1; }
+          grep -q 'sin_sesion' /tmp/api.json \
+            || { echo "::error::La API no contesto el 401 en JSON."; fallos=1; }
+
+          [ "$fallos" = "0" ] || exit 1
+          echo "OK: sin sesion no se sirve ni la aplicacion, ni sus assets, ni la API."

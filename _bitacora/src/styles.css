@@ -1,0 +1,204 @@
+/*
+ * DAK Bitácora — base.
+ *
+ * Fase 0/1: CSS liso y correcto. Los tokens de abajo son los que la pasada de
+ * diseño de la Fase 3 va a afinar; la estructura no debería cambiar.
+ *
+ * Identidad DAK: fondo oscuro, profundidad por luz y no por brillo, morado y
+ * teal con cuentagotas. Nada de sombras de color ni halos.
+ */
+
+:root {
+  /* Tres planos. Se distinguen por claridad de superficie, no por sombras. */
+  --fondo: #030106;
+  --superficie: #0a0612;
+  --elevada: #120c1e;
+
+  --linea: rgba(255, 255, 255, 0.07);
+  --linea-viva: rgba(255, 255, 255, 0.14);
+
+  --texto: #f4f1f8;
+  --secundario: rgba(244, 241, 248, 0.74);
+  --tenue: rgba(244, 241, 248, 0.58);
+
+  --morado: #b93eff;
+  --teal: #3ddad7;
+  --ambar: #e8b562;
+  --alerta: #ff9b9b;
+
+  /* Sombras NEUTRAS. Nunca moradas, nunca teal, nunca con offset 0. */
+  --sombra-reposo: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --sombra-elevada: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
+
+  --ease-suave: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-salida: cubic-bezier(0.4, 0, 1, 1);
+  --t-micro: 140ms;
+  --t-corta: 240ms;
+  --t-media: 360ms;
+
+  --r-tarjeta: 14px;
+  --r-boton: 12px;
+  --r-chip: 8px;
+
+  /* Fabián usa esto con el pulgar, de pie y con prisa. 56px no es generosidad:
+     es el mínimo para que no falle un toque. */
+  --toque: 56px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: Poppins, system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  /* La barra de gestos de iOS se come lo que haya pegado abajo. */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* Las cifras se alinean en columna. Sin esto, una lista de horas baila. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.envoltorio {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+}
+
+.marca {
+  width: 34px;
+  margin-bottom: 26px;
+}
+.marca svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.marca polygon {
+  fill: var(--texto);
+}
+
+.rotulo {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tenue);
+}
+
+h1 {
+  font-size: 26px;
+  font-weight: 200;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin: 10px 0 22px;
+}
+
+.tarjeta {
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--r-tarjeta);
+  padding: 18px 18px 20px;
+  box-shadow: var(--sombra-reposo);
+}
+
+.tarjeta + .tarjeta {
+  margin-top: 12px;
+}
+
+.dato {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  font-size: 15px;
+  border-bottom: 1px solid var(--linea);
+}
+.dato:last-child {
+  border-bottom: 0;
+}
+.dato dt {
+  color: var(--tenue);
+  flex: none;
+}
+.dato dd {
+  color: var(--secundario);
+  text-align: right;
+  word-break: break-word;
+}
+
+/* «Sin dato» es un estado de primera clase, no un hueco que se disimula.
+   Un cero inventado es peor que un vacío honesto. */
+.sin-dato {
+  color: var(--tenue);
+  font-style: italic;
+}
+
+.aviso {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid rgba(255, 155, 155, 0.3);
+  border-radius: var(--r-tarjeta);
+  background: var(--superficie);
+  color: var(--alerta);
+  padding: 14px 16px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.aviso b {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  margin-top: 9px;
+  border-radius: 50%;
+  background: var(--alerta);
+}
+
+.nota-fase {
+  margin-top: 26px;
+  padding: 13px 15px;
+  border: 1px dashed var(--linea-viva);
+  border-radius: var(--r-tarjeta);
+  color: var(--tenue);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.pie {
+  margin-top: 30px;
+  color: var(--tenue);
+  font-size: 13px;
+}
+.pie a {
+  color: var(--secundario);
+}
+
+/* Con el movimiento desactivado la interfaz sigue siendo legible y completa:
+   ninguna información depende de que algo se anime para aparecer. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

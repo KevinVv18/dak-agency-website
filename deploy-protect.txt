@@ -23,6 +23,7 @@ analisis/
 guias/
 agro/
 ventas/
+bitacora/
 .builds/
 
 # Detectadas el 26-ago-2026 por la guarda, que aborto el deploy en vez de
