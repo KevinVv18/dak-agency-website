@@ -6,13 +6,26 @@ manda al prospecto es el link.**
 
 ```
 _analisis-microsite/
-├─ .htaccess       ← noindex + cabeceras. NO borrar: aquí hay datos reales de prospectos
-├─ robots.txt      ← Disallow: /
-├─ index.html      ← raíz neutra, no lista clientes
-├─ assets/         ← logotipo DAK compartido
-├─ ayb/index.html  ← A&B Representaciones (Chiclayo)
-└─ server.cjs      ← preview local; el workflow lo excluye del deploy
+├─ .htaccess               ← noindex + cabeceras. NO borrar: aquí hay datos reales de prospectos
+├─ robots.txt              ← Disallow: /
+├─ index.html              ← raíz neutra, no lista clientes
+├─ assets/
+│  ├─ dak-logo-blanco.svg  ← logotipo compartido
+│  ├─ signos.css / .js     ← mundo actual «Signos vitales» (informes nuevos)
+│  └─ analisis.css / .js   ← mundo anterior (los seis informes ya entregados)
+├─ auditar-contraste.js    ← se pega en la consola. Cero fallos o no se publica
+├─ kusiwawita/index.html   ← primer informe del mundo nuevo
+├─ ayb/index.html          ← A&B Representaciones (Chiclayo)
+└─ server.cjs              ← preview local; el workflow lo excluye del deploy
 ```
+
+## Dos mundos visuales conviviendo, a propósito
+
+Desde el **2026-09-02** los informes nuevos se construyen con **«Signos vitales»**
+(`signos.css` + `signos.js`). Los seis anteriores —`ayb`, `renovacix`, `multisonrisas`,
+`gia`, `domexia`, `xoxo`— **se quedan en `analisis.css` y no se tocan**: sus enlaces
+están en manos de prospectos y tienen que seguir mostrando lo que se presentó en la
+reunión. No hay migración pendiente; es una decisión.
 
 ## Por qué un link y no un adjunto
 
@@ -44,7 +57,67 @@ Luego abre `http://localhost:4320/ayb/`. También está como entrada `analisis` 
 > workflow hace `rsync --delete` sobre `public_html/` y borraría todos los entregables.
 > Es exactamente lo que pasó con el demo inmobiliario.
 
-## Diseño: las reglas que sostienen el formato
+## «Signos vitales» — el mundo de los informes nuevos
+
+El informe deja de parecer un deck y pasa a ser **la hoja de monitorización de una
+marca**. El problema que resuelve es concreto: en el formato anterior **todo pesaba lo
+mismo**, y un dato demoledor ocupaba el mismo espacio visual que uno de relleno. Un trazo
+plano no necesita que nadie lo explique.
+
+- **Cada capítulo es una derivación** con su etiqueta en el riel, y el estado se lee en la
+  **forma del trazo**: latido = actividad, línea plana = silencio, ráfaga de marcas
+  verticales = anuncios que la competencia tiene encendidos.
+- **Toda cifra va con su rango de referencia**, como un análisis de laboratorio: «20
+  seguidores» deja de ser una opinión y pasa a ser *fuera de rango, siendo el rango local
+  156–787*. El marcador de estado no es solo color: `fuera` lleva filete doble, `atención`
+  lleva filete discontinuo, `dentro` lleva filete simple.
+- **La portada es un solo trazo** con el diagnóstico dentro. En Kusiwawita, su actividad y
+  la de su categoría sobre el mismo eje de tiempo.
+- **Un solo momento animado**: el barrido que escribe los trazos al entrar en pantalla.
+  Nada late en bucle.
+- **El cursor mide.** Sobre un trazo aparece una vertical con la fecha y el valor de ese
+  punto; con el campo enfocado, las flechas recorren los puntos uno a uno.
+- **Al imprimir, la pantalla se vuelve papel**: tira blanca con rejilla impresa y el
+  logotipo sobre su propia superficie oscura, porque es blanco y desaparecería.
+
+### Un informe nuevo no escribe SVG a mano
+
+Los datos se declaran en atributos y `signos.js` dibuja el trazo, el eje, la banda de
+silencio y la ráfaga de la competencia. Cuando una cifra se corrige, se corrige en un
+sitio:
+
+```html
+<div class="strip-c"
+     data-from="2026-06-29" data-to="2026-09-02"
+     data-series="2026-06-29:0|2026-07-06:4|2026-07-25:11"
+     data-flat="2026-07-25" data-flat-label="39 días sin publicar"
+     data-ticks="2026-08-31:Mundo Color|2026-09-01:Cantolao"
+     data-ticks-label="cada marca vertical, un anuncio de la competencia"
+     data-unit="me gusta" data-max="11"
+     data-alt="Descripción del trazo para quien no lo ve."></div>
+```
+
+El riel de derivaciones y el índice se construyen leyendo las `<section data-ch="…">`, así
+que **un capítulo nuevo no añade marcado extra**. El teclado (↓ ↑ espacio RePág AvPág
+Inicio Fin, `Esc`) viene gratis.
+
+Reglas que hay que mantener al añadir una marca:
+
+- `<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">`.
+- Cada afirmación con su fuente y su fecha al pie de sección (`.src`), y el **límite
+  honesto** de esa fuente escrito al lado.
+- **Ningún texto funcional por debajo de 11 px** (`.69rem`). La primera versión tenía los
+  rótulos de eje a 9,6 px y a 2,57:1 de contraste.
+- **Ningún rótulo dentro del SVG.** El campo se estira sin conservar proporción, así que
+  el texto se deformaría; las etiquetas van en HTML sobre el campo (`span.ov`).
+- El trazo **dibuja el dato y no lo exagera**: misma escala en todos los informes y eje
+  siempre rotulado. Una marca sana debe verse sana.
+- Sin JavaScript la página se lee entera: lo único que desaparece son los trazos, y cada
+  cifra está escrita al lado en texto.
+
+---
+
+## Diseño del mundo anterior (`analisis.css`): las reglas que lo sostienen
 
 Estos informes tienen **dos usos y hay que servir a los dos**: se proyectan en una reunión
 y se releen después en el celular. Todo lo de abajo sale de ahí.
@@ -104,6 +177,13 @@ no hay que perseguir falsos positivos en los titulares.
 
 La primera pasada encontró 8 fallos que nadie había visto a ojo, incluidos los pies de
 fuente a 3,33:1 — que son justamente lo que sostiene la credibilidad del informe.
+
+> **2026-09-02 — el auditor perdió su lista de selectores.** Iba con una lista fija de
+> clases que había que mantener a mano, y envejecía con cada rediseño: el día que llegó
+> «Signos vitales» habría seguido cantando «cero fallos» sin encontrar una sola de sus
+> clases. Ahora recorre **todo elemento con texto propio y visible**, cuenta el alpha del
+> color y busca el primer ancestro con fondo opaco. Funciona igual en cualquier plantilla
+> futura. En Kusiwawita revisó 323 elementos: 2 fallos, corregidos, y cerró en cero.
 
 ### Legibilidad de sala
 

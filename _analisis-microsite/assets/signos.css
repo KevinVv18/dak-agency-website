@@ -1,0 +1,462 @@
+/* ============================================================================
+   signos.css — mundo visual «Signos vitales»
+   Hoja de monitorización de marca · analisis.dakagency.net
+
+   El informe no es un deck: es la tira que sale del monitor. Cada capítulo es
+   una derivación con su trazo, el estado se lee en la FORMA del trazo (latido,
+   línea plana, ráfaga) antes que en el color, y todo valor medido lleva su
+   rango de referencia al lado.
+
+   Reglas de este mundo:
+   · La rejilla milimetrada solo existe DENTRO de un campo de trazo. Nunca
+     detrás del texto: ahí sería textura decorativa, que es justo lo que el
+     sitio principal retiró a propósito.
+   · El trazo dibuja el dato y no lo exagera. Misma escala en todos los
+     informes, eje siempre rotulado. Una marca sana debe verse sana.
+   · Un solo momento animado: el barrido que escribe los trazos. Nada late en
+     bucle.
+   · Al imprimir, la pantalla se vuelve papel: tira blanca, rejilla impresa.
+   ========================================================================== */
+
+:root{
+  /* Instrumento */
+  --ink:#050308;          /* fondo, vecino del #030106 de marca */
+  --panel:#0C0714;
+  --panel-2:#120B1E;
+  --edge:rgba(232,228,240,.14);
+  --edge-2:rgba(232,228,240,.08);
+
+  /* Tinta */
+  --bone:#E8E4F0;                       /* 18.9:1 sobre --ink */
+  --hi:#fff;              /* el énfasis: en pantalla blanco, sobre papel negro */
+  --dim:rgba(232,228,240,.62);          /*  6.4:1 sobre --ink */
+  --faint:rgba(232,228,240,.34);        /* solo filetes y ejes, nunca texto */
+
+  /* Trazos */
+  --trace:#00C8C8;        /* teal DAK · el canal vivo            9.9:1 */
+  --subject:#B93EFF;      /* morado DAK · la marca analizada     5.1:1 */
+  --alarm:#FF6B85;        /* fuera de rango                      7.7:1 */
+  --ok:#3FD49B;           /* dentro de rango                    10.9:1 */
+  --amber:#FFC15E;
+
+  /* Rejilla del campo de trazo */
+  --grid-min:rgba(185,62,255,.13);
+  --grid-maj:rgba(185,62,255,.26);
+
+  --sans:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  --pad:clamp(1.15rem,5vw,4rem);
+  --maxw:1120px;
+  --rail:34px;
+  --ease:cubic-bezier(.16,1,.3,1);
+
+  color-scheme:dark;
+  accent-color:var(--subject);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+body{
+  margin:0;
+  font-family:var(--sans);
+  font-size:1rem;
+  line-height:1.62;
+  background:var(--ink);
+  color:var(--bone);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  font-variant-numeric:tabular-nums;
+}
+
+/* Superficies del navegador: también son diseño --------------------------- */
+::selection{background:rgba(185,62,255,.32);color:#fff}
+:focus-visible{outline:2px solid var(--trace);outline-offset:3px;border-radius:2px}
+*{scrollbar-width:thin;scrollbar-color:rgba(185,62,255,.42) transparent}
+*::-webkit-scrollbar{width:9px;height:9px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{background:rgba(185,62,255,.42);border-radius:9px}
+*::-webkit-scrollbar-thumb:hover{background:rgba(185,62,255,.62)}
+
+a{color:var(--trace);text-decoration:underline;text-underline-offset:.22em;
+  text-decoration-thickness:1px;text-decoration-color:rgba(0,200,200,.45)}
+a:hover{text-decoration-color:var(--trace)}
+
+/* ── Barra de instrumento ────────────────────────────────────────────────── */
+.bar{
+  position:sticky;top:0;z-index:60;
+  display:flex;align-items:center;gap:.9rem;
+  padding:.62rem clamp(.9rem,3vw,1.5rem);
+  background:rgba(5,3,8,.93);
+  border-bottom:1px solid var(--edge);
+  backdrop-filter:saturate(140%) blur(8px);
+}
+.bar .lg{height:19px;width:auto;flex:none;opacity:.94}
+.bar .who{
+  font-family:var(--mono);font-size:.69rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--dim);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.bar .sp{flex:1}
+.btn{
+  font-family:var(--mono);font-size:.69rem;letter-spacing:.08em;
+  text-transform:uppercase;font-weight:500;
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.5rem .8rem;min-height:34px;
+  color:var(--bone);background:transparent;
+  border:1px solid var(--edge);border-radius:2px;
+  cursor:pointer;transition:border-color .18s,background .18s,color .18s;
+}
+.btn:hover{border-color:var(--subject);background:rgba(185,62,255,.1)}
+.btn svg{width:13px;height:13px;flex:none}
+
+/* Barra de avance: es un indicador de barrido, no un adorno */
+.prog{position:fixed;top:0;left:0;height:2px;width:0;z-index:70;
+  background:var(--trace);box-shadow:0 0 6px rgba(0,200,200,.55)}
+
+/* ── Riel de derivaciones ────────────────────────────────────────────────── */
+.deriv{
+  position:fixed;left:0;top:50%;transform:translateY(-50%);
+  z-index:50;width:var(--rail);
+  display:none;flex-direction:column;gap:.55rem;align-items:center;
+  padding:.7rem 0;
+}
+@media (min-width:1240px){.deriv{display:flex}}
+.deriv button{
+  position:relative;display:block;width:var(--rail);height:16px;
+  background:none;border:0;padding:0;cursor:pointer;
+}
+/* El guion crece con transform, no con width: animar width recalcula el layout
+   en cada frame y es una de las prohibiciones declaradas del sistema. */
+.deriv button::before{
+  content:'';position:absolute;left:11px;top:50%;
+  width:22px;height:1px;background:var(--faint);
+  transform:translateY(-50%) scaleX(.55);transform-origin:left center;
+  transition:transform .22s var(--ease),background .22s;
+}
+.deriv button:hover::before{transform:translateY(-50%) scaleX(.82);background:var(--bone)}
+.deriv button[aria-current='true']::before{
+  transform:translateY(-50%) scaleX(1);height:2px;background:var(--subject)}
+.deriv button span{
+  position:absolute;left:calc(var(--rail) + 6px);top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:.69rem;letter-spacing:.1em;text-transform:uppercase;
+  white-space:nowrap;color:var(--bone);
+  background:var(--panel-2);border:1px solid var(--edge);
+  padding:.28rem .5rem;border-radius:2px;
+  opacity:0;pointer-events:none;transition:opacity .16s;
+}
+.deriv button:hover span,.deriv button:focus-visible span{opacity:1}
+
+/* Índice para pantallas sin riel */
+.idxw{position:fixed;inset:0;z-index:80;display:none;background:rgba(5,3,8,.94)}
+.idxw.on{display:block}
+.idxw nav{
+  position:absolute;inset:auto 0 0 0;max-height:82vh;overflow:auto;
+  background:var(--panel);border-top:1px solid var(--edge);
+  padding:1rem var(--pad) 2rem;
+}
+.idxw h2{font-family:var(--mono);font-size:.69rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--dim);margin:.4rem 0 .9rem;font-weight:500}
+.idxw button.go{
+  display:flex;align-items:baseline;gap:.8rem;width:100%;text-align:left;
+  background:none;border:0;border-bottom:1px solid var(--edge-2);
+  padding:.8rem 0;color:var(--bone);font-family:var(--sans);font-size:1rem;cursor:pointer;
+}
+.idxw button.go em{font-family:var(--mono);font-style:normal;font-size:.69rem;
+  color:var(--subject);letter-spacing:.08em;flex:none;width:2.4rem}
+
+/* ── Secciones ───────────────────────────────────────────────────────────── */
+section{padding:clamp(3.2rem,8vw,6rem) var(--pad);border-top:1px solid var(--edge-2);
+  scroll-margin-top:52px}
+section:first-of-type{border-top:0;scroll-margin-top:0}
+.wrap{max-width:var(--maxw);margin:0 auto}
+
+h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.022em;font-weight:600}
+h1{font-size:clamp(2.5rem,8.5vw,5.4rem);line-height:.98;letter-spacing:-.04em;font-weight:600}
+h2{font-size:clamp(1.6rem,4vw,2.6rem);line-height:1.1}
+h3{font-size:1.06rem;line-height:1.35;font-weight:600}
+p{margin:0 0 1rem;max-width:68ch}
+p:last-child{margin-bottom:0}
+h2 + p,h2 + .lead,h3 + p{margin-top:.85rem}
+h2 + .strip{margin-top:1.9rem}
+.lead{font-size:clamp(1.08rem,2.1vw,1.32rem);line-height:1.55;color:var(--bone);max-width:56ch}
+.note{color:var(--dim);font-size:.94rem;max-width:64ch}
+strong,b{font-weight:600;color:var(--hi)}
+
+/* Etiqueta de derivación: identifica el canal medido, no numera capítulos */
+.chan{
+  display:flex;align-items:center;gap:.7rem;margin-bottom:1.4rem;
+  font-family:var(--mono);font-size:.69rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);font-weight:500;
+}
+.chan::after{content:'';flex:1;height:1px;background:var(--edge)}
+
+/* ── Portada ─────────────────────────────────────────────────────────────── */
+.hero{padding-top:clamp(2.4rem,6vw,4rem)}
+.hero .logo{height:26px;width:auto;margin-bottom:clamp(1.8rem,5vw,3rem);opacity:.92}
+.hero h1{margin-bottom:.5rem}
+.hero .sub{font-size:clamp(1.05rem,2.4vw,1.5rem);color:var(--dim);
+  margin:0 0 1.6rem;max-width:40ch;line-height:1.35}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.5rem 2rem;
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;
+  color:var(--dim);text-transform:uppercase;
+  padding-top:1rem;border-top:1px solid var(--edge);
+}
+.meta b{color:var(--bone);font-weight:500}
+
+/* ── Campo de trazo ──────────────────────────────────────────────────────── */
+.strip{margin:2.2rem 0 0;padding:0}
+.strip-h{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem 1rem;
+  margin-bottom:.55rem;
+}
+.strip-lb{font-family:var(--mono);font-size:.7rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--bone);font-weight:500}
+.strip-u{font-family:var(--mono);font-size:.69rem;letter-spacing:.04em;color:var(--dim)}
+.strip-c{
+  position:relative;display:flex;flex-direction:column;
+  height:clamp(200px,26vw,290px);
+  background:linear-gradient(180deg,#0A0512,#07040E);
+  border:1px solid var(--edge);border-radius:3px;
+  overflow:hidden;
+}
+.strip .field{position:relative;flex:1;min-height:0}
+.strip svg{display:block;width:100%;height:100%;touch-action:pan-y}
+.strip .axis{
+  display:flex;justify-content:space-between;
+  padding:.4rem .55rem .5rem;border-top:1px solid var(--edge-2);
+  font-family:var(--mono);font-size:.69rem;letter-spacing:.05em;color:var(--dim);
+}
+/* Rótulos del campo: HTML sobre el SVG, para que no los estire la escala */
+.ov{
+  position:absolute;pointer-events:none;white-space:nowrap;
+  font-family:var(--mono);font-size:.69rem;letter-spacing:.05em;
+  color:var(--dim);line-height:1;
+}
+.ov.ax{color:var(--dim)}
+.ov.ov-a{color:var(--alarm)}
+/* En pantallas estrechas el rótulo del carril se cruzaría con la ráfaga; el pie
+   del campo ya explica qué es cada marca vertical. */
+@media (max-width:700px){.field > span.ov.fade:not(.ov-a){display:none}}
+
+/* Trazos */
+.tr{fill:none;stroke-width:1.75;stroke-linejoin:round;stroke-linecap:round;
+  vector-effect:non-scaling-stroke}
+.tr-subject{stroke:var(--subject)}
+.tr-flat{stroke:var(--faint);stroke-width:1.5;stroke-dasharray:none}
+.tr-base{stroke:var(--edge);stroke-width:1}
+.tick{stroke:var(--trace);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.dot{fill:var(--subject)}
+.dot-zero{fill:none;stroke:var(--subject);stroke-width:1.25;vector-effect:non-scaling-stroke}
+.band{fill:rgba(255,107,133,.07)}
+.band-e{stroke:rgba(255,107,133,.4);stroke-width:1;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}
+
+/* Cursor de medición */
+.cur{pointer-events:none;opacity:0;transition:opacity .12s}
+.strip-c.live .cur{opacity:1}
+.cur line{stroke:var(--bone);stroke-width:1;stroke-dasharray:2 3;vector-effect:non-scaling-stroke}
+.read{
+  position:absolute;top:.5rem;left:0;pointer-events:none;
+  font-family:var(--mono);font-size:.69rem;letter-spacing:.04em;
+  background:var(--panel-2);border:1px solid var(--edge);
+  color:var(--bone);padding:.24rem .45rem;border-radius:2px;white-space:nowrap;
+  opacity:0;transform:translateX(-50%);transition:opacity .12s;
+}
+.strip-c.live .read{opacity:1}
+
+/* ── Constantes: valor · rango · estado ──────────────────────────────────── */
+.vitals{border-top:1px solid var(--edge);margin-top:1.6rem}
+.v{
+  display:grid;gap:.15rem 1rem;align-items:baseline;
+  grid-template-columns:1fr auto;
+  padding:.95rem 0;border-bottom:1px solid var(--edge-2);
+}
+@media (min-width:760px){
+  .v{grid-template-columns:minmax(0,1.35fr) 7.5rem minmax(0,1fr) 8.5rem;padding:.85rem 0}
+}
+.v-n{font-size:.98rem;color:var(--bone)}
+.v-v{font-family:var(--mono);font-size:1.35rem;font-weight:500;line-height:1.1;color:var(--hi)}
+.v-v small{font-size:.7rem;letter-spacing:.06em;color:var(--dim);font-weight:400}
+.v-r{font-family:var(--mono);font-size:.72rem;color:var(--dim);letter-spacing:.02em}
+.v-s{
+  display:inline-flex;align-items:center;gap:.42rem;
+  font-family:var(--mono);font-size:.69rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);
+}
+/* El estado se lee en la marca antes que en el color */
+.v-s::before{content:'';width:14px;height:0;border-top:2px solid currentColor;flex:none}
+.v-s.out{color:var(--alarm)}
+.v-s.out::before{border-top-style:double;border-top-width:4px}
+.v-s.in{color:var(--ok)}
+.v-s.watch{color:var(--amber)}
+.v-s.watch::before{border-top-style:dashed}
+.v.is-out{background:linear-gradient(90deg,rgba(255,107,133,.07),transparent 62%)}
+
+/* ── Censo de interacción ────────────────────────────────────────────────── */
+.census{display:grid;gap:1px;margin-top:1.5rem;background:var(--edge-2);
+  border:1px solid var(--edge);border-radius:3px;overflow:hidden}
+.census .row{
+  display:grid;grid-template-columns:6.4rem 1fr 3.6rem;gap:.8rem;align-items:center;
+  padding:.5rem .7rem;background:var(--ink);
+}
+.census .row.h{background:var(--panel);font-family:var(--mono);font-size:.69rem;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--dim)}
+.census .d{font-family:var(--mono);font-size:.74rem;color:var(--dim)}
+.census .b{height:9px;background:rgba(232,228,240,.07);position:relative;border-radius:1px}
+.census .b i{position:absolute;inset:0 auto 0 0;background:var(--subject);border-radius:1px;display:block}
+.census .b.z{background:repeating-linear-gradient(90deg,rgba(232,228,240,.16) 0 3px,transparent 3px 7px)}
+.census .n{font-family:var(--mono);font-size:.82rem;text-align:right;color:var(--bone)}
+.census .n.z{color:var(--dim)}
+.census .row.t{background:var(--panel);font-weight:600}
+.census .row.t .n{color:var(--hi)}
+
+/* ── Tablas ──────────────────────────────────────────────────────────────── */
+/* La sombra de los bordes avisa de que la tabla sigue hacia el lado; en móvil
+   es la única pista de que hay más columnas. */
+.tw{margin-top:1.5rem;overflow-x:auto;border:1px solid var(--edge);border-radius:3px;
+  background:
+    radial-gradient(farthest-side at 0 50%,rgba(0,0,0,.55),rgba(0,0,0,0)) 0 0/14px 100% no-repeat,
+    radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.55),rgba(0,0,0,0)) 100% 0/14px 100% no-repeat;
+  background-attachment:scroll,scroll}
+table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:640px}
+caption{caption-side:top;text-align:left;font-family:var(--mono);font-size:.69rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
+  padding:.7rem .8rem;border-bottom:1px solid var(--edge);background:var(--panel)}
+th,td{padding:.62rem .8rem;text-align:left;border-bottom:1px solid var(--edge-2);
+  vertical-align:top;color:var(--bone)}
+th{font-family:var(--mono);font-size:.69rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--dim);font-weight:500;white-space:nowrap;background:var(--panel)}
+td.num{font-family:var(--mono);text-align:right;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tr.me td{background:rgba(185,62,255,.11);color:var(--hi)}
+tr.me td:first-child{box-shadow:inset 1px 0 0 var(--subject)}
+tr.lead-r td{background:rgba(0,200,200,.07)}
+@media (hover:hover){tbody tr:hover td{background:rgba(232,228,240,.045)}
+  tbody tr.me:hover td{background:rgba(185,62,255,.16)}}
+
+/* ── Descartes ───────────────────────────────────────────────────────────── */
+.disc{display:grid;gap:0;margin-top:1.4rem;border-top:1px solid var(--edge)}
+.disc div{display:grid;gap:.2rem .9rem;padding:.85rem 0;border-bottom:1px solid var(--edge-2)}
+@media (min-width:760px){.disc div{grid-template-columns:14rem 1fr}}
+.disc dt,.disc .k{font-family:var(--mono);font-size:.76rem;color:var(--bone);
+  text-decoration:line-through;text-decoration-color:var(--alarm);
+  text-decoration-thickness:1px;text-underline-offset:2px}
+.disc .r{color:var(--dim);font-size:.9rem}
+
+/* ── Movimientos ─────────────────────────────────────────────────────────── */
+.moves{display:grid;gap:0;margin-top:1.6rem;border-top:1px solid var(--edge)}
+.mv{padding:1.5rem 0;border-bottom:1px solid var(--edge-2)}
+@media (min-width:820px){
+  .mv{display:grid;grid-template-columns:3.2rem 1fr 15rem;gap:0 2rem;align-items:start}
+}
+.mv-o{font-family:var(--mono);font-size:1.5rem;color:var(--subject);line-height:1;
+  padding-top:.15rem}
+.mv h3{margin-bottom:.5rem}
+.mv p{font-size:.96rem;color:var(--dim);max-width:56ch}
+.mv p strong{color:var(--bone);font-weight:500}
+.mv-k{
+  margin-top:1rem;padding:.75rem .85rem;
+  border:1px solid var(--edge);border-radius:3px;background:var(--panel);
+}
+@media (min-width:820px){.mv-k{margin-top:0}}
+.mv-k .kl{font-family:var(--mono);font-size:.69rem;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--dim);display:block;margin-bottom:.35rem}
+.mv-k .kv{font-size:.88rem;color:var(--bone);line-height:1.45}
+.cost{font-family:var(--mono);font-size:.69rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ok);display:inline-block;margin-bottom:.55rem}
+.cost.paid{color:var(--amber)}
+
+/* ── Escenarios ──────────────────────────────────────────────────────────── */
+.scen{display:grid;gap:1px;margin-top:1.6rem;background:var(--edge);
+  border:1px solid var(--edge);border-radius:3px;overflow:hidden}
+@media (min-width:820px){.scen{grid-template-columns:repeat(3,1fr)}}
+.sc{background:var(--panel);padding:1.2rem 1.1rem}
+.sc.pick{background:linear-gradient(180deg,rgba(185,62,255,.14),var(--panel) 60%)}
+.sc .t{font-family:var(--mono);font-size:.69rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--dim);display:block;margin-bottom:.5rem}
+.sc.pick .t{color:var(--subject)}
+.sc .amt{font-family:var(--mono);font-size:1.6rem;font-weight:500;color:var(--hi);line-height:1.05;
+  display:block;margin-bottom:.15rem}
+.sc .per{font-family:var(--mono);font-size:.69rem;color:var(--dim);display:block;margin-bottom:.75rem}
+.sc p{font-size:.88rem;color:var(--dim);margin:0}
+
+/* ── Diagnóstico ─────────────────────────────────────────────────────────── */
+.dx{
+  border-left:1px solid var(--subject);
+  padding:.2rem 0 .2rem 1.4rem;margin:1.8rem 0 0;
+  font-size:clamp(1.24rem,3.1vw,1.95rem);line-height:1.4;font-weight:400;
+  color:var(--hi);max-width:34ch;letter-spacing:-.015em;
+}
+.dx-s{
+  font-family:var(--mono);font-size:.69rem;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--dim);margin-top:1.1rem;display:block;
+}
+
+/* ── Bloques auxiliares ──────────────────────────────────────────────────── */
+.cols{display:grid;gap:1.6rem 2.4rem;margin-top:1.6rem}
+@media (min-width:820px){.cols{grid-template-columns:repeat(2,1fr)}}
+.box{border:1px solid var(--edge);border-radius:3px;padding:1.1rem;background:var(--panel)}
+.box h3{margin-bottom:.55rem}
+.box p{font-size:.92rem;color:var(--dim);margin-bottom:0}
+.list{margin:1rem 0 0;padding:0;list-style:none}
+.list li{position:relative;padding:.5rem 0 .5rem 1.5rem;border-bottom:1px solid var(--edge-2);
+  font-size:.94rem;color:var(--dim)}
+.list li:last-child{border-bottom:0}
+.list li::before{content:'';position:absolute;left:0;top:1.05em;width:10px;height:1px;
+  background:var(--subject)}
+.list li b{color:var(--bone);font-weight:500}
+
+.src{
+  margin-top:2.2rem;padding-top:.9rem;border-top:1px solid var(--edge-2);
+  font-family:var(--mono);font-size:.69rem;line-height:1.65;letter-spacing:.02em;
+  color:var(--dim);max-width:78ch;
+}
+.src b{color:var(--bone);font-weight:500;letter-spacing:.09em;text-transform:uppercase;
+  font-size:.69rem;display:block;margin-bottom:.3rem}
+
+.close{text-align:left}
+.close .who{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);margin-top:1.4rem;display:block}
+
+/* ── Barrido: el único momento animado ───────────────────────────────────── */
+.js .sweep{stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+.js .strip-c.drawn .sweep{transition:stroke-dashoffset 1.15s var(--ease);stroke-dashoffset:0}
+.js .fade{opacity:0}
+.js .strip-c.drawn .fade{transition:opacity .5s ease .75s;opacity:1}
+@media (prefers-reduced-motion:reduce){
+  .js .sweep{stroke-dashoffset:0}
+  .js .fade{opacity:1}
+  .js .strip-c.drawn .sweep,.js .strip-c.drawn .fade{transition:none}
+}
+
+/* ── Impresión: la pantalla se vuelve papel ──────────────────────────────── */
+@media print{
+  :root{
+    color-scheme:light;
+    --ink:#fff;--panel:#fff;--panel-2:#fff;
+    --bone:#111;--hi:#000;--dim:#4a4a52;--faint:#6B6675;
+    --edge:#d8d2e4;--edge-2:#ebe7f2;
+    --subject:#6C1FA8;--trace:#00706F;--alarm:#B0102F;--ok:#0A6A4A;--amber:#7A4A00;
+    --grid-min:rgba(200,60,60,.13);--grid-maj:rgba(200,60,60,.26);
+  }
+  body{background:#fff;color:#111}
+  .bar,.deriv,.idxw,.prog,.btn{display:none!important}
+  section{padding:1.1cm 0;border-top:1px solid var(--edge-2);break-inside:auto}
+  .hero{padding-top:0}
+  /* El logotipo es blanco: sobre papel necesita su propia superficie */
+  .hero .logo{background:#050308;padding:7px 9px;border-radius:3px;height:22px;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .tw{background:none}
+  .strip-c{background:#fff;break-inside:avoid}
+  .js .sweep{stroke-dashoffset:0!important}
+  .js .fade{opacity:1!important}
+  .strip,.tw,.mv,.sc,.box{break-inside:avoid}
+  h1{font-size:2.6rem}h2{font-size:1.6rem}
+  .tr-flat{stroke:#9a94a6}
+  tr.me td{background:#f3e9fb!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .v.is-out{background:none}
+  a{color:#111;text-decoration:none}
+}
