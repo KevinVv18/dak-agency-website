@@ -111,6 +111,36 @@ lo demás —la altura, los bloques, el corchete de anotación— lo resuelve `s
 Esa línea es la que evita la pregunta «¿y esas rayas azules?», que es exactamente lo que
 hundió a la versión anterior.
 
+### La regla del PDF: lo que significa algo se pinta con un borde
+
+**El navegador no imprime fondos** salvo que quien imprime tenga marcada la casilla de
+«gráficos de fondo», y esa casilla no la controlamos: la marca —o no— el dueño del
+negocio cuando le da a «Guardar en PDF». Salió un PDF con los números y los corchetes
+—que son bordes— y **las barras en blanco**.
+
+No se arregla forzando `print-color-adjust:exact`, porque eso solo funciona si la casilla
+está puesta. Se arregla cambiando la pintura: **cada bloque es un elemento con
+`border-top`**, y un borde se imprime siempre. Misma pintura en pantalla y en papel, sin
+dos caminos que se puedan desincronizar.
+
+Se aplicó a todo lo que carga información, no solo al gráfico de portada: las barras del
+censo, los rombos de la leyenda, las patas de los corchetes, las viñetas de las listas y
+los filetes de los rótulos. Los fondos quedan **solo para lo que puede desaparecer sin
+que se pierda un dato**: el tinte de las semanas de silencio, el realce de la fila de la
+marca y el color del papel.
+
+Para comprobarlo sin imprimir, con la página abierta en la consola:
+
+```js
+for (const s of document.styleSheets) for (const x of s.cssRules)
+  if (x.type === 4 && (x.conditionText||'').includes('print')) x.media.mediaText = 'screen';
+document.head.insertAdjacentHTML('beforeend',
+  '<style>*,*::before,*::after{background-image:none!important;background-color:transparent!important}</style>');
+```
+
+Eso deja la página exactamente como sale del diálogo de impresión con los fondos
+apagados. **Si desaparece un dato, está mal pintado.**
+
 Reglas duras del componente:
 
 - **Nombres de clase con prefijo `t-` y anidados bajo `.tally-g`.** La primera versión usó

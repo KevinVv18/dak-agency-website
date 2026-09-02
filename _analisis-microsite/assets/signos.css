@@ -17,6 +17,14 @@
      verse sana.
    · Sin dibujo vectorial en los datos. Son cajas de CSS: no hay nada que se
      pueda deformar, cortar ni depender de JavaScript.
+   · **Toda marca que signifique algo se pinta con un BORDE, nunca con un
+     fondo.** Los navegadores no imprimen fondos salvo que el usuario tenga
+     marcada la casilla de «gráficos de fondo», y esa casilla no la controlamos
+     nosotros: la controla el dueño del negocio que le da a «Guardar en PDF».
+     Ya salió un PDF con los números y los corchetes —que son bordes— y las
+     barras en blanco. Un borde se imprime siempre. Los fondos quedan solo para
+     lo que puede desaparecer sin que se pierda información: tintes de tramo,
+     realces de fila y el propio color del papel.
    · Al imprimir, la pantalla se vuelve papel.
    ========================================================================== */
 
@@ -189,7 +197,7 @@ strong,b{font-weight:600;color:var(--hi)}
   font-family:var(--mono);font-size:.69rem;letter-spacing:.14em;
   text-transform:uppercase;color:var(--dim);font-weight:500;
 }
-.chan::after{content:'';flex:1;height:1px;background:var(--edge)}
+.chan::after{content:'';flex:1;height:0;border-top:1px solid var(--edge)}
 
 /* ── Portada ─────────────────────────────────────────────────────────────── */
 .hero{padding-top:clamp(2.4rem,6vw,4rem)}
@@ -253,8 +261,8 @@ strong,b{font-weight:600;color:var(--hi)}
 .tally-g .t-ln b{font-weight:600}
 .tally-g .t-key{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);
   font-size:.69rem;letter-spacing:.03em;color:var(--dim)}
-.tally-g .t-key::before{content:'';width:11px;height:9px;border-radius:1px;
-  background:currentColor;flex:none}
+.tally-g .t-key::before{content:'';width:11px;height:0;
+  border-top:9px solid currentColor;flex:none}
 .tally-g .t-a b,.tally-g .t-a .t-key{color:var(--subject)}
 .tally-g .t-b{margin:.7rem 0 0}
 .tally-g .t-b b,.tally-g .t-b .t-key{color:var(--trace)}
@@ -269,16 +277,17 @@ strong,b{font-weight:600;color:var(--hi)}
 .tally-g .t-lane.down .t-wk{justify-content:flex-start}
 .tally-g .t-lane.up .t-wk.z{background:linear-gradient(0deg,rgba(255,107,133,.07),transparent)}
 
-/* La barra se corta en bloques con una franja: cada bloque es una unidad y se
-   cuenta a ojo. La cifra va escrita al lado para no depender de contar. */
-.tally-g .t-bl{width:100%;max-width:38px;border-radius:1px;
-  height:calc(var(--n) * var(--u));
-  background:repeating-linear-gradient(to top,
-    var(--c) 0 calc(var(--u) - 4px), transparent calc(var(--u) - 4px) var(--u));
-}
-.tally-g .t-lane.down .t-bl{background:repeating-linear-gradient(to bottom,
-  var(--c) 0 calc(var(--u) - 4px), transparent calc(var(--u) - 4px) var(--u))}
-.tally-g .t-wk.z .t-bl{height:0;background:none;border-top:1px dashed var(--faint)}
+/* Cada bloque es un elemento propio, y se pinta con un BORDE, no con un fondo.
+   Parece un rodeo y es lo contrario: los navegadores no imprimen fondos salvo
+   que el usuario tenga marcada la casilla de «gráficos de fondo» en el diálogo
+   de impresión. La primera versión usaba un degradado repetido y el PDF salía
+   con los números y los corchetes —que son bordes— y las barras en blanco.
+   Un borde se imprime siempre. Misma pintura en pantalla y en papel. */
+.tally-g .t-bl{display:flex;flex-direction:column;gap:4px;
+  width:100%;max-width:38px}
+.tally-g .t-bl i{display:block;width:100%;height:0;
+  border-top:calc(var(--u) - 4px) solid var(--c)}
+.tally-g .t-wk.z .t-bl{display:block;height:0;border-top:1px dashed var(--faint)}
 .tally-g .t-cnt{font-family:var(--mono);font-size:.69rem;line-height:1;color:var(--bone)}
 .tally-g .t-wk.z .t-cnt{color:var(--dim)}
 
@@ -299,13 +308,13 @@ strong,b{font-weight:600;color:var(--hi)}
   font-family:var(--mono);font-size:.69rem;letter-spacing:.03em;
   color:var(--alarm);border-bottom:1px solid rgba(255,107,133,.5)}
 .tally-g .t-brk::before,.tally-g .t-brk::after{content:'';position:absolute;bottom:0;
-  width:1px;height:5px;background:rgba(255,107,133,.5)}
+  width:0;height:5px;border-left:1px solid rgba(255,107,133,.5)}
 .tally-g .t-brk::before{left:0}
 .tally-g .t-brk::after{right:0}
 .tally-g .t-brk.t{color:var(--trace);border-bottom:0;
   border-top:1px solid rgba(0,200,200,.55);padding:.42rem 0 0}
 .tally-g .t-brk.t::before,.tally-g .t-brk.t::after{top:0;bottom:auto;
-  background:rgba(0,200,200,.55)}
+  border-left-color:rgba(0,200,200,.55)}
 /* El tramo que abarca cada corchete vive aquí y no en un style= del informe,
    porque en un teléfono el de la ráfaga necesita más columnas o su texto
    se parte en cuatro líneas. */
@@ -357,9 +366,9 @@ strong,b{font-weight:600;color:var(--hi)}
 .census .row.h{background:var(--panel);font-family:var(--mono);font-size:.69rem;
   letter-spacing:.11em;text-transform:uppercase;color:var(--dim)}
 .census .d{font-family:var(--mono);font-size:.74rem;color:var(--dim)}
-.census .b{height:9px;background:rgba(232,228,240,.07);position:relative;border-radius:1px}
-.census .b i{position:absolute;inset:0 auto 0 0;background:var(--subject);border-radius:1px;display:block}
-.census .b.z{background:repeating-linear-gradient(90deg,rgba(232,228,240,.16) 0 3px,transparent 3px 7px)}
+.census .b{height:9px;background:rgba(232,228,240,.07);position:relative}
+.census .b i{position:absolute;inset:0 auto auto 0;height:0;border-top:9px solid var(--subject);display:block}
+.census .b.z{background:none;height:0;align-self:center;border-top:1px dashed var(--faint)}
 .census .n{font-family:var(--mono);font-size:.82rem;text-align:right;color:var(--bone)}
 .census .n.z{color:var(--dim)}
 .census .row.t{background:var(--panel);font-weight:600}
@@ -457,8 +466,8 @@ tr.lead-r td{background:rgba(0,200,200,.07)}
 .list li{position:relative;padding:.5rem 0 .5rem 1.5rem;border-bottom:1px solid var(--edge-2);
   font-size:.94rem;color:var(--dim)}
 .list li:last-child{border-bottom:0}
-.list li::before{content:'';position:absolute;left:0;top:1.05em;width:10px;height:1px;
-  background:var(--subject)}
+.list li::before{content:'';position:absolute;left:0;top:1.05em;width:10px;height:0;
+  border-top:1px solid var(--subject)}
 .list li b{color:var(--bone);font-weight:500}
 
 .src{
