@@ -65,41 +65,67 @@ mismo**, y un dato demoledor ocupaba el mismo espacio visual que uno de relleno.
 plano no necesita que nadie lo explique.
 
 - **Cada capítulo es una derivación** con su etiqueta en el riel, y el estado se lee en la
-  **forma del trazo**: latido = actividad, línea plana = silencio, ráfaga de marcas
-  verticales = anuncios que la competencia tiene encendidos.
+  **forma**: bloques apilados = actividad, columnas vacías = silencio, ráfaga = anuncios
+  que la competencia tiene encendidos.
 - **Toda cifra va con su rango de referencia**, como un análisis de laboratorio: «20
   seguidores» deja de ser una opinión y pasa a ser *fuera de rango, siendo el rango local
   156–787*. El marcador de estado no es solo color: `fuera` lleva filete doble, `atención`
   lleva filete discontinuo, `dentro` lleva filete simple.
-- **La portada es un solo trazo** con el diagnóstico dentro. En Kusiwawita, su actividad y
-  la de su categoría sobre el mismo eje de tiempo.
-- **Un solo momento animado**: el barrido que escribe los trazos al entrar en pantalla.
-  Nada late en bucle.
-- **El cursor mide.** Sobre un trazo aparece una vertical con la fecha y el valor de ese
-  punto; con el campo enfocado, las flechas recorren los puntos uno a uno.
-- **Al imprimir, la pantalla se vuelve papel**: tira blanca con rejilla impresa y el
-  logotipo sobre su propia superficie oscura, porque es blanco y desaparecería.
+- **La portada es un solo gráfico** con el diagnóstico dentro. En Kusiwawita, sus semanas
+  y las de su competencia sobre el mismo eje y con la misma unidad.
+- **Al imprimir, la pantalla se vuelve papel**, y el logotipo va sobre su propia superficie
+  oscura, porque es blanco y si no desaparecería.
 
-### Un informe nuevo no escribe SVG a mano
+### El gráfico se cuenta, no se interpreta
 
-Los datos se declaran en atributos y `signos.js` dibuja el trazo, el eje, la banda de
-silencio y la ráfaga de la competencia. Cuando una cifra se corrige, se corrige en un
-sitio:
+> **Aviso, y viene de haberlo hecho mal.** La primera versión de este mundo dibujaba un
+> trazo tipo electrocardiograma en SVG, generado por `signos.js` desde atributos
+> `data-series` / `data-ticks`. **Se retiró el mismo día que se estrenó, por dos motivos.**
+>
+> El técnico: `vector-effect:non-scaling-stroke` mide el `stroke-dasharray` en píxeles
+> renderizados, mientras `getTotalLength()` devuelve unidades del `viewBox`. Como el campo
+> se estiraba, el guion se quedaba corto y **la línea se cortaba antes de su último
+> punto** — solo a ciertos anchos, así que en local se veía bien y en producción no.
+>
+> El de verdad: **no se entendía.** Un eje de «me gusta por día de publicación» no le dice
+> nada a quien tiene que aprobar un presupuesto, y las marcas verticales del carril de la
+> competencia se leían como un fallo de dibujo, no como un dato. Un gráfico que hay que
+> explicar en una reunión ya perdió.
+
+Lo que hay ahora es un **conteo por semanas escrito en HTML**, sin SVG y sin JavaScript:
+cada bloque es una cosa y se cuentan con el dedo. Dos carriles enfrentados sobre el mismo
+eje, con la **misma unidad y el mismo alto de bloque**, así que comparar es mirar.
 
 ```html
-<div class="strip-c"
-     data-from="2026-06-29" data-to="2026-09-02"
-     data-series="2026-06-29:0|2026-07-06:4|2026-07-25:11"
-     data-flat="2026-07-25" data-flat-label="39 días sin publicar"
-     data-ticks="2026-08-31:Mundo Color|2026-09-01:Cantolao"
-     data-ticks-label="cada marca vertical, un anuncio de la competencia"
-     data-unit="me gusta" data-max="11"
-     data-alt="Descripción del trazo para quien no lo ve."></div>
+<div class="t-lane up t-row">
+  <div class="t-wk" style="--n:3"><span class="t-cnt">3</span><span class="t-bl"></span></div>
+  <div class="t-wk z"><span class="t-cnt">0</span><span class="t-bl"></span></div>
+</div>
 ```
+
+`--n` es el número de unidades de esa semana y `.z` marca las vacías. En el carril de
+abajo se invierte el orden de los dos `<span>` para que la cifra quede bajo la barra. Todo
+lo demás —la altura, los bloques, el corchete de anotación— lo resuelve `signos.css`.
+
+**Cada carril declara en su rótulo qué es un bloque** («cada bloque, una publicación»).
+Esa línea es la que evita la pregunta «¿y esas rayas azules?», que es exactamente lo que
+hundió a la versión anterior.
+
+Reglas duras del componente:
+
+- **Nombres de clase con prefijo `t-` y anidados bajo `.tally-g`.** La primera versión usó
+  `.v`, `.row` y `.k`, y `.v` ya era la fila de las constantes, con dos columnas de 7,5 y
+  8,5 rem: cada número heredó ese ancho, reventó la rejilla y las barras salieron una
+  columna corridas respecto a su fecha. En una hoja compartida por varios componentes, un
+  nombre genérico es una bomba de relojería.
+- **El tramo que abarca cada corchete va en CSS, no en un `style=`** del informe: en un
+  teléfono el de la ráfaga necesita más columnas o su texto se parte en cuatro líneas.
+- **El `aria-label` del contenedor cuenta la historia completa en palabras.** Es un
+  `role="img"`: quien no lo ve tiene que quedarse con lo mismo.
 
 El riel de derivaciones y el índice se construyen leyendo las `<section data-ch="…">`, así
 que **un capítulo nuevo no añade marcado extra**. El teclado (↓ ↑ espacio RePág AvPág
-Inicio Fin, `Esc`) viene gratis.
+Inicio Fin, `Esc`) viene gratis. Es lo único que hace `signos.js`: **no dibuja datos.**
 
 Reglas que hay que mantener al añadir una marca:
 
@@ -108,12 +134,12 @@ Reglas que hay que mantener al añadir una marca:
   honesto** de esa fuente escrito al lado.
 - **Ningún texto funcional por debajo de 11 px** (`.69rem`). La primera versión tenía los
   rótulos de eje a 9,6 px y a 2,57:1 de contraste.
-- **Ningún rótulo dentro del SVG.** El campo se estira sin conservar proporción, así que
-  el texto se deformaría; las etiquetas van en HTML sobre el campo (`span.ov`).
-- El trazo **dibuja el dato y no lo exagera**: misma escala en todos los informes y eje
-  siempre rotulado. Una marca sana debe verse sana.
-- Sin JavaScript la página se lee entera: lo único que desaparece son los trazos, y cada
-  cifra está escrita al lado en texto.
+- **Nada de dibujo vectorial para los datos.** Cajas de CSS, que no se deforman ni se
+  cortan.
+- El gráfico **dibuja el dato y no lo exagera**: misma unidad y mismo alto de bloque en
+  todos los carriles y en todos los informes. Una marca sana debe verse sana.
+- **Sin JavaScript la página se lee entera y el gráfico también.** Lo único que se pierde
+  es el riel, el índice y el teclado.
 
 ---
 
