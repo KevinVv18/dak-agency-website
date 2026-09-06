@@ -52,9 +52,6 @@ const SEDE = {
   zona: 'Los Parques de San Gabriel, Chiclayo',
 }
 
-const grados = ({ lat, lon }) =>
-  `${Math.abs(lat).toFixed(4)}° ${lat < 0 ? 'S' : 'N'} · ${Math.abs(lon).toFixed(4)}° ${lon < 0 ? 'O' : 'E'}`
-
 /* ── LA POSICIÓN, DIBUJADA ──
 
    El bloque era «6.7744° S · 79.8747° O» y dos líneas de dirección: exacto y
@@ -365,13 +362,15 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* La marca, de fondo. Ya no es un bloque propio al final: vive detrás de
-          toda la placa, muy tenue, como el grabado de una chapa. */}
-      <div className="pie-fondo" aria-hidden="true" ref={fondoRef}>
-        <MarcaEnReposo />
-      </div>
-
       <div className="pie-placa">
+        {/* La marca, de fondo. Vive DENTRO de la placa y no fuera: así se centra
+            contra el bloque de contenido sin números mágicos, y sigue
+            centrada sea cual sea la altura de las columnas o de la franja
+            legal. Fuera, había que restarle a ojo media franja legal. */}
+        <div className="pie-fondo" aria-hidden="true" ref={fondoRef}>
+          <MarcaEnReposo />
+        </div>
+
         {/* ── Fila 1: qué es y por dónde se le habla ── */}
         <div className="pie-col pie-col--marca">
           <p className="pie-rotulo">Equipo</p>
@@ -427,24 +426,37 @@ const Footer = () => {
             quien busca una dirección. */}
         <div className="pie-col">
           <p className="pie-rotulo">Posición</p>
-          <MapaSede />
-          <p className="pie-coords">{grados(SEDE)}</p>
-          <p className="pie-dato">{SEDE.calle}</p>
-          <p className="pie-dato">{SEDE.zona}</p>
-          <a
-            className="pie-enlace"
-            href={`https://www.google.com/maps/search/?api=1&query=${SEDE.lat},${SEDE.lon}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Abrir en Maps
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M7 17 17 7M9 7h8v8" />
-            </svg>
-          </a>
 
-          <p className="pie-rotulo pie-rotulo--seg">Horario</p>
-          <p className="pie-dato">Lun a Vie · 9:00 – 18:00</p>
+          {/* El mapa va AL LADO de la dirección, no encima.
+              Apilado hacía esta columna el doble de alta que las otras dos y
+              rompía la simetría de la placa, que es lo que Kevin no soportaba.
+              En fila, las dos mitades miden casi lo mismo y la columna vuelve a
+              la altura de sus vecinas.
+
+              Las coordenadas se van: eran una lectura de instrumento que ya no
+              hace falta ahora que se ve el sitio, y a Kevin no le gustaban. La
+              dirección se queda, que es lo que alguien necesita de verdad. */}
+          <div className="pie-sede">
+            <MapaSede />
+            <div className="pie-sede-datos">
+              <p className="pie-dato">{SEDE.calle}</p>
+              <p className="pie-dato">{SEDE.zona}</p>
+              <a
+                className="pie-enlace"
+                href={`https://www.google.com/maps/search/?api=1&query=${SEDE.lat},${SEDE.lon}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Abrir en Maps
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M7 17 17 7M9 7h8v8" />
+                </svg>
+              </a>
+
+              <p className="pie-rotulo pie-rotulo--seg">Horario</p>
+              <p className="pie-dato">Lun a Vie · 9:00 – 18:00</p>
+            </div>
+          </div>
         </div>
       </div>
 

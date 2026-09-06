@@ -108,12 +108,23 @@
    Era un bloque propio de 400px al final del pie. Ahora vive DETRÁS de la
    placa, muy tenue: el grabado de la chapa, no un cartel. Sigue siendo la
    misma geometría que el túnel usa como obstáculo. */
+/* Centrada en la placa, no colgada del borde de abajo.
+   Anclada al fondo se salía por la base y quedaba recortada, y las columnas la
+   cruzaban por sitios distintos: se leía como polígonos sueltos y no como una
+   marca. Centrada en los dos ejes cabe entera y queda detrás de todo, que es
+   para lo que está. */
+/* Centrada en la placa, que es su caja: el marcado la mete dentro y la placa
+   es `position: relative`. Antes colgaba del borde inferior del pie, se salía
+   por la base y las columnas la cruzaban por sitios distintos — se leía como
+   polígonos sueltos y no como una marca. */
 .pie-fondo {
   position: absolute;
   left: 50%;
-  bottom: 2.5rem;
-  transform: translateX(-50%);
-  width: min(1100px, 88%);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  /* Más pequeña que el bloque de contenido, a propósito: una marca del mismo
+     tamaño que las columnas no se lee como fondo, se lee como interferencia. */
+  width: min(680px, 56%);
   /* El tinte va en `opacity` y no en el alfa del color: así el encendido se
      anima en el compositor —una propiedad, sin repintar los cinco polígonos— y
      en reposo se ve exactamente igual que cuando era rgba(255,255,255,0.055). */
@@ -210,6 +221,9 @@
 }
 
 .pie-col {
+  /* Por encima de la marca, que ahora es hermana suya dentro de la placa. */
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -257,9 +271,22 @@
 
    Las esquineras son las del sistema (--esq-img), las mismas que enmarcan los
    botones y las fichas. El mapa no estrena vocabulario: usa el que hay. */
+/* Las dos mitades de la posición, en fila. */
+.pie-sede {
+  display: flex;
+  gap: 1.1rem;
+  align-items: flex-start;
+}
+
+.pie-sede-datos {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .pie-mapa {
-  margin: 0 0 1.1rem;
-  width: min(100%, 232px);
+  margin: 0;
+  flex: 0 0 auto;
+  width: 150px;
 }
 
 /* Las esquineras enmarcan EL MAPA, no el mapa más su pie de foto. Estaban en
@@ -368,17 +395,6 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
-}
-
-/* La posición, en mono y con cifras tabulares: es una lectura, no una frase. */
-.pie-coords {
-  font-family: var(--font-mono);
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: #ffffff;
-  font-variant-numeric: tabular-nums;
-  margin: 0 0 0.6rem;
 }
 
 .pie-enlace {
@@ -604,6 +620,30 @@
     inset: 0;
     width: auto;
     transform: none;
+  }
+
+  /* En una columna estrecha el mapa y la dirección no caben en fila: la calle
+     se partía en tres renglones y el mapa quedaba pegado a la izquierda
+     mientras el resto del pie va centrado, que es justo lo que Kevin pidió que
+     no pasara. Apilados y centrados, vuelve la simetría. */
+  .pie-sede {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* La escala y la atribución, centradas bajo el mapa: con el mapa centrado y
+     el pie de foto a la izquierda, el bloque se veía torcido. */
+  .pie-mapa-pie {
+    justify-items: center;
+  }
+
+  .pie-mapa-regla {
+    justify-content: center;
+  }
+
+  .pie-sede-datos {
+    flex: 0 1 auto;
   }
 
   /* Centrado explícito ANTES de girar. Con place-items en la rejilla, la caja
