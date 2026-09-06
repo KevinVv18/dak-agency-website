@@ -5,6 +5,9 @@ import './Footer.css'
    hero usa como OBSTÁCULO; aquí se pintan como trazo. No es una copia del
    logo: es literalmente la misma geometría con la que abre la página. */
 import { CAJA, FORMAS } from '../data/marca'
+/* Las calles de verdad alrededor de la oficina, traídas una sola vez de
+   OpenStreetMap por scripts/mapa-sede.mjs y horneadas como trazos. */
+import { VIAS, CALLES, RADIO_METROS } from '../data/mapa-sede'
 import { scrollToSection } from '../utils/scrollToSection'
 
 /* ═══════════════════════════════════════════════════════════════
@@ -51,6 +54,78 @@ const SEDE = {
 
 const grados = ({ lat, lon }) =>
   `${Math.abs(lat).toFixed(4)}° ${lat < 0 ? 'S' : 'N'} · ${Math.abs(lon).toFixed(4)}° ${lon < 0 ? 'O' : 'E'}`
+
+/* ── LA POSICIÓN, DIBUJADA ──
+
+   El bloque era «6.7744° S · 79.8747° O» y dos líneas de dirección: exacto y
+   completamente mudo. Antes de eso hubo un iframe de Google Maps, retirado a
+   propósito — 31 peticiones, ~520KB y el cromo de Google dentro de la página.
+
+   Esto es la tercera vía. El mapa es REAL: son las calles que hay alrededor de
+   la oficina, con la Panamericana Norte y la Av. Juan Tomis Stack cruzando, y
+   la propia Av. Víctor Andrés Belaunde de la dirección. Pero lo dibujamos
+   nosotros, con el filete de un píxel de toda la web, y viaja dentro del
+   paquete: ni una petición en tiempo de ejecución.
+
+   Inventar un plano esquemático habría sido más rápido y habría estado mal:
+   sería afirmar una geografía falsa en la web de una agencia que presume de no
+   inventar datos.
+
+   La oficina cae en 50,50 por construcción —el lienzo se proyecta centrado en
+   ella—, así que la mira no se coloca a ojo: está donde está el sitio. */
+/* Un número redondo que quepa holgado: 200 m son el 22% del lado. */
+const ESCALA_M = 200
+
+const MapaSede = () => (
+  <figure className="pie-mapa">
+    <svg
+      className="pie-mapa-lienzo"
+      viewBox="0 0 100 100"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {/* La trama urbana primero, las vías grandes encima: lo que sitúa se lee
+          por brillo, no por grosor. Todo a un píxel, como el resto del sitio. */}
+      <g className="pie-mapa-calles">
+        {CALLES.map((d, i) => <path key={i} d={d} vectorEffect="non-scaling-stroke" />)}
+      </g>
+      <g className="pie-mapa-vias">
+        {VIAS.map((d, i) => <path key={i} d={d} vectorEffect="non-scaling-stroke" />)}
+      </g>
+      {/* La mira. Se abre alrededor del punto en vez de cruzarlo: así el sitio
+          exacto queda despejado y no tachado. */}
+      <g className="pie-mapa-mira">
+        <path d="M50 36.5V45M50 55v8.5M36.5 50H45M55 50h8.5" vectorEffect="non-scaling-stroke" />
+        <circle cx="50" cy="50" r="5" vectorEffect="non-scaling-stroke" />
+      </g>
+      <rect className="pie-mapa-punto" x="48.7" y="48.7" width="2.6" height="2.6" />
+      {/* El norte, DIBUJADO y no escrito. Hubo aquí una «N» de 7px: la
+          auditoría la cazó por debajo del piso de 11px del proyecto, y subirla
+          a 11 la habría dejado enorme sobre un recorte de 162px. Una punta y su
+          asta dicen lo mismo sin tipografía, y un icono se dibuja. La
+          proyección es norte arriba por construcción. */}
+      <g className="pie-mapa-norte">
+        <path d="M92 4.2 94 8.4h-4z" />
+        <path d="M92 9.6v6.4" vectorEffect="non-scaling-stroke" />
+      </g>
+    </svg>
+
+    {/* La escala es de verdad: el lienzo mide 2 x RADIO_METROS de lado, así que
+        la barra se calcula, no se dibuja a ojo. Y la atribución de OSM es
+        obligatoria por la ODbL — no es cortesía y no se quita. */}
+    <figcaption className="pie-mapa-pie">
+      <span className="pie-mapa-regla">
+        <span
+          className="pie-mapa-escala"
+          aria-hidden="true"
+          style={{ width: `${(ESCALA_M / (2 * RADIO_METROS)) * 100}%` }}
+        />
+        <span>{ESCALA_M} m</span>
+      </span>
+      <span className="pie-mapa-fuente">© OpenStreetMap</span>
+    </figcaption>
+  </figure>
+)
 
 /* La marca en trazo, construida con los mismos polígonos del túnel. */
 const MarcaEnReposo = () => (
@@ -348,6 +423,7 @@ const Footer = () => {
             quien busca una dirección. */}
         <div className="pie-col">
           <p className="pie-rotulo">Posición</p>
+          <MapaSede />
           <p className="pie-coords">{grados(SEDE)}</p>
           <p className="pie-dato">{SEDE.calle}</p>
           <p className="pie-dato">{SEDE.zona}</p>

@@ -235,6 +235,121 @@
   margin: 0;
 }
 
+/* ── EL MAPA DE LA SEDE ──
+
+   Calles reales de OpenStreetMap, horneadas en src/data/mapa-sede.js y pintadas
+   aquí con el filete de un píxel de toda la web. Ni una petición en tiempo de
+   ejecución: no hay a dónde ir, los trazos ya están en el paquete.
+
+   Las esquineras son las del sistema (--esq-img), las mismas que enmarcan los
+   botones y las fichas. El mapa no estrena vocabulario: usa el que hay. */
+.pie-mapa {
+  margin: 0 0 1.1rem;
+  width: min(100%, 178px);
+  padding: 8px;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(255, 255, 255, 0.34);
+}
+
+.pie-mapa-lienzo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  /* Apenas un tono por encima del pie: separa el recorte del fondo sin llegar a
+     ser una caja. */
+  background: rgba(255, 255, 255, 0.022);
+}
+
+/* Todo a un píxel, en los dos grupos. Lo que distingue una avenida de una calle
+   es el BRILLO, no el grosor: engordar el trazo rompería el filete de un píxel
+   que sostiene el resto del sitio. */
+.pie-mapa-calles path,
+.pie-mapa-vias path,
+.pie-mapa-mira path,
+.pie-mapa-mira circle,
+.pie-mapa-norte path {
+  fill: none;
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pie-mapa-calles path { stroke: rgba(255, 255, 255, 0.17); }
+.pie-mapa-vias path { stroke: rgba(255, 255, 255, 0.4); }
+
+.pie-mapa-mira path,
+.pie-mapa-mira circle {
+  stroke: var(--color-accent-texto);
+  opacity: 0.75;
+}
+
+.pie-mapa-punto {
+  fill: var(--color-accent-texto);
+}
+
+/* La punta va rellena; el asta, a un pixel como todo lo demas. */
+.pie-mapa-norte path { stroke: rgba(255, 255, 255, 0.34); }
+.pie-mapa-norte path:first-child {
+  fill: rgba(255, 255, 255, 0.34);
+  stroke: none;
+}
+
+/* La escala y la atribución. La atribución de OpenStreetMap es obligatoria por
+   la ODbL: no es un crédito de cortesía y no se retira. */
+.pie-mapa-pie {
+  /* Dos renglones explícitos y no un flex que envuelve: envolviendo, la
+     atribución caía suelta a la derecha de la segunda línea y se leía como algo
+     que se había descolgado. Cada cosa en su fila, y las dos siguen la
+     alineación de la columna — a la izquierda en escritorio, centrada en el pie
+     de móvil. */
+  display: grid;
+  justify-items: inherit;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+  font-family: var(--font-mono);
+  /* 0.7rem = 11,2px. El piso de texto funcional del proyecto son 11px. */
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--color-texto-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* El ancho lo pone el JSX a partir de los metros reales del recorte: la barra
+   mide lo que dice medir. */
+.pie-mapa-escala {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.45);
+  position: relative;
+}
+
+/* Los topes, para que se lea como una regla y no como un guion. */
+.pie-mapa-escala::before,
+.pie-mapa-escala::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.45);
+}
+.pie-mapa-escala::before { left: 0; }
+.pie-mapa-escala::after { right: 0; }
+
+.pie-mapa-fuente {
+  opacity: 0.72;
+}
+
+/* La escala y sus metros, en la misma línea. */
+.pie-mapa-regla {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
 /* La posición, en mono y con cifras tabulares: es una lectura, no una frase. */
 .pie-coords {
   font-family: var(--font-mono);

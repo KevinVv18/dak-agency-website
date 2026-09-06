@@ -585,10 +585,21 @@
 }
 
 /* ── Modal del demo embebido (se monta solo al hacer click) ── */
+/* El velo tiene que tapar TODO lo fijo, no solo el contenido.
+
+   Estaba en 1000, que es exactamente --z-navigation: la nav quedaba a su misma
+   altura y seguía recibiendo clics, así que con el demo abierto se podía pulsar
+   «SERVICIOS» y la página de detrás se desplazaba por debajo del modal. Ese era
+   el fallo.
+
+   9995 y no --z-modal (2000) porque la burbuja del chat vive en 9990 por su
+   cuenta: con 2000 el velo tapaba la nav pero la burbuja seguía flotando por
+   encima del demo. Hasta que esa escala se unifique, este número es el que
+   describe la realidad. */
 .demo-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 9995;
   background: rgba(3, 1, 6, 0.82);
   backdrop-filter: blur(6px);
   display: flex;
