@@ -138,23 +138,35 @@
    Las dos animan solo `opacity`, así que no hay maquetación ni repintado por
    fotograma; y ninguna corre en bucle: se ponen por clase y se quitan solas al
    terminar. */
+/* EL TECHO SON 0,14, Y NO ES UNA CIFRA DE GUSTO.
+
+   Estuvo en 0,46 y era un fallo de bulto: la marca es un TRAZO que cruza por
+   debajo de la dirección, del enlace a Maps y de toda la línea legal, y a 0,46
+   ese trazo queda en rgb(119,118,121) — el texto secundario que cae encima baja
+   a 1,37:1. Kevin lo vio y con razón. Puse ese número comprobando que la
+   animación corría, sin mirar nunca qué le hacía al texto de encima.
+
+   Medido a lo largo de la rampa: 0,20 deja el texto en 3,74:1, 0,16 en 4,31:1 y
+   0,14 en 4,61:1. El techo es el último valor con el que lo que hay ENCIMA de
+   la marca sigue pasando AA. Sobre un reposo de 0,055 sigue siendo dos veces y
+   media más: se ve encenderse de sobra. */
 @keyframes pie-marca-tubo {
   0%, 4%    { opacity: 0.055; }
-  5%        { opacity: 0.34; }
+  5%        { opacity: 0.105; }
   7%        { opacity: 0.06; }
-  9%        { opacity: 0.42; }
+  9%        { opacity: 0.13; }
   10.5%     { opacity: 0.055; }
-  13%       { opacity: 0.26; }
-  14.5%     { opacity: 0.07; }
-  18%       { opacity: 0.46; }
-  20%       { opacity: 0.30; }
-  24%, 74%  { opacity: 0.46; }
+  13%       { opacity: 0.085; }
+  14.5%     { opacity: 0.065; }
+  18%       { opacity: 0.14; }
+  20%       { opacity: 0.095; }
+  24%, 74%  { opacity: 0.14; }
   100%      { opacity: 0.055; }
 }
 
 @keyframes pie-marca-roce {
   0%        { opacity: 0.055; }
-  10%, 74%  { opacity: 0.46; }
+  10%, 74%  { opacity: 0.14; }
   100%      { opacity: 0.055; }
 }
 
@@ -188,7 +200,9 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1.2fr;
+  /* Era 1.4fr para la primera columna, de cuando llevaba más contenido: con
+     lo que tiene hoy dejaba 270px de vacío antes del índice. */
+  grid-template-columns: 1fr 0.85fr 1.05fr;
   gap: 3rem;
   max-width: 1400px;
   margin: 0 auto;
@@ -245,7 +259,13 @@
    botones y las fichas. El mapa no estrena vocabulario: usa el que hay. */
 .pie-mapa {
   margin: 0 0 1.1rem;
-  width: min(100%, 178px);
+  width: min(100%, 232px);
+}
+
+/* Las esquineras enmarcan EL MAPA, no el mapa más su pie de foto. Estaban en
+   la figura entera y las de abajo caían por debajo de la atribución: el marco
+   parecía rodear otra cosa. */
+.pie-mapa-marco {
   padding: 8px;
   background-image: var(--esq-img);
   background-size: var(--esq-tam);

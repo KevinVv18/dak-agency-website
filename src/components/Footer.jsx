@@ -78,7 +78,10 @@ const ESCALA_M = 200
 
 const MapaSede = () => (
   <figure className="pie-mapa">
-    <svg
+    {/* El marco existe para que las esquineras rodeen el MAPA y no el mapa más
+        su pie de foto, que era lo que pasaba. */}
+    <div className="pie-mapa-marco">
+      <svg
       className="pie-mapa-lienzo"
       viewBox="0 0 100 100"
       aria-hidden="true"
@@ -108,7 +111,8 @@ const MapaSede = () => (
         <path d="M92 4.2 94 8.4h-4z" />
         <path d="M92 9.6v6.4" vectorEffect="non-scaling-stroke" />
       </g>
-    </svg>
+      </svg>
+    </div>
 
     {/* La escala es de verdad: el lienzo mide 2 x RADIO_METROS de lado, así que
         la barra se calcula, no se dibuja a ojo. Y la atribución de OSM es
