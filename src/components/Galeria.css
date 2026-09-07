@@ -1,0 +1,798 @@
+/* =============================================
+   GALERÍA — la mesa de luz
+   =============================================
+
+   /gallery es una hoja de contactos: el archivo entero visible de una vez,
+   fotogramas numerados en una retícula estricta, y la lupa para mirar de cerca
+   sin abrir nada.
+
+   Lo que sustituye: seis secciones —hero de cinco imágenes sueltas, masonry con
+   filtros, carrusel de cuatro banners, archivo de fotografía, tres filas que
+   repetían piezas del masonry, y cifras— cada una con su propia entrada de fade
+   idéntica. La deuda nº 4 de DESIGN.md, literalmente.
+
+   Aquí hay una sola retícula para los dos archivos, una costura donde la mesa se
+   enciende, y un único momento animado: esa costura.
+
+   NO IMPORTA Estudio.css. El tramo claro declara sus propios tokens, medidos
+   sobre el mismo #F4F1F6. La portada sigue usando Estudio.css sin enterarse.
+   ============================================= */
+
+.galeria {
+  /* La hoja */
+  --hoja-max: 1400px;
+  --canal: 2px;             /* el hueco entre fotogramas */
+  --filete: rgba(255, 255, 255, 0.09);
+  --plancha: #0A0612;       /* el papel sobre el que se imprime el fotograma */
+  --tinta: #ffffff;                       /* 20.4:1 sobre #030106 */
+  --tinta-2: rgba(255, 255, 255, 0.55);   /*  6.26:1 — el piso documentado */
+  --tinta-3: rgba(255, 255, 255, 0.72);   /* 10.9:1 — la numeración */
+
+  /* ── LA TEXTURA ──
+
+     Dos capas, y las dos son del sistema o del mundo de esta página. Ninguna
+     reintroduce la cuadrícula de filetes tileada que DESIGN.md retiró.
+
+     1. LA ESTELA, en su escalón MEDIO y no en el tenue.
+        El mapa de index.css asigna --estela-tenue al Taller, y así lo consume
+        la portada. Pero ahí el Taller llega precedido de Servicios (fuerte) y
+        Demos (media): el tenue se lee como el aire calmándose porque vienes de
+        algo más fuerte. /gallery no tiene aguas arriba —se entra directamente—
+        y el tenue, que es 0.013 de alfa en una sola dirección, no se lee: se
+        lee como nada. El escalón medio es el que dice aquí lo que el tenue dice
+        allí. La regla del sistema es el gradiente, no el número.
+
+     2. EL GRANO, que es el material de esta página y no del sitio.
+        Una hoja de contactos se imprime sobre papel y el papel tiene grano.
+        Ruido fractal en un SVG de 180px, ya atenuado dentro del propio archivo
+        para no necesitar una capa con opacidad encima. Es ruido, no retícula:
+        no tiene dirección, no tiene paso y no forma una malla.
+
+     Sin --luz-seccion. Dos razones, las dos comprobadas en el inspector:
+     (1) es un radial anclado a la altura del elemento, y esta página mide miles
+         de píxeles: un solo resplandor a esa escala es una mancha, no una luz;
+     (2) su anclaje por sección no funciona. --luz-seccion se declara en :root, y
+         los var(--luz-x/--luz-y) de dentro se sustituyen ahí, no en quien lo usa,
+         así que redeclararlos en la sección no mueve nada — se queda en 50% 0%.
+         (Navigation.css tiene el mismo problema sin saberlo.)
+     La luz de esta página vive donde tiene sentido: en la costura. */
+  --grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='0.13'/%3E%3C/svg%3E");
+  --grano-tinta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='0.17'/%3E%3C/svg%3E");
+
+  position: relative;
+  background:
+    var(--grano),
+    var(--estela-media),
+    var(--color-primary);
+  background-size: 180px 180px, auto, auto;
+  color: var(--tinta);
+  padding: clamp(4.75rem, 9vw, 7.5rem) 0 0;
+  overflow-x: clip;
+}
+
+/* El texto seleccionado también es superficie de diseño, y por defecto lo pinta
+   el navegador con un azul que no es de nadie. (El sitio tiene user-select:none
+   en body; esto cubre las excepciones tasadas de index.css.) */
+.galeria ::selection {
+  background: rgba(176, 36, 255, 0.32);
+  color: #fff;
+}
+
+/* ---------------------------------------------
+   RÓTULO — la cabecera impresa de la hoja
+   --------------------------------------------- */
+.rotulo {
+  max-width: var(--hoja-max);
+  margin: 0 auto;
+  padding: 0 clamp(0.75rem, 2vw, 2rem) clamp(0.85rem, 2.5vw, 2rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem clamp(1rem, 3vw, 2.5rem);
+}
+
+.rotulo-identidad {
+  min-width: 0;
+}
+
+/* Escala propia y NO la de .section-title: aquí el titular no compite con la
+   hoja, la rotula. El archivo es lo que tiene que pesar en el primer viewport.
+   Es el ÚNICO tipo de display de la ruta. */
+.rotulo-titulo {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  margin: 0;
+  color: var(--tinta);
+}
+
+.rotulo-datos,
+.hoja-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.15rem;
+  margin: 0.6rem 0 0;
+  font-size: 0.8125rem;    /* 13px */
+  line-height: 1.4;
+  color: var(--tinta-2);
+}
+
+/* Un punto de separación dibujado, no un carácter: así no lo lee el lector de
+   pantalla ni se cuela en una selección de texto. */
+.rotulo-datos span + span,
+.hoja-datos span + span {
+  position: relative;
+  padding-left: 1.15rem;
+}
+
+.rotulo-datos span + span::before,
+.hoja-datos span + span::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  transform: translateY(-50%);
+}
+
+/* ---------------------------------------------
+   MARCADO — el lápiz graso sobre la hoja
+   ---------------------------------------------
+   No es un filtro: no quita nada. Marca las piezas de una categoría y apaga el
+   resto sin sacarlas de la hoja ni del tabulador. Antes esto era un filtro que
+   desmontaba y remontaba veinte elementos con `layout` de framer-motion en cada
+   pulsación: veinte medidas y veinte transformaciones, con la última tarjeta
+   entrando 0,76 s tarde. Ahora no se mueve ni un píxel. */
+.marcado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.marcado-boton {
+  /* El área táctil es el propio botón. Antes la daba un ::after de index.css
+     que solo ampliaba el alto, y por eso la auditoría móvil cantaba controles
+     de 33x44 en esta ruta. */
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--filete);
+  background: transparent;
+  color: var(--tinta-2);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: color var(--transition-fast) var(--ease-out-expo),
+              border-color var(--transition-fast) var(--ease-out-expo),
+              background-color var(--transition-fast) var(--ease-out-expo);
+}
+
+.marcado-boton:hover {
+  color: var(--tinta);
+  border-color: rgba(176, 36, 255, 0.55);
+}
+
+/* Tinta blanca y no negra sobre el morado de marca. Se midió: #030106 sobre
+   #B024FF da 4.46:1 y la auditoría lo cantaba a 4.41; el blanco da 4.62 y pasa.
+   Cambiar el morado en vez de la tinta habría tocado un compromiso de marca de
+   PRODUCT.md, que es lo único aquí que no se negocia. */
+.marcado-boton[aria-pressed='true'] {
+  color: #ffffff;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.marcado-aviso {
+  flex-basis: 100%;
+  margin: 0.15rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--tinta-2);
+}
+
+/* ---------------------------------------------
+   LA HOJA
+   ---------------------------------------------
+   Un solo rótulo de hoja para los dos archivos, al mismo rango. Estaban a cuatro
+   escalones de escala —«Taller» en 13px y «Estudio» en display a 3.25rem— y eso
+   decía que el archivo secundario era el titular de la página. */
+.hoja-titulo {
+  max-width: var(--hoja-max);
+  margin: 0 auto clamp(0.4rem, 1.2vw, 0.85rem);
+  padding: 0 clamp(0.75rem, 2vw, 2rem);
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-2);
+}
+
+.hoja-datos {
+  max-width: var(--hoja-max);
+  margin: -0.2rem auto clamp(0.7rem, 1.5vw, 1.1rem);
+  padding: 0 clamp(0.75rem, 2vw, 2rem);
+}
+
+.hoja {
+  list-style: none;
+  max-width: var(--hoja-max);
+  margin: 0 auto;
+  padding: 0 clamp(0.75rem, 2vw, 2rem);
+  display: grid;
+  gap: clamp(0.9rem, 1.6vw, 1.15rem) var(--canal);
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (min-width: 601px) {
+  .hoja { grid-template-columns: repeat(5, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .hoja { grid-template-columns: repeat(7, 1fr); }
+}
+
+/* Las esquineras del sistema (--esq-img de index.css: las cuatro marcas de una
+   mira de registro de imprenta) puestas donde significan algo. Las usan el pie,
+   el ticker, el blog y el formulario alrededor de sus placas; aquí enmarcan la
+   hoja, que es literalmente una copia de contacto con sus marcas de registro.
+   No se animan: aquí no hay hover que abrirlas. */
+.hoja--taller,
+.hoja--estudio {
+  --esq-color: rgba(255, 255, 255, 0.34);
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+}
+
+.tramo-claro .hoja--estudio {
+  --esq-color: rgba(3, 1, 6, 0.34);
+}
+
+.celda {
+  position: relative;
+  min-width: 0;
+}
+
+/* La tira de panorámicas: dos columnas en móvil, cuatro a partir de tableta.
+   Van aparte porque son otro formato de negativo, igual que en una hoja de
+   contactos de verdad; y porque un span dentro de la rejilla de verticales
+   dejaba huecos que `grid-auto-flow: dense` solo tapaba desordenando la
+   numeración de los fotogramas. */
+.hoja--portadas {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 601px) {
+  .hoja--portadas { grid-template-columns: repeat(4, 1fr); }
+}
+
+.celda-boton {
+  display: block;
+  position: relative;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: var(--plancha);
+  aspect-ratio: 4 / 5;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.celda--panorama .celda-boton {
+  aspect-ratio: 5 / 2;
+}
+
+/* ---- El recorte ----
+   Las piezas del Taller van a `contain`: una pieza gráfica ES sus bordes, y
+   recortarla le corta el titular, el precio o el teléfono. Cuando la proporción
+   no es la de la plancha —las dos portadas de reel, que son 9:16— el fotograma
+   se ve entero sobre el papel, con el papel alrededor. Eso es exactamente lo que
+   se ve en una hoja de contactos con dos formatos en el mismo rollo.
+
+   Las fotos del Estudio van a `cover`, más abajo: el positivo de una foto se
+   recorta sin drama porque el fotograma completo está a un clic, en el visor. */
+.celda-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity var(--transition-base) var(--ease-out-expo);
+}
+
+/* El filete de la celda va dentro, para que el canal entre fotogramas siga
+   midiendo exactamente --canal y la retícula no se descuadre. */
+.celda-boton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 1px var(--filete);
+  pointer-events: none;
+  transition: box-shadow var(--transition-fast) var(--ease-out-expo);
+}
+
+.celda-boton:hover::after,
+.celda-boton:focus-visible::after {
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+/* La sombra lleva desplazamiento y desenfoque; un halo centrado sin offset es
+   decoración, no profundidad (DESIGN.md). */
+.celda-boton:hover {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
+  z-index: 2;
+}
+
+/* El anillo global es de 3px con 3px de separación y en una retícula de canal
+   de 2px se comería a los vecinos. Aquí va por dentro. */
+.celda-boton:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: -3px;
+  z-index: 3;
+}
+
+/* El número de fotograma. Placa opaca a propósito: sobre la imagen el contraste
+   sería incalculable, y la auditoría móvil salta —sin avisar— cualquier texto
+   que no pueda medir. */
+.celda-numero {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  padding: 2px 5px;
+  background: var(--color-primary);
+  color: var(--tinta-3);
+  font-size: 11px;         /* el piso exacto de --texto-minimo */
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* La anotación del fotograma: una línea corta bajo cada celda, como la que se
+   escribe a mano en el margen de la hoja. En el Taller es el tipo de pieza; en
+   el Estudio, el rubro. El cliente completo no cabe a 113px sin partirse en tres
+   líneas, así que vive en la lupa y en el visor. */
+.celda-nota {
+  margin: 0.4rem 0 0;
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--tinta-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Apagada = fuera del marcado. Sigue visible, sigue pulsable y sigue en el
+   tabulador: esconderla haría que el archivo pareciera más pequeño de lo que
+   es, que es justo lo contrario de lo que esta página tiene que demostrar. */
+.celda--apagada .celda-img {
+  opacity: 0.28;
+}
+
+.celda--apagada .celda-nota {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.celda--apagada .celda-boton:hover .celda-img,
+.celda--apagada .celda-boton:focus-visible .celda-img {
+  opacity: 1;
+}
+
+/* ---------------------------------------------
+   LA LUPA
+   ---------------------------------------------
+   Solo aparece donde hay puntero fino (lo decide el JS, no este archivo).
+   No intercepta el ratón: si lo hiciera, al asomar sobre la celda de al lado
+   se apagaría sola. */
+.lupa {
+  position: fixed;
+  z-index: var(--z-tooltip);
+  pointer-events: none;
+  background: var(--color-primary);
+  border: 1px solid var(--color-accent);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.7);
+}
+
+.lupa-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.lupa-ficha {
+  display: block;
+  padding: 0.5rem 0.7rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.lupa-ficha b {
+  display: block;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ---------------------------------------------
+   LA COSTURA — el único momento animado
+   ---------------------------------------------
+   La mesa se enciende justo donde el archivo pasa de negativo a positivo.
+   Anima `transform` y `opacity`; nada que recalcule el layout.
+
+   El resplandor lo pone el fondo de la banda y no una sombra del filete: un
+   box-shadow sin desplazamiento es el «halo de color haciendo de sombra» que
+   DESIGN.md prohíbe, y este archivo lo cita doscientas líneas más arriba. */
+.costura {
+  position: relative;
+  height: clamp(5.5rem, 11vw, 9rem);
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: radial-gradient(70% 170% at 50% 100%,
+      rgba(176, 36, 255, 0.55) 0%,
+      rgba(176, 36, 255, 0.18) 38%,
+      transparent 74%);
+}
+
+.costura-luz {
+  display: block;
+  width: min(var(--hoja-max), 92vw);
+  height: 2px;
+  transform-origin: 50% 50%;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      var(--color-accent) 16%,
+      #ffffff 50%,
+      var(--color-accent) 84%,
+      transparent 100%);
+}
+
+/* ---------------------------------------------
+   TRAMO CLARO — el Estudio
+   ---------------------------------------------
+   Los tokens del sitio están calculados sobre fondo oscuro y aquí no valen.
+   Estos están medidos sobre #F4F1F6 y son los mismos números que Estudio.css
+   verifica en la portada — pero declarados aquí, porque este archivo no importa
+   aquél: tocarlo cambiaría la portada sin que el diff de /gallery lo insinuara.
+   Ver la cabecera de ArchivoEstudio.jsx. */
+.tramo-claro {
+  --claro: #F4F1F6;
+  --plancha: #E8E3EC;
+  --tinta: #030106;                 /* 18.56:1 */
+  --tinta-2: #5F5A66;               /*  5.97:1 */
+  --tinta-3: #5F5A66;
+  --acento-claro: #8D1DCC;          /*  5.90:1 — el morado de marca al 80% de luz */
+  --filete: #DDD6E3;
+
+  /* El mismo grano, en negativo: aquí el papel es claro y el ruido lo oscurece.
+     La estela muere en la costura —el Estudio es el ancla clara del sitio y no
+     lleva textura direccional—, así que aquí solo queda el papel. */
+  background:
+    var(--grano-tinta),
+    var(--claro);
+  background-size: 180px 180px, auto;
+  color: var(--tinta);
+  padding: clamp(2.5rem, 6vw, 4rem) 0 clamp(3.5rem, 7vw, 5.5rem);
+}
+
+.tramo-claro .hoja-titulo,
+.tramo-claro .hoja-datos {
+  color: var(--tinta-2);
+}
+
+.tramo-claro .hoja-datos span + span::before {
+  background: var(--acento-claro);
+}
+
+/* Las fotos sí se recortan: ver la nota de .celda-img. */
+.celda--estudio .celda-img {
+  object-fit: cover;
+  object-position: center 38%;
+}
+
+.celda--estudio .celda-numero {
+  background: var(--claro);
+  color: var(--tinta-2);
+}
+
+.celda--estudio .celda-boton:hover::after,
+.celda--estudio .celda-boton:focus-visible::after {
+  box-shadow: inset 0 0 0 1px var(--acento-claro);
+}
+
+.celda--estudio .celda-boton:hover {
+  box-shadow: 0 8px 22px rgba(3, 1, 6, 0.22);
+}
+
+/* ---------------------------------------------
+   PIE DE HOJA
+   ---------------------------------------------
+   Las cifras van como el sello al pie de la hoja. No como tres tarjetas de
+   estadística sobre fondo levantado: esa es la plantilla que el suelo de calidad
+   de impeccable señala como el recurso por defecto de la categoría, y es
+   exactamente lo que había aquí.
+
+   Y el pie ocupa el ancho de la hoja, no su tercio izquierdo: en una página cuyo
+   argumento es que la hoja está llena, la salida no puede ser la composición más
+   vacía de todas. */
+.pie-hoja {
+  max-width: var(--hoja-max);
+  margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+  padding: clamp(2rem, 4vw, 3rem) clamp(0.75rem, 2vw, 2rem) clamp(4rem, 8vw, 6rem);
+  border-top: 1px solid var(--filete);
+}
+
+/* En una línea y a tamaño de dato, no en tres bloques de número grande sobre
+   etiqueta pequeña: eso es la «hero-metric template» que el suelo de calidad de
+   impeccable nombra como el recurso por defecto de la categoría. El filete de
+   abajo es el que lleva la medida de la hoja al pie; las cifras solo la sellan. */
+.pie-cifras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem clamp(1.25rem, 4vw, 3rem);
+  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+  padding-bottom: clamp(1.25rem, 2.5vw, 2rem);
+  border-bottom: 1px solid var(--filete);
+  font-size: 0.8125rem;
+  color: var(--tinta-2);
+}
+
+/* La cifra pesa por peso y por color, no por tamaño: en la línea del sello un
+   escalón tipográfico propio solo añade un escalón más a la escala. */
+.pie-cifra b {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--color-accent-texto);   /* 5.14:1 — el token que existe para esto */
+  letter-spacing: -0.02em;
+}
+
+.pie-cierre {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: end;
+}
+
+@media (min-width: 860px) {
+  .pie-cierre {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.pie-frase {
+  max-width: 46ch;
+  margin: 0;
+  font-size: clamp(1.25rem, 2.4vw, 1.625rem);   /* el escalón «title» del sistema */
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--tinta);
+}
+
+.pie-accion {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  min-height: 52px;
+  padding: 0 1.75rem;
+  background: var(--color-accent);
+  color: #ffffff;                     /* 4.62:1 — ver la nota de .marcado-boton */
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform var(--transition-fast) var(--ease-out-expo),
+              box-shadow var(--transition-fast) var(--ease-out-expo);
+}
+
+.pie-accion:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(176, 36, 255, 0.28);
+}
+
+/* ---------------------------------------------
+   EL VISOR
+   --------------------------------------------- */
+.visor-velo {
+  position: fixed;
+  inset: 0;
+  /* Por encima de todo lo fijo: la nav está en --z-navigation y la burbuja del
+     chat también. El lightbox anterior vivía en 1500 a pelo, por debajo de
+     parte de eso. */
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: center;
+  padding: clamp(0.75rem, 3vw, 2.5rem);
+  background: rgba(3, 1, 6, 0.93);
+  backdrop-filter: blur(6px);
+}
+
+.visor {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  /* El diálogo se ajusta a la obra en vez de imponerle 1100px: una portada de
+     reel a 9:16 dejaba media caja de cromo vacío a los lados. El mínimo lo
+     marca la banda del pie, que es lo que no puede encogerse más. */
+  width: fit-content;
+  /* El suelo lo marca la banda del pie: por debajo de 720px sus tres grupos
+     —datos, ayuda de teclado y mandos— se parten en dos filas. En móvil este
+     mínimo es el 100%, así que el diálogo ocupa el ancho entero. */
+  min-width: min(100%, 720px);
+  max-width: min(1100px, 100%);
+  max-height: 100%;
+  background: var(--superficie-alta);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.75);
+  overflow: auto;
+}
+
+/* Hueco arriba para que el botón de cerrar se apoye en el cromo del diálogo y no
+   sobre la obra: en móvil tapaba el logotipo de la pieza. */
+.visor-lienzo {
+  display: grid;
+  place-items: center;
+  padding: 3.5rem clamp(0.75rem, 2vw, 1.5rem) clamp(0.75rem, 2vw, 1.5rem);
+  min-height: 0;
+}
+
+.visor-img {
+  display: block;
+  max-width: 100%;
+  max-height: min(56vh, 620px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/* La banda de anotación al pie del fotograma. Una sola maquetación para todos
+   los anchos: apilada en móvil, en fila desde 760px. Como columna derecha se
+   estiraba a la altura del lienzo y dejaba medio panel vacío. */
+.visor-ficha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem clamp(1.25rem, 3vw, 2.5rem);
+  padding: 1.25rem clamp(1rem, 3vw, 1.75rem) 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.visor-datos {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+
+.visor-titulo {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.4vw, 1.625rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #fff;
+  /* «Rejuvenecimiento» se salía por el borde de la columna. */
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.visor-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  margin: 0.6rem 0 0;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.62);   /* 7.7:1 sobre #0A0612 */
+}
+
+.visor-cliente {
+  font-weight: 700;
+  color: var(--color-accent-texto);   /* 5.14:1 */
+}
+
+.visor-conteo {
+  font-variant-numeric: tabular-nums;
+}
+
+.visor-mandos {
+  display: flex;
+  gap: 0.375rem;
+  margin-left: auto;
+}
+
+/* La ayuda de teclado. Solo donde hay teclado de verdad: en una pantalla táctil
+   no hay flechas que pulsar. */
+.visor-teclas {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .visor-teclas {
+    display: block;
+    margin: 0;
+    padding-left: clamp(1.25rem, 3vw, 2.5rem);
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.62);
+  }
+
+  .visor-teclas kbd {
+    display: inline-block;
+    min-width: 1.5rem;
+    padding: 1px 5px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    font-family: inherit;
+    font-size: 11px;
+    text-align: center;
+    color: #fff;
+  }
+}
+
+.visor-mando,
+.visor-cerrar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(3, 1, 6, 0.88);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: color var(--transition-fast) var(--ease-out-expo),
+              border-color var(--transition-fast) var(--ease-out-expo);
+}
+
+.visor-mando:hover,
+.visor-cerrar:hover {
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+.visor-cerrar {
+  position: absolute;
+  top: clamp(0.5rem, 2vw, 1rem);
+  right: clamp(0.5rem, 2vw, 1rem);
+  z-index: 1;
+}
+
+@media (min-width: 900px) {
+  .visor-img {
+    max-height: min(66vh, 720px);
+  }
+}
+
+/* ---------------------------------------------
+   MOVIMIENTO REDUCIDO
+   ---------------------------------------------
+   Gallery.css no tenía ni un bloque de estos. */
+@media (prefers-reduced-motion: reduce) {
+  .costura-luz {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .celda-boton,
+  .celda-boton::after,
+  .celda-img,
+  .marcado-boton,
+  .pie-accion,
+  .visor-mando,
+  .visor-cerrar {
+    transition: none;
+  }
+
+  .pie-accion:hover {
+    transform: none;
+  }
+}

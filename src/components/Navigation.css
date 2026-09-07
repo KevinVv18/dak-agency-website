@@ -137,8 +137,12 @@
 }
 
 .nav-links a:hover,
+/* El enlace activo iba en #B024FF a pelo y daba 4.49:1 sobre el fondo: el fallo
+   por una centésima que DESIGN.md ya describe y para el que existe
+   --color-accent-texto (#B93EFF, 5.14:1). La auditoría móvil no lo cantaba
+   porque salta cualquier texto sobre un fondo translúcido, y esta barra lo es. */
 .nav-links a.nav-link-active {
-  color: #B024FF;
+  color: var(--color-accent-texto);
   text-shadow: 0 0 15px rgba(176, 36, 255, 0.8);
 }
 

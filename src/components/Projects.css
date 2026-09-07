@@ -592,14 +592,14 @@
    «SERVICIOS» y la página de detrás se desplazaba por debajo del modal. Ese era
    el fallo.
 
-   9995 y no --z-modal (2000) porque la burbuja del chat vive en 9990 por su
-   cuenta: con 2000 el velo tapaba la nav pero la burbuja seguía flotando por
-   encima del demo. Hasta que esa escala se unifique, este número es el que
-   describe la realidad. */
+   Estuvo en 9995 a mano porque la burbuja del chat vive en 9990 por su cuenta y
+   --z-modal valía 2000: con 2000 el velo tapaba la nav pero la burbuja seguía
+   flotando por encima del demo. Esa escala ya está unificada en index.css, así
+   que el token vuelve a ser el que manda. */
 .demo-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9995;
+  z-index: var(--z-modal);
   background: rgba(3, 1, 6, 0.82);
   backdrop-filter: blur(6px);
   display: flex;
