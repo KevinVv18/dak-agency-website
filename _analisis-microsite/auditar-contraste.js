@@ -25,7 +25,12 @@
   function fondo(el) {                       // primer ancestro con fondo opaco
     for (var e = el; e && e !== document.documentElement; e = e.parentElement) {
       var s = getComputedStyle(e).backgroundColor, c = rgb(s);
-      if (c && alpha(s) > .92) return c;
+      // >= y no >: la barra fija del informe es exactamente rgba(3,1,6,.92). Con el
+      // comparador estricto se la saltaba, medía contra el papel claro del body y
+      // daba dos falsos positivos (2,34:1 y 1,11:1) en los diez informes. Compuesta
+      // sobre el fondo más claro posible, esa barra queda en rgb(22,20,26) y sus
+      // textos dan 7,1:1 y 15,0:1.
+      if (c && alpha(s) >= .92) return c;
     }
     var b = rgb(getComputedStyle(document.body).backgroundColor);
     return b || [255, 255, 255];

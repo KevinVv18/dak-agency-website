@@ -65,6 +65,19 @@
         "_socios-microsite/server.cjs"
       ],
       "port": 4321
+    },
+    {
+      "//": "Copia del micrositio en otro puerto: el 4320 lo ocupa el server.cjs de otro worktree.",
+      "name": "analisis-4321",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4321",
+        "--directory",
+        "_analisis-microsite"
+      ],
+      "port": 4321
     }
   ]
 }
