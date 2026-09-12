@@ -515,6 +515,193 @@ ul.li.teal li::before{border-top-color:var(--teal)}
   .js .rv,.js .rv.on{opacity:1;transform:none;transition:none}
 }
 
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EL VOCABULARIO VISUAL DE LOS INFORMES ANTERIORES
+
+   Añadido el 12-sep-2026. La socia que presenta estos informes pidió que
+   Montaña se pareciera al de GIA: «más gráficos, más directo». GIA vive en
+   `analisis.css` y su fuerza está en cinco componentes que este mundo no
+   tenía — barras horizontales, cifras grandes, escenarios de pauta con el
+   monto en tamaño de titular, fases con su semana, y rejillas de fichas.
+
+   Se traen esos cinco, en la paleta y la tipografía de este mundo, con dos
+   cambios que no son negociables aquí:
+
+     · LA BARRA SE PINTA CON UN BORDE. En GIA el relleno es un `background`
+       y al imprimir desaparece, que es exactamente el fallo que costó un PDF
+       en blanco y por el que existe la regla. Aquí el relleno es un
+       `border-top` de 10 px: mide lo mismo y sobrevive al papel.
+     · EL ANCHO VIVE EN EL HTML, no en el JavaScript. GIA pone la anchura
+       desde `analisis.js` leyendo `data-pct`, así que sin JS las barras salen
+       a cero. Aquí es `--pct` en el propio marcado y el JS solo anima desde
+       cero: sin JS el gráfico se ve completo, que es la regla del micrositio.
+
+   Nada de rótulo sobre titular: eso sí se queda fuera. GIA lleva doce y es
+   la única prohibición del suelo de calidad que ningún encargo revierte.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Barras horizontales ─────────────────────────────────────────────────── */
+
+.bars{margin:1.5rem 0 0;border:1px solid var(--filete2);background:var(--alta)}
+.bars-h{padding:.8rem clamp(.9rem,2vw,1.25rem);border-bottom:1px solid var(--filete)}
+.bars-t{font-size:.69rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--tx)}
+.bars-u{display:block;margin-top:.28rem;font-size:.69rem;color:var(--tx3);letter-spacing:.02em}
+.bars-b{padding:.4rem clamp(.9rem,2vw,1.25rem) .9rem}
+.bra{
+  display:grid;grid-template-columns:minmax(7.5rem,12rem) 1fr auto;
+  gap:.7rem 1rem;align-items:center;
+  padding:.62rem 0;border-top:1px solid var(--filete);
+}
+.bra:first-child{border-top:0}
+.bra > *{min-width:0}
+.bra-k{font-size:.82rem;font-weight:600;line-height:1.28;color:var(--tx)}
+.bra-k span{display:block;margin-top:.1rem;font-size:.69rem;font-weight:400;color:var(--tx3)}
+.bra-t{display:block;height:10px;border-bottom:1px solid var(--filete)}
+/* El relleno ES un borde, así que se imprime. El ancho vive en el marcado:
+   sin JavaScript la barra ya está a su medida. */
+.bra-f{
+  display:block;height:0;width:calc(var(--pct,0) * 1%);
+  border-top:10px solid var(--purp);
+  transform-origin:left center;
+}
+.bra.rival .bra-f{border-top-color:var(--teal)}
+.bra.nulo .bra-f{border-top:10px solid transparent;border-bottom:1px dashed var(--filete2)}
+.bra-v{font-size:.94rem;font-weight:700;color:var(--tx);white-space:nowrap;font-variant-numeric:tabular-nums}
+.bra.me .bra-k,.bra.me .bra-v{color:var(--purpt)}
+.bars-f{padding:.7rem clamp(.9rem,2vw,1.25rem);border-top:1px solid var(--filete);
+  font-size:.69rem;line-height:1.5;color:var(--tx3)}
+/* Crece con transform, no con width: animar width recalcula el layout en cada
+   frame. Y el ancho final vive en el marcado, asi que sin JavaScript la barra
+   ya esta a su medida: la clase .js es la que habilita el estado inicial. */
+.js .bra-f{transition:transform .8s var(--ease)}
+.js .bars:not(.on) .bra-f{transform:scaleX(0)}
+@media (prefers-reduced-motion:reduce){
+  .js .bra-f{transition:none}
+  .js .bars:not(.on) .bra-f{transform:none}
+}
+@media (max-width:620px){
+  .bra{grid-template-columns:1fr auto;gap:.3rem .8rem}
+  .bra-k{grid-column:1 / -1}
+}
+
+/* ── Cifras grandes ──────────────────────────────────────────────────────── */
+
+.cuadros{display:grid;gap:1px;margin:1.5rem 0 0;background:var(--filete2);border:1px solid var(--filete2)}
+@media (min-width:700px){.cuadros.tres{grid-template-columns:repeat(3,1fr)}}
+@media (min-width:560px){.cuadros.dos{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:900px){.cuadros.cuatro{grid-template-columns:repeat(4,1fr)}}
+.cuadro{background:var(--alta);padding:clamp(1rem,2.2vw,1.45rem)}
+.cuadro .n{
+  display:block;font-size:clamp(2rem,4.4vw,3.1rem);font-weight:800;
+  letter-spacing:-.045em;line-height:1;color:var(--tx);font-variant-numeric:tabular-nums;
+}
+.cuadro.mal .n{color:var(--rojo)}
+.cuadro.bien .n{color:var(--verde)}
+.cuadro.marca .n{color:var(--purpt)}
+.cuadro .l{
+  display:block;margin-top:.55rem;padding-top:.5rem;border-top:1px solid var(--filete);
+  font-size:.82rem;line-height:1.4;color:var(--tx2);
+}
+.cuadro .l b{color:var(--tx)}
+
+/* ── Escenarios de pauta: el monto en tamaño de titular ─────────────────── */
+
+.niveles{display:grid;gap:1rem;margin:1.6rem 0 0}
+@media (min-width:900px){.niveles{grid-template-columns:repeat(3,1fr);align-items:start}}
+.nivel{border:1px solid var(--filete2);background:var(--alta);padding:clamp(1.1rem,2.3vw,1.55rem)}
+.nivel h3{font-size:.94rem;font-weight:700;color:var(--tx)}
+.nivel .monto{
+  display:block;margin:.6rem 0 .1rem;font-size:clamp(1.5rem,3.2vw,2.1rem);
+  font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--tx);
+}
+.nivel .lapso{
+  display:block;margin:0 0 .85rem;padding-bottom:.7rem;border-bottom:1px solid var(--filete);
+  font-size:.69rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);
+}
+.nivel p{margin:0;font-size:.89rem;color:var(--tx2);max-width:none}
+/* La recomendada se marca con regla y rótulo, no con una píldora de color:
+   este mundo no tiene radios y un filete de acento lateral está prohibido. */
+.nivel.reco{border-color:var(--purp);background:rgba(176,36,255,.07);
+  border-top-width:3px;border-top-style:solid}
+.nivel .marca-reco{
+  display:block;margin-bottom:.5rem;font-size:.69rem;font-weight:600;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--purpt);
+}
+
+/* ── Rejilla de fichas ───────────────────────────────────────────────────── */
+
+.fichas{display:grid;gap:1rem;margin:1.5rem 0 0}
+@media (min-width:820px){
+  .fichas.dos{grid-template-columns:repeat(2,1fr)}
+  .fichas.tres{grid-template-columns:repeat(3,1fr)}
+}
+.fichas.tres,.fichas.dos{align-items:start}
+.ficha{border:1px solid var(--filete2);background:var(--alta);padding:clamp(1rem,2.2vw,1.4rem)}
+.ficha h3{font-size:.98rem;font-weight:700;margin-bottom:.5rem}
+.ficha .l{
+  display:block;margin-bottom:.45rem;font-size:.69rem;font-weight:600;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--purpt);
+}
+.ficha p{margin:0 0 .5rem;font-size:.9rem;color:var(--tx2);max-width:none}
+.ficha p:last-child{margin-bottom:0}
+.ficha.si{border-color:rgba(63,212,155,.5)}
+.ficha.no{border-color:rgba(255,107,133,.5)}
+.ficha.si .l{color:var(--verde)}
+.ficha.no .l{color:var(--rojo)}
+
+/* ── Fases con su semana ─────────────────────────────────────────────────── */
+
+.fases{margin:1.6rem 0 0;padding:0;list-style:none;counter-reset:fs}
+.fases > li{
+  counter-increment:fs;display:grid;gap:.2rem 1.4rem;
+  grid-template-columns:1fr;
+  padding:clamp(1.1rem,2.3vw,1.5rem) 0;border-top:1px solid var(--filete2);
+}
+@media (min-width:820px){
+  .fases > li{grid-template-columns:10.5rem 1fr}
+  .fases .cuando{grid-row:1;grid-column:1}
+  .fases .cuerpo{grid-row:1;grid-column:2}
+}
+.fases .cuando{
+  display:block;font-size:.82rem;font-weight:700;color:var(--tx);
+}
+.fases .cuando::before{
+  content:counter(fs,decimal-leading-zero);
+  display:block;font-size:1.5rem;font-weight:800;line-height:1;
+  letter-spacing:-.04em;color:var(--purp);margin-bottom:.35rem;
+}
+.fases .cuando em{display:block;margin-top:.2rem;font-style:normal;font-size:.69rem;
+  font-weight:400;color:var(--tx3)}
+.fases h3{margin-bottom:.45rem}
+.fases p{margin-bottom:.6rem;font-size:.95rem;color:var(--tx2)}
+.fases p:last-of-type{margin-bottom:0}
+.fases .rev{
+  display:block;margin-top:.75rem;padding-top:.6rem;border-top:1px solid var(--filete);
+  font-size:.79rem;line-height:1.5;color:var(--tx2);max-width:62ch;
+}
+.fases .rev b{color:var(--teal);font-weight:600}
+
+/* ── Dos columnas enfrentadas ───────────────────────────────────────────── */
+
+.frente{display:grid;gap:1rem;margin:1.5rem 0 0}
+@media (min-width:780px){.frente{grid-template-columns:1fr 1fr;align-items:start}}
+.frente > div{border:1px solid var(--filete2);background:var(--alta);padding:clamp(1rem,2.2vw,1.4rem)}
+.frente > div.pro{border-color:rgba(63,212,155,.5)}
+.frente > div.con{border-color:rgba(255,107,133,.5)}
+.frente h3{font-size:.82rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid var(--filete)}
+.frente .pro h3{color:var(--verde)}
+.frente .con h3{color:var(--rojo)}
+.frente ul{list-style:none;margin:0;padding:0}
+.frente li{position:relative;padding:0 0 0 1.3rem;margin:0 0 .62rem;font-size:.9rem;
+  color:var(--tx2);line-height:1.5}
+.frente li:last-child{margin-bottom:0}
+.frente li::before{content:'';position:absolute;left:0;top:.6em;width:8px;height:0;
+  border-top:2px solid var(--verde)}
+.frente .con li::before{border-top-color:var(--rojo)}
+.frente li b{color:var(--tx)}
+
 /* ══════════════════════════════════════════════════════════════════════════
    IMPRESIÓN — la pantalla se vuelve papel
 
@@ -617,6 +804,67 @@ ul.li.teal li::before{border-top-color:var(--teal)}
   .src,.pr-f,.cnt-f{color:#55505C;break-before:avoid}
   .pie{background:#fff;border-top:1px solid #9F97AB;break-before:avoid}
   .pie .lg{filter:invert(1)}
+
+  /* ── El vocabulario visual, en papel ─────────────────────────────────── */
+  .bars{background:#fff;border-color:#9F97AB;break-inside:avoid}
+  .bra{break-inside:avoid}
+  .bra-k{color:#141416}
+  .bra-k span{color:#55505C}
+  .bra-t{border-bottom-color:#CFC8D6}
+  .bra-f{border-top-color:#7A1FB8;width:calc(var(--pct,0) * 1%) !important;transform:none !important}
+  .bra.rival .bra-f{border-top-color:#046A6A}
+  .bra.nulo .bra-f{border-top-color:transparent;border-bottom-color:#9F97AB}
+  .bra-v{color:#141416}
+  .bra.me .bra-k,.bra.me .bra-v{color:#661596}
+  .bars-f,.bars-u{color:#55505C}
+  .bars-t{color:#141416}
+
+  .cuadros{background:#9F97AB;border-color:#9F97AB;break-inside:avoid}
+  .cuadro{background:#fff;padding:3.5mm}
+  .cuadro .n{font-size:19pt;color:#141416}
+  .cuadro.mal .n{color:#A8102F}
+  .cuadro.bien .n{color:#046145}
+  .cuadro.marca .n{color:#661596}
+  .cuadro .l{color:#3B3641;border-top-color:#CFC8D6}
+  .cuadro .l b{color:#141416}
+
+  .niveles{display:block}
+  .nivel{background:#fff;border-color:#9F97AB;margin-bottom:3mm;break-inside:avoid;padding:3.5mm}
+  .nivel.reco{background:#fff;border-color:#7A1FB8;border-top-width:1.5pt}
+  .nivel .marca-reco{color:#661596}
+  .nivel .monto{font-size:15pt;color:#141416}
+  .nivel .lapso{color:#55505C;border-bottom-color:#CFC8D6}
+  .nivel p{color:#3B3641}
+
+  .fichas{display:block}
+  .ficha{background:#fff;border-color:#9F97AB;margin-bottom:3mm;break-inside:avoid;padding:3.5mm}
+  .ficha .l{color:#661596}
+  .ficha p{color:#3B3641}
+  .ficha.si{border-color:#046145}
+  .ficha.no{border-color:#A8102F}
+  .ficha.si .l{color:#046145}
+  .ficha.no .l{color:#A8102F}
+
+  .fases > li{break-inside:avoid;border-top-color:#9F97AB}
+  .fases .cuando{color:#141416}
+  .fases .cuando::before{color:#7A1FB8}
+  .fases .cuando em{color:#55505C}
+  .fases p{color:#3B3641}
+  .fases .rev{color:#3B3641;border-top-color:#CFC8D6}
+  .fases .rev b{color:#046145}
+
+  .frente{display:block}
+  .frente > div{background:#fff;border-color:#9F97AB;margin-bottom:3mm;break-inside:avoid;padding:3.5mm}
+  .frente > div.pro{border-color:#046145}
+  .frente > div.con{border-color:#A8102F}
+  .frente .pro h3{color:#046145}
+  .frente .con h3{color:#A8102F}
+  .frente h3{border-bottom-color:#CFC8D6}
+  .frente li{color:#3B3641}
+  .frente li b{color:#141416}
+  .frente li::before{border-top-color:#046145}
+  .frente .con li::before{border-top-color:#A8102F}
+
   .js .rv,.js .rv.on{opacity:1 !important;transform:none !important}
   a{color:#661596;text-decoration:none}
 }
