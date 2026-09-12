@@ -14,7 +14,8 @@
     "fotos:pendientes": "node scripts/fotos-pendientes.mjs",
     "fotos:subir": "node scripts/subir-fotos.mjs",
     "taller:variantes": "node scripts/variantes-taller.mjs",
-    "demos:capturas": "node scripts/capturar-demos.mjs"
+    "demos:capturas": "node scripts/capturar-demos.mjs",
+    "mapa:sede": "node scripts/mapa-sede.mjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

@@ -1,0 +1,20 @@
+{
+  "name": "dak-bitacora",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "probar": "echo \"Se ejecuta en el servidor: ssh ... /opt/alt/php83/usr/bin/php pruebas/continuidad.php\""
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.19"
+  }
+}

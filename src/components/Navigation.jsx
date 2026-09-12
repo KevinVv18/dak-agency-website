@@ -113,8 +113,6 @@ const Navigation = () => {
     }
   }
 
-  const isGallery = location.pathname === '/gallery'
-
   const renderLink = (link, index, isMobile) => {
     const isRoute = link.href.startsWith('/')
     const isActive = isRoute

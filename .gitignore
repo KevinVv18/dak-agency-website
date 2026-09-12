@@ -50,3 +50,6 @@ _backups/
 !.impeccable/config.json
 .claude/skills/impeccable/
 .claude/settings.local.json
+
+# Capturas de trabajo de las revisiones de diseño. No son entregable.
+.capturas/

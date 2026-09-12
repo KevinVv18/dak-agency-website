@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import './Footer.css'
 /* La marca, en crudo. FORMAS son los cinco polígonos que el campo de flujo del
    hero usa como OBSTÁCULO; aquí se pintan como trazo. No es una copia del
    logo: es literalmente la misma geometría con la que abre la página. */
 import { CAJA, FORMAS } from '../data/marca'
+/* Las calles de verdad alrededor de la oficina, traídas una sola vez de
+   OpenStreetMap por scripts/mapa-sede.mjs y horneadas como trazos. */
+import { VIAS, CALLES, RADIO_METROS } from '../data/mapa-sede'
 import { scrollToSection } from '../utils/scrollToSection'
 
 /* ═══════════════════════════════════════════════════════════════
@@ -49,8 +52,81 @@ const SEDE = {
   zona: 'Los Parques de San Gabriel, Chiclayo',
 }
 
-const grados = ({ lat, lon }) =>
-  `${Math.abs(lat).toFixed(4)}° ${lat < 0 ? 'S' : 'N'} · ${Math.abs(lon).toFixed(4)}° ${lon < 0 ? 'O' : 'E'}`
+/* ── LA POSICIÓN, DIBUJADA ──
+
+   El bloque era «6.7744° S · 79.8747° O» y dos líneas de dirección: exacto y
+   completamente mudo. Antes de eso hubo un iframe de Google Maps, retirado a
+   propósito — 31 peticiones, ~520KB y el cromo de Google dentro de la página.
+
+   Esto es la tercera vía. El mapa es REAL: son las calles que hay alrededor de
+   la oficina, con la Panamericana Norte y la Av. Juan Tomis Stack cruzando, y
+   la propia Av. Víctor Andrés Belaunde de la dirección. Pero lo dibujamos
+   nosotros, con el filete de un píxel de toda la web, y viaja dentro del
+   paquete: ni una petición en tiempo de ejecución.
+
+   Inventar un plano esquemático habría sido más rápido y habría estado mal:
+   sería afirmar una geografía falsa en la web de una agencia que presume de no
+   inventar datos.
+
+   La oficina cae en 50,50 por construcción —el lienzo se proyecta centrado en
+   ella—, así que la mira no se coloca a ojo: está donde está el sitio. */
+/* Un número redondo que quepa holgado: 200 m son el 22% del lado. */
+const ESCALA_M = 200
+
+const MapaSede = () => (
+  <figure className="pie-mapa">
+    {/* El marco existe para que las esquineras rodeen el MAPA y no el mapa más
+        su pie de foto, que era lo que pasaba. */}
+    <div className="pie-mapa-marco">
+      <svg
+      className="pie-mapa-lienzo"
+      viewBox="0 0 100 100"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {/* La trama urbana primero, las vías grandes encima: lo que sitúa se lee
+          por brillo, no por grosor. Todo a un píxel, como el resto del sitio. */}
+      <g className="pie-mapa-calles">
+        {CALLES.map((d, i) => <path key={i} d={d} vectorEffect="non-scaling-stroke" />)}
+      </g>
+      <g className="pie-mapa-vias">
+        {VIAS.map((d, i) => <path key={i} d={d} vectorEffect="non-scaling-stroke" />)}
+      </g>
+      {/* La mira. Se abre alrededor del punto en vez de cruzarlo: así el sitio
+          exacto queda despejado y no tachado. */}
+      <g className="pie-mapa-mira">
+        <path d="M50 36.5V45M50 55v8.5M36.5 50H45M55 50h8.5" vectorEffect="non-scaling-stroke" />
+        <circle cx="50" cy="50" r="5" vectorEffect="non-scaling-stroke" />
+      </g>
+      <rect className="pie-mapa-punto" x="48.7" y="48.7" width="2.6" height="2.6" />
+      {/* El norte, DIBUJADO y no escrito. Hubo aquí una «N» de 7px: la
+          auditoría la cazó por debajo del piso de 11px del proyecto, y subirla
+          a 11 la habría dejado enorme sobre un recorte de 162px. Una punta y su
+          asta dicen lo mismo sin tipografía, y un icono se dibuja. La
+          proyección es norte arriba por construcción. */}
+      <g className="pie-mapa-norte">
+        <path d="M92 4.2 94 8.4h-4z" />
+        <path d="M92 9.6v6.4" vectorEffect="non-scaling-stroke" />
+      </g>
+      </svg>
+    </div>
+
+    {/* La escala es de verdad: el lienzo mide 2 x RADIO_METROS de lado, así que
+        la barra se calcula, no se dibuja a ojo. Y la atribución de OSM es
+        obligatoria por la ODbL — no es cortesía y no se quita. */}
+    <figcaption className="pie-mapa-pie">
+      <span className="pie-mapa-regla">
+        <span
+          className="pie-mapa-escala"
+          aria-hidden="true"
+          style={{ width: `${(ESCALA_M / (2 * RADIO_METROS)) * 100}%` }}
+        />
+        <span>{ESCALA_M} m</span>
+      </span>
+      <span className="pie-mapa-fuente">© OpenStreetMap</span>
+    </figcaption>
+  </figure>
+)
 
 /* La marca en trazo, construida con los mismos polígonos del túnel. */
 const MarcaEnReposo = () => (
@@ -70,11 +146,109 @@ const MarcaEnReposo = () => (
         vectorEffect="non-scaling-stroke"
       />
     ))}
+
+    {/* La misma geometría con el trazo engordado, en transparente y sin pintar:
+        es contra ESTA con la que se comprueba si el ratón cruza la marca. El
+        trazo visible mide 2px y acertarle sería puntería, no un roce. */}
+    <g className="pie-marca-tacto" stroke="transparent" strokeWidth="26">
+      {FORMAS.map((puntos, i) => (
+        <polygon key={i} points={puntos.join(',')} />
+      ))}
+    </g>
   </svg>
 )
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
+
+  /* ── El grabado del pie se enciende ──
+
+     Dos disparadores, tal como los pidió Kevin:
+
+     - AUTOMÁTICO, en móvil y en escritorio: cada tanto la marca prende TRABADA,
+       como un fluorescente que no arranca a la primera, aguanta constante unos
+       segundos y se apaga sola.
+     - AL ROCE, solo con ratón: cuando el puntero cruza uno de los trazos, se
+       enciende los mismos segundos pero SIN el trabado, que es un gesto del
+       evento automático y no de la respuesta al gesto.
+
+     Lo del roce no se puede resolver con :hover: la marca vive detrás de la
+     placa del pie y con `pointer-events: none`, así que nunca recibe el
+     puntero. Se comprueba por GEOMETRÍA, con isPointInStroke contra una copia
+     de trazo grueso — eso responde de verdad a «cruzar un trazo», y no a
+     «entrar en el rectángulo del logo».
+
+     Coste: el escuchador vive en el pie, no en la ventana; se estrangula a un
+     fotograma; y el reloj automático solo corre mientras el pie está a la
+     vista. Con el visitante pidiendo no ver movimiento no se monta nada. */
+  const fondoRef = useRef(null)
+
+  useEffect(() => {
+    const fondo = fondoRef.current
+    if (!fondo) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const svg = fondo.querySelector('svg')
+    const pie = fondo.closest('.pie')
+    let aLaVista = false
+
+    const apagar = () => fondo.classList.remove('pie-fondo--tubo', 'pie-fondo--roce')
+    const encender = (clase) => {
+      // Si ya está encendida, no se reinicia: dos disparos seguidos harían un
+      // tartamudeo que no es el trabado que buscamos.
+      if (!aLaVista) return
+      if (fondo.classList.contains('pie-fondo--tubo') ||
+          fondo.classList.contains('pie-fondo--roce')) return
+      fondo.classList.add(clase)
+    }
+    fondo.addEventListener('animationend', apagar)
+
+    /* El reloj solo corre mientras el pie está a la vista, y arranca AL
+       LLEGAR: con un intervalo pelado, quien baja hasta aquí podía quedarse
+       hasta 17s mirando una placa muerta antes del primer encendido. */
+    let reloj = null
+    let primera = null
+    const parar = () => { clearInterval(reloj); clearTimeout(primera); reloj = null; primera = null }
+
+    const observador = new IntersectionObserver(([e]) => {
+      aLaVista = e.isIntersecting
+      if (!aLaVista) { apagar(); parar(); return }
+      if (reloj) return
+      primera = setTimeout(() => encender('pie-fondo--tubo'), 1200)
+      reloj = setInterval(() => encender('pie-fondo--tubo'), 17000)
+    }, { threshold: 0 })
+    observador.observe(fondo)
+
+    // ── El roce, solo con ratón ──
+    let pendiente = false
+    let ultimo = null
+    const comprobar = () => {
+      pendiente = false
+      const m = svg.getScreenCTM()
+      if (!m || !ultimo) return
+      const p = new DOMPoint(ultimo.clientX, ultimo.clientY).matrixTransform(m.inverse())
+      for (const trazo of svg.querySelectorAll('.pie-marca-tacto polygon')) {
+        if (trazo.isPointInStroke(p)) { encender('pie-fondo--roce'); return }
+      }
+    }
+    const alMover = (e) => {
+      if (e.pointerType !== 'mouse') return
+      ultimo = e
+      if (pendiente) return
+      pendiente = true
+      requestAnimationFrame(comprobar)
+    }
+    const conRaton = window.matchMedia('(pointer: fine)').matches
+    if (conRaton && pie) pie.addEventListener('pointermove', alMover)
+
+    return () => {
+      parar()
+      observador.disconnect()
+      fondo.removeEventListener('animationend', apagar)
+      if (conRaton && pie) pie.removeEventListener('pointermove', alMover)
+    }
+  }, [])
+
 
   const footerLinks = [
     { name: 'Servicios', href: '#services' },
@@ -155,19 +329,28 @@ const Footer = () => {
           movimiento. */}
       <div className="pie-cinta">
         <div className="pie-cinta-riel">
-          {[0, 1].map((copia) => (
+          {/* CUATRO copias, no dos. Con dos, el grupo de siete servicios mide
+              menos de mil pixeles y no llegaba a llenar ni una pantalla ancha:
+              se veia una sola hilera cruzando y detras un riel vacio la mayor
+              parte del tiempo. Con cuatro, lo que queda a la vista tras el
+              desplazamiento son tres grupos seguidos, que cubren cualquier
+              ancho razonable, y la cinta no se vacia nunca.
+
+              Solo la primera copia son enlaces de verdad; las otras tres estan
+              fuera del arbol de accesibilidad y fuera del tabulador. */}
+          {[0, 1, 2, 3].map((copia) => (
             <nav
               key={copia}
               className="pie-cinta-grupo"
               aria-label={copia === 0 ? 'Servicios' : undefined}
-              aria-hidden={copia === 1 ? 'true' : undefined}
+              aria-hidden={copia > 0 ? 'true' : undefined}
             >
               {SERVICIOS.map((nombre, i) => (
                 <a
                   key={nombre}
                   href="#services"
                   className="pie-cinta-item"
-                  tabIndex={copia === 1 ? -1 : undefined}
+                  tabIndex={copia > 0 ? -1 : undefined}
                   onClick={(e) => handleLinkClick(e, '#services')}
                 >
                   <span className="pie-cinta-n">{String(i + 1).padStart(2, '0')}</span>
@@ -179,13 +362,15 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* La marca, de fondo. Ya no es un bloque propio al final: vive detrás de
-          toda la placa, muy tenue, como el grabado de una chapa. */}
-      <div className="pie-fondo" aria-hidden="true">
-        <MarcaEnReposo />
-      </div>
-
       <div className="pie-placa">
+        {/* La marca, de fondo. Vive DENTRO de la placa y no fuera: así se centra
+            contra el bloque de contenido sin números mágicos, y sigue
+            centrada sea cual sea la altura de las columnas o de la franja
+            legal. Fuera, había que restarle a ojo media franja legal. */}
+        <div className="pie-fondo" aria-hidden="true" ref={fondoRef}>
+          <MarcaEnReposo />
+        </div>
+
         {/* ── Fila 1: qué es y por dónde se le habla ── */}
         <div className="pie-col pie-col--marca">
           <p className="pie-rotulo">Equipo</p>
@@ -241,23 +426,37 @@ const Footer = () => {
             quien busca una dirección. */}
         <div className="pie-col">
           <p className="pie-rotulo">Posición</p>
-          <p className="pie-coords">{grados(SEDE)}</p>
-          <p className="pie-dato">{SEDE.calle}</p>
-          <p className="pie-dato">{SEDE.zona}</p>
-          <a
-            className="pie-enlace"
-            href={`https://www.google.com/maps/search/?api=1&query=${SEDE.lat},${SEDE.lon}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Abrir en Maps
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M7 17 17 7M9 7h8v8" />
-            </svg>
-          </a>
 
-          <p className="pie-rotulo pie-rotulo--seg">Horario</p>
-          <p className="pie-dato">Lun a Vie · 9:00 – 18:00</p>
+          {/* El mapa va AL LADO de la dirección, no encima.
+              Apilado hacía esta columna el doble de alta que las otras dos y
+              rompía la simetría de la placa, que es lo que Kevin no soportaba.
+              En fila, las dos mitades miden casi lo mismo y la columna vuelve a
+              la altura de sus vecinas.
+
+              Las coordenadas se van: eran una lectura de instrumento que ya no
+              hace falta ahora que se ve el sitio, y a Kevin no le gustaban. La
+              dirección se queda, que es lo que alguien necesita de verdad. */}
+          <div className="pie-sede">
+            <MapaSede />
+            <div className="pie-sede-datos">
+              <p className="pie-dato">{SEDE.calle}</p>
+              <p className="pie-dato">{SEDE.zona}</p>
+              <a
+                className="pie-enlace"
+                href={`https://www.google.com/maps/search/?api=1&query=${SEDE.lat},${SEDE.lon}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Abrir en Maps
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M7 17 17 7M9 7h8v8" />
+                </svg>
+              </a>
+
+              <p className="pie-rotulo pie-rotulo--seg">Horario</p>
+              <p className="pie-dato">Lun a Vie · 9:00 – 18:00</p>
+            </div>
+          </div>
         </div>
       </div>
 
