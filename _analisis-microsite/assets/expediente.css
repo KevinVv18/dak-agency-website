@@ -1,0 +1,622 @@
+/* ============================================================================
+   expediente.css — el mundo «Expediente de pruebas»
+
+   Tercer mundo visual del micrositio de análisis. No sustituye a los otros dos:
+   «analisis.css» sostiene los seis informes de la primera tanda y «signos.css»
+   el de Kusiwawita. Los enlaces de todos ellos están en manos de prospectos y
+   tienen que seguir mostrando lo que se presentó en su reunión.
+
+   POR QUÉ ESTE MUNDO. El informe de Grupo Montaña tiene que decirle a una
+   dueña que el problema no está donde ella cree. Una afirmación así no se
+   sostiene con diseño: se sostiene con pruebas. Así que la estructura del
+   documento ES el método del circuito —«cada afirmación con su fuente y su
+   fecha, y lo que no se pudo verificar se marca»— convertido en forma. Cada
+   hallazgo es una prueba numerada, con su enunciado, su dato, su fuente
+   fechada y su límite declarado. La numeración no decora: en la reunión se
+   dice «mira la prueba 7» y se salta ahí.
+
+   PALETA: la de DAK, sin adaptar. Fondo #030106, morado #B024FF como
+   estructura —numera, marca dónde estás, firma las fuentes— y teal #00C8C8
+   para el contraste con la competencia. El morado de marca falla AA por una
+   centésima sobre el fondo, así que el texto pequeño usa #B93EFF, que es el
+   mismo tono con 12% de blanco. Esa regla viene medida del DESIGN.md del sitio
+   principal y aquí no se renegocia.
+
+   TEXTURAS: tres, y las tres decorativas a propósito.
+     · La estela — trazos de una sola dirección, casi horizontales, en tres
+       periodos que no comparten divisor. Es el sistema de fondos de DAK.
+     · El grano — ruido fractal, porque un expediente es papel.
+     · El rayado — líneas verticales finísimas dentro de las fichas de prueba.
+       Es el papel de listado continuo. Marca «esto es evidencia», no opinión.
+   Ninguna de las tres carga un dato, así que las tres pueden desaparecer al
+   imprimir sin que se pierda nada. Que es justo lo que pasa.
+
+   El detalle de cada una, y por qué van al peso que van, está en el bloque
+   de tokens. Resumen: la primera versión las dejó entre el 3 % y el 10 % de
+   alfa y no se veían en ninguna captura. Una textura que no se ve no es una
+   textura.
+
+   LA REGLA DEL PDF. El navegador no imprime fondos salvo que quien imprime
+   marque la casilla de «gráficos de fondo», y esa casilla la marca la dueña
+   del negocio, no nosotros. Por eso **todo lo que significa algo se pinta con
+   un borde**: los bloques del conteo, las viñetas, las patas de los corchetes
+   y los filetes de los rótulos. Los fondos quedan solo para lo que puede
+   desaparecer sin perder un dato.
+   ========================================================================== */
+
+@font-face{font-family:Poppins;src:url(poppins-400.woff2) format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:Poppins;src:url(poppins-600.woff2) format('woff2');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:Poppins;src:url(poppins-700.woff2) format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:Poppins;src:url(poppins-800.woff2) format('woff2');font-weight:800;font-style:normal;font-display:swap}
+
+:root{
+  --fondo:#030106;
+  --alta:#0A0612;
+  --ficha:#0E0817;
+  --purp:#B024FF;
+  --purpt:#B93EFF;          /* el morado que sí pasa AA en texto pequeño */
+  --teal:#00C8C8;
+  --tx:#FFFFFF;
+  --tx2:rgba(255,255,255,.64);
+  --tx3:rgba(255,255,255,.50);
+  --filete:rgba(255,255,255,.10);
+  --filete2:rgba(255,255,255,.18);
+  --rojo:#FF6B85;
+  --ambar:#FFC15E;
+  --verde:#3FD49B;
+
+  --sans:Poppins,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --ease:cubic-bezier(.19,1,.22,1);
+  --mx:min(1180px,100% - 2.5rem);
+
+  /* ── LAS TEXTURAS ──────────────────────────────────────────────────────
+     Tres, y las tres a peso visible. La primera versión las dejó entre el 3 %
+     y el 10 % de alfa «por prudencia» y desaparecían en cada captura: una
+     textura que no se ve no es una textura, es una coartada.
+
+     LA ESTELA. Trazos de una sola dirección, casi horizontales, que es la
+     forma que DAK sanciona. Van en TRES periodos que no comparten divisor
+     —97, 151 y 211 px— así que el campo no repite a la vista y no se puede
+     leer como mosaico. La cuadrícula tileada de filetes sigue prohibida: se
+     retiró del sitio principal el 07-ago-2026 por ser la firma más
+     reconocible de interfaz generada, y lo que la separa de esto es
+     justamente que aquí no hay una segunda dirección que cierre celdas. */
+  --estela-fuerte:
+    repeating-linear-gradient(186deg,transparent 0 96px,rgba(176,36,255,.20) 96px 98px,transparent 98px 97px),
+    repeating-linear-gradient(184deg,transparent 0 150px,rgba(176,36,255,.11) 150px 151px,transparent 151px 151px),
+    repeating-linear-gradient(188deg,transparent 0 210px,rgba(0,200,200,.10) 210px 211px,transparent 211px 211px);
+  --estela-media:
+    repeating-linear-gradient(186deg,transparent 0 96px,rgba(176,36,255,.13) 96px 98px,transparent 98px 97px),
+    repeating-linear-gradient(184deg,transparent 0 150px,rgba(176,36,255,.07) 150px 151px,transparent 151px 151px);
+  --estela-tenue:
+    repeating-linear-gradient(186deg,transparent 0 150px,rgba(176,36,255,.10) 150px 152px,transparent 152px 151px),
+    repeating-linear-gradient(184deg,transparent 0 211px,rgba(176,36,255,.055) 211px 212px,transparent 212px 211px);
+  --estela-teal:
+    repeating-linear-gradient(186deg,transparent 0 96px,rgba(0,200,200,.14) 96px 98px,transparent 98px 97px),
+    repeating-linear-gradient(184deg,transparent 0 150px,rgba(0,200,200,.08) 150px 151px,transparent 151px 151px);
+
+  /* EL GRANO. Un expediente es papel, y el papel tiene grano. Ruido
+     fractal autoral en un SVG en línea de 400 bytes, no una imagen. Es lo
+     que impide que el fondo se lea como un plano de color. */
+  --grano:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='.06'/%3E%3C/svg%3E");
+
+  /* EL RAYADO del listado continuo, dentro de la ficha de prueba. */
+  --rayado:repeating-linear-gradient(90deg,rgba(255,255,255,.055) 0 1px,transparent 1px 9px);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+body{
+  margin:0;background:var(--fondo);color:var(--tx);
+  font-family:var(--sans);font-size:1rem;font-weight:400;line-height:1.62;
+  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Las superficies que no dibujamos también son del diseño. */
+::selection{background:var(--purp);color:#fff}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+html{scrollbar-color:var(--purp) var(--fondo)}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--fondo)}
+::-webkit-scrollbar-thumb{background:#4A1070;border:3px solid var(--fondo)}
+::-webkit-scrollbar-thumb:hover{background:var(--purp)}
+
+a{color:var(--purpt)}
+b,strong{font-weight:700;color:var(--tx)}
+
+/* ── Barra, avance, riel, índice ──────────────────────────────────────────
+   El comportamiento lo da signos.js, que no dibuja datos: solo construye el
+   riel y el índice leyendo las <section data-ch> y escucha el teclado. */
+
+.prog{position:fixed;inset:0 auto auto 0;height:2px;width:0;background:var(--purp);z-index:60}
+
+.bar{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:.9rem;
+  padding:.62rem clamp(.9rem,3vw,1.6rem);
+  background:rgba(3,1,6,.94);border-bottom:1px solid var(--filete);
+}
+.bar .lg{height:19px;width:auto;display:block}
+.bar .who{
+  font-size:.69rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--tx3);border-left:1px solid var(--filete2);padding-left:.9rem;
+}
+.bar .sp{flex:1}
+.bar .btn{
+  display:inline-flex;align-items:center;gap:.42rem;min-height:40px;padding:0 .95rem;
+  background:transparent;border:1px solid var(--filete2);color:var(--tx);
+  font-family:inherit;font-size:.72rem;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;transition:border-color .2s,background .2s;
+}
+.bar .btn:hover{border-color:var(--purp);background:rgba(176,36,255,.12)}
+.bar .btn svg{width:14px;height:14px}
+
+.deriv{
+  position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:45;
+  display:none;flex-direction:column;gap:7px;padding:.8rem .55rem;
+}
+@media (min-width:1280px){.deriv{display:flex}}
+.deriv button{
+  position:relative;min-width:24px;min-height:24px;padding:0;background:none;border:0;
+  cursor:pointer;display:flex;align-items:center;
+}
+/* El guion crece con transform, no con width: animar width recalcula el
+   layout en cada frame y está prohibido en el sistema de DAK. */
+.deriv button::before{
+  content:'';width:20px;height:2px;background:var(--filete2);
+  transform:scaleX(.6);transform-origin:left center;
+  transition:transform .25s var(--ease),background .25s;
+}
+.deriv button:hover::before{transform:scaleX(1);background:var(--tx2)}
+.deriv button[aria-current=true]::before{transform:scaleX(1);background:var(--purp)}
+.deriv button span{
+  position:absolute;left:26px;top:50%;transform:translateY(-50%);white-space:nowrap;
+  font-size:.69rem;font-weight:600;letter-spacing:.06em;color:var(--tx);
+  background:var(--alta);border:1px solid var(--filete2);padding:.22rem .5rem;
+  opacity:0;pointer-events:none;transition:opacity .18s;
+}
+.deriv button:hover span,.deriv button:focus-visible span{opacity:1}
+
+.idxw{
+  position:fixed;inset:0;z-index:70;display:none;
+  background:rgba(3,1,6,.93);padding:clamp(1rem,5vh,3rem) 1rem;overflow:auto;
+}
+.idxw.on{display:block}
+.idxw nav{
+  max-width:640px;margin:0 auto;background:var(--alta);
+  border:1px solid var(--filete2);padding:clamp(1.2rem,3vw,2rem);
+}
+.idxw h2{
+  margin:0 0 1rem;font-size:.69rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--purpt);
+}
+.idxw button.go{
+  display:flex;gap:1rem;align-items:baseline;width:100%;min-height:44px;
+  padding:.62rem 0;background:none;border:0;border-top:1px solid var(--filete);
+  color:var(--tx);font-family:inherit;font-size:.98rem;font-weight:600;
+  text-align:left;cursor:pointer;
+}
+.idxw button.go:hover{color:var(--purpt)}
+.idxw button.go em{
+  font-style:normal;font-size:.69rem;font-weight:600;letter-spacing:.08em;
+  color:var(--tx3);min-width:1.9rem;
+}
+
+/* ── Secciones ───────────────────────────────────────────────────────────── */
+
+section{
+  position:relative;padding:clamp(3.4rem,8vw,6.4rem) 0;
+  border-top:1px solid var(--filete);
+}
+section > *{position:relative;z-index:1}
+section::before{
+  content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:var(--grano),var(--estela-tenue);
+}
+section.t-fuerte::before{background-image:var(--grano),var(--estela-fuerte)}
+section.t-media::before{background-image:var(--grano),var(--estela-media)}
+section.t-teal::before{background-image:var(--grano),var(--estela-teal)}
+section.t-sin::before{background-image:var(--grano)}
+section.alta{background:var(--alta)}
+
+.w{width:var(--mx);margin-inline:auto}
+.w-est{width:min(760px,100% - 2.5rem);margin-inline:auto}
+
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.03em;line-height:1.04;text-wrap:balance}
+h1{font-size:clamp(2.5rem,6.6vw,5.2rem);letter-spacing:-.045em}
+h2{font-size:clamp(1.85rem,4vw,3.05rem)}
+h3{font-size:clamp(1.1rem,2vw,1.4rem);font-weight:700;letter-spacing:-.02em;line-height:1.2}
+
+/* El rótulo sobre el titular se retiró el 11-sep-2026. Iba en doce secciones
+   y es una prohibición dura del suelo de calidad, sin excepción que valga: el
+   titular carga su propio peso. Lo que el rótulo sí llevaba —el tramo de
+   pruebas de cada capítulo— bajó a la entradilla, donde es una frase y no una
+   etiqueta. Los datos del documento —lugar, rubro, fecha— subieron al folio,
+   que encabeza el documento entero y no un titular. */
+
+.folio{
+  border-bottom:1px solid var(--filete);
+  padding:.7rem 0;
+}
+.folio .w{
+  display:flex;flex-wrap:wrap;gap:.35rem 1.4rem;align-items:baseline;
+  font-size:.69rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--tx3);
+}
+.folio b{color:var(--purpt);font-weight:600}
+.folio .ff{margin-left:auto;color:var(--tx3);letter-spacing:.08em}
+
+p{margin:0 0 1.05rem;max-width:68ch}
+.lede{font-size:clamp(1.05rem,1.9vw,1.28rem);line-height:1.55;color:var(--tx2);max-width:62ch}
+.lede b{color:var(--tx)}
+.dato{color:var(--tx2)}
+h2 + p,h2 + .lede,h1 + .lede{margin-top:1.3rem}
+
+/* ── La ficha de prueba ──────────────────────────────────────────────────
+   El componente que da nombre al mundo. Se numera con un contador: en la
+   reunión se cita «la prueba 7» y hay que poder saltar ahí. */
+
+main{counter-reset:pr}
+.pr{
+  counter-increment:pr;position:relative;
+  background:var(--ficha);background-image:var(--rayado);
+  border:1px solid var(--filete2);
+  padding:clamp(1.2rem,2.6vw,1.9rem) clamp(1.2rem,2.6vw,1.9rem) clamp(1rem,2vw,1.3rem) clamp(1.9rem,3.4vw,2.6rem);
+  margin:0 0 1.15rem;
+}
+/* La perforación del listado continuo. 1px de ancho: es un filete, no una banda. */
+.pr::before{
+  content:'';position:absolute;left:.85rem;top:1.15rem;bottom:1.15rem;width:1px;
+  background:repeating-linear-gradient(180deg,var(--purp) 0 5px,transparent 5px 13px);
+}
+.pr-n{
+  display:block;font-size:.69rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--purpt);margin-bottom:.5rem;
+}
+.pr-n::before{content:'Prueba ' counter(pr,decimal-leading-zero)}
+.pr-q{
+  margin:0 0 .85rem;font-size:clamp(1.04rem,1.7vw,1.3rem);font-weight:700;
+  line-height:1.28;letter-spacing:-.015em;color:var(--tx);max-width:54ch;
+}
+.pr-q b{color:var(--purpt)}
+.pr p{font-size:.95rem;color:var(--tx2);max-width:64ch}
+.pr p:last-of-type{margin-bottom:0}
+.pr-f{
+  display:block;margin-top:1rem;padding-top:.65rem;border-top:1px solid var(--filete);
+  font-size:.69rem;line-height:1.5;letter-spacing:.02em;color:var(--tx3);max-width:70ch;
+}
+.pr-f b{color:var(--tx2);font-weight:600}
+.pr.no-ver{border-style:dashed}
+.pr.no-ver .pr-n::before{content:'Prueba ' counter(pr,decimal-leading-zero) ' · no verificada'}
+
+/* La prueba que sostiene el capítulo pesa más que las que lo acompañan.
+   Quince fichas idénticas dejaban el hallazgo principal —no existir en el
+   mapa— leyéndose igual que el lema prestado. Sube el enunciado, entra aire,
+   y el filete de la izquierda pasa a ser una regla doble. */
+.pr.clave{border-color:var(--purp);padding-top:clamp(1.5rem,3vw,2.3rem)}
+.pr.clave::before{
+  width:3px;
+  background:
+    linear-gradient(var(--purp),var(--purp)) left/1px 100% no-repeat,
+    repeating-linear-gradient(180deg,var(--purp) 0 5px,transparent 5px 13px) right/1px 100% no-repeat;
+}
+.pr.clave .pr-q{font-size:clamp(1.24rem,2.3vw,1.72rem);max-width:34ch;margin-bottom:1.05rem}
+.pr.clave p{font-size:1rem}
+
+/* Rejilla de pruebas en pantallas anchas: dos columnas, sin igualar alturas. */
+.pr-2{display:grid;gap:1.15rem}
+@media (min-width:960px){.pr-2{grid-template-columns:1fr 1fr;align-items:start}.pr-2 .pr{margin:0}}
+
+/* ── El conteo: bloques que se cuentan con el dedo ───────────────────────
+   Cada bloque es un elemento con border-top, no un fondo, porque un borde
+   se imprime siempre. Misma unidad y mismo alto en todos los carriles. */
+
+.cnt{margin:2rem 0 0;padding:0;border:1px solid var(--filete2);background:var(--alta)}
+.cnt-h{padding:.7rem clamp(.9rem,2vw,1.3rem);border-bottom:1px solid var(--filete)}
+.cnt-t{font-size:.69rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--tx)}
+.cnt-u{display:block;margin-top:.3rem;font-size:.69rem;color:var(--tx3);letter-spacing:.02em}
+.cnt-b{padding:.55rem clamp(.9rem,2vw,1.3rem);overflow-x:auto}
+.lane{display:grid;grid-template-columns:minmax(9.5rem,13rem) 1fr;gap:.8rem;align-items:end;
+  padding:.55rem 0;border-top:1px solid var(--filete)}
+.lane:first-child{border-top:0}
+.lane-k{padding-bottom:.15rem}
+.lane-n{display:block;font-size:.78rem;font-weight:700;line-height:1.25;color:var(--tx)}
+.lane-s{display:block;margin-top:.15rem;font-size:.69rem;color:var(--tx3);letter-spacing:.02em}
+.lane-s.mine{color:var(--purpt)}
+.lane-s.rival{color:var(--teal)}
+.wks{display:grid;grid-template-columns:repeat(var(--w,6),minmax(2.2rem,1fr));gap:.42rem;align-items:end;min-width:16rem}
+.wk{display:flex;flex-direction:column;justify-content:flex-end;gap:2px;min-height:3.3rem}
+.wk .bl{display:block;height:0;border-top:9px solid var(--purp)}
+.lane.rival .wk .bl{border-top-color:var(--teal)}
+.wk .num{display:block;margin-top:.3rem;font-size:.69rem;font-weight:600;color:var(--tx2);text-align:center}
+.wk.z .num{color:var(--tx3)}
+.wk.z{background:rgba(255,255,255,.028)}
+/* El hilo: la misma unidad, tendida en horizontal. Una marca por semana.
+   Treinta bloques apilados en vertical no se cuentan; treinta tendidos en
+   una fila se leen como lo que son — largo. */
+.hilo{display:grid;grid-template-columns:minmax(9.5rem,13rem) 1fr auto;gap:.8rem;
+  align-items:center;padding:.8rem 0;border-top:1px solid var(--filete)}
+.hilo:first-child{border-top:0}
+.hilo-k{min-width:0}
+.hilo-r{display:flex;flex-wrap:wrap;gap:3px;align-items:center;min-width:0}
+.hilo-r i{display:block;width:0;height:16px;border-left:2px solid var(--purp)}
+.hilo.rival .hilo-r i{border-left-color:var(--teal)}
+.hilo-c{font-size:.82rem;font-weight:700;color:var(--tx);white-space:nowrap}
+.hilo-c::after{content:' sem';font-size:.69rem;font-weight:400;color:var(--tx3)}
+@media (max-width:640px){
+  .hilo{grid-template-columns:1fr auto;gap:.5rem .8rem}
+  .hilo-k{grid-column:1 / -1}
+}
+
+.cnt-x{display:grid;grid-template-columns:minmax(9.5rem,13rem) 1fr;gap:.8rem;padding:0 clamp(.9rem,2vw,1.3rem) clamp(.9rem,2vw,1.3rem)}
+.cnt-x .wks{min-width:16rem}
+/* En movil el carril se apila: la etiqueta arriba y los bloques con el ancho
+   entero. Antes el rotulo de 9,5rem mas los 16rem de bloques empujaban el
+   documento a 456px dentro de un viewport de 390 y la pagina entera se
+   desplazaba en horizontal. */
+@media (max-width:700px){
+  .lane,.cnt-x{grid-template-columns:1fr;gap:.5rem}
+  .lane{align-items:stretch}
+  .lane-k{padding-bottom:0}
+  .wks,.cnt-x .wks{min-width:0}
+  .wk{min-height:3rem}
+}
+.lane > *,.cnt-x > *{min-width:0}
+.cnt-x span{font-size:.69rem;color:var(--tx3);text-align:center;letter-spacing:.02em}
+.cnt-f{padding:.75rem clamp(.9rem,2vw,1.3rem);border-top:1px solid var(--filete);
+  font-size:.69rem;line-height:1.5;color:var(--tx3)}
+
+/* ── Tabla: isla clara dentro del mundo oscuro ──────────────────────────
+   Todo componente de fondo claro declara su propio color de texto. Si no lo
+   hace, hereda el blanco del mundo y queda blanco sobre blanco. Ya pasó. */
+
+.tw{margin:1.8rem 0 0;overflow-x:auto;border:1px solid var(--filete2);background:#F4F1F6;color:#141416}
+.tw table{width:100%;min-width:44rem;border-collapse:collapse;font-size:.84rem}
+.tw th,.tw td{padding:.68rem .8rem;text-align:left;border-bottom:1px solid #DDD6E3;color:#141416;vertical-align:top}
+.tw thead th{
+  background:#E8E3EC;font-size:.69rem;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:#3A3440;position:sticky;top:0;white-space:nowrap;
+}
+.tw tbody tr:last-child td{border-bottom:0}
+.tw td b{color:#141416}
+.tw .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tw tr.me td{background:#2A0A3E;color:#fff}
+.tw tr.me td b{color:#fff}
+.tw .si{color:#0A7A55;font-weight:600}
+.tw .no{color:#B3123F;font-weight:600}
+.tw tr.me td .si{color:#6FE3B4}
+.tw tr.me td .no{color:#FF9BAF}
+.tw caption{caption-side:bottom;padding:.7rem .8rem;text-align:left;font-size:.69rem;
+  line-height:1.5;color:#55505C;background:#EFEBF2;border-top:1px solid #DDD6E3}
+
+/* ── Veredicto: la frase que la reunión se lleva ────────────────────────── */
+
+.ver{
+  margin:2rem 0 0;padding:clamp(1.3rem,3vw,2.1rem);
+  background:var(--purp);color:#fff;border:1px solid var(--purp);
+}
+.ver p{margin:0;max-width:56ch;font-size:clamp(1.1rem,2.2vw,1.5rem);font-weight:700;
+  line-height:1.32;letter-spacing:-.02em;color:#fff}
+.ver b{color:#fff;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.ver .cap{display:block;margin-top:.9rem;font-size:.69rem;font-weight:600;letter-spacing:.12em;
+  /* blanco pleno: al 82% sobre el morado de marca da 3,51:1 y no pasa AA a 11px */
+  text-transform:uppercase;color:#fff}
+
+/* ── Listas ──────────────────────────────────────────────────────────────── */
+
+ul.li{list-style:none;margin:1.2rem 0 0;padding:0}
+ul.li li{position:relative;padding:0 0 0 1.5rem;margin:0 0 .72rem;color:var(--tx2);max-width:66ch}
+ul.li li::before{content:'';position:absolute;left:0;top:.62em;width:9px;height:0;border-top:2px solid var(--purp)}
+ul.li li b{color:var(--tx)}
+ul.li.teal li::before{border-top-color:var(--teal)}
+
+/* Descartes: el nombre tachado, la cifra que tenía y la línea que lo delató. */
+.dsc{margin:1.4rem 0 0;padding:0;list-style:none}
+.dsc li{padding:.72rem 0;border-top:1px solid var(--filete);color:var(--tx3);font-size:.92rem;max-width:72ch}
+.dsc s{color:var(--tx2);font-weight:600;text-decoration-thickness:1px}
+.dsc em{font-style:normal;color:var(--tx2)}
+
+/* ── Movimientos y cifras ────────────────────────────────────────────────── */
+
+.mov{margin:1.6rem 0 0;padding:0;list-style:none;counter-reset:mv}
+.mov > li{
+  counter-increment:mv;position:relative;padding:clamp(1.1rem,2.4vw,1.6rem) 0 clamp(1.1rem,2.4vw,1.6rem) 3.4rem;
+  border-top:1px solid var(--filete2);
+}
+.mov > li::before{
+  content:counter(mv);position:absolute;left:0;top:clamp(1.1rem,2.4vw,1.6rem);
+  font-size:1.6rem;font-weight:800;line-height:1;color:var(--purp);letter-spacing:-.04em;
+}
+.mov h3{margin-bottom:.55rem}
+.mov p{margin-bottom:.7rem;color:var(--tx2);font-size:.96rem}
+.mov .chk{
+  display:block;padding-top:.6rem;border-top:1px solid var(--filete);
+  font-size:.79rem;line-height:1.5;color:var(--tx2);max-width:62ch;
+}
+.mov .chk b{color:var(--teal);font-weight:600}
+
+/* Los escenarios de pauta van como filas de un registro, no como tres tarjetas
+   iguales con una marcada «recomendado». Esa es la retícula de precios de un
+   SaaS, y es justo el idioma que la tesis de este documento rechaza: un
+   expediente no vende planes, anota partidas. La recomendada se marca con una
+   regla, que es como se marca algo en un registro. */
+.esc{margin:1.6rem 0 0;border:1px solid var(--filete2)}
+.esc > div{
+  display:grid;gap:.3rem 1.6rem;align-items:baseline;
+  grid-template-columns:1fr;padding:clamp(1rem,2.2vw,1.4rem);
+  border-top:1px solid var(--filete);
+}
+@media (min-width:820px){
+  .esc > div{grid-template-columns:14.5rem 1fr;gap:.4rem 2rem}
+  .esc .cifra{grid-column:1;grid-row:2}
+  .esc h3{grid-column:1;grid-row:1}
+  .esc p{grid-column:2;grid-row:1 / span 2}
+}
+.esc > div:first-child{border-top:0}
+/* La recomendada lleva regla arriba y abajo, no un filete de acento a la
+   izquierda: un borde lateral de color por encima de 1px está prohibido. */
+.esc > div.rec{border-top:2px solid var(--purp);border-bottom:2px solid var(--purp);
+  background:rgba(176,36,255,.07)}
+.esc h3{font-size:.94rem;font-weight:700;color:var(--tx)}
+.esc h3 em{display:block;margin-top:.1rem;font-style:normal;color:var(--purpt);font-weight:600;font-size:.82rem}
+.esc .cifra{display:block;font-size:clamp(1.3rem,2.4vw,1.62rem);
+  font-weight:800;letter-spacing:-.03em;color:var(--tx);line-height:1.1}
+.esc p{font-size:.92rem;color:var(--tx2);margin:0;max-width:52ch}
+
+.hon{margin:1.6rem 0 0;border:1px solid var(--filete2);background:var(--alta)}
+.hon > div{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;align-items:baseline;justify-content:space-between;
+  padding:clamp(.95rem,2vw,1.25rem);border-top:1px solid var(--filete)}
+.hon > div:first-child{border-top:0}
+.hon .qu{font-size:.96rem;font-weight:600;color:var(--tx);max-width:44ch}
+.hon .qu span{display:block;margin-top:.25rem;font-size:.82rem;font-weight:400;color:var(--tx2)}
+.hon .cu{font-size:1.12rem;font-weight:800;letter-spacing:-.02em;color:var(--tx);white-space:nowrap}
+
+/* ── Portada ─────────────────────────────────────────────────────────────
+   El contrato dice: un solo gráfico contable con el diagnóstico en una frase
+   al lado. La primera versión abría con tres líneas de display morado y
+   empujaba el gráfico por debajo del pliegue, que es exactamente la portada
+   que el contrato no pedía. Ahora el titular baja de escala, la entradilla es
+   una frase, y el gráfico entra en el primer golpe de vista a 1440 y a 390.
+
+   Y el morado vuelve a ser estructura: la línea va en blanco y el morado
+   marca solo la cláusula que es la tesis. Tres líneas enteras de croma
+   saturada sobre casi negro son el racimo de interfaz generada, no la voz
+   de DAK. */
+
+.tapa{padding:clamp(1.2rem,2.4vw,1.9rem) 0 clamp(2.6rem,5vw,4rem);border-top:0}
+.tapa h1{font-size:clamp(1.9rem,3.3vw,2.95rem);letter-spacing:-.035em;line-height:1.03;max-width:27ch}
+.tapa h1 b{color:var(--purpt);font-weight:800}
+.tapa .lede{margin:.85rem 0 0;font-size:clamp(.96rem,1.4vw,1.08rem);max-width:70ch}
+.tapa .cnt{margin-top:clamp(1.1rem,2.1vw,1.5rem)}
+
+/* ── Fuentes al pie de sección ───────────────────────────────────────────── */
+
+.src{
+  display:block;margin-top:1.9rem;padding-top:.7rem;border-top:1px solid var(--filete);
+  font-size:.69rem;line-height:1.55;letter-spacing:.02em;color:var(--tx3);max-width:74ch;
+}
+.src b{color:var(--tx2);font-weight:600}
+
+/* ── Pie ─────────────────────────────────────────────────────────────────── */
+
+.pie{padding:clamp(2.6rem,6vw,4rem) 0;border-top:1px solid var(--filete2);background:var(--alta)}
+.pie .lg{height:26px;width:auto;display:block;margin-bottom:1.2rem}
+.pie p{font-size:.88rem;color:var(--tx2);max-width:60ch}
+.pie .fin{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid var(--filete);
+  font-size:.69rem;color:var(--tx3);letter-spacing:.02em;line-height:1.6}
+
+/* ── Motion: un solo momento, y desde un estado ya visible ──────────────── */
+
+.js .rv{opacity:0;transform:translateY(14px)}
+.js .rv.on{opacity:1;transform:none;transition:opacity .62s var(--ease),transform .62s var(--ease)}
+@media (prefers-reduced-motion:reduce){
+  .js .rv,.js .rv.on{opacity:1;transform:none;transition:none}
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   IMPRESIÓN — la pantalla se vuelve papel
+
+   El mundo entero se invierte en vez de gastar tinta en un fondo negro. Y lo
+   que significa algo ya está pintado con un borde, así que sobrevive aunque
+   quien imprime no marque «gráficos de fondo».
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media print{
+  @page{size:A4;margin:14mm 13mm}
+
+  :root{
+    --fondo:#fff;--alta:#fff;--ficha:#fff;
+    --tx:#141416;--tx2:#3B3641;--tx3:#55505C;
+    --filete:#CFC8D6;--filete2:#9F97AB;
+    --purp:#7A1FB8;--purpt:#661596;--teal:#046A6A;
+    --rojo:#A8102F;--verde:#046145;--ambar:#7A4A00;
+  }
+  body{background:#fff;color:#141416;font-size:10.4pt;line-height:1.48}
+  .prog,.bar,.deriv,.idxw{display:none !important}
+  section::before{display:none !important}
+  section{padding:0 0 8mm;border-top:0;break-inside:auto}
+  section.alta{background:#fff}
+  .w,.w-est{width:100%}
+  h1{font-size:25pt}h2{font-size:15pt}h3{font-size:11pt}
+  h1,h2,h3{color:#141416;break-after:avoid}
+  p,.lede{color:#3B3641;max-width:none}
+  .lede{font-size:11pt}
+  .folio{border-bottom:1px solid #9F97AB;padding:0 0 2.5mm;margin-bottom:4mm}
+  .folio .w{color:#55505C}
+  .folio b{color:#661596}
+  .tapa{padding-top:0}
+  .tapa h1{font-size:20pt;max-width:none}
+  .tapa h1 b{color:#661596}
+  .tapa .lede{font-size:10.6pt}
+
+  .pr{background:#fff !important;background-image:none !important;border:1px solid #9F97AB;
+    padding:4mm 4mm 3.2mm 7mm;margin-bottom:3.5mm;break-inside:avoid}
+  .pr::before{background:repeating-linear-gradient(180deg,#7A1FB8 0 4px,transparent 4px 11px)}
+  .pr-n{color:#661596}
+  .pr-q{color:#141416;font-size:11pt}
+  .pr p{color:#3B3641}
+  .pr-f{color:#55505C;border-top-color:#CFC8D6}
+  .pr-2{display:block}
+  .pr-2 .pr{margin-bottom:3.5mm}
+
+  .cnt{background:#fff;border-color:#9F97AB;break-inside:avoid}
+  .cnt-b{overflow:visible}
+  .wks{min-width:0}
+  .wk .bl{border-top-color:#7A1FB8}
+  .pr-q b{color:#661596}
+  .lane.rival .wk .bl{border-top-color:#046A6A}
+  .wk.z{background:none}
+  .lane-s.mine{color:#661596}
+  .lane-s.rival{color:#046A6A}
+  .hilo{break-inside:avoid}
+  .hilo-r i{border-left-color:#7A1FB8}
+  .hilo.rival .hilo-r i{border-left-color:#046A6A}
+  .hilo-c{color:#141416}
+  .hilo-c::after{color:#55505C}
+
+  /* La tabla fluye y repite cabecera; lo que no se parte es la fila. */
+  .tw{overflow:visible;border-color:#9F97AB;background:#fff}
+  .tw table{min-width:0;width:100%;table-layout:fixed;font-size:8.2pt}
+  .tw th,.tw td{padding:2.2mm 2mm;overflow-wrap:anywhere}
+  .tw .num{white-space:normal}
+  .tw thead{display:table-header-group}
+  .tw tr{break-inside:avoid}
+  .tw thead th{background:#EDE9F1;color:#2A2430;position:static;white-space:normal;letter-spacing:.05em}
+  .tw td,.tw th{border-bottom-color:#CFC8D6}
+  /* La fila de la marca se imprime calada: hay que devolverle la tinta. */
+  .tw tr.me td{background:#2A0A3E !important;color:#fff !important}
+  .tw tr.me td b,.tw tr.me td .si,.tw tr.me td .no{color:#fff !important}
+  .tw caption{background:#fff;color:#55505C;border-top-color:#CFC8D6}
+
+  /* El veredicto va calado; sin fondo impreso quedaría blanco sobre blanco. */
+  .ver{background:#fff !important;border:2px solid #7A1FB8;padding:4mm;break-inside:avoid}
+  .ver p,.ver b{color:#141416 !important}
+  .ver .cap{color:#661596 !important}
+
+  ul.li li::before{border-top-color:#7A1FB8}
+  ul.li.teal li::before{border-top-color:#046A6A}
+  ul.li li,.dsc li{color:#3B3641}
+  .dsc s,.dsc em{color:#55505C}
+
+  .mov > li{break-inside:avoid;padding-left:9mm}
+  .mov > li::before{color:#7A1FB8}
+  .mov .chk b{color:#046145}
+  .esc{border-color:#9F97AB}
+  .esc > div{background:#fff;border-top-color:#CFC8D6;break-inside:avoid;padding:3mm}
+  .esc > div.rec{background:#fff;border-top:1.5pt solid #7A1FB8;border-bottom:1.5pt solid #7A1FB8}
+  .esc h3 em{color:#661596}
+  .esc .cifra{font-size:12pt}
+  .pr.clave{border-color:#7A1FB8;border-width:1.5pt}
+  .pr.clave .pr-q{font-size:13pt;max-width:none}
+  .pr.clave::before{background:repeating-linear-gradient(180deg,#7A1FB8 0 4px,transparent 4px 11px);width:1px}
+  .hon{background:#fff;border-color:#9F97AB;break-inside:avoid}
+  .hon .qu span,.esc p{color:#3B3641}
+
+  .src,.pr-f,.cnt-f{color:#55505C;break-before:avoid}
+  .pie{background:#fff;border-top:1px solid #9F97AB;break-before:avoid}
+  .pie .lg{filter:invert(1)}
+  .js .rv,.js .rv.on{opacity:1 !important;transform:none !important}
+  a{color:#661596;text-decoration:none}
+}

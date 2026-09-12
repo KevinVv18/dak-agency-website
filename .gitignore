@@ -48,6 +48,10 @@ _backups/
 # aprobadas, con su motivo, en un solo sitio revisable.
 .impeccable/*
 !.impeccable/config.json
+# Y los briefs de superficie tambien: son la decision de diseno de cada
+# entregable —modo, audiencia, direccion elegida y por que— y sin versionar
+# no le sirven a nadie mas que a la sesion que los escribio.
+!.impeccable/surfaces/
 .claude/skills/impeccable/
 .claude/settings.local.json
 

@@ -20,6 +20,33 @@
         ],
         "createdAt": "2026-08-07T01:12:26.776Z",
         "reason": "Confirmado por el usuario (07-ago-2026): .cursor-grid-reveal no es textura de fondo sino un gesto que sigue al raton y solo se ve donde el cursor la descubre. Las nueve cuadriculas fijas de seccion si se retiraron."
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "*",
+        "files": [
+          "_analisis-microsite/assets/expediente.css"
+        ],
+        "createdAt": "2026-09-12T01:10:46.672Z",
+        "reason": "El micrositio de analisis no se rige por el DESIGN.md de la SPA: es una superficie aparte con su propio mundo visual, igual que analisis.css y signos.css, que disparan los mismos avisos (37 y 78). Ignorar por ambito, no por gusto."
+      },
+      {
+        "rule": "design-system-color",
+        "value": "*",
+        "files": [
+          "_analisis-microsite/assets/expediente.css"
+        ],
+        "createdAt": "2026-09-12T01:10:46.672Z",
+        "reason": "El micrositio de analisis no se rige por el DESIGN.md de la SPA: es una superficie aparte con su propio mundo visual, igual que analisis.css y signos.css, que disparan los mismos avisos (37 y 78). Ignorar por ambito, no por gusto."
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "*",
+        "files": [
+          "_analisis-microsite/assets/expediente.css"
+        ],
+        "createdAt": "2026-09-12T01:10:46.672Z",
+        "reason": "El micrositio de analisis no se rige por el DESIGN.md de la SPA: es una superficie aparte con su propio mundo visual, igual que analisis.css y signos.css, que disparan los mismos avisos (37 y 78). Ignorar por ambito, no por gusto."
       }
     ]
   }

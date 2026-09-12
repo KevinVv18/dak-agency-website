@@ -11,21 +11,32 @@ _analisis-microsite/
 ├─ index.html              ← raíz neutra, no lista clientes
 ├─ assets/
 │  ├─ dak-logo-blanco.svg  ← logotipo compartido
-│  ├─ signos.css / .js     ← mundo actual «Signos vitales» (informes nuevos)
-│  └─ analisis.css / .js   ← mundo anterior (los seis informes ya entregados)
+│  ├─ poppins-*.woff2      ← Poppins autoalojada, 31 KB los cuatro pesos
+│  ├─ expediente.css       ← mundo actual «Expediente de pruebas»
+│  ├─ signos.css / .js     ← «Signos vitales». signos.js lo comparten los dos mundos
+│  └─ analisis.css / .js   ← mundo original (la primera tanda de informes)
 ├─ auditar-contraste.js    ← se pega en la consola. Cero fallos o no se publica
-├─ kusiwawita/index.html   ← primer informe del mundo nuevo
+├─ montana/index.html      ← primer informe del «Expediente»
+├─ kusiwawita/index.html   ← «Signos vitales»
 ├─ ayb/index.html          ← A&B Representaciones (Chiclayo)
 └─ server.cjs              ← preview local; el workflow lo excluye del deploy
 ```
 
-## Dos mundos visuales conviviendo, a propósito
+## Tres mundos visuales conviviendo, a propósito
 
-Desde el **2026-09-02** los informes nuevos se construyen con **«Signos vitales»**
-(`signos.css` + `signos.js`). Los seis anteriores —`ayb`, `renovacix`, `multisonrisas`,
-`gia`, `domexia`, `xoxo`— **se quedan en `analisis.css` y no se tocan**: sus enlaces
-están en manos de prospectos y tienen que seguir mostrando lo que se presentó en la
-reunión. No hay migración pendiente; es una decisión.
+| Mundo | Hoja | Informes | Desde |
+|---|---|---|---|
+| **Expediente de pruebas** | `expediente.css` | `montana` | 2026-09-11 |
+| Signos vitales | `signos.css` | `kusiwawita` | 2026-09-02 |
+| El original | `analisis.css` | `ayb`, `renovacix`, `multisonrisas`, `gia`, `domexia`, `xoxo`, `arce`, `jetc` | 2026-08-03 |
+
+**Ningún informe entregado se migra.** Sus enlaces están en manos de prospectos y tienen
+que seguir mostrando lo que se presentó en su reunión. No hay deuda pendiente: es una
+decisión, y se repite cada vez que llega un mundo nuevo.
+
+Lo que **sí** se comparte entre mundos es `signos.js`, porque no dibuja datos: construye
+el riel de capítulos y el índice leyendo las `<section data-ch>`, mueve la barra de avance
+y escucha el teclado. El «Expediente» lo reutiliza sin tocar una línea.
 
 ## Por qué un link y no un adjunto
 
@@ -57,7 +68,86 @@ Luego abre `http://localhost:4320/ayb/`. También está como entrada `analisis` 
 > workflow hace `rsync --delete` sobre `public_html/` y borraría todos los entregables.
 > Es exactamente lo que pasó con el demo inmobiliario.
 
-## «Signos vitales» — el mundo de los informes nuevos
+## «Expediente de pruebas» — el mundo actual
+
+Estrenado el **2026-09-11** con Grupo Montaña, y con un problema muy concreto que
+resolver: el informe tenía que decirle a una dueña que su problema **no está donde ella
+cree**. Ella pidió TikTok, video, Meta Ads y campañas geolocalizadas; el diagnóstico era
+que no existe en Google Maps y que su tienda en línea no tiene píxel.
+
+Una afirmación así no se sostiene con diseño. Se sostiene con pruebas. Así que **la
+estructura del documento es el método del circuito convertido en forma**: cada hallazgo
+es una *prueba numerada*, con su enunciado, su dato, su fuente fechada y su límite
+declarado. La regla de honestidad de la Fase 6 deja de ser una nota al pie y pasa a ser
+el componente.
+
+- **La numeración no decora, y por eso se permite.** En la reunión se dice «mira la
+  prueba 7» y se salta ahí; el capítulo que responde al encargo cita *Pruebas 06 a 09*.
+  El contador es **uno solo para todo el documento** (`main{counter-reset:pr}`): cuando
+  estaba en cada contenedor, el titular decía «Pruebas 09 y 10» y las fichas de debajo
+  decían «Prueba 01».
+- **La paleta es la de DAK sin adaptar**: fondo `#030106`, morado `#B024FF` como
+  estructura —numera las pruebas, marca dónde estás, firma las fuentes— y teal
+  `#00C8C8` reservado al contraste con la competencia. El texto pequeño en morado usa
+  `#B93EFF`, que es el valor ya medido en el `DESIGN.md` del sitio principal: el morado
+  de marca falla AA por una centésima.
+- **Dos texturas, las dos decorativas a propósito.** La *estela* de DAK —trazos casi
+  horizontales de una sola dirección, en tres fuerzas— y el *rayado* de listado continuo
+  dentro de las fichas de prueba, que marca «esto es evidencia». Como ninguna carga un
+  dato, las dos desaparecen al imprimir sin que se pierda nada.
+
+  > ⚠️ La estela se dibuja con `repeating-linear-gradient(186deg, …)`. La primera versión
+  > usaba `96deg` y salían **casi verticales**: el ángulo es el del eje del degradado, y
+  > las bandas van perpendiculares a él. Un trazo vertical repetido es exactamente la
+  > cuadrícula que el sitio principal retiró el 07-ago-2026 por ser la firma más
+  > reconocible de interfaz generada.
+
+- **Poppins autoalojada**, cuatro pesos, 31 KB en total. Sin Google Fonts: el informe se
+  proyecta en salas de reunión cuyo wifi no es asunto nuestro.
+- **Cero radios por encima de 4 px, cero degradados de color, cero sombras, cero glifos
+  unicode haciendo de icono.** Comprobado por programa, no a ojo.
+
+### El conteo, en dos formas
+
+La misma unidad y el mismo alto de bloque que en «Signos vitales», pero con dos
+disposiciones según lo que se cuente:
+
+```html
+<!-- vertical: una columna por semana, los bloques crecen hacia arriba -->
+<div class="wk"><span class="bl"></span><span class="bl"></span><span class="num">2</span></div>
+<div class="wk z"><span class="num">0</span></div>
+
+<!-- horizontal: una marca por semana, tendidas en fila -->
+<span class="hilo-r" role="img" aria-label="Seis semanas sin publicar"><i></i>…</span>
+```
+
+El *hilo* horizontal nació de un error: treinta semanas de silencio apiladas en vertical
+daban una columna de 330 px que no se contaba con el dedo. **Treinta marcas tendidas en
+una fila se leen como lo que son: largo.**
+
+El bloque es `height:0` con un `border-top` de 9 px, y la marca del hilo es un
+`border-left` de 2 px. **El borde ES el bloque**, así que se imprime siempre. Con un
+filete de 2 px sobre 9 px de aire, dos bloques y tres se parecían demasiado.
+
+### Lo que la verificación encontró, y hay que seguir corriendo
+
+Todo esto se midió con Chromium propio, no mirando la pantalla:
+
+1. **Contraste** con `auditar-contraste.js` a tres anchos: cero fallos sobre 406
+   elementos. Cayeron dos rótulos blancos al 82 % sobre el morado de marca —3,51:1 a
+   11 px— y se pasaron a blanco pleno.
+2. **El ancho imprimible son 720 px.** La tabla de seis columnas pedía 786 por su
+   contenido mínimo y **se cortaba por la derecha en el PDF**, columna y pie de tabla
+   incluidos, sin que nada lo delatara en pantalla. Se arregló con `table-layout:fixed`
+   y, sobre todo, quitando una columna cuyas celdas decían todas lo mismo: una columna
+   que no distingue a nadie no compara nada.
+3. **Un `thead` con `nowrap` se monta sobre la columna vecina** en cuanto la tabla pasa a
+   ancho fijo. En pantalla no se ve porque la tabla tiene scroll propio.
+4. **La página en medio impresión con todos los fondos apagados** es la única prueba que
+   vale. Se captura bloque por bloque; si desaparece un dato, está pintado con un fondo y
+   hay que repintarlo con un borde.
+
+## «Signos vitales» — el mundo anterior
 
 El informe deja de parecer un deck y pasa a ser **la hoja de monitorización de una
 marca**. El problema que resuelve es concreto: en el formato anterior **todo pesaba lo
@@ -173,7 +263,7 @@ Reglas que hay que mantener al añadir una marca:
 
 ---
 
-## Diseño del mundo anterior (`analisis.css`): las reglas que lo sostienen
+## Diseño del mundo original (`analisis.css`): las reglas que lo sostienen
 
 Estos informes tienen **dos usos y hay que servir a los dos**: se proyectan en una reunión
 y se releen después en el celular. Todo lo de abajo sale de ahí.
@@ -249,8 +339,15 @@ dentro de su contenedor.
 
 ## Añadir una marca nueva
 
-Copia `ayb/index.html`, cambia el contenido por el dossier de la marca y ajusta las rutas
-`../assets/`. El riel, el índice, la numeración, el conteo y el teclado **vienen gratis**.
+Copia **`montana/index.html`**, que es el mundo vigente, cambia el contenido por el
+dossier de la marca y ajusta las rutas `../assets/`. El riel, el índice, el conteo de
+pruebas y el teclado **vienen gratis**.
+
+Antes de mandar el enlace, córrele las cuatro comprobaciones que no se pueden hacer a
+ojo: el auditor de contraste a tres anchos, el ancho imprimible de 720 px, la página en
+medio impresión con los fondos apagados, y `detect.mjs`. Las cuatro están explicadas
+arriba, y las cuatro encontraron algo real en el estreno.
+
 Mantén:
 
 - `<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">`
