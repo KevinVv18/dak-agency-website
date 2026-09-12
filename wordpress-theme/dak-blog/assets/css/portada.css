@@ -1,0 +1,209 @@
+/* ═══════════════════════════════════════════════════════════════
+   PORTADA — la tapa del catálogo, el índice de secciones, el
+   recuadro de la entrada más reciente y las ocho secciones con
+   sus filas. Solo se carga en la portada.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── La tapa ──────────────────────────────────────────────────
+   No es un héroe: es la portada de un catálogo. Dice qué es esto,
+   de cuándo es y cuánto trae. Sin imagen de fondo, sin degradado.
+   ─────────────────────────────────────────────────────────── */
+.tapa {
+  background: var(--papel-fila);
+  border-bottom: 3px solid var(--tinta);
+}
+.tapa .contenedor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 1.5rem 3rem;
+  padding-block: 2.15rem 1.85rem;
+}
+.tapa h1 {
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  max-width: 21ch;
+  text-wrap: balance;
+}
+.tapa-bajada {
+  font-family: var(--f-prosa);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--tinta-2);
+  max-width: 54ch;
+  margin-top: 0.9rem;
+}
+
+/* Bloque de edición: la caja de datos que todo catálogo lleva */
+.edicion {
+  border: 1px solid var(--tinta);
+  min-width: 15rem;
+}
+/* El sello de edición lleva la tinta de la casa.
+   Es el único compromiso que el blog hereda del sitio principal, y tiene que
+   aparecer SOBRE el pliegue. Antes lo llevaba el rótulo que había encima del
+   h1; al retirar ese eyebrow —prohibido— el púrpura se fue abajo del todo.
+   Aquí vuelve, y en un objeto que le corresponde: el sello de la edición
+   vigente. Blanco sobre #B024FF mide 4.62:1. */
+.edicion-titulo {
+  background: var(--casa); color: #fff;
+  padding: 0.45rem 0.85rem;
+}
+.edicion dl { display: grid; grid-template-columns: auto 1fr; }
+.edicion dt {
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--tinta-3);
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--filete);
+}
+.edicion dd {
+  font-size: 0.9375rem; font-weight: 600; text-align: right;
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--filete);
+  font-variant-numeric: tabular-nums;
+}
+.edicion dl > :nth-last-child(-n + 2) { border-bottom: 0; }
+
+/* ── Índice de secciones ──────────────────────────────────────
+   Es la navegación primaria y vive sobre el pliegue.
+   ─────────────────────────────────────────────────────────── */
+.indice { padding-block: 1.75rem 0; }
+.indice-titulo {
+  display: flex; align-items: baseline; gap: 1rem;
+  border-bottom: 1px solid var(--tinta);
+  padding-bottom: 0.55rem; margin-bottom: 1rem;
+}
+.indice-titulo h2 { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; }
+.indice-titulo .cuenta { font-size: 0.75rem; color: var(--tinta-3); margin-left: auto; }
+
+.indice-rejilla { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--filete); }
+/* El vidriado de cada sección entra AQUÍ, sobre el pliegue.
+   El índice es lo primero que se ve después de la tapa, así que es donde
+   este mundo tiene que enseñar su color: ocho campos de tinta plana, no
+   ocho filetes de 3px sobre papel blanco. */
+.indice-item {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 0.75rem;
+  background: var(--papel-fila);
+  padding: 0.8rem 0.9rem 0.85rem;
+  transition: background var(--avance);
+}
+.indice-item:hover { background: var(--papel-tinte); }
+.indice-item .codigo {
+  grid-row: 1 / 3;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sec); color: #fff;
+  font-size: 0.875rem; font-weight: 700; letter-spacing: 0.02em;
+}
+.indice-item .nombre { font-size: 0.9375rem; font-weight: 600; line-height: 1.25; align-self: end; }
+.indice-item .cuenta { font-size: 0.75rem; color: var(--tinta-3); align-self: start; padding-top: 0.2rem; }
+
+/* ── Recuadro de la entrada más reciente ──────────────────────
+   El equivalente al recuadro de oferta: un catálogo destaca una
+   referencia por página, no todas. Es la ÚNICA imagen con
+   prioridad de carga de toda la portada.
+   ─────────────────────────────────────────────────────────── */
+.destacada { margin-block: 2.75rem 0; }
+.destacada-marco {
+  display: grid;
+  /* La columna de la lámina es la estrecha, no la ancha: a 1.05fr la fila la
+     medía el texto y la imagen salía en formato apaisado —o sea, recortando
+     media lámina del circuito, que viene en 4:5 con tipografía impresa. */
+  grid-template-columns: minmax(0, 0.44fr) minmax(0, 1fr);
+  border: 3px solid var(--tinta);
+  background: var(--papel-fila);
+}
+/* Una entrada sin imagen destacada no puede dejar media columna vacía:
+   el recuadro pasa a una sola columna. Pasa en un WordPress recién montado
+   y pasaría si alguien publica sin miniatura. */
+.destacada-marco.sin-imagen { grid-template-columns: 1fr; }
+
+/* Aquí NO se recorta: la caja se ajusta a la lámina, no la lámina a la caja.
+   Es el mismo principio que en la entrada, y por la misma razón —lo que llega
+   del circuito lleva palabras impresas—, con la ventaja de que así sirve
+   igual de bien a los seis formatos que hay hoy en el archivo: la fila la
+   marca la más alta de las dos columnas y la que sobra se apoya en el papel
+   entintado. Con el calzo fijo al 4:5 que probé antes, las láminas apaisadas
+   perdían más de la mitad. */
+.destacada-figura {
+  position: relative;
+  background: var(--papel-tinte);
+  align-self: stretch;
+}
+.destacada-figura img {
+  display: block;
+  width: 100%; height: auto;
+  max-height: 34rem; object-fit: contain;
+}
+.destacada-sello {
+  position: absolute; left: 0; top: 0;
+  background: var(--casa); color: #fff;
+  padding: 0.4rem 0.8rem;
+}
+.destacada-cuerpo { display: flex; flex-direction: column; padding: 1.75rem 2rem 1.6rem; }
+.destacada-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.destacada-cuerpo h2 {
+  font-size: clamp(1.4rem, 2.4vw, 1.95rem);
+  font-weight: 700; line-height: 1.16; letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.destacada-cuerpo h2 a { transition: color var(--avance); }
+.destacada-cuerpo h2 a:hover { color: var(--casa-texto); }
+.destacada-extracto {
+  font-family: var(--f-prosa);
+  font-size: 1.0625rem; line-height: 1.62;
+  color: var(--tinta-2);
+  margin-top: 0.9rem;
+}
+.destacada-pie {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem;
+  margin-top: auto; padding-top: 1.4rem;
+  border-top: 1px solid var(--filete);
+}
+.destacada-leer {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--casa-texto);
+}
+.destacada-leer span { transition: transform var(--avance); }
+.destacada-leer:hover span { transform: translateX(4px); }
+
+/* La banda de sección, la fila de catálogo y la etiqueta de sección son
+   primitivas compartidas con el archivo y la búsqueda: viven en style.css. */
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 1000px) {
+  .indice-rejilla { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* El recuadro aguanta en dos columnas mucho más abajo de lo que aguantaba el
+   índice: apilarlo a 1000 px dejaba una lámina de 4:5 a 800 px de ancho, o
+   sea más de mil de alto. Medido a 680 px se iba a 793 y el titular caía
+   fuera de pantalla. En dos columnas la lámina se queda estrecha y en
+   proporción hasta que la columna de texto ya no cabe. */
+@media (max-width: 620px) {
+  .destacada-marco { grid-template-columns: 1fr; }
+  /* Apilada, la lámina se monta centrada sobre el papel entintado en vez de
+     estirarse: por debajo de 416 px de ancho —o sea, en cualquier teléfono—
+     llena el marco sola y no se ve montura ninguna. */
+  .destacada-figura img {
+    max-width: 26rem; max-height: 32.5rem;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  /* Nunca por encima del valor de escritorio: el pliegue del móvil es más
+     corto, así que la tapa tiene que ocupar menos, no más. */
+  .tapa .contenedor { grid-template-columns: 1fr; align-items: start; padding-block: 1.75rem 1.5rem; }
+  .edicion { min-width: 0; width: 100%; }
+  .destacada-cuerpo { padding: 1.35rem 1.25rem 1.25rem; }
+}
+
+@media (max-width: 420px) {
+  .indice-rejilla { grid-template-columns: 1fr; }
+}

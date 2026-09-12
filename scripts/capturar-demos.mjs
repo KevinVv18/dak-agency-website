@@ -58,13 +58,14 @@ const DEMOS = [
   {
     id: 'tienda',
     url: 'https://american-vault.com/',
-    /* La portada es negra casi entera. Lo que se reconoce como tienda es la
-       rejilla del catálogo, que vive más abajo en la misma página. */
+    /* Se retrataba la rejilla del catálogo, porque «la portada es negra casi
+       entera». Kevin la quiere por su PORTADA, y tiene razón: negra es
+       exactamente lo que esa tienda ES. El monograma, el bolso con la cadena y
+       el rótulo dicen de qué va en un vistazo; una rejilla de fichas dice «una
+       tienda cualquiera». Se queda arriba, con tiempo para que el bolso acabe
+       de entrar. */
     async preparar(p) {
-      await p.evaluate(() => {
-        const rejilla = document.querySelector('#catalogGrid')
-        if (rejilla) rejilla.scrollIntoView({ block: 'start' })
-      })
+      await p.evaluate(() => window.scrollTo(0, 0))
       await esperar(2500)
     },
   },
@@ -147,7 +148,17 @@ const aWebp = async (pagina, base64, ancho) =>
     CALIDAD,
   )
 
+/* Sin argumentos las hace las cuatro. Con ellos, solo las nombradas:
+   `node scripts/capturar-demos.mjs tienda blog`. Sirve para no volver a subir
+   capturas de demos que nadie ha tocado. */
+const PEDIDAS = process.argv.slice(2)
+const AGENDA = PEDIDAS.length ? DEMOS.filter((d) => PEDIDAS.includes(d.id)) : DEMOS
+
 const main = async () => {
+  if (!AGENDA.length) {
+    console.log(`  no conozco: ${PEDIDAS.join(', ')}. Los que hay: ${DEMOS.map((d) => d.id).join(', ')}`)
+    return
+  }
   await mkdir(DESTINO, { recursive: true })
   const navegador = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] })
   // Página auxiliar, en blanco, donde vive el canvas que codifica.
@@ -157,7 +168,7 @@ const main = async () => {
   let total = 0
   let problemas = 0
 
-  for (const demo of DEMOS) {
+  for (const demo of AGENDA) {
     const p = await navegador.newPage()
     await p.setViewport({ ...VENTANA, deviceScaleFactor: 2 })
     process.stdout.write(`  ${demo.id.padEnd(14)} `)
@@ -196,7 +207,7 @@ const main = async () => {
   }
 
   await navegador.close()
-  console.log(`\n  total ${total} KB en ${DEMOS.length * ANCHOS.length} archivos`)
+  console.log(`\n  total ${total} KB en ${AGENDA.length * ANCHOS.length} archivos`)
   if (problemas) {
     console.log(`  ${problemas} con problemas — revisa antes de desplegar`)
     process.exitCode = 1

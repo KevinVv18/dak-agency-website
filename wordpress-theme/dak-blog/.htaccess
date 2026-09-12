@@ -1,0 +1,22 @@
+# El registro del sistema de diseño (DESIGN.md y su sidecar) viaja dentro de la
+# carpeta del tema porque el tema es lo único versionado de este blog: el
+# WordPress se administra en vivo y no tiene repositorio. Pero que viaje con el
+# tema no significa que deba servirse a internet.
+#
+# Comprobado el 26-ago-2026: los .md del tema anterior responden 200 en
+# https://dakagency.net/blog/wp-content/themes/dak-informando/DESIGN.md
+# No es información sensible, pero es documentación interna publicada por
+# descuido, y no hay razón para repetirlo aquí.
+#
+# El tema no sirve ningún .json en tiempo de ejecución (no hay theme.json ni
+# block.json), así que denegarlos no rompe nada.
+
+<FilesMatch "\.(md|json)$">
+	<IfModule mod_authz_core.c>
+		Require all denied
+	</IfModule>
+	<IfModule !mod_authz_core.c>
+		Order allow,deny
+		Deny from all
+	</IfModule>
+</FilesMatch>

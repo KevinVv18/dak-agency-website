@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 /* `useScroll`, `useTransform` y `AnimatePresence` se han ido con las cuatro
    maquetaciones a medida: eran los carruseles automáticos que rotaban la pieza
    cada 3,5-4 segundos dentro de cada bloque de cliente. */
@@ -194,18 +195,56 @@ const LiveDemos = () => {
   const inView = useInView(ref, { once: true, margin: '-80px' })
   const [botOpen, setBotOpen] = useState(false)
 
-  useEffect(() => {
-    document.body.style.overflow = botOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [botOpen])
+  const modalRef = useRef(null)
+  const focoPrevio = useRef(null)
 
-  /* Escape cierra. Faltaba: el modal se traga el scroll de la página y su
-     única salida era acertarle a la ✕ o al fondo. */
+  /* ── Mientras el demo está abierto, el índice NO se usa ──
+
+     El fallo que arreglaba esto: con el modal abierto se podía pulsar
+     «SERVICIOS» en la nav, la página de detrás se desplazaba y quedaban las dos
+     cosas encima la una de la otra. La causa eran dos agujeros a la vez:
+
+     1. El velo estaba en z-index 1000, EXACTAMENTE el mismo que --z-navigation,
+        así que la nav no quedaba tapada y seguía recibiendo clics. Ahora el
+        velo está por encima de todo lo fijo, la burbuja del chat incluida.
+     2. Aunque estuviera tapada, seguía siendo alcanzable con el tabulador. Por
+        eso el resto de la página pasa a `inert`: ni ratón, ni teclado, ni
+        lector de pantalla, hasta que se vuelva.
+
+     Son dos defensas independientes a propósito: `inert` es reciente, y en un
+     navegador que no lo entienda el velo por sí solo ya deja la nav fuera de
+     alcance.
+
+     El modal se pinta con un portal a <body> para quedar FUERA del subárbol que
+     se congela — si viviera dentro de #root se congelaría a sí mismo. */
   useEffect(() => {
     if (!botOpen) return
+    const raiz = document.getElementById('root')
+    focoPrevio.current = document.activeElement
+    document.body.style.overflow = 'hidden'
+    if (raiz) {
+      raiz.inert = true
+      raiz.setAttribute('aria-hidden', 'true')
+    }
+    // El foco entra en el modal: si se quedara detrás, el tabulador empezaría a
+    // recorrer una página que el visitante ya no ve.
+    const entra = requestAnimationFrame(() => {
+      modalRef.current?.querySelector('.demo-modal-close')?.focus()
+    })
     const alPulsar = (e) => { if (e.key === 'Escape') setBotOpen(false) }
     window.addEventListener('keydown', alPulsar)
-    return () => window.removeEventListener('keydown', alPulsar)
+
+    return () => {
+      cancelAnimationFrame(entra)
+      window.removeEventListener('keydown', alPulsar)
+      document.body.style.overflow = ''
+      if (raiz) {
+        raiz.inert = false
+        raiz.removeAttribute('aria-hidden')
+      }
+      // Y vuelve de donde salió, que es la mitad que casi siempre se olvida.
+      focoPrevio.current?.focus?.()
+    }
   }, [botOpen])
 
   const openBot = (e) => { e.preventDefault(); setBotOpen(true) }
@@ -233,9 +272,16 @@ const LiveDemos = () => {
         ))}
       </div>
 
-      {botOpen && (
+      {botOpen && createPortal(
         <div className="demo-modal-overlay" onClick={() => setBotOpen(false)}>
-          <div className="demo-modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="demo-modal"
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Demo en vivo del asistente de DAK"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="demo-modal-head">
               <span className="demo-modal-title">
                 <span className="demo-live-dot" />
@@ -256,7 +302,8 @@ const LiveDemos = () => {
               title="Demo del asistente IA de DAK"
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )

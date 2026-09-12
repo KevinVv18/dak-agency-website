@@ -1,0 +1,66 @@
+{
+  "title": "Tu Página Web Lenta Te Está Costando Clientes (y Ni Siquiera lo Notas)",
+  "slug": "pagina-web-lenta",
+  "category_slug": "diseno-web",
+  "excerpt": "El visitante que se va porque tu web tardó no deja rastro: no escribe, no reclama, no aparece en ninguna estadística. Cómo medir la velocidad real de tu página, qué la vuelve lenta y qué se arregla primero.",
+  "tags": [
+    "página web lenta",
+    "velocidad de carga",
+    "diseño web",
+    "experiencia de usuario",
+    "conversión"
+  ],
+  "content": "<p>Hay un tipo de cliente perdido que nunca vas a poder contar: el que hizo clic en tu web, esperó, vio una pantalla en blanco y volvió atrás para entrar a la de al lado. No te escribió, no reclamó, no dejó una reseña. Simplemente se fue, y para ti ese día se ve idéntico a cualquier otro.</p>\n\n<p>Respuesta directa: una <strong>página web lenta</strong> te cuesta clientes de forma invisible, porque el abandono ocurre antes de que la visita llegue a contar como algo — y casi siempre la causa no es el hosting, sino imágenes enormes, plantillas cargadas de funciones que no usas y una pila de plugins que nadie revisó nunca. Se mide en dos minutos y, en la mayoría de casos, la mitad del problema se arregla en una tarde.</p>\n\n<h2>Por qué la velocidad decide antes que el diseño</h2>\n\n<p>La primera impresión de tu web no la da el diseño: la da el tiempo que pasa hasta que se ve algo. Un visitante que espera frente a una pantalla vacía no está evaluando tu propuesta, está evaluando si vale la pena seguir esperando — y en el celular, con datos móviles y una mano ocupada, esa paciencia es corta.</p>\n\n<p>Hay además un segundo efecto. Google usa la experiencia de carga como una de sus señales de calidad, así que una web lenta no solo pierde a quien ya llegó: aparece peor posicionada, y por lo tanto llega menos gente. El daño se acumula por los dos lados.</p>\n\n<h2>Mídela bien: no desde tu computadora</h2>\n\n<p>El error clásico es abrir la web propia, verla instantánea y concluir que va bien. Claro que va bien: tu navegador ya tiene todo guardado en caché y probablemente estás con fibra en la oficina.</p>\n\n<p>Para medirla de verdad usa una herramienta gratuita como PageSpeed Insights de Google, que evalúa la página con conexión simulada de celular y devuelve un informe con las oportunidades ordenadas. Mira siempre el resultado de móvil, no el de escritorio: es el que refleja cómo llega la mayoría de tu tráfico. Y prueba varias páginas, no solo la portada — la ficha de producto o el formulario de contacto suelen ser más pesados y son justo donde se cierra la venta.</p>\n\n<h2>Las cinco causas que explican casi todo</h2>\n\n<p><strong>Imágenes sin optimizar.</strong> Es la número uno por goleada. La foto sale de la cámara o del diseñador con varios megas y se sube tal cual. Cada visitante descarga ese peso completo para verlo en una pantalla de seis pulgadas. Redimensionar al tamaño real de uso y guardar en un formato moderno como WebP suele recortar el peso a una fracción sin diferencia visible.</p>\n\n<p><strong>Plantillas que hacen de todo.</strong> Muchas plantillas comerciales vienen con carruseles, animaciones, tiendas, reservas y galerías. Aunque uses el 10%, el navegador carga la maquinaria completa en cada visita.</p>\n\n<p><strong>Plugins acumulados.</strong> El plugin que se instaló para una promoción de hace dos años sigue ahí, cargando sus archivos en todas las páginas. Es la clase de peso que nadie nota porque creció de a poco.</p>\n\n<p><strong>Sin caché.</strong> Sin caché, el servidor arma la página desde cero para cada visitante. Con caché, entrega una versión ya construida. Es una de las mejoras con mejor relación esfuerzo-resultado que existen.</p>\n\n<p><strong>Hosting insuficiente.</strong> Es la causa que más se menciona y la que menos veces es la culpable de verdad. Sí importa —sobre todo si tu público está en Perú y el servidor está lejos—, pero cambiar de hosting sin arreglar las imágenes es mudar el problema de casa.</p>\n\n<h2>Qué arreglar primero</h2>\n\n<p>En este orden, porque va de mayor a menor impacto por hora de trabajo:</p>\n\n<ul>\n<li><strong>Comprime y redimensiona las imágenes.</strong> Empieza por la portada y las páginas con más visitas.</li>\n<li><strong>Activa la caché.</strong> En WordPress se resuelve con un plugin; en un sitio a medida, con configuración del servidor.</li>\n<li><strong>Desinstala lo que no uses.</strong> Desactivar no basta: hay que eliminar.</li>\n<li><strong>Carga las imágenes de más abajo solo cuando hagan falta</strong> (carga diferida), para que la primera pantalla aparezca antes.</li>\n<li><strong>Revisa scripts de terceros.</strong> Chats, píxeles, mapas incrustados y contadores suman tiempo; deja los que realmente aportan.</li>\n<li><strong>Recién ahí, evalúa el hosting.</strong> Si después de todo lo anterior sigue lenta, ya sabes que el problema sí está abajo.</li>\n</ul>\n\n<h2>Cuándo optimizar ya no alcanza</h2>\n\n<p>Hay un punto en que seguir parchando cuesta más que rehacer. Suele reconocerse por estas señales: la web se construyó hace más de cinco años, depende de una plantilla que ya no recibe actualizaciones, cada cambio pequeño rompe otra cosa, o en el celular hay que hacer zoom para leer.</p>\n\n<p>En esos casos la velocidad es un síntoma, no la enfermedad. Y si estás evaluando esa decisión, conviene mirarla junto con el costo real de rehacerla: lo desglosamos en <a href=\"https://dakagency.net/blog/cuanto-cuesta-una-pagina-web-en-chiclayo/\">cuánto cuesta una página web</a>. Si además dudas de si necesitas web propia o te bastan las redes, ese debate está en <a href=\"https://dakagency.net/blog/pagina-web-propia-o-redes-sociales/\">página web propia o redes sociales</a>.</p>\n\n<h2>Cómo lo hacemos en DAK</h2>\n\n<p>Antes de tocar nada medimos, y medimos en móvil. Con el informe delante separamos lo que se arregla en una tarde —imágenes, caché, plugins muertos— de lo que exige trabajo de fondo, y empezamos siempre por lo primero: es lo que da resultado visible sin poner en riesgo el sitio.</p>\n\n<p>Después volvemos a medir. Esa segunda medición es la que decide si hace falta ir más profundo o si el sitio ya está donde tiene que estar. Y cuando construimos una web desde cero, las imágenes se optimizan al subirlas, no después: la velocidad es más barata cuando se diseña, no cuando se rescata.</p>\n\n<h2>Preguntas frecuentes</h2>\n\n<h3>¿Cuánto debería tardar en cargar mi página web?</h3>\n<p>La referencia práctica es que el contenido principal se vea en torno a los dos segundos y medio en conexión móvil. Más allá de la cifra exacta, lo importante es que el visitante vea algo útil pronto: una página que muestra el encabezado rápido y completa el resto después se percibe mucho más rápida que una que espera a tenerlo todo listo.</p>\n\n<h3>¿Cómo mido la velocidad de mi web gratis?</h3>\n<p>Con PageSpeed Insights de Google: pegas la URL y te devuelve una evaluación con conexión de celular simulada y una lista de oportunidades ordenadas por impacto. Revisa siempre el resultado de móvil y prueba varias páginas, no solo la portada, porque las fichas de producto y los formularios suelen pesar más.</p>\n\n<h3>¿La velocidad afecta el posicionamiento en Google?</h3>\n<p>Sí, forma parte de las señales de experiencia de página que Google considera. No es el factor más importante —el contenido sigue mandando—, pero entre dos páginas que responden igual de bien a una búsqueda, la más rápida tiene ventaja. Y el efecto indirecto es igual de real: una web lenta pierde visitantes antes de que lleguen a leerte.</p>\n\n<h3>¿Cambiar de hosting va a solucionarlo?</h3>\n<p>Solo si el hosting es realmente el cuello de botella, y en la mayoría de casos no lo es. Lo habitual es que el peso venga de imágenes sin optimizar, plantillas sobrecargadas y plugins acumulados. Conviene arreglar eso primero y volver a medir: si sigue lenta, ahí sí el servidor es el sospechoso.</p>\n\n<h3>¿Cuánto cuesta acelerar una web existente?</h3>\n<p>Depende de si alcanza con optimizar o hay que rehacer. Una limpieza de imágenes, caché y plugins es un trabajo acotado de horas. Rehacer el sitio es otro proyecto y otro presupuesto. Por eso el primer paso siempre es medir: sin ese diagnóstico, cualquier cotización es una adivinanza.</p>\n\n<h2>Conclusión: lo que no se mide, se pierde en silencio</h2>\n\n<p>Una <strong>página web lenta</strong> no genera quejas, genera ausencias. Nadie te avisa que se fue, y por eso es tan fácil convivir años con el problema creyendo que simplemente \"llega poca gente\".</p>\n\n<p>La buena noticia es que se diagnostica gratis y en minutos. Mide tu web hoy en móvil, mira las tres primeras oportunidades que te señale y empieza por las imágenes. Es la hora de trabajo con mejor retorno que vas a invertir en tu sitio este mes.</p>\n\n<blockquote><p>¿Quieres saber qué tan lenta está tu web y qué se arregla primero? <a href=\"https://wa.me/51906765040\">Escríbenos por WhatsApp</a> o <a href=\"https://plan.dakagency.net/agendar.html\">agenda un diagnóstico sin compromiso</a>.</p></blockquote>\n\n<blockquote class=\"servicio-relacionado\"><p><strong>Servicio relacionado:</strong> conoce nuestro servicio de <a href=\"https://dakagency.net/blog/diseno-web-chiclayo/\">diseño y desarrollo web</a> y ten un sitio que cargue rápido desde el primer día.</p></blockquote>",
+  "rank_math": {
+    "focus_keyword": "página web lenta",
+    "title": "Página Web Lenta: Por Qué Pierdes Clientes y Cómo Arreglarlo",
+    "description": "Una página web lenta pierde clientes sin dejar rastro. Cómo medir la velocidad real en móvil, las cinco causas más comunes y qué conviene arreglar primero."
+  },
+  "faq_jsonld": {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "¿Cuánto debería tardar en cargar mi página web?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "La referencia práctica es que el contenido principal se vea en torno a los dos segundos y medio en conexión móvil. Más allá de la cifra exacta, lo importante es que el visitante vea algo útil pronto: una página que muestra el encabezado rápido y completa el resto después se percibe mucho más rápida que una que espera a tenerlo todo listo."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cómo mido la velocidad de mi web gratis?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Con PageSpeed Insights de Google: pegas la URL y te devuelve una evaluación con conexión de celular simulada y una lista de oportunidades ordenadas por impacto. Revisa siempre el resultado de móvil y prueba varias páginas, no solo la portada, porque las fichas de producto y los formularios suelen pesar más."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿La velocidad afecta el posicionamiento en Google?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sí, forma parte de las señales de experiencia de página que Google considera. No es el factor más importante —el contenido sigue mandando—, pero entre dos páginas que responden igual de bien a una búsqueda, la más rápida tiene ventaja. Y el efecto indirecto es igual de real: una web lenta pierde visitantes antes de que lleguen a leerte."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cambiar de hosting va a solucionarlo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Solo si el hosting es realmente el cuello de botella, y en la mayoría de casos no lo es. Lo habitual es que el peso venga de imágenes sin optimizar, plantillas sobrecargadas y plugins acumulados. Conviene arreglar eso primero y volver a medir: si sigue lenta, ahí sí el servidor es el sospechoso."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cuánto cuesta acelerar una web existente?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Depende de si alcanza con optimizar o hay que rehacer. Una limpieza de imágenes, caché y plugins es un trabajo acotado de horas. Rehacer el sitio es otro proyecto y otro presupuesto. Por eso el primer paso siempre es medir: sin ese diagnóstico, cualquier cotización es una adivinanza."
+        }
+      }
+    ]
+  },
+  "featured_image_alt": "Pantallas de escritorio, laptop y celular mostrando paginas web de proyectos - pagina web lenta - DAK Agency"
+}

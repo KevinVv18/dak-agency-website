@@ -108,12 +108,23 @@
    Era un bloque propio de 400px al final del pie. Ahora vive DETRÁS de la
    placa, muy tenue: el grabado de la chapa, no un cartel. Sigue siendo la
    misma geometría que el túnel usa como obstáculo. */
+/* Centrada en la placa, no colgada del borde de abajo.
+   Anclada al fondo se salía por la base y quedaba recortada, y las columnas la
+   cruzaban por sitios distintos: se leía como polígonos sueltos y no como una
+   marca. Centrada en los dos ejes cabe entera y queda detrás de todo, que es
+   para lo que está. */
+/* Centrada en la placa, que es su caja: el marcado la mete dentro y la placa
+   es `position: relative`. Antes colgaba del borde inferior del pie, se salía
+   por la base y las columnas la cruzaban por sitios distintos — se leía como
+   polígonos sueltos y no como una marca. */
 .pie-fondo {
   position: absolute;
   left: 50%;
-  bottom: 2.5rem;
-  transform: translateX(-50%);
-  width: min(1100px, 88%);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  /* Más pequeña que el bloque de contenido, a propósito: una marca del mismo
+     tamaño que las columnas no se lee como fondo, se lee como interferencia. */
+  width: min(680px, 56%);
   /* El tinte va en `opacity` y no en el alfa del color: así el encendido se
      anima en el compositor —una propiedad, sin repintar los cinco polígonos— y
      en reposo se ve exactamente igual que cuando era rgba(255,255,255,0.055). */
@@ -138,23 +149,35 @@
    Las dos animan solo `opacity`, así que no hay maquetación ni repintado por
    fotograma; y ninguna corre en bucle: se ponen por clase y se quitan solas al
    terminar. */
+/* EL TECHO SON 0,14, Y NO ES UNA CIFRA DE GUSTO.
+
+   Estuvo en 0,46 y era un fallo de bulto: la marca es un TRAZO que cruza por
+   debajo de la dirección, del enlace a Maps y de toda la línea legal, y a 0,46
+   ese trazo queda en rgb(119,118,121) — el texto secundario que cae encima baja
+   a 1,37:1. Kevin lo vio y con razón. Puse ese número comprobando que la
+   animación corría, sin mirar nunca qué le hacía al texto de encima.
+
+   Medido a lo largo de la rampa: 0,20 deja el texto en 3,74:1, 0,16 en 4,31:1 y
+   0,14 en 4,61:1. El techo es el último valor con el que lo que hay ENCIMA de
+   la marca sigue pasando AA. Sobre un reposo de 0,055 sigue siendo dos veces y
+   media más: se ve encenderse de sobra. */
 @keyframes pie-marca-tubo {
   0%, 4%    { opacity: 0.055; }
-  5%        { opacity: 0.34; }
+  5%        { opacity: 0.105; }
   7%        { opacity: 0.06; }
-  9%        { opacity: 0.42; }
+  9%        { opacity: 0.13; }
   10.5%     { opacity: 0.055; }
-  13%       { opacity: 0.26; }
-  14.5%     { opacity: 0.07; }
-  18%       { opacity: 0.46; }
-  20%       { opacity: 0.30; }
-  24%, 74%  { opacity: 0.46; }
+  13%       { opacity: 0.085; }
+  14.5%     { opacity: 0.065; }
+  18%       { opacity: 0.14; }
+  20%       { opacity: 0.095; }
+  24%, 74%  { opacity: 0.14; }
   100%      { opacity: 0.055; }
 }
 
 @keyframes pie-marca-roce {
   0%        { opacity: 0.055; }
-  10%, 74%  { opacity: 0.46; }
+  10%, 74%  { opacity: 0.14; }
   100%      { opacity: 0.055; }
 }
 
@@ -188,7 +211,9 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1.2fr;
+  /* Era 1.4fr para la primera columna, de cuando llevaba más contenido: con
+     lo que tiene hoy dejaba 270px de vacío antes del índice. */
+  grid-template-columns: 1fr 0.85fr 1.05fr;
   gap: 3rem;
   max-width: 1400px;
   margin: 0 auto;
@@ -196,6 +221,9 @@
 }
 
 .pie-col {
+  /* Por encima de la marca, que ahora es hermana suya dentro de la placa. */
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -235,15 +263,138 @@
   margin: 0;
 }
 
-/* La posición, en mono y con cifras tabulares: es una lectura, no una frase. */
-.pie-coords {
+/* ── EL MAPA DE LA SEDE ──
+
+   Calles reales de OpenStreetMap, horneadas en src/data/mapa-sede.js y pintadas
+   aquí con el filete de un píxel de toda la web. Ni una petición en tiempo de
+   ejecución: no hay a dónde ir, los trazos ya están en el paquete.
+
+   Las esquineras son las del sistema (--esq-img), las mismas que enmarcan los
+   botones y las fichas. El mapa no estrena vocabulario: usa el que hay. */
+/* Las dos mitades de la posición, en fila. */
+.pie-sede {
+  display: flex;
+  gap: 1.1rem;
+  align-items: flex-start;
+}
+
+.pie-sede-datos {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.pie-mapa {
+  margin: 0;
+  flex: 0 0 auto;
+  width: 150px;
+}
+
+/* Las esquineras enmarcan EL MAPA, no el mapa más su pie de foto. Estaban en
+   la figura entera y las de abajo caían por debajo de la atribución: el marco
+   parecía rodear otra cosa. */
+.pie-mapa-marco {
+  padding: 8px;
+  background-image: var(--esq-img);
+  background-size: var(--esq-tam);
+  background-position: var(--esq-reposo);
+  background-repeat: no-repeat;
+  --esq-color: rgba(255, 255, 255, 0.34);
+}
+
+.pie-mapa-lienzo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  /* Apenas un tono por encima del pie: separa el recorte del fondo sin llegar a
+     ser una caja. */
+  background: rgba(255, 255, 255, 0.022);
+}
+
+/* Todo a un píxel, en los dos grupos. Lo que distingue una avenida de una calle
+   es el BRILLO, no el grosor: engordar el trazo rompería el filete de un píxel
+   que sostiene el resto del sitio. */
+.pie-mapa-calles path,
+.pie-mapa-vias path,
+.pie-mapa-mira path,
+.pie-mapa-mira circle,
+.pie-mapa-norte path {
+  fill: none;
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pie-mapa-calles path { stroke: rgba(255, 255, 255, 0.17); }
+.pie-mapa-vias path { stroke: rgba(255, 255, 255, 0.4); }
+
+.pie-mapa-mira path,
+.pie-mapa-mira circle {
+  stroke: var(--color-accent-texto);
+  opacity: 0.75;
+}
+
+.pie-mapa-punto {
+  fill: var(--color-accent-texto);
+}
+
+/* La punta va rellena; el asta, a un pixel como todo lo demas. */
+.pie-mapa-norte path { stroke: rgba(255, 255, 255, 0.34); }
+.pie-mapa-norte path:first-child {
+  fill: rgba(255, 255, 255, 0.34);
+  stroke: none;
+}
+
+/* La escala y la atribución. La atribución de OpenStreetMap es obligatoria por
+   la ODbL: no es un crédito de cortesía y no se retira. */
+.pie-mapa-pie {
+  /* Dos renglones explícitos y no un flex que envuelve: envolviendo, la
+     atribución caía suelta a la derecha de la segunda línea y se leía como algo
+     que se había descolgado. Cada cosa en su fila, y las dos siguen la
+     alineación de la columna — a la izquierda en escritorio, centrada en el pie
+     de móvil. */
+  display: grid;
+  justify-items: inherit;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
   font-family: var(--font-mono);
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: #ffffff;
+  /* 0.7rem = 11,2px. El piso de texto funcional del proyecto son 11px. */
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--color-texto-2);
   font-variant-numeric: tabular-nums;
-  margin: 0 0 0.6rem;
+}
+
+/* El ancho lo pone el JSX a partir de los metros reales del recorte: la barra
+   mide lo que dice medir. */
+.pie-mapa-escala {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.45);
+  position: relative;
+}
+
+/* Los topes, para que se lea como una regla y no como un guion. */
+.pie-mapa-escala::before,
+.pie-mapa-escala::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.45);
+}
+.pie-mapa-escala::before { left: 0; }
+.pie-mapa-escala::after { right: 0; }
+
+.pie-mapa-fuente {
+  opacity: 0.72;
+}
+
+/* La escala y sus metros, en la misma línea. */
+.pie-mapa-regla {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .pie-enlace {
@@ -469,6 +620,30 @@
     inset: 0;
     width: auto;
     transform: none;
+  }
+
+  /* En una columna estrecha el mapa y la dirección no caben en fila: la calle
+     se partía en tres renglones y el mapa quedaba pegado a la izquierda
+     mientras el resto del pie va centrado, que es justo lo que Kevin pidió que
+     no pasara. Apilados y centrados, vuelve la simetría. */
+  .pie-sede {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* La escala y la atribución, centradas bajo el mapa: con el mapa centrado y
+     el pie de foto a la izquierda, el bloque se veía torcido. */
+  .pie-mapa-pie {
+    justify-items: center;
+  }
+
+  .pie-mapa-regla {
+    justify-content: center;
+  }
+
+  .pie-sede-datos {
+    flex: 0 1 auto;
   }
 
   /* Centrado explícito ANTES de girar. Con place-items en la rejilla, la caja

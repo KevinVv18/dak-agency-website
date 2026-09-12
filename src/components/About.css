@@ -257,8 +257,48 @@
   .about { padding: var(--spacing-3xl) 1.5rem; }
 }
 
+/* ── En una sola columna, el eje BAJA ──
+
+   A partir de aquí las cuatro estaciones se apilan, y el filete horizontal que
+   las colgaba deja de tener sentido: ya no hay cuatro cosas en fila de las que
+   colgar. Apiladas y todas a ras del margen izquierdo se leían como cuatro
+   bloques sueltos sin relación entre sí.
+
+   Así que el eje se parte en cuatro tramos y cada estación entra un escalón más
+   que la anterior. Lo que se ve es una BAJADA, que es exactamente lo que el
+   proceso es: no se puede lanzar antes de diseñar. La marca vertical de cada
+   estación viaja con su tramo, y el encuentro de las dos dibuja la junta.
+
+   Solo aquí. En dos y en cuatro columnas el eje horizontal ya hace ese trabajo
+   y escalonar sería ruido. */
 @media (max-width: 560px) {
-  .about-steps { grid-template-columns: 1fr; }
+  .about-steps {
+    grid-template-columns: 1fr;
+    /* El eje ya no es de la rejilla: ahora cada estación trae el suyo. */
+    background: none;
+    /* Cuánto entra cada escalón. Medido contra la columna de texto: por encima
+       de 1rem el cuarto paso deja el párrafo en tiras de tres palabras. */
+    --escalon: 0.9rem;
+  }
+
+  .about-step {
+    margin-left: calc(var(--escalon-n, 0) * var(--escalon));
+    /* Sin sangría derecha: lo que se gana por la izquierda con el escalón hay
+       que devolvérselo al párrafo por algún lado. El aire lateral ya lo pone
+       el propio .about. */
+    padding: 1.3rem 0 0 0;
+    /* Su tramo de eje. Se desvanece hacia la derecha para que se lea como un
+       riel que continúa, y no como el borde superior de una caja. */
+    background:
+      linear-gradient(to right,
+        rgba(255, 255, 255, 0.14) 0 58%,
+        rgba(255, 255, 255, 0) 100%)
+      0 0 / 100% 1px no-repeat;
+  }
+
+  .about-step:nth-child(2) { --escalon-n: 1; }
+  .about-step:nth-child(3) { --escalon-n: 2; }
+  .about-step:nth-child(4) { --escalon-n: 3; }
 }
 
 @media (prefers-reduced-motion: reduce) {

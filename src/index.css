@@ -98,10 +98,17 @@
   --breakpoint-mobile: 768px;
   --breakpoint-tablet: 1024px;
   
-  /* Z-index */
+  /* Z-index
+
+     --z-modal estaba en 2000 y no servía para nada: la burbuja del chat vive en
+     9990 por su cuenta (ChatWidget.css:11), así que un velo en 2000 tapaba la
+     nav pero dejaba la burbuja flotando encima del diálogo. Projects.css:595 lo
+     documentó y puso 9995 a mano, dejando escrito «hasta que esa escala se
+     unifique». Esto la unifica: el token ya describe la realidad y los dos
+     diálogos del sitio lo usan. */
   --z-navigation: 1000;
-  --z-modal: 2000;
-  --z-tooltip: 3000;
+  --z-modal: 9995;
+  --z-tooltip: 9998;
 }
 
 /* ===================================
@@ -313,11 +320,15 @@ section {
    falta y ampliar ahi solo arriesga solapes.
 
    Nota: ninguno de estos selectores usaba ::after, se comprobo antes. Si
-   alguno lo necesita en el futuro, hay que mover la ampliacion a ::before. */
+   alguno lo necesita en el futuro, hay que mover la ampliacion a ::before.
+
+   Los controles de /gallery salieron de estas listas al rehacerse la ruta: los
+   nuevos declaran su propio min-height/min-width de 44px en Galeria.css. La
+   ampliacion por pseudo-elemento solo daba alto, y por eso los botones de la
+   nav flotante median 33x44 y la auditoria los cantaba. */
 @media (max-width: 768px), (pointer: coarse) {
   .hamburger,
   .ann-step,
-  .gallery-dot,
   .nav-arrow,
   .notif-btn,
   .social-link,
@@ -334,16 +345,12 @@ section {
   .pie-arriba,
   .progress-segment,
   .pie-enlace,
-  .pie-indice-item,
-  .filter-pill,
-  .floating-nav-btn,
-  .banner-arrow {
+  .pie-indice-item {
     position: relative;
   }
 
   .hamburger::after,
   .ann-step::after,
-  .gallery-dot::after,
   .nav-arrow::after,
   .notif-btn::after,
   .social-link::after,
@@ -359,10 +366,7 @@ section {
   .pie-terminos a::after,
   .pie-arriba::after,
   .progress-segment::after,
-  .pie-enlace::after,
-  .filter-pill::after,
-  .floating-nav-btn::after,
-  .banner-arrow::after {
+  .pie-enlace::after {
     content: '';
     position: absolute;
     left: 0;
@@ -395,9 +399,7 @@ section {
   .hamburger::after,
   .nav-arrow::after,
   .notif-btn::after,
-  .social-link::after,
-  .gallery-dot::after,
-  .banner-arrow::after {
+  .social-link::after {
     left: 50%;
     right: auto;
     width: 44px;
@@ -700,9 +702,11 @@ section {
        llegue su rediseño — retirando entonces su --luz-seccion, que es el
        lenguaje del mundo anterior (resplandor radial).
 
-     HOY NINGUNA SECCIÓN LOS CONSUME. Se definen para que el sistema exista y
-     los rediseños los adopten uno a uno; aplicarlos a secciones aún no
-     pensadas sería vestir dos veces el mismo cuerpo. */
+     Consumidores a día de hoy: Servicios (fuerte), Demos (media), Taller, Blog,
+     Nosotros y Contacto (tenue), y el Pie sin ninguna. /gallery es la excepción
+     razonada: es el Taller convertido en ruta propia, y sin nada aguas arriba
+     el escalón tenue no se lee, así que toma el medio. El motivo está escrito
+     en Galeria.css. */
   --estela-fuerte:
     repeating-linear-gradient(2deg,
       rgba(255, 255, 255, 0.042) 0 1px, transparent 1px 9px),

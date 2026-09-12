@@ -2,11 +2,23 @@ import { fotoUrl, fotoFuentes, CARPETA_ESTUDIO } from '../utils/cloudinary'
 
 // Las 6 fotos que ya viven en el repo. Se conservan como línea familiar.
 import fBaby from '../assets/gallery/baby1-min.webp'
+import fBabySm from '../assets/gallery/baby1-min-sm.webp'
+import fBabyXs from '../assets/gallery/baby1-min-xs.webp'
 import fFamilia from '../assets/gallery/Familia1-min.webp'
+import fFamiliaSm from '../assets/gallery/Familia1-min-sm.webp'
+import fFamiliaXs from '../assets/gallery/Familia1-min-xs.webp'
 import fHermanos from '../assets/gallery/hermanos.webp'
+import fHermanosSm from '../assets/gallery/hermanos-sm.webp'
+import fHermanosXs from '../assets/gallery/hermanos-xs.webp'
 import fMami from '../assets/gallery/mami1-min.webp'
+import fMamiSm from '../assets/gallery/mami1-min-sm.webp'
+import fMamiXs from '../assets/gallery/mami1-min-xs.webp'
 import fPareja from '../assets/gallery/pareja1-min.webp'
+import fParejaSm from '../assets/gallery/pareja1-min-sm.webp'
+import fParejaXs from '../assets/gallery/pareja1-min-xs.webp'
 import fPediatra from '../assets/gallery/PEDIATRA CORRALES@3x-min.webp'
+import fPediatraSm from '../assets/gallery/PEDIATRA CORRALES@3x-min-sm.webp'
+import fPediatraXs from '../assets/gallery/PEDIATRA CORRALES@3x-min-xs.webp'
 
 // Logos de cliente. Solo hay cuatro por ahora; el resto cae al monograma.
 // Comprobado que los cuatro son a todo color y se leen sobre el fondo claro de
@@ -199,22 +211,22 @@ export const sesiones = [
 
   // ── LÍNEA FAMILIAR — ya en el repo, se sirven en local ───────────────────
   { id: 'pediatra-corrales', w: 900, h: 1600, cliente: 'Pediatría Corrales', sector: 'Salud',
-    linea: 'comercial', publicado: true, local: fPediatra,
+    linea: 'comercial', publicado: true, local: fPediatra, localSm: fPediatraSm, localXs: fPediatraXs,
     alt: 'Equipo médico de Pediatría Corrales sobre fondo blanco' },
   { id: 'familia', w: 1067, h: 1600, cliente: null, sector: 'Retrato familiar',
-    linea: 'familiar', publicado: true, local: fFamilia,
+    linea: 'familiar', publicado: true, local: fFamilia, localSm: fFamiliaSm, localXs: fFamiliaXs,
     alt: 'Retrato de familia en estudio' },
   { id: 'hermanos', w: 1067, h: 1600, cliente: null, sector: 'Retrato infantil',
-    linea: 'familiar', publicado: true, local: fHermanos,
+    linea: 'familiar', publicado: true, local: fHermanos, localSm: fHermanosSm, localXs: fHermanosXs,
     alt: 'Retrato de dos hermanos sobre fondo navideño' },
   { id: 'pareja', w: 1067, h: 1600, cliente: null, sector: 'Retrato de pareja',
-    linea: 'familiar', publicado: true, local: fPareja,
+    linea: 'familiar', publicado: true, local: fPareja, localSm: fParejaSm, localXs: fParejaXs,
     alt: 'Retrato de pareja en estudio' },
   { id: 'maternidad', w: 1067, h: 1600, cliente: null, sector: 'Maternidad',
-    linea: 'familiar', publicado: true, local: fMami,
+    linea: 'familiar', publicado: true, local: fMami, localSm: fMamiSm, localXs: fMamiXs,
     alt: 'Sesión de maternidad en estudio' },
   { id: 'newborn', w: 1600, h: 1067, cliente: null, sector: 'Recién nacido',
-    linea: 'familiar', publicado: true, local: fBaby,
+    linea: 'familiar', publicado: true, local: fBaby, localSm: fBabySm, localXs: fBabyXs,
     alt: 'Sesión de recién nacido en estudio' },
 ]
 
@@ -230,12 +242,23 @@ export const srcDeSesion = (sesion, ancho) =>
 
 /**
  * srcset/sizes de una sesión, para que cada pantalla pida el ancho que le hace
- * falta. Solo aplica a las de Cloudinary: las seis del repo son un archivo
- * único y no hay variantes que ofrecer, así que devuelven nada y se quedan con
- * su src.
+ * falta.
+ *
+ * Las de Cloudinary las resuelve `fotoFuentes`. Las seis del repo devolvían
+ * nada y se quedaban con su archivo único: 980 KB para pintarse entre 171 y
+ * 342px, lo más caro de /gallery y también de la portada. Ahora
+ * `npm run taller:variantes` les genera un -xs de 360 y un -sm de 700, y aquí
+ * se ofrecen los tres anchos. Si una sesión no los tiene declarados, se
+ * comporta exactamente como antes.
  */
-export const fuentesDeSesion = (sesion, medida) =>
-  sesion.local ? {} : fotoFuentes(sesion.id, medida)
+export const fuentesDeSesion = (sesion, medida) => {
+  if (!sesion.local) return fotoFuentes(sesion.id, medida)
+  if (!sesion.localXs) return {}
+  return {
+    srcSet: `${sesion.localXs} 360w, ${sesion.localSm} 700w, ${sesion.local} ${sesion.w}w`,
+    sizes: medida,
+  }
+}
 
 /** Para el informe de pendientes: qué falta subir y con qué nombre exacto. */
 export const pendientes = () =>
