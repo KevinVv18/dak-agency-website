@@ -1,0 +1,279 @@
+/* propuesta.css — capa sobre analisis.css para los informes nuevos del mundo deck
+   (diagnóstico + propuesta comercial). Se carga DESPUÉS de analisis.css y solo en
+   los informes que la piden: los ya entregados no cambian ni un píxel.
+
+   Tres decisiones, tomadas el 25-sep-2026 con El Arroyito:
+
+   1. SIN CÁPSULAS. Los botones redondos de 999px eran la forma por defecto de
+      cualquier plantilla y no tenían nada de DAK (la web principal usa esquinas
+      rectas). Ahora son «pestañas de expediente»: rectángulo recto con una
+      esquina biselada. Dice «documento», no «app».
+
+   2. EL NÚMERO CUELGA, NO ENCABEZA. El kicker en mayúsculas encima de cada
+      titular era una etiqueta más compitiendo con el titular. El número de
+      capítulo pasa a colgar a la izquierda del propio titular (sigue sirviendo
+      para decir «vamos al 7» en una reunión) y la fase de la metodología baja a
+      la línea de fuentes, que es donde se justifica.
+
+   3. LO QUE SIGNIFICA ALGO SE PINTA CON BORDE. La regla que nació en «Signos
+      vitales»: el navegador no imprime fondos salvo que quien imprime lo pida.
+      Barras, viñetas, cabeceras de tabla y la fila de la marca llevan su dato en
+      un borde, que se imprime siempre. */
+
+:root{
+  --r:4px;                 /* radio único, el mismo que la web principal */
+  --bisel:12px;            /* la esquina cortada de botones y pestañas */
+  --lila:#C97DFF;          /* púrpura legible sobre negro en texto pequeño (5,6:1) */
+}
+
+/* ---------- superficies del navegador ---------- */
+::selection{background:#B024FF;color:#fff}
+:focus-visible{outline:2px solid #B024FF;outline-offset:3px}
+.dark :focus-visible{outline-color:var(--lila)}
+.tw{scrollbar-color:#B9A8D6 transparent}
+
+/* ---------- radios: un solo sistema ---------- */
+.card,.tier,.step,.vs .col,.tw,.idx button{border-radius:var(--r)}
+.rail .lbl{border-radius:2px}
+
+/* El púrpura de marca da 4,49:1 sobre negro en los rótulos de 11,5 px: una
+   centésima por debajo del mínimo. Sobre oscuro, el lila. */
+.dark .lab{color:var(--lila)}
+/* La barra fija era 92 % opaca: el auditor (con razón) no la cuenta como fondo, y
+   el texto de la barra depende de lo que pase por debajo. Al 95 % es un fondo. */
+.bar{background:rgba(3,1,6,.95)}
+
+/* ---------- 1. Botones: pestañas de expediente ---------- */
+.bar{padding-top:.6rem;padding-bottom:.6rem}
+.bar .pdf,.bar .menu{min-height:40px;box-sizing:border-box}
+.bar .pdf{border-radius:0;padding:.55rem 1.05rem .55rem .95rem;
+  clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%);
+  display:inline-flex;align-items:center;gap:.5rem;transition:background .18s ease}
+.bar .pdf svg{width:14px;height:14px;flex:none}
+.bar .menu{border-radius:0;background:transparent;border:1px solid rgba(201,125,255,.45);
+  padding:.55rem .9rem .55rem .8rem}
+.bar .menu:hover,.bar .menu[aria-expanded="true"]{background:rgba(176,36,255,.16)}
+
+.btn{border-radius:0;min-height:52px;box-sizing:border-box}
+.btn.p{padding:.95rem 1.7rem .95rem 1.5rem;gap:.8rem;
+  clip-path:polygon(0 0,calc(100% - var(--bisel)) 0,100% var(--bisel),100% 100%,0 100%)}
+.btn.p svg{width:18px;height:18px;flex:none;transition:transform .35s cubic-bezier(.19,1,.22,1)}
+.btn.p:hover{transform:none}
+.btn.p:hover svg{transform:translateX(5px)}
+/* El secundario deja de ser botón: es un enlace con el subrayado grueso de un
+   documento marcado a mano. Mismo objetivo táctil, menos peso visual. */
+.btn.l{background:none;border:0;color:#fff;padding:.9rem .2rem;font:inherit;font-weight:600;font-size:.98rem;
+  text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.4em;
+  text-decoration-color:rgba(201,125,255,.6);cursor:pointer;display:inline-flex;align-items:center;gap:.55rem}
+.btn.l:hover{text-decoration-color:var(--lila)}
+.btn.l svg{width:16px;height:16px;flex:none}
+.cta{align-items:center;gap:1rem 2rem}
+
+/* Sello de portada: una línea de verificación, sin cápsula ni punto latiendo */
+.sello{display:flex;align-items:center;gap:.8rem;margin-top:1.9rem;font-size:.86rem;font-weight:600;
+  color:#EDE6F6;letter-spacing:.01em;max-width:52ch}
+.sello::before{content:"";flex:none;width:2.2rem;border-top:1px solid var(--lila)}
+
+/* «Recomendado» es la pestaña que asoma sobre la tarjeta, como en un archivador */
+.tiers{margin-top:3.4rem;row-gap:3rem}
+.tier{position:relative}
+.tier.reco{box-shadow:none;border:1px solid var(--purp);outline:1px solid var(--purp);outline-offset:-2px}
+.tier .badge{position:absolute;left:-1px;bottom:100%;margin:0;border-radius:0;
+  padding:.4rem 1.2rem .35rem .8rem;font-size:.68rem;letter-spacing:.12em;
+  clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%)}
+
+/* ---------- 2. El número cuelga del titular ---------- */
+/* El riel y el índice cuentan la portada como 01: el titular tiene que decir lo mismo */
+body{counter-reset:cap 1}
+section:not(.hero) h2.c{display:grid;grid-template-columns:auto 1fr;column-gap:clamp(.7rem,1.6vw,1.2rem);align-items:baseline}
+section:not(.hero) h2.c::before{content:counter(cap,decimal-leading-zero);font-family:var(--sans);
+  font-size:.42em;font-weight:700;letter-spacing:.04em;color:var(--purpd);font-variant-numeric:tabular-nums;
+  padding-top:.1em;min-width:1.7em}
+.dark h2.c::before{color:var(--lila)}
+.close h2.c{display:block}
+.close h2.c::before{content:none}
+h2.c+.lede{margin-top:1.1rem}
+/* La fase de la metodología, al pie: es donde se justifica el capítulo */
+.src .fase{font-style:normal;font-weight:700;color:var(--purpd);margin-right:.35rem}
+.dark .src .fase{color:var(--lila)}
+
+/* ---------- 3. Lo que significa algo, con borde ---------- */
+/* Viñetas: aro de color en vez de círculo relleno */
+.dot{background:none!important;border:5px solid var(--purp);width:10px;height:10px;box-sizing:border-box}
+.dot.g{border-color:var(--green)}.dot.r{border-color:var(--red)}.dot.a{border-color:var(--amber)}
+/* Barras: la longitud es un borde superior grueso, no un fondo */
+.btrack{border-radius:0;height:26px}
+.bfill{height:0;border-radius:0;background:none;box-shadow:none;border-top:26px solid #9A3BE0}
+.bfill::after{content:none}
+.bfill.zero{background:none;border-top-color:var(--red);min-width:6px}
+.bfill.me{border-top-color:#4E0F80}
+.dark .bfill{border-top-color:#B024FF}
+.dark .bfill.me{border-top-color:#F3E3FF}
+/* Hueco de publicación dentro de una serie de barras: el silencio también es un dato */
+.brow.hueco{grid-template-columns:1fr;font-size:.84rem;font-weight:600;color:var(--red);padding:.1rem 0 .1rem;
+  border-top:1px dashed currentColor;border-bottom:1px dashed currentColor;text-align:center}
+.brow .bn{font-size:.9rem}
+.brow .bn small{display:block;font-size:.76rem;color:var(--muted)}
+.dark .brow .bn small{color:var(--mutedd)}
+
+/* ---------- componentes nuevos ---------- */
+
+/* Libro mayor: tres columnas con filete arriba, en lugar de tres tarjetas iguales */
+.ledger{display:grid;gap:1.6rem 2.2rem;margin-top:2.6rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
+.ledger>div{border-top:1px solid rgba(201,125,255,.45);padding-top:1rem}
+.ledger .lab{margin-bottom:.5rem}
+.ledger p:not(.lab){font-size:1rem;line-height:1.55}
+.dark .ledger p:not(.lab){color:#E9E2F4}
+section:not(.dark) .ledger>div{border-top-color:var(--line)}
+
+/* El recorrido: de ver el video a sentarse a la mesa */
+.ruta{list-style:none;display:grid;margin-top:2.6rem;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid rgba(255,255,255,.14)}
+.ruta li{padding:1.3rem 1.3rem 0 0;position:relative}
+.ruta li+li{padding-left:1.3rem;border-left:1px solid rgba(255,255,255,.1)}
+.ruta .n{display:block;font:700 .78rem/1 var(--sans);letter-spacing:.1em;color:var(--mutedd);margin-bottom:.9rem}
+.ruta h3{font-size:1.2rem;margin-bottom:.5rem}
+.ruta p{font-size:.93rem;color:var(--mutedd)}
+.ruta .est{display:inline-block;margin-top:.9rem;font:700 .74rem/1.2 var(--sans);letter-spacing:.06em;text-transform:uppercase;
+  padding-top:.45rem;border-top:3px solid currentColor}
+.ruta .ok{color:var(--green)}.ruta .at{color:var(--amber)}.ruta .ko{color:var(--red)}
+@media(max-width:860px){.ruta{grid-template-columns:1fr 1fr}.ruta li:nth-child(3){padding-left:0;border-left:0}
+  .ruta li:nth-child(n+3){margin-top:1.4rem;border-top:1px solid rgba(255,255,255,.1)}}
+@media(max-width:480px){.ruta{grid-template-columns:1fr}.ruta li,.ruta li+li{padding-left:0;border-left:0}
+  .ruta li+li{margin-top:1.2rem;border-top:1px solid rgba(255,255,255,.1)}}
+
+/* El mapa: posición en Google Maps por consulta y por distancia.
+   Una celda = un punto de la ciudad. El número es el puesto; el trazo lo repite
+   para que se lea de lejos y sobreviva a la impresión sin fondos:
+   top 3 = borde doble · 4 a 10 = borde simple · 11 a 20 = discontinuo · fuera = punteado tenue. */
+.mapa{margin-top:2.4rem;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mapa table{min-width:720px;border-collapse:separate;border-spacing:6px;font-size:.9rem;table-layout:fixed}
+.mapa th,.mapa td{background:none!important;border:0;padding:0;color:inherit;white-space:normal}
+.mapa thead th{position:static;font:600 .78rem/1.3 var(--sans);color:var(--mutedd);text-align:center;padding:0 0 .5rem;vertical-align:bottom}
+.mapa thead th b{display:block;color:#fff;font-size:.86rem}
+.mapa thead th:first-child{text-align:left;width:11.5rem}
+.mapa tbody th{text-align:left;font:600 .92rem/1.3 var(--sans);color:#fff;padding-right:.6rem}
+.mapa td{text-align:center}
+.mapa .p{display:flex;align-items:center;justify-content:center;height:46px;font:700 1.05rem/1 var(--sans);
+  font-variant-numeric:tabular-nums;border:1px solid rgba(201,125,255,.55);color:#fff}
+.mapa .p.t3{border:3px double var(--lila);color:#fff;font-size:1.2rem}
+.mapa .p.t20{border:1px dashed rgba(201,125,255,.6);color:#D8C8EE}
+.mapa .p.no{border:1px dotted rgba(255,255,255,.28);color:#9F93B5;font-weight:600}
+.mapa tbody tr.me th{color:var(--lila)}
+.leyenda{display:flex;flex-wrap:wrap;gap:.6rem 1.6rem;margin-top:1.1rem;font-size:.82rem;color:var(--mutedd)}
+.leyenda span{display:inline-flex;align-items:center;gap:.55rem}
+.leyenda i{display:inline-block;width:22px;height:16px;flex:none}
+.leyenda .t3{border:3px double var(--lila)}.leyenda .t10{border:1px solid rgba(201,125,255,.55)}
+.leyenda .t20{border:1px dashed rgba(201,125,255,.6)}.leyenda .no{border:1px dotted rgba(255,255,255,.35)}
+
+/* En el teléfono, diez columnas no caben: la misma tabla, traspuesta
+   (puntos en filas, búsquedas en columnas). Solo se muestra una de las dos. */
+.mapa-m{display:none}
+.mapa-m table{min-width:0;width:100%;border-spacing:4px}
+.mapa-m thead th{font-size:.74rem}
+.mapa-m thead th:first-child{width:6.4rem}
+.mapa-m tbody th{font-size:.86rem;line-height:1.25}
+.mapa-m tbody th small{display:block;font-size:.74rem;font-weight:500;color:var(--mutedd)}
+.mapa-m .p{height:40px;font-size:.95rem}
+.mapa-m .p.no{font-size:.78rem}
+@media(max-width:760px){.mapa-d{display:none}.mapa-m{display:block}}
+@media print{.mapa-m{display:none!important}.mapa-d{display:block!important;overflow:visible}.mapa-d table{min-width:0!important;font-size:.7rem}.mapa-d .p{height:30px}}
+
+/* Casillero de cumplimiento: «7 de 10 videos dicen la dirección» */
+.casilla{display:grid;gap:.9rem;margin-top:1.6rem}
+.casilla li{list-style:none;display:grid;grid-template-columns:minmax(9rem,15rem) 1fr auto;gap:1rem;align-items:center;font-size:.93rem}
+.casilla .cajas{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;max-width:260px}
+.casilla .cajas i{display:block;height:18px;border:1px solid #CFC3E3}
+.casilla .cajas i.s{border:0;border-top:18px solid var(--purpd)}
+.casilla .cuenta{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.casilla .cero{color:var(--red)}
+@media(max-width:560px){.casilla li{grid-template-columns:1fr auto}.casilla .cajas{grid-column:1/-1;grid-row:2;max-width:none}}
+
+/* Cifras enfrentadas: la marca contra la mediana de sus vecinos */
+.frente{display:grid;gap:1.2rem 2.4rem;margin-top:2.4rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.frente>div{border-top:1px solid var(--line);padding-top:1rem}
+.frente .stat{font-size:clamp(2.4rem,5vw,3.4rem)}
+.frente .vs-n{margin-top:.5rem;font-size:.9rem;color:var(--muted)}
+.frente .vs-n b{color:var(--tx);font-variant-numeric:tabular-nums}
+
+/* Lo que escribe Chiclayo: la frase tal cual, con su lectura al lado */
+.busca{margin-top:2.2rem;display:grid;gap:0}
+.busca>div{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:1.4rem;padding:1.05rem 0;border-top:1px solid var(--line)}
+.busca>div:last-child{border-bottom:1px solid var(--line)}
+.busca q{font-family:var(--serif);font-size:1.12rem;quotes:"«" "»";color:var(--tx)}
+.busca q+q::before{content:" · «"}
+.busca .quiere{font-size:.93rem;color:var(--muted)}
+.busca .quiere b{color:var(--tx)}
+@media(max-width:640px){.busca>div{grid-template-columns:1fr;gap:.4rem}}
+
+/* Tabla de la competencia: número a la derecha y alineado */
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+@media(max-width:640px){
+  .bar .pdf span{display:none}
+  .bar .pdf{padding:.55rem .8rem}
+}
+
+/* ---------- legibilidad (pasada de impeccable, 25-sep-2026) ---------- */
+/* Nada funcional por debajo de 11 px: .68rem daba 10,9 px */
+.lab,.rail .lbl,.tier .badge{font-size:.72rem}
+/* La cabecera fija es un rótulo de 45 caracteres: en versalitas no se lee de un vistazo */
+.bar .who{text-transform:none;letter-spacing:.01em;font-size:.82rem}
+/* Líneas de lectura: las fuentes y los pasos no pasan de ~75 caracteres */
+.src{max-width:62ch}
+.tnote,.attrib{max-width:62ch}
+.step p{max-width:68ch}
+.brow.hueco{padding:.35rem 0}
+
+/* ---------- movimiento sin recalcular el layout ---------- */
+/* Las barras ya no animan `width` (recalcula el layout en cada frame): el largo
+   final va en --pct desde el HTML y lo que se anima es un scaleX. analisis.js
+   sigue poniendo el mismo width por su cuenta, sin transición, así que no choca. */
+.bfill{width:calc(var(--pct,0)*1%);transform-origin:left center;
+  transition:transform 1.1s cubic-bezier(.19,1,.22,1)!important;transition-delay:calc(var(--i,0)*70ms)!important}
+.js .bars:not(.in) .bfill{transform:scaleX(0)}
+@media (prefers-reduced-motion:reduce){.bfill{transition:none!important}.js .bars:not(.in) .bfill{transform:none}}
+.prog{transition:none}
+.rail .tick,.rail button:hover .tick,.rail button:focus-visible .tick,.rail button[aria-current="true"] .tick{width:30px}
+.rail .tick{transform-origin:left center;transform:scaleX(.47);transition:transform .22s cubic-bezier(.19,1,.22,1),background .22s ease}
+.rail button:hover .tick,.rail button:focus-visible .tick{transform:scaleX(.87)}
+.rail button[aria-current="true"] .tick{transform:none}
+.bar .menu .bars3 i{transition:transform .24s cubic-bezier(.19,1,.22,1),opacity .18s ease}
+.bar .menu .bars3 i:nth-child(2),.bar .menu:hover .bars3 i:nth-child(2){width:100%;transform-origin:left center;transform:scaleX(.72)}
+.bar .menu:hover .bars3 i:nth-child(2){transform:none}
+
+/* Las tarjetas de plan son islas claras dentro de una sección oscura: su lista
+   hereda el lila de .dark .dl span (2,6:1 sobre blanco). Declaran su propio color. */
+.dark .tier .dl span{color:var(--muted)}
+.dark .tier .dl b{color:var(--tx)}
+
+/* Énfasis dentro de secciones oscuras: blanco en pantalla, negro en papel.
+   Un style="color:#fff" en línea se imprimía blanco sobre blanco. */
+.dark .hl{color:#fff}
+
+/* ---------- impresión ---------- */
+@media print{
+  .cta,.btn{display:none!important}
+  /* Una sección larga no puede ir entera en una hoja: dejarla partir y proteger
+     solo los bloques. Si no, quedan hojas con una línea de fuentes y nada más. */
+  section{break-inside:auto!important}
+  h2,h3{break-after:avoid}
+  .card,.tier,.step,.vs .col,.ledger>div,.ruta li,.brow,.casilla li,tr,.src,.frente>div,.busca>div,.mapa{break-inside:avoid}
+  .bfill,.js .bars:not(.in) .bfill{transform:none!important}
+  .hero .logo,.foot img{filter:brightness(0)}
+  .hero .sub,.thesis em{color:#4E0F80!important}
+  .thesis b,.hl,.dark .hl{color:#000!important}
+  .hero .meta,.hero .date{color:#333!important}
+  th{background:none!important;color:#000!important;border-bottom:2px solid #000}
+  tr.me td,.dark tr.me td{background:none!important;color:#000!important;font-weight:700;
+    border-top:2px solid #000;border-bottom:2px solid #000}
+  tr.me td b{color:#000!important}
+  .dark .ledger p:not(.lab),.ruta p,.mapa tbody th,.mapa .p{color:#000!important}
+  .ruta{border-top-color:#999}.ruta li+li{border-left-color:#ccc}
+  .mapa .p{border-color:#7A1FB8}.mapa .p.t3{border-color:#7A1FB8}.mapa .p.no{border-color:#bbb;color:#666!important}
+  .mapa thead th,.mapa thead th b,.leyenda{color:#333!important}
+  .dark .bfill,.bfill{border-top-color:#7A1FB8}
+  .bfill.me,.dark .bfill.me{border-top-color:#000}
+  .sello{color:#000}
+  .tier .badge{position:static;display:inline-block;margin-bottom:.7rem;color:#000;background:none;border:1px solid #000;clip-path:none}
+  .tiers{margin-top:1.4rem}
+}
