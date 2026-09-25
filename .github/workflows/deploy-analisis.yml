@@ -6,18 +6,35 @@ name: Deploy microsite de análisis de marca
 # Cada carpeta de adentro es un entregable de un cliente distinto (ej. /ayb/).
 # El .htaccess de la carpeta fuerza noindex: son datos reales de prospectos.
 #
-# ⚠️ 'analisis/' DEBE seguir en la lista de --exclude de deploy.yml o ese deploy
-#    borra todos los entregables. Ya pasó con el demo inmobiliario.
+# ⚠️ 'analisis/' DEBE seguir en deploy-protect.txt o el deploy de la SPA borra
+#    todos los entregables. Ya pasó con el demo inmobiliario.
 #
 # Dispara:
 #  - manualmente (workflow_dispatch)
 #  - push a main que toque _analisis-microsite/**
-#  - cualquier push cuyo commit incluya [deploy-analisis]
+#  - pull request que toque _analisis-microsite/** → SOLO el ensayo en seco, no despliega
+#
+# 25-sep-2026: el servidor iba por delante del repo. JETC (/jetc/), el Radar
+# (/radar/), sitemap.xml, robots.txt, la v9 de analisis.css y seis informes se
+# habían subido desde una PC local sin pasar por main. Este rsync usa --delete,
+# así que el siguiente push habría borrado JETC y el Radar y devuelto seis
+# informes a su versión vieja, sin que nadie lo viera. Desde entonces hay una
+# guarda: antes de subir nada se hace el mismo rsync en seco contra el servidor
+# real, se imprime qué cambiaría y el deploy SE DETIENE si iba a borrar algo.
 
 on:
   workflow_dispatch:
+    inputs:
+      permitir_borrados:
+        description: 'Permitir que el deploy borre del servidor lo que no está en el repo. Solo si el borrado es intencionado.'
+        type: boolean
+        default: false
   push:
     branches: [main]
+    paths:
+      - '_analisis-microsite/**'
+      - '.github/workflows/deploy-analisis.yml'
+  pull_request:
     paths:
       - '_analisis-microsite/**'
       - '.github/workflows/deploy-analisis.yml'
@@ -27,13 +44,99 @@ permissions:
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy-analisis]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Guarda: el mismo rsync que el deploy, en seco y comparando por contenido
+      # (-c), contra el servidor real. Imprime cada archivo que cambiaría, con su
+      # diff si es texto, y aborta si alguno se fuera a borrar. Falla cerrado: si
+      # no se puede hacer la comprobación, no se despliega.
+      #
+      # En un pull request es la vista previa del deploy: el log dice exactamente
+      # qué va a pasar en el servidor antes de mergear.
+      - name: Guarda anti-borrado (ensayo en seco contra el servidor)
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          PERMITIR_BORRADOS: ${{ github.event_name == 'workflow_dispatch' && inputs.permitir_borrados }}
+        run: |
+          # Sin `set -e` a propósito, igual que la guarda de deploy.yml: cada
+          # fallo se comprueba y se explica en vez de cortar el log en blanco.
+          set -uo pipefail
+
+          if [ -z "$SSH_KEY" ]; then
+            echo "::error::No hay SSH_PRIVATE_KEY (¿pull request desde un fork?). Sin ella no se puede comprobar el servidor."
+            exit 1
+          fi
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p 65002 89.116.115.11 >> ~/.ssh/known_hosts 2>/dev/null || echo "aviso: ssh-keyscan falló; se continúa con accept-new"
+
+          SSH="ssh -i $HOME/.ssh/deploy_key -p 65002 -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20"
+          HOST=u567580447@89.116.115.11
+          REMOTE=/home/u567580447/domains/dakagency.net/public_html/analisis
+
+          ok=0
+          for intento in 1 2 3; do
+            if rsync -n -rlc --delete --itemize-changes \
+                 --exclude='server.cjs' --exclude='README.md' \
+                 -e "$SSH" _analisis-microsite/ "$HOST:$REMOTE/" > /tmp/ensayo.txt 2> /tmp/rsync.err; then
+              ok=1; break
+            fi
+            echo "intento $intento fallido:"; sed 's/^/    /' /tmp/rsync.err
+            sleep $((intento * 5))
+          done
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::No se pudo hacer el ensayo en seco por SSH tras 3 intentos. Se aborta sin desplegar."
+            exit 1
+          fi
+
+          grep -E '^\*deleting' /tmp/ensayo.txt | sed 's/^\*deleting *//' > /tmp/borrados.txt || true
+          grep -E '^[<>]f\+{9}' /tmp/ensayo.txt | awk '{print $2}' > /tmp/nuevos.txt || true
+          grep -E '^[<>]f' /tmp/ensayo.txt | grep -vE '^[<>]f\+{9}' | awk '{print $2}' > /tmp/cambian.txt || true
+
+          echo "--- nuevos en el servidor ($(wc -l < /tmp/nuevos.txt)) ---"; sed 's/^/  + /' /tmp/nuevos.txt
+          echo "--- cambian de contenido ($(wc -l < /tmp/cambian.txt)) ---"
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            case "$f" in
+              *.html|*.css|*.js|*.txt|*.xml|*.svg|.htaccess|*/.htaccess)
+                # </dev/null: sin él, ssh se come el resto de la lista que lee
+                # este while y el bucle termina en el primer archivo.
+                $SSH "$HOST" "cat '$REMOTE/$f'" < /dev/null > /tmp/servidor.tmp 2>/dev/null || : > /tmp/servidor.tmp
+                if diff -q --strip-trailing-cr /tmp/servidor.tmp "_analisis-microsite/$f" > /dev/null; then
+                  echo "  ~ $f  (solo cambia el fin de línea CRLF → LF)"
+                else
+                  echo "  ~ $f"
+                  diff -u --strip-trailing-cr --label "servidor/$f" --label "repo/$f" \
+                    /tmp/servidor.tmp "_analisis-microsite/$f" | head -60 | sed 's/^/      /'
+                fi ;;
+              *) echo "  ~ $f  (binario o tipo sin diff)" ;;
+            esac
+          done < /tmp/cambian.txt
+
+          if [ -s /tmp/borrados.txt ]; then
+            echo "--- se BORRARÍAN del servidor ($(wc -l < /tmp/borrados.txt)) ---"; sed 's/^/  - /' /tmp/borrados.txt
+            # Un .htaccess no se puede leer por HTTP (403), así que si se va a
+            # borrar uno se imprime entero: es la única forma de recuperarlo al repo.
+            grep -E '(^|/)\.htaccess$' /tmp/borrados.txt | while IFS= read -r f; do
+              echo "--- contenido actual de $f en el servidor ---"
+              $SSH "$HOST" "cat '$REMOTE/$f'" < /dev/null | sed 's/^/      /'
+            done
+            if [ "$PERMITIR_BORRADOS" = "true" ]; then
+              echo "::warning::Borrados permitidos a mano en este workflow_dispatch. Se continúa."
+            else
+              echo "::error::El deploy borraría lo de arriba porque vive en el servidor y no en el repo. Súbelo al repo (o, si de verdad sobra, lanza el workflow a mano con permitir_borrados)."
+              exit 1
+            fi
+          else
+            echo "OK: el deploy no borra nada del servidor."
+          fi
+
       - name: Subir microsite al docroot del subdominio (rsync en Docker)
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         uses: burnett01/rsync-deployments@7.0.1
         with:
           # server.cjs y README.md son herramientas locales, no se publican.

@@ -20,6 +20,51 @@
         ],
         "createdAt": "2026-08-07T01:12:26.776Z",
         "reason": "Confirmado por el usuario (07-ago-2026): .cursor-grid-reveal no es textura de fondo sino un gesto que sigue al raton y solo se ve donde el cursor la descubre. Las nueve cuadriculas fijas de seccion si se retiraron."
+      },
+      {
+        "rule": "ai-color-palette",
+        "value": "*",
+        "files": [
+          "_analisis-microsite/arroyito/**"
+        ],
+        "createdAt": "2026-09-25T14:06:38.903Z",
+        "reason": "Paleta de marca vinculante (PRODUCT.md, Brand Commitments: fondo #030106 y morado #B024FF); el mundo deck de analisis.dakagency.net la usa en todos los informes."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "_analisis-microsite/arroyito/**"
+        ],
+        "createdAt": "2026-09-25T14:06:38.911Z",
+        "reason": "Falso positivo: la regla .bfill::after vive en analisis.css (compartida) y propuesta.css la anula con content:none; en la página renderizada no existe."
+      },
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "_analisis-microsite/arroyito/**"
+        ],
+        "createdAt": "2026-09-25T14:06:38.918Z",
+        "reason": "Falso positivo: el box-shadow de .bfill en analisis.css (compartida) queda en none por propuesta.css; ningún elemento renderizado lo lleva."
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "_analisis-microsite/arroyito/**"
+        ],
+        "createdAt": "2026-09-25T14:06:38.926Z",
+        "reason": "Falso positivo: las transiciones de width de analisis.css (compartida) se sustituyen por transform en propuesta.css; comprobado con getComputedStyle, ningún elemento anima width."
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "_analisis-microsite/arroyito/**"
+        ],
+        "createdAt": "2026-09-25T14:06:38.933Z",
+        "reason": "Falso positivo: .tw es el contenedor con borde de una tabla cuyas celdas llevan .7rem/.9rem de relleno; la tabla ocupa el marco a propósito."
       }
     ]
   }

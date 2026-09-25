@@ -1,2 +1,17 @@
+# analisis.dakagency.net aloja los informes de marca de prospectos reales.
+# Regla por defecto: nada se rastrea.
+#
+# Unica excepcion: /radar/, el estudio agregado y anonimo, escrito para ser
+# publico. Los buscadores aplican la regla mas especifica, asi que el Allow de
+# /radar/ gana sobre el Disallow general para esa ruta.
+#
+# /assets/ se permite para que Google pueda renderizar /radar/ con su hoja de
+# estilos y su script. Ahi solo viven CSS, JS y el logotipo: ningun dato de cliente.
+
 User-agent: *
 Disallow: /
+Allow: /radar/
+Allow: /assets/
+Allow: /sitemap.xml
+
+Sitemap: https://analisis.dakagency.net/sitemap.xml

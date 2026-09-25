@@ -7,18 +7,21 @@ manda al prospecto es el link.**
 ```
 _analisis-microsite/
 ├─ .htaccess               ← noindex + cabeceras. NO borrar: aquí hay datos reales de prospectos
-├─ robots.txt              ← Disallow: /
+├─ robots.txt              ← Disallow: / salvo /radar/ y /assets/
+├─ sitemap.xml             ← solo /radar/. Los informes NUNCA van aquí
 ├─ index.html              ← raíz neutra, no lista clientes
 ├─ assets/
 │  ├─ dak-logo-blanco.svg  ← logotipo compartido
-│  ├─ signos.css / .js     ← mundo actual «Signos vitales» (informes nuevos)
-│  └─ analisis.css / .js   ← mundo anterior (los seis informes ya entregados)
+│  ├─ signos.css / .js     ← mundo «Signos vitales» (kusiwawita)
+│  ├─ analisis.css / .js   ← mundo deck (ayb, renovacix, multisonrisas, gia, domexia, xoxo,
+│  │                          arce, jetc, montana2, montana3, radar)
+│  ├─ propuesta.css        ← capa sobre analisis.css para diagnóstico + propuesta (arroyito)
+│  └─ expediente.css + poppins-*.woff2 ← mundo «expediente» (montana)
+├─ radar/                  ← estudio público e INDEXABLE; su propio .htaccess levanta el noindex
 ├─ auditar-contraste.js    ← se pega en la consola. Cero fallos o no se publica
-├─ kusiwawita/index.html   ← primer informe del mundo nuevo
-├─ ayb/index.html          ← A&B Representaciones (Chiclayo)
+├─ <marca>/index.html      ← un informe por carpeta
 └─ server.cjs              ← preview local; el workflow lo excluye del deploy
 ```
-
 ## Dos mundos visuales conviviendo, a propósito
 
 Desde el **2026-09-02** los informes nuevos se construyen con **«Signos vitales»**
@@ -53,9 +56,39 @@ Luego abre `http://localhost:4320/ayb/`. También está como entrada `analisis` 
 2. Push a `main` tocando `_analisis-microsite/**` → dispara `deploy-analisis.yml`.
    También sirve `workflow_dispatch` o un commit con `[deploy-analisis]`.
 
+> ⚠️ **El servidor no puede ir por delante del repo.** El 25-sep-2026 aparecieron en
+> producción `jetc/`, `radar/` (con su `.htaccess`), `montana*/`, `arce/`, `sitemap.xml`,
+> `expediente.css`, las Poppins y versiones nuevas de siete archivos, subidos desde una PC
+> sin pasar por `main`. Como este deploy usa `rsync --delete`, el siguiente push los habría
+> borrado. Desde entonces `deploy-analisis.yml` hace antes un **rsync en seco contra el
+> servidor**: imprime qué cambiaría (con diff) y **falla si iba a borrar algo**. En cada PR
+> corre solo esa vista previa. Si falla, lo que falta se copia al repo; un borrado a
+> propósito se lanza a mano con `workflow_dispatch` y `permitir_borrados`.
+
 > ⚠️ **`analisis/` ya está en la lista de `--exclude` de `deploy.yml`.** No la quites: ese
 > workflow hace `rsync --delete` sobre `public_html/` y borraría todos los entregables.
 > Es exactamente lo que pasó con el demo inmobiliario.
+
+## `propuesta.css` — diagnóstico y propuesta en el mundo deck
+
+Para cuando el informe es a la vez diagnóstico (como JETC o GIA) y propuesta comercial
+(como Montaña 3). Se carga **después** de `analisis.css` y solo en los informes que la piden,
+así que los ya entregados no cambian. Primer uso: `arroyito/` (25-sep-2026).
+
+- **Sin cápsulas.** Botones rectos con una esquina biselada («pestaña de expediente»);
+  el secundario es un enlace con subrayado grueso; «Recomendado» asoma sobre la tarjeta
+  como la pestaña de un archivador; el sello de portada es una línea, no un chip.
+- **El número cuelga del titular** (`<h2 class="c"><span>…</span></h2>`) y la fase de la
+  metodología baja a la línea de fuentes (`<span class="fase">Fase 4 · Demanda.</span>`).
+  El contador arranca en 1 para que diga lo mismo que el riel, que cuenta la portada.
+- **Lo que significa algo se pinta con borde** (la regla de «Signos vitales»): barras,
+  viñetas, cabeceras de tabla y la fila de la marca se imprimen aunque no se impriman fondos.
+- Componentes: `.ledger` (tres columnas con filete), `.ruta` (los pasos de ver a llegar),
+  `.mapa` (puesto en Google Maps por búsqueda y punto; en móvil, `.mapa-m` traspuesta),
+  `.casilla` («7 de 10»), `.frente` (la marca contra la mediana de sus vecinos) y `.busca`.
+- Las barras llevan su largo en `style="--pct:…"` y animan `scaleX`, no `width`.
+- El informe añade un `beforeprint` que fija las cifras que cuentan: sin él, «Guardar en
+  PDF» desde la portada imprimía ceros.
 
 ## «Signos vitales» — el mundo de los informes nuevos
 
