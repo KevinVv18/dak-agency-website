@@ -103,7 +103,9 @@ jobs:
             [ -n "$f" ] || continue
             case "$f" in
               *.html|*.css|*.js|*.txt|*.xml|*.svg|.htaccess|*/.htaccess)
-                $SSH "$HOST" "cat '$REMOTE/$f'" > /tmp/servidor.tmp 2>/dev/null || : > /tmp/servidor.tmp
+                # </dev/null: sin él, ssh se come el resto de la lista que lee
+                # este while y el bucle termina en el primer archivo.
+                $SSH "$HOST" "cat '$REMOTE/$f'" < /dev/null > /tmp/servidor.tmp 2>/dev/null || : > /tmp/servidor.tmp
                 if diff -q --strip-trailing-cr /tmp/servidor.tmp "_analisis-microsite/$f" > /dev/null; then
                   echo "  ~ $f  (solo cambia el fin de línea CRLF → LF)"
                 else
@@ -117,6 +119,12 @@ jobs:
 
           if [ -s /tmp/borrados.txt ]; then
             echo "--- se BORRARÍAN del servidor ($(wc -l < /tmp/borrados.txt)) ---"; sed 's/^/  - /' /tmp/borrados.txt
+            # Un .htaccess no se puede leer por HTTP (403), así que si se va a
+            # borrar uno se imprime entero: es la única forma de recuperarlo al repo.
+            grep -E '(^|/)\.htaccess$' /tmp/borrados.txt | while IFS= read -r f; do
+              echo "--- contenido actual de $f en el servidor ---"
+              $SSH "$HOST" "cat '$REMOTE/$f'" < /dev/null | sed 's/^/      /'
+            done
             if [ "$PERMITIR_BORRADOS" = "true" ]; then
               echo "::warning::Borrados permitidos a mano en este workflow_dispatch. Se continúa."
             else
