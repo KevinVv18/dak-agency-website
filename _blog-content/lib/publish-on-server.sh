@@ -41,6 +41,14 @@ for f in "${files[@]}"; do
 	for ext in webp jpg jpeg png; do
 		if [ -f "$STAGE/assets/$base.$ext" ]; then img="$STAGE/assets/$base.$ext"; break; fi
 	done
+	# Regla (Kevin, 28-sep-2026): ningún post sale sin imagen destacada. Si no
+	# tiene asset se queda EN ESPERA en la cola y se pasa al siguiente; saldrá
+	# solo en la primera corrida después de que se suba su imagen a assets/.
+	# ALLOW_NO_IMAGE=1 lo fuerza (solo a propósito, nunca desde el cron).
+	if [ -z "$img" ] && [ "${ALLOW_NO_IMAGE:-0}" != "1" ]; then
+		echo "[ESPERA] $base: sin imagen en assets/, no se publica."
+		continue
+	fi
 	echo "[*] Intentando: $base ${img:+(con imagen)}"
 	out="$("$WP" eval-file "$PHP_LIB" "$f" "$STATUS" $img 2>&1)"
 	echo "$out"
@@ -63,4 +71,4 @@ for f in "${files[@]}"; do
 	fi
 done
 
-echo "[INFO] Todos los posts de la cola ya existían en el blog. Nada nuevo."
+echo "[INFO] Nada que publicar: los posts de la cola ya existían o están [ESPERA] sin imagen."

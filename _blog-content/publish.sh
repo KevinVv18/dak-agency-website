@@ -49,7 +49,7 @@ for f in "${queue_files[@]}"; do
 	echo "[*] Procesando: $base"
 	$SCP "$f" "$SSH_USER@$SSH_HOST:$REMOTE_TMP/post.json" >/dev/null
 
-	# Imagen destacada opcional: _blog-content/assets/<base_noext>.<ext>
+	# Imagen destacada (obligatoria, ver la guarda de abajo): _blog-content/assets/<base_noext>.<ext>
 	remote_img=""
 	for ext in webp jpg jpeg png; do
 		local_img="$SCRIPT_DIR/assets/$base_noext.$ext"
@@ -60,6 +60,11 @@ for f in "${queue_files[@]}"; do
 			break
 		fi
 	done
+	# Misma regla que lib/publish-on-server.sh: sin imagen destacada no se publica.
+	if [ -z "$remote_img" ] && [ "${ALLOW_NO_IMAGE:-0}" != "1" ]; then
+		echo "    [ESPERA] sin imagen en assets/: se deja en cola."
+		continue
+	fi
 
 	out="$($SSH "cd $WP_PATH && wp eval-file $REMOTE_TMP/wp-create-post.php $REMOTE_TMP/post.json $POST_STATUS $remote_img 2>&1")"
 
