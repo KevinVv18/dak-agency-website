@@ -57,3 +57,4 @@ _backups/
 # Showroom: material de clientes reales (renders, plantas). El repo es
 # publico: esto no se versiona nunca.
 _showroom-demo/privado/
+_showroom-demo/produccion/__pycache__/

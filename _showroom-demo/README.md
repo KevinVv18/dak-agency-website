@@ -72,6 +72,18 @@ blender -b -P _showroom-demo/produccion/edificio.py -- --vista web_frente --anch
   blender -b -P produccion/interior.py -- --tipo A --salida 360 --escena sala --out sala.jpg
   ```
 
+- `muebles.py`: muebles y vestido de los interiores (sofá de bouclé, comedor de
+  roble con sillas de cuerda, camas tapizadas, cocina en L con repisa LED,
+  baños con mueble flotante, cortinas de lino, plafones encendidos), el pozo de
+  luz que se ve por las ventanas de la medianera y el hall tras la puerta de
+  entrada. Poly Haven casi no tiene mobiliario actual: los muebles se modelan
+  aquí y de Poly Haven salen telas, maderas y accesorios. La vara de acabado son
+  los renders de Domaria (oct-2026).
+- Noche (`edificio.py --noche`): cada ventana del edificio tiene un cuarto real
+  detrás (vaciado del volumen con un booleano), con plafón cálido y siluetas de
+  muebles; luz rasante en las celosías, pista mojada, LED en el cerco y cielo
+  de hora azul. Antes el muro macizo tapaba los interiores y las ventanas no se
+  veían encendidas.
 - El visor 360 es **Pannellum 2.5.7 (MIT)** en `vendor/`, cargado solo al
   abrir un recorrido.
 

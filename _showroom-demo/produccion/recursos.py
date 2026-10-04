@@ -51,6 +51,26 @@ RECURSOS = {
     'asphalt_02': ('textura', '2k', 'pista'),
     'red_brick_03': ('textura', '2k', 'ladrillo caravista del piso 1'),
     'grass_concrete_pavement': ('textura', '2k', 'piso de cochera'),
+    # Ronda de acabado (oct-2026): la vara son los renders de Domaria.
+    # Noche: hora azul con nubes (la cámara lo ve; la luz sigue saliendo del cielo físico).
+    'qwantani_dusk_2_puresky': ('hdri', '4k', 'cielo de hora azul'),
+    # Telas y maderas reales para los muebles procedurales.
+    'wool_boucle': ('textura', '2k', 'tapiz del sofá'),
+    'rough_linen': ('textura', '2k', 'cortinas, cojines y ropa de cama'),
+    'curly_teddy_natural': ('textura', '2k', 'alfombra de pelo'),
+    'oak_veneer_01': ('textura', '2k', 'enchapado de roble claro: muebles de cocina, aparador, mesa'),
+    'terry_cloth': ('textura', '2k', 'toallas'),
+    'interior_tiles': ('textura', '2k', 'enchape de baño'),
+    # Accesorios que sí calzan con un departamento actual.
+    'modern_ceiling_lamp_01': ('modelo', '2k', 'colgante del comedor'),
+    'ceramic_vase_01': ('modelo', '2k', 'jarrón'),
+    'ceramic_vase_02': ('modelo', '2k', 'jarrón'),
+    'ceramic_vase_03': ('modelo', '2k', 'jarrón alto'),
+    'standing_picture_frame_01': ('modelo', '2k', 'cuadro apoyado'),
+    'calathea_orbifolia_01': ('modelo', '2k', 'planta de interior'),
+    'anthurium_botany_01': ('modelo', '2k', 'planta de interior'),
+    'wicker_basket_01': ('modelo', '2k', 'canasta'),
+    'shrub_02': ('modelo', '2k', 'arbustos del pozo de luz'),
 }
 
 MAPAS_TEXTURA = ('Diffuse', 'nor_gl', 'Rough')

@@ -39,7 +39,7 @@ export const plantillas = {
     aspecto: F / P,
     // Render cenital de produccion/interior.py --salida piso, encuadrado exacto
     // al rectángulo del edificio (100 px/m): los polígonos calzan sin ajuste.
-    imagen: 'assets/plantas/piso-tipico-v2.webp',
+    imagen: 'assets/plantas/piso-tipico-v3.webp',
     // Cenital del barrio sin el edificio (edificio.py --vista planta_contexto):
     // la planta queda a pantalla completa rodeada de su manzana real. `marco`
     // es lo que cubre esa imagen en coordenadas normalizadas de la planta.

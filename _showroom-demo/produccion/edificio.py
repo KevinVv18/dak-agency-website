@@ -172,6 +172,23 @@ def material_tex(nombre, id_, tinte=None, escala=2.0, normal=0.5):
     return m
 
 
+def rugosidad(m, a, b):
+    """Remapea la rugosidad del material (o la fija si no tiene mapa): pista
+    mojada de noche, porcelanato pulido en los interiores."""
+    nt = m.node_tree
+    bsdf = nt.nodes.get('Principled BSDF')
+    enlace = next((l for l in nt.links if l.to_socket == bsdf.inputs['Roughness']), None)
+    if enlace is None:
+        bsdf.inputs['Roughness'].default_value = (a + b) / 2
+        return m
+    rango = nt.nodes.new('ShaderNodeMapRange')
+    rango.inputs['To Min'].default_value = a
+    rango.inputs['To Max'].default_value = b
+    nt.links.new(enlace.from_socket, rango.inputs['Value'])
+    nt.links.new(rango.outputs['Result'], bsdf.inputs['Roughness'])
+    return m
+
+
 def emisivo(nombre, color, fuerza):
     """Superficie que emite luz (ventana encendida, letrero)."""
     m = bpy.data.materials.new(nombre)
@@ -253,6 +270,11 @@ VEGETACION = {}
 # Modo noche: hora azul, ventanas encendidas, alumbrado público. Lo fija main()
 # desde --noche; con False todo se construye exactamente como de día.
 NOCHE = False
+# Mientras se arma el edificio (no el barrio): de noche cada ventana tiene un
+# cuarto de verdad detrás, vaciado del volumen con un booleano. Sin eso el
+# muro macizo tapaba el interior y las ventanas no se veían encendidas.
+CUARTOS = False
+CORTES = []
 
 
 def cargar_vegetacion(ids):
@@ -296,8 +318,13 @@ def ventana(x0, x1, z0, z1, y, M, hojas=2, s=1):
     caja('vidrio', x0, x1, y + 0.02 * s, y + 0.03 * s, z0, z1, M['vidrio'], bisel=0)
     rnd = random.Random(round(x0 * 37 + z0 * 101))
     cubierto = rnd.choice((0.0, 0.25, 0.35, 0.5, 0.65, 1.0))
-    encendida = NOCHE and random.Random(round(x0 * 53 + z0 * 71)).random() < 0.58
-    caja('interior', x0, x1, y + 0.05 * s, y + 0.06 * s, z0, z1, M['interior_luz' if encendida else 'interior'], bisel=0)
+    con_cuarto = NOCHE and CUARTOS and y > -0.3
+    encendida = NOCHE and random.Random(round(x0 * 53 + z0 * 71)).random() < (0.86 if con_cuarto else 0.58)
+    if con_cuarto:
+        cuarto(x0, x1, z0, z1, y, M, encendida, rnd)
+        cubierto = min(cubierto, 0.35)
+    else:
+        caja('interior', x0, x1, y + 0.05 * s, y + 0.06 * s, z0, z1, M['interior_luz' if encendida else 'interior'], bisel=0)
     if cubierto:
         ancho = (x1 - x0) * cubierto
         if rnd.random() < 0.5:
@@ -310,6 +337,64 @@ def ventana(x0, x1, z0, z1, y, M, hojas=2, s=1):
     for i in range(hojas + 1):
         xm = x0 + (x1 - x0) * i / hojas
         caja('marco', xm - t / 2, xm + t / 2, y, y + 0.06 * s, z0, z1, M['marco'], bisel=0)
+
+
+def cuarto(x0, x1, z0, z1, y, M, encendida, rnd):
+    """Ambiente detrás de una ventana del edificio: el hueco (que luego se
+    resta del volumen), un plafón encendido, muro de fondo cálido y la silueta
+    de un mueble. Es lo que hace que de noche la fachada se lea habitada."""
+    P = PARAM
+    h1, hp = P['h_piso1'], P['h_piso']
+    zf = h1 + int((z0 - h1) / hp) * hp if z0 >= h1 else 0.0
+    zt = zf + hp - 0.06
+    xa, xb = max(0.45, x0 - 0.35), min(P['frente'] - 0.45, x1 + 0.35)
+    fondo = 3.0
+    corte = caja('corte', xa, xb, -0.25, fondo, zf + 0.02, zt, M['interior'], bisel=0)
+    CORTES.append(corte)
+    caja('cuarto_fondo', xa, xb, fondo - 0.05, fondo, zf, zt, M['cuarto'], bisel=0)
+    caja('cuarto_piso', xa, xb, 0.0, fondo, zf, zf + 0.025, M['cuarto_piso'], bisel=0)
+    ancho = rnd.uniform(1.2, 2.0)
+    xm = rnd.uniform(xa + 0.3, max(xa + 0.31, xb - ancho - 0.3))
+    caja('mueble_interior', xm, xm + ancho, fondo - 1.0, fondo - 0.1, zf, zf + 0.8, M['mueble_interior'], bisel=0.03)
+    if rnd.random() < 0.5:
+        caja('cuadro_interior', xm + 0.2, xm + ancho - 0.2, fondo - 0.07, fondo - 0.05, zf + 1.3, zf + 1.9, M['cuadro_interior'], bisel=0)
+    if not encendida:
+        return
+    cx = (xa + xb) / 2
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.12, depth=0.02, location=(cx, 1.3, zt - 0.01))
+    bpy.context.active_object.data.materials.append(M['plafon_on'])
+    luz = bpy.data.lights.new('cuarto', 'AREA')
+    luz.shape = 'DISK'
+    luz.size = 0.6
+    luz.energy = rnd.uniform(130, 210)
+    luz.color = (1.0, 0.52, 0.22)
+    ob = bpy.data.objects.new('cuarto', luz)
+    ob.location = (cx, 1.3, zt - 0.03)
+    bpy.context.collection.objects.link(ob)
+
+
+def vaciar_cuartos(cuerpo):
+    """Resta del volumen del edificio los huecos de los cuartos."""
+    if not CORTES:
+        return
+    col = bpy.data.collections.new('cortes')
+    bpy.context.scene.collection.children.link(col)
+    for c in CORTES:
+        for u in list(c.users_collection):
+            u.objects.unlink(c)
+        col.objects.link(c)
+        c.hide_render = True
+        c.display_type = 'WIRE'
+    mod = cuerpo.modifiers.new('cuartos', 'BOOLEAN')
+    mod.operation = 'DIFFERENCE'
+    mod.operand_type = 'COLLECTION'
+    mod.collection = col
+    for solver in ('MANIFOLD', 'EXACT', 'FLOAT', 'FAST'):
+        try:
+            mod.solver = solver
+            break
+        except TypeError:
+            continue
 
 
 def baranda_vidrio(x0, x1, y, z, M, alto=1.0):
@@ -377,13 +462,27 @@ def balcon_enmarcado(x0, x1, z0, P, M, lado_celosia='izq'):
     bpy.context.active_object.data.materials.append(M['luminaria'])
     if NOCHE:
         luz = bpy.data.lights.new('downlight', 'SPOT')
-        luz.energy = 60
-        luz.spot_size = math.radians(110)
-        luz.color = (1.0, 0.82, 0.6)
+        luz.energy = 90
+        luz.spot_size = math.radians(100)
+        luz.color = (1.0, 0.72, 0.42)
         ob = bpy.data.objects.new('downlight', luz)
         ob.location = ((x0 + x1) / 2, -v / 2, z0 + h - t - 0.06)
         bpy.context.collection.objects.link(ob)
     ancho_cel = 1.4
+    if NOCHE:
+        # bañador de luz desde el piso del balcón: raspa la celosía de abajo
+        # hacia arriba, como en los renders nocturnos de la competencia
+        xc = (x0 + t + ancho_cel / 2) if lado_celosia == 'izq' else (x1 - t - ancho_cel / 2)
+        ras = bpy.data.lights.new('banador', 'SPOT')
+        ras.energy = 140
+        ras.spot_size = math.radians(40)
+        ras.spot_blend = 0.6
+        ras.shadow_soft_size = 0.03
+        ras.color = (1.0, 0.8, 0.55)
+        ob = bpy.data.objects.new('banador', ras)
+        ob.location = (xc, -v + 0.22, z0 + t + 0.04)
+        ob.rotation_euler = (math.radians(170), 0, 0)
+        bpy.context.collection.objects.link(ob)
     if lado_celosia == 'izq':
         celosia(x0 + t, x0 + t + ancho_cel, z0 + t, z0 + h - t, -v + 0.05, M)
         vx0, vx1 = x0 + t + ancho_cel + 0.25, x1 - t - 0.25
@@ -415,8 +514,10 @@ def edificio(P, M):
     W, D = P['frente'], P['fondo']
     z_top = P['h_piso1'] + P['pisos'] * P['h_piso']
 
+    global CUARTOS
+    CUARTOS = True
     # cuerpo
-    caja('cuerpo', 0, W, 0, D, 0, z_top, M['blanco'])
+    cuerpo = caja('cuerpo', 0, W, 0, D, 0, z_top, M['blanco'])
     caja('parapeto_azotea', -0.05, W + 0.05, -0.05, D + 0.05, z_top, z_top + 0.25, M['blanco'])
 
     xl0, xl1 = P['col_izq']
@@ -468,6 +569,8 @@ def edificio(P, M):
 
     # piso 1 detrás del cerco: muro de ladrillo caravista visible sobre el cerco
     caja('zocalo', 0, W, -0.02, 0, 0, P['h_piso1'], M['ladrillo'], bisel=0)
+    CUARTOS = False
+    vaciar_cuartos(cuerpo)
 
 
 def cerco(P, M):
@@ -493,6 +596,27 @@ def cerco(P, M):
         caja('porton', 5.4, W - 0.2, y - 0.2, y - 0.14, zz, zz + 0.07, M['marco'], bisel=0)
     for xm in (5.4, 7.6, 9.8, 12.0, W - 0.25):
         caja('porton_parante', xm, xm + 0.06, y - 0.2, y - 0.12, 0.35, h - 0.45, M['marco'], bisel=0)
+    if NOCHE:
+        # tira LED bajo la viga del cerco y cochera encendida detrás del portón:
+        # la luz se cuela entre los listones
+        caja('led_cerco', -0.6, W + 0.6, y - 0.31, y - 0.29, h - 0.47, h - 0.45, M['led'], bisel=0)
+        for xx, ancho_ in ((2.6, 5.0), (9.6, 8.0)):
+            luz = bpy.data.lights.new('led_cerco', 'AREA')
+            luz.shape = 'RECTANGLE'
+            luz.size, luz.size_y = ancho_, 0.05
+            luz.energy = 40 * ancho_
+            luz.color = (1.0, 0.76, 0.5)
+            ob = bpy.data.objects.new('led_cerco', luz)
+            ob.location = (xx, y - 0.32, h - 0.48)
+            bpy.context.collection.objects.link(ob)
+        for xx in (3.3, 9.5):
+            luz = bpy.data.lights.new('cochera', 'AREA')
+            luz.size = 2.5
+            luz.energy = 260
+            luz.color = (1.0, 0.8, 0.58)
+            ob = bpy.data.objects.new('cochera', luz)
+            ob.location = (xx, y + 1.3, 2.4)
+            bpy.context.collection.objects.link(ob)
     # nombre y numeración
     texto('LOS FAIQUES', W - 0.4, y - 0.31, h - 0.38, 0.36, M['marco'])
     texto('F-14', 5.25, y - 0.31, h - 0.95, 0.24, M['marco'])
@@ -654,7 +778,7 @@ def alumbrado(P, M):
             caja('brazo', x - 0.05, x + 0.05, min(y, y + brazo), max(y, y + brazo), 8.0, 8.1, M['acero'], bisel=0)
             caja('farol', x - 0.25, x + 0.25, y + brazo - 0.18, y + brazo + 0.18, 7.8, 8.0, M['farol'], bisel=0)
             luz = bpy.data.lights.new('sodio', 'POINT')
-            luz.energy = 3600
+            luz.energy = 1700
             luz.shadow_soft_size = 0.3
             luz.color = (1.0, 0.62, 0.28)
             ob = bpy.data.objects.new('sodio', luz)
@@ -675,7 +799,7 @@ def pasto(x0, x1, y0, y1, z, por_m2=5):
 # ── Escena ───────────────────────────────────────────────────────────────────
 
 def materiales(acento):
-    return {
+    M = {
         'blanco': material_tex('blanco', 'plastered_wall_04', tinte=(0.8, 0.8, 0.78, 1), escala=2.5, normal=0.3),
         'acento': material_tex('acento', 'plastered_wall_04', tinte=hex_rgb(acento), escala=2.5, normal=0.3),
         'vidrio': material('vidrio', (0.85, 0.92, 0.95, 1), 0.02, transmision=1.0),
@@ -702,7 +826,19 @@ def materiales(acento):
         'casas': {c: material_tex(f'casa_{c}', 'plastered_wall_04', tinte=hex_rgb(c), escala=2.5, normal=0.35)
                   for c, _ in PALETA_CASAS},
         'vecino2': material('vecino2', (0.55, 0.53, 0.5, 1), 0.9, ruido=0.3),
+        'cuarto': material('cuarto', (0.8, 0.7, 0.58, 1), 0.85),
+        'cuarto_piso': material('cuarto_piso', (0.42, 0.33, 0.24, 1), 0.35),
+        'mueble_interior': material('mueble_interior', (0.18, 0.16, 0.14, 1), 0.7),
+        'cuadro_interior': material('cuadro_interior', (0.45, 0.3, 0.2, 1), 0.8),
+        'plafon_on': emisivo('plafon_on', (1.0, 0.78, 0.5, 1), 18.0),
+        'led': emisivo('led', (1.0, 0.75, 0.45, 1), 30.0),
     }
+    if NOCHE:
+        # pista y vereda recién regadas: el reflejo de las luces es la mitad
+        # del efecto nocturno
+        rugosidad(M['asfalto'], 0.02, 0.28)
+        rugosidad(M['concreto'], 0.12, 0.5)
+    return M
 
 
 def cielo():
@@ -724,7 +860,7 @@ def cielo():
     if hasattr(sky, 'air_density'):
         sky.air_density = 1.2
     bg = n.get('Background')
-    bg.inputs['Strength'].default_value = 0.5 if NOCHE else 0.09
+    bg.inputs['Strength'].default_value = 0.22 if NOCHE else 0.09
     # Sol físico: da las sombras duras de tarde que el cielo solo no produce.
     sol = bpy.data.lights.new('sol', 'SUN')
     sol.energy = 0.0 if NOCHE else 5.5
@@ -735,14 +871,27 @@ def cielo():
     bpy.context.collection.objects.link(ob)
     w.node_tree.links.new(sky.outputs['Color'], bg.inputs['Color'])
     hdri = RECURSOS / 'kloofendal_43d_clear_puresky' / 'kloofendal_43d_clear_puresky_4k.hdr'
+    if NOCHE and (RECURSOS / 'qwantani_dusk_2_puresky' / 'qwantani_dusk_2_puresky_4k.hdr').exists():
+        hdri = RECURSOS / 'qwantani_dusk_2_puresky' / 'qwantani_dusk_2_puresky_4k.hdr'
     if hdri.exists():
         # La cámara ve un cielo fotográfico; la luz sigue saliendo del cielo físico
         # y del sol, así no hay dos soles proyectando sombras distintas.
         env = n.new('ShaderNodeTexEnvironment')
         env.image = bpy.data.images.load(str(hdri))
         bg_foto = n.new('ShaderNodeBackground')
-        bg_foto.inputs['Strength'].default_value = 0.16 if NOCHE else 1.5
-        w.node_tree.links.new(env.outputs['Color'], bg_foto.inputs['Color'])
+        bg_foto.inputs['Strength'].default_value = 0.42 if NOCHE else 1.5
+        if NOCHE:
+            # la hora azul de las fotos de Chiclayo es más saturada que el HDRI:
+            # se tiñe conservando sus nubes
+            tinte = n.new('ShaderNodeMix')
+            tinte.data_type = 'RGBA'
+            tinte.blend_type = 'MULTIPLY'
+            enchufe(tinte.inputs, 'Factor', 'VALUE').default_value = 1.0
+            enchufe(tinte.inputs, 'B', 'RGBA').default_value = (0.22, 0.36, 1.0, 1.0)
+            w.node_tree.links.new(env.outputs['Color'], enchufe(tinte.inputs, 'A', 'RGBA'))
+            w.node_tree.links.new(enchufe(tinte.outputs, 'Result', 'RGBA'), bg_foto.inputs['Color'])
+        else:
+            w.node_tree.links.new(env.outputs['Color'], bg_foto.inputs['Color'])
         rayo = n.new('ShaderNodeLightPath')
         mezcla = n.new('ShaderNodeMixShader')
         salida = n.get('World Output')
@@ -795,13 +944,14 @@ def render(a):
     s.render.resolution_x = a.ancho
     s.render.resolution_y = a.alto
     s.render.film_transparent = False
-    for look in ('AgX - Medium High Contrast', 'Medium High Contrast', 'None'):
+    looks = ('AgX - High Contrast', 'High Contrast') if NOCHE else ()
+    for look in looks + ('AgX - Medium High Contrast', 'Medium High Contrast', 'None'):
         try:
             s.view_settings.look = look
             break
         except TypeError:
             continue
-    s.view_settings.exposure = 1.25 if NOCHE else -0.4
+    s.view_settings.exposure = 0.0 if NOCHE else -0.4
     s.render.filepath = a.out
     s.render.image_settings.file_format = 'PNG'
 
