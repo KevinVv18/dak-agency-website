@@ -49,27 +49,4 @@ export default [
       { id: 'principal', nombre: 'Dormitorio principal' },
     ],
   },
-  {
-    id: 'PH',
-    nombre: 'Penthouse',
-    dormitorios: 3,
-    banos: 3,
-    areaTechada: 118.4,
-    areaLibre: 36.0,
-    resumen: '3 dormitorios con terraza',
-    ambientes: [
-      'Sala-comedor de doble frente',
-      'Terraza con parrilla',
-      'Cocina con isla',
-      'Dormitorio principal con baño y walk-in',
-      'Dos dormitorios con baño compartido',
-      'Estudio',
-    ],
-    planta: { amoblada: null, plano: null },
-    escenas: [
-      { id: 'sala', nombre: 'Sala y comedor' },
-      { id: 'terraza', nombre: 'Terraza' },
-      { id: 'principal', nombre: 'Dormitorio principal' },
-    ],
-  },
 ];

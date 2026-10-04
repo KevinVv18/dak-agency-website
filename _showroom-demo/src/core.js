@@ -44,6 +44,10 @@
   };
   const orientacion = (u) => u.orientacion || D.plantillas[pisoPorId[u.piso].plantilla].posiciones[u.posicion].orientacion;
   const areaTotal = (t) => t.areaTechada + (t.areaLibre || 0);
+  // Una unidad puede traer excepciones sobre su tipología (p.ej. terraza en
+  // azotea): el área libre de la unidad manda sobre la de la tipología.
+  const areaLibreDe = (u) => u.areaLibre ?? tipoPorId[u.tipologia].areaLibre ?? 0;
+  const areaTotalDe = (u) => tipoPorId[u.tipologia].areaTechada + areaLibreDe(u);
 
   function precioTexto(u) {
     if (u.estado === 'vendido') return 'Vendido';
@@ -190,7 +194,7 @@
         <dl class="datos">
           <div><dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
           <div><dt>Baños</dt><dd>${t.banos}</dd></div>
-          <div><dt>Área total</dt><dd>${m2(areaTotal(t))}</dd></div>
+          <div><dt>Área total</dt><dd>${m2(areaTotalDe(u))}</dd></div>
           <div><dt>Orientación</dt><dd>${esc(orientacion(u))}</dd></div>
           <div><dt>Precio</dt><dd>${precioTexto(u)}</dd></div>
         </dl>
@@ -301,15 +305,15 @@
           ${bono(u) ? `<p class="bono"><strong>Bono del Buen Pagador: ${soles(bono(u).monto)}</strong><span class="nota">${esc(D.proyecto.bonoBuenPagador.referencia)}. Sujeto a calificación.</span></p>` : ''}
           <dl class="datos">
             <div><dt>Área techada</dt><dd>${m2(t.areaTechada)}</dd></div>
-            ${t.areaLibre ? `<div><dt>Área libre</dt><dd>${m2(t.areaLibre)}</dd></div>` : ''}
-            <div><dt>Área total</dt><dd>${m2(areaTotal(t))}</dd></div>
+            ${areaLibreDe(u) ? `<div><dt>Área libre</dt><dd>${m2(areaLibreDe(u))}</dd></div>` : ''}
+            <div><dt>Área total</dt><dd>${m2(areaTotalDe(u))}</dd></div>
             <div><dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
             <div><dt>Baños</dt><dd>${t.banos}</dd></div>
             <div><dt>Piso</dt><dd>${esc(piso.etiqueta.replace('Piso ', ''))}</dd></div>
             <div><dt>Orientación</dt><dd>${esc(orientacion(u))}</dd></div>
           </dl>
           <h2>Ambientes</h2>
-          <ul class="ambientes">${t.ambientes.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
+          <ul class="ambientes">${[...t.ambientes, ...(u.extras || [])].map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
           <div class="acciones acciones--columna">
             ${consultable
               ? `<button class="boton boton--primario" data-consultar="${u.id}" data-seccion="${sec}">Consultar por este departamento</button>`

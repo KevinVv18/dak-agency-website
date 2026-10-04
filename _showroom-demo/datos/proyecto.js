@@ -13,7 +13,7 @@ export default {
   zonaReferencial: true,
   lema: 'Departamentos en preventa',
   descripcion:
-    'Edificio residencial de 10 pisos con departamentos de 2 y 3 dormitorios y dos penthouses con terraza.',
+    'Edificio boutique de 6 pisos con departamentos de 2 y 3 dormitorios, cocheras y terraza en azotea.',
   moneda: 'PEN',
   modoDemo: true,
   avisoDemo: 'Proyecto conceptual · inventario, precios y vistas de ejemplo',

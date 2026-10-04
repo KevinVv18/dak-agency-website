@@ -9,9 +9,9 @@
 // tener renders: el motor dibuja un marcador en su lugar.
 export const vistas = [
   { id: 'frente', nombre: 'Frente', imagen: { dia: null, noche: null } },
-  { id: 'esquina', nombre: 'Esquina', imagen: { dia: null, noche: null } },
-  { id: 'lateral', nombre: 'Lateral', imagen: { dia: null, noche: null } },
-  { id: 'posterior', nombre: 'Posterior', imagen: { dia: null, noche: null } },
+  { id: 'diagonal', nombre: 'Diagonal', imagen: { dia: null, noche: null } },
+  { id: 'balcones', nombre: 'Balcones', imagen: { dia: null, noche: null } },
+  { id: 'cenital', nombre: 'Cocheras', imagen: { dia: null, noche: null } },
 ];
 
 // Clip de transición entre paradas consecutivas, clave "origen>destino".
@@ -46,43 +46,21 @@ export const plantillas = {
       },
     },
   },
-  penthouse: {
-    nombre: 'Planta de penthouses',
-    aspecto: 1000 / 640,
-    imagen: null,
-    esquema: {
-      contorno: [[0.05, 0.08], [0.95, 0.08], [0.95, 0.92], [0.05, 0.92]],
-      nucleo: [[0.46, 0.36], [0.54, 0.36], [0.54, 0.64], [0.46, 0.64]],
-      pasillo: [[0.40, 0.44], [0.60, 0.44], [0.60, 0.56], [0.40, 0.56]],
-    },
-    posiciones: {
-      '01': {
-        orientacion: 'Frente y patio, terraza al frente',
-        poligono: [[0.05, 0.08], [0.46, 0.08], [0.46, 0.44], [0.40, 0.44], [0.40, 0.56], [0.46, 0.56], [0.46, 0.92], [0.05, 0.92]],
-      },
-      '02': {
-        orientacion: 'Frente y patio, terraza lateral',
-        poligono: [[0.54, 0.08], [0.95, 0.08], [0.95, 0.92], [0.54, 0.92], [0.54, 0.56], [0.60, 0.56], [0.60, 0.44], [0.54, 0.44]],
-      },
-    },
-  },
 };
 
-const pisosTipicos = Array.from({ length: 8 }, (_, i) => {
+const pisosTipicos = Array.from({ length: 5 }, (_, i) => {
   const n = String(i + 2);
   return { id: n, etiqueta: `Piso ${n}`, plantilla: 'tipica' };
 });
 
 // Orden de abajo hacia arriba. `uso` describe los pisos sin departamentos.
 export const pisos = [
-  { id: '1', etiqueta: 'Piso 1', plantilla: null, uso: 'Lobby, recepción y estacionamientos' },
+  { id: '1', etiqueta: 'Piso 1', plantilla: null, uso: 'Recepción, ascensor y cocheras' },
   ...pisosTipicos,
-  { id: '10', etiqueta: 'Piso 10', plantilla: 'penthouse' },
-  { id: 'azotea', etiqueta: 'Azotea', plantilla: null, uso: 'Terraza común, zona de parrillas y gimnasio' },
+  { id: 'azotea', etiqueta: 'Azotea', plantilla: null, uso: 'Terraza común con parrillas y terrazas privadas de los dptos. 601 y 602' },
 ];
 
 export const amenidades = [
-  { id: 'terraza', nombre: 'Terraza con zona de parrillas', piso: 'azotea' },
-  { id: 'gimnasio', nombre: 'Gimnasio', piso: 'azotea' },
-  { id: 'lobby', nombre: 'Lobby con recepción', piso: '1' },
+  { id: 'terraza', nombre: 'Terraza común con parrillas', piso: 'azotea' },
+  { id: 'recepcion', nombre: 'Recepción con ascensor', piso: '1' },
 ];
