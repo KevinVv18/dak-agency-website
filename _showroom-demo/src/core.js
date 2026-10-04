@@ -903,7 +903,7 @@
     const v = cont && D.vistas[Number(cont.dataset.vistaActual)];
     if (!v?.giro) return;
     giro.tocado = Boolean(query().giro);
-    zoomG.s = 1; zoomG.x = 0; zoomG.y = 0;
+    centrarZoomGiro(1.1);
     const n = v.giro.cuadros;
     const modo = modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia');
     const orden = [...Array(n).keys()].sort((a, b) => (a % 4 ? 1 : 0) - (b % 4 ? 1 : 0));
@@ -933,6 +933,15 @@
     zoomG.x = limitar(zoomG.x, W - zoomG.s * W, 0);
     zoomG.y = limitar(zoomG.y, H - zoomG.s * H, 0);
     z.style.transform = `translate(${zoomG.x}px, ${zoomG.y}px) scale(${zoomG.s})`;
+  }
+  // El giro arranca apenas acercado y centrado: queda margen para que el
+  // arrastre vertical incline la toma (arriba y abajo no se sienten muertos).
+  function centrarZoomGiro(s) {
+    const z = app.querySelector('[data-giro-zoom]');
+    zoomG.s = s;
+    zoomG.x = z ? (z.clientWidth - s * z.clientWidth) / 2 : 0;
+    zoomG.y = z ? (z.clientHeight - s * z.clientHeight) / 2 : 0;
+    aplicarZoomGiro();
   }
   function zoomGiro(factor, px, py) {
     const z = app.querySelector('[data-giro-zoom]');
@@ -982,15 +991,19 @@
     const escena = e.target.closest('.inmersiva--edificio[data-giro] .escena');
     if (!escena || e.button !== 0 || dedos.size > 1) return;
     tocarGiro();
-    giro.arr = { id: e.pointerId, x: e.clientX, k: Number(contGiro().dataset.cuadro), movido: false };
+    giro.arr = { id: e.pointerId, x: e.clientX, y: e.clientY, k: Number(contGiro().dataset.cuadro), zy: zoomG.y, movido: false };
   });
   document.addEventListener('pointermove', (e) => {
     if (!giro.arr || e.pointerId !== giro.arr.id || giro.pellizco) return;
     const dx = e.clientX - giro.arr.x;
-    if (!giro.arr.movido && Math.abs(dx) < 6) return;
+    const dy = e.clientY - giro.arr.y;
+    if (!giro.arr.movido && Math.hypot(dx, dy) < 6) return;
     giro.arr.movido = true;
     // arrastrar a la izquierda trae el costado derecho: el edificio sigue a la mano
     mostrarCuadro(giro.arr.k - dx / 14);
+    // y en vertical la toma se inclina, con resistencia, hasta el borde del cuadro
+    zoomG.y = giro.arr.zy + dy * 0.55;
+    aplicarZoomGiro();
   });
   document.addEventListener('pointerup', (e) => {
     if (!giro.arr || e.pointerId !== giro.arr.id) return;
