@@ -53,3 +53,7 @@ _backups/
 
 # Capturas de trabajo de las revisiones de diseño. No son entregable.
 .capturas/
+
+# Showroom: material de clientes reales (renders, plantas). El repo es
+# publico: esto no se versiona nunca.
+_showroom-demo/privado/

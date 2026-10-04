@@ -6,21 +6,28 @@
 // Todas las páginas comparten el mismo motor (core.js) y los mismos datos
 // (datos.js → window.SHOWROOM): Node y navegador leen una sola fuente.
 //
-//   node _showroom-demo/generar.js
+// Un motor, varios proyectos: cada proyecto es una carpeta con datos/ y
+// assets/. Sin argumento se genera la vitrina pública (esta carpeta); un
+// cliente real vive en privado/<cliente>/ y nunca entra al repo.
+//
+//   node _showroom-demo/generar.js                    -> dist/
+//   node _showroom-demo/generar.js privado/varu       -> privado/varu/dist/
 
 import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-import proyecto from './datos/proyecto.js';
-import { vistas, transiciones, plantillas, pisos, amenidades } from './datos/edificio.js';
-import tipologias from './datos/tipologias.js';
-import unidades from './datos/unidades.js';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const RAIZ = dirname(fileURLToPath(import.meta.url));
-const DIST = join(RAIZ, 'dist');
+const SITIO = resolve(RAIZ, process.argv[2] || '.');
+const DIST = join(SITIO, 'dist');
 const ESTADOS = ['disponible', 'reservado', 'vendido'];
+
+const cargar = async (archivo) => import(pathToFileURL(join(SITIO, 'datos', archivo)).href);
+const { default: proyecto } = await cargar('proyecto.js');
+const { vistas, transiciones = {}, plantillas, pisos, amenidades = [] } = await cargar('edificio.js');
+const { default: tipologias } = await cargar('tipologias.js');
+const { default: unidades } = await cargar('unidades.js');
 
 const datos = { proyecto, vistas, transiciones, plantillas, pisos, amenidades, tipologias, unidades };
 
@@ -88,6 +95,7 @@ function paginas(d) {
     { ruta: '', titulo: `${p.nombre} · ${p.marca}`, desc: p.descripcion },
     { ruta: 'edificio/', titulo: `Edificio · ${p.nombre}`, desc: `Recorre el exterior de ${p.nombre} y elige un piso.` },
     { ruta: 'departamentos/', titulo: `Departamentos · ${p.nombre}`, desc: `Todos los departamentos de ${p.nombre}, con filtros.` },
+    { ruta: 'modelos/', titulo: `Modelos · ${p.nombre}`, desc: `Las distribuciones de ${p.nombre}, con su planta amoblada.` },
   ];
   for (const piso of d.pisos) {
     lista.push({ ruta: `piso/${piso.id}/`, titulo: `${piso.etiqueta} · ${p.nombre}`, desc: piso.uso || `Planta del ${piso.etiqueta.toLowerCase()}.` });
@@ -145,7 +153,7 @@ async function generar() {
   await writeFile(join(DIST, 'datos.js'), datosJs);
   // Renders optimizados para web (los produce produccion/). Reemplazar una
   // imagen exige renombrarla: el .htaccess cachea imágenes por meses.
-  if (await stat(join(RAIZ, 'assets')).catch(() => null)) await cp(join(RAIZ, 'assets'), join(DIST, 'assets'), { recursive: true });
+  if (await stat(join(SITIO, 'assets')).catch(() => null)) await cp(join(SITIO, 'assets'), join(DIST, 'assets'), { recursive: true });
 
   const lista = paginas(datos);
   for (const pag of lista) {
@@ -153,7 +161,7 @@ async function generar() {
     await mkdir(dir, { recursive: true });
     await writeFile(join(dir, 'index.html'), shell(pag, v));
   }
-  console.log(`✓ ${lista.length} páginas · ${datos.unidades.length} unidades · ${datos.pisos.length} pisos → dist/`);
+  console.log(`✓ ${lista.length} páginas · ${datos.unidades.length} unidades · ${datos.pisos.length} pisos → ${DIST}`);
 }
 
 generar();

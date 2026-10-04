@@ -78,13 +78,15 @@
     // La ficha de un departamento pertenece al recorrido del edificio; solo el
     // catálogo marca «Departamentos».
     const enCatalogo = ruta.startsWith('departamentos/');
+    const enModelos = ruta.startsWith('modelos/');
     const actual = (si) => (si ? ' aria-current="page"' : '');
     return `
       ${p.modoDemo ? `<div class="aviso-demo">${esc(p.avisoDemo)}</div>` : ''}
       <header class="barra">
         <a class="barra__marca" href="${url('')}"><strong>${esc(p.marca)}</strong><span>${esc(p.nombre)}</span></a>
         <nav class="barra__nav" aria-label="Principal">
-          <a href="${url('edificio/')}"${actual(ruta && !enCatalogo)}>Edificio</a>
+          <a href="${url('edificio/')}"${actual(ruta && !enCatalogo && !enModelos)}>Edificio</a>
+          <a href="${url('modelos/')}"${actual(enModelos)}>Modelos</a>
           <a href="${url('departamentos/')}"${actual(enCatalogo)}>Departamentos</a>
         </nav>
       </header>
@@ -103,7 +105,7 @@
         <div class="portada__texto">
           <p class="portada__marca">${esc(p.marca)}</p>
           <h1>${esc(p.nombre)}</h1>
-          <p>${esc(p.lema)} · ${esc(p.zona)}, ${esc(p.ciudad)}${p.zonaReferencial ? ' <span class="nota">(ubicación referencial)</span>' : ''}</p>
+          <p>${esc(p.lema)} · ${p.zona ? `${esc(p.zona)}, ` : ''}${esc(p.ciudad)}${p.zona && p.zonaReferencial ? ' <span class="nota">(ubicación referencial)</span>' : ''}</p>
           <div class="acciones">
             <a class="boton boton--primario" href="${url('edificio/')}">Ingresar</a>
             <a class="boton" href="${url('departamentos/')}">Ver departamentos</a>
@@ -115,7 +117,9 @@
   function vistaEdificio() {
     const q = query();
     const i = Math.max(0, D.vistas.findIndex((v) => v.id === q.vista));
-    const modo = q.modo === 'noche' ? 'noche' : 'dia';
+    // El conmutador día/noche solo aparece si existe al menos un render nocturno.
+    const hayNoche = D.vistas.some((v) => v.imagen.noche);
+    const modo = hayNoche && q.modo === 'noche' ? 'noche' : 'dia';
     const v = D.vistas[i];
     const img = v.imagen[modo];
     const listaPisos = [...D.pisos].reverse().map((p) => {
@@ -134,10 +138,10 @@
             <button class="boton" data-vista="${(i - 1 + D.vistas.length) % D.vistas.length}" aria-label="Vista anterior">←</button>
             <span class="escena__nombre">${esc(v.nombre)} <small>${i + 1}/${D.vistas.length}</small></span>
             <button class="boton" data-vista="${(i + 1) % D.vistas.length}" aria-label="Vista siguiente">→</button>
-            <div class="conmutador" role="group" aria-label="Iluminación">
+            ${hayNoche ? `<div class="conmutador" role="group" aria-label="Iluminación">
               <button class="boton" data-modo="dia" aria-pressed="${modo === 'dia'}">Día</button>
               <button class="boton" data-modo="noche" aria-pressed="${modo === 'noche'}">Noche</button>
-            </div>
+            </div>` : ''}
           </div>
         </section>
         <aside class="selector-pisos" aria-label="Pisos">
@@ -226,7 +230,7 @@
       return marco(`
         <div class="cabecera"><h1>${esc(piso.etiqueta)}</h1>${cambioPiso}</div>
         <p>${esc(piso.uso)}</p>
-        ${marcador(`Áreas comunes · ${piso.etiqueta}`, 'Galería o panorama de amenities')}`, migas);
+        ${marcador(piso.etiqueta, 'Galería o panorama del piso')}`, migas);
     }
 
     const q = query();
@@ -380,7 +384,32 @@
         ${Object.keys(q).length ? `<a class="boton" href="${url('departamentos/')}">Limpiar</a>` : ''}
       </form>
       <p class="resumen">${res.length} departamento${res.length === 1 ? '' : 's'} · ${disp} disponible${disp === 1 ? '' : 's'}</p>
-      ${grupos || '<p>Ningún departamento coincide con esos filtros.</p>'}`, [{ txt: 'Departamentos' }]);
+      ${grupos || (D.unidades.length ? '<p>Ningún departamento coincide con esos filtros.</p>' : `<p>Inventario por confirmar. Mientras tanto puedes ver los <a href="${url('modelos/')}">modelos de departamento</a>.</p>`)}`, [{ txt: 'Departamentos' }]);
+  }
+
+  // Modelos: una tarjeta por tipología con su planta amoblada. Es la puerta de
+  // entrada de quien todavía no sabe en qué piso quiere vivir.
+  function vistaModelos() {
+    const tarjetas = D.tipologias.map((t) => {
+      const suyas = D.unidades.filter((u) => u.tipologia === t.id);
+      const disp = suyas.filter((u) => u.estado === 'disponible').length;
+      const area = t.areaTechada ? m2(areaTotal(t)) : 'Área por confirmar';
+      return `
+        <article class="modelo">
+          ${t.planta.amoblada ? `<img src="${esc(recurso(t.planta.amoblada))}" alt="Planta amoblada del ${esc(t.nombre)}" loading="lazy">` : marcador(`Planta amoblada · ${t.nombre}`)}
+          <div class="modelo__texto">
+            <h2>${esc(t.nombre)}</h2>
+            <p class="tenue">${esc(t.resumen)}</p>
+            <dl class="datos">
+              <div><dt>Área</dt><dd>${area}</dd></div>
+              <div><dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
+              <div><dt>Baños</dt><dd>${t.banos}</dd></div>
+            </dl>
+            ${suyas.length ? `<a class="boton" href="${url('departamentos/', { tipo: t.id })}">${disp ? `Ver ${disp} disponible${disp > 1 ? 's' : ''}` : `Ver los ${suyas.length} departamentos`}</a>` : ''}
+          </div>
+        </article>`;
+    }).join('');
+    return marco(`<div class="cabecera"><h1>Modelos</h1></div><div class="modelos">${tarjetas}</div>`, [{ txt: 'Modelos' }]);
   }
 
   function vistaNoEncontrada() {
@@ -435,6 +464,7 @@
     if (!partes.length) html = vistaPortada();
     else if (partes[0] === 'edificio') html = vistaEdificio();
     else if (partes[0] === 'departamentos') html = vistaCatalogo();
+    else if (partes[0] === 'modelos') html = vistaModelos();
     else if (partes[0] === 'piso' && partes[1]) html = vistaPiso(partes[1]);
     else if (partes[0] === 'departamento' && partes[1]) html = vistaUnidad(partes[1]);
     else html = vistaNoEncontrada();
@@ -449,7 +479,7 @@
     const p = D.proyecto;
     const piso = partes[0] === 'piso' && pisoPorId[partes[1]];
     const u = partes[0] === 'departamento' && unidadPorId[partes[1]];
-    const t = u ? `Dpto. ${u.id} · ${tipoPorId[u.tipologia].nombre}` : piso ? piso.etiqueta : partes[0] === 'edificio' ? 'Edificio' : partes[0] === 'departamentos' ? 'Departamentos' : null;
+    const t = u ? `Dpto. ${u.id} · ${tipoPorId[u.tipologia].nombre}` : piso ? piso.etiqueta : partes[0] === 'edificio' ? 'Edificio' : partes[0] === 'departamentos' ? 'Departamentos' : partes[0] === 'modelos' ? 'Modelos' : null;
     document.title = t ? `${t} · ${p.nombre}` : `${p.nombre} · ${p.marca}`;
   }
 

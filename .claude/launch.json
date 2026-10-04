@@ -39,6 +39,13 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "4340", "--bind", "127.0.0.1", "--directory", "_showroom-demo/dist"],
       "port": 4340
+    },
+    {
+      "//": "Showroom de un cliente real (carpeta privada, fuera de git). Generar antes con `node _showroom-demo/generar.js privado/varu`.",
+      "name": "showroom-varu",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "4341", "--bind", "127.0.0.1", "--directory", "_showroom-demo/privado/varu/dist"],
+      "port": 4341
     }
   ]
 }

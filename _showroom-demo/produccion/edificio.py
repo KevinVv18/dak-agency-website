@@ -31,7 +31,7 @@ RECURSOS = Path(os.environ.get('SHOWROOM_RECURSOS', Path.home() / 'tools' / 'rec
 
 PARAM = {
     'frente': 14.4,        # ancho de fachada (m)
-    'fondo': 18.0,         # profundidad del cuerpo (m)
+    'fondo': 22.0,         # profundidad del cuerpo (m); la planta de la web usa lo mismo
     'h_piso1': 3.0,        # piso 1: recepción y cocheras
     'h_piso': 2.8,         # pisos típicos
     'pisos': 5,            # pisos de departamentos (2..6)
@@ -468,7 +468,7 @@ def entorno(P, M):
     # Árboles: faiques y algarrobos en la berma y al fondo, jacarandá en vereda.
     arboles = [
         ('island_tree_01', 0.8, -r - 13.4, 7.5, 0.4),      # primer plano, enmarca por la izquierda
-        ('island_tree_01', 27.0, -r - 13.6, 8.0, 2.1),
+        ('island_tree_01', 37.0, -r - 13.6, 8.0, 2.1),
         ('tree_small_02', 14.0, -r - 12.6, 4.5, 1.0),
         ('jacaranda_tree', -6.5, -r - 1.9, 6.5, 0.8),
         ('jacaranda_tree', W + 4.0, -r - 1.9, 6.0, 2.6),
@@ -492,17 +492,20 @@ def entorno(P, M):
     pasto(-16, 32, -r - 15, -r - 11.65, 0.18)
 
 
-# Colores de fachada que se ven en cualquier calle de Chiclayo (sRGB).
+# Colores de fachada que se ven en cualquier calle de Chiclayo (sRGB), con el
+# peso que tienen en la calle: dominan el blanco, el hueso y el cemento; los
+# colores vivos son minoría. Sin esto el barrio parece de juguete.
 PALETA_CASAS = [
-    'e3cfa4',   # crema
-    'd4a35f',   # ocre
-    'a8a6a0',   # gris cemento
-    'e6dfd0',   # blanco hueso
-    'dc9f80',   # durazno
-    '9fbfa9',   # verde agua
-    'e2c06a',   # amarillo maíz
-    'a9c4d4',   # celeste pálido
-    'c97f5f',   # terracota
+    ('e6dfd0', 5),   # blanco hueso
+    ('d9d4c7', 4),   # blanco sucio
+    ('a8a6a0', 4),   # gris cemento
+    ('ddd0ad', 3),   # crema
+    ('cfa874', 2),   # ocre
+    ('d3a68e', 2),   # durazno
+    ('a9bfae', 1),   # verde agua
+    ('d8c07e', 1),   # amarillo maíz
+    ('aec2cc', 1),   # celeste pálido
+    ('c08a70', 1),   # terracota
 ]
 
 
@@ -560,8 +563,9 @@ def fila_casas(x_desde, x_hasta, y_fachada, mira, M, rnd, pisos_max=3, fondo=(16
         xa, xb = sorted((x, x + w * direccion))
         pisos = rnd.choices([1, 2, 3, 4], weights=[2, 5, 4, 1 if pisos_max >= 4 else 0])[0]
         pisos = min(pisos, pisos_max)
-        tinte = rnd.choice(PALETA_CASAS)
-        mat = M['ladrillo'] if rnd.random() < 0.12 else M['casas'][tinte]
+        tinte = rnd.choices([c for c, _ in PALETA_CASAS], weights=[w for _, w in PALETA_CASAS])[0]
+        # ladrillo sin tarrajear: casas a medio terminar, muy comunes
+        mat = M['ladrillo'] if rnd.random() < 0.22 else M['casas'][tinte]
         yf = y_fachada + rnd.uniform(-0.3, 0.3)
         h = casa(xa + 0.05, xb - 0.05, yf, rnd.uniform(*fondo), pisos, mat, M, rnd, mira)
         lotes.append((xa, xb, h))
@@ -626,7 +630,7 @@ def materiales(acento):
         'vecino1': material('vecino1', (0.62, 0.61, 0.58, 1), 0.9, ruido=0.3),
         'tanque': material('tanque', (0.012, 0.012, 0.012, 1), 0.45),
         'casas': {c: material_tex(f'casa_{c}', 'plastered_wall_04', tinte=hex_rgb(c), escala=2.5, normal=0.35)
-                  for c in PALETA_CASAS},
+                  for c, _ in PALETA_CASAS},
         'vecino2': material('vecino2', (0.55, 0.53, 0.5, 1), 0.9, ruido=0.3),
     }
 

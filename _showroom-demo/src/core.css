@@ -39,7 +39,7 @@ h2 { font-size: 1.05rem; }
 .barra__marca { display: flex; flex-direction: column; color: inherit; text-decoration: none; line-height: 1.2; }
 .barra__marca strong { letter-spacing: .14em; font-size: .8rem; }
 .barra__marca span { font-size: .95rem; }
-.barra__nav { display: flex; gap: 4px; }
+.barra__nav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .barra__nav a { padding: 8px 12px; border-radius: var(--radio); color: var(--tinta); text-decoration: none; }
 .barra__nav a[aria-current] { background: var(--fondo); font-weight: 600; }
 
@@ -82,7 +82,7 @@ main { padding: 12px var(--gutter) 48px; max-width: 1280px; margin: 0 auto; }
 
 /* Edificio */
 .edificio { display: grid; gap: 16px; }
-.escena__lienzo img { width: 100%; border-radius: var(--radio); }
+.escena__lienzo img { width: 100%; max-height: 78vh; object-fit: contain; background: var(--tinta); border-radius: var(--radio); }
 .escena__controles { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
 .escena__nombre { min-width: 8rem; text-align: center; font-weight: 600; }
 .conmutador { display: inline-flex; gap: 4px; margin-left: auto; }
@@ -143,6 +143,13 @@ main { padding: 12px var(--gutter) 48px; max-width: 1280px; margin: 0 auto; }
 .bono .nota { margin: 0; }
 .bono-mini { display: block; color: var(--disponible); font-size: .8rem; }
 
+/* Modelos */
+.modelos { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+.modelo { background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--radio); overflow: hidden; display: grid; }
+.modelo img { width: 100%; aspect-ratio: 16 / 10; object-fit: contain; background: var(--fondo); padding: 8px; }
+.modelo .marcador { border-radius: 0; border: 0; }
+.modelo__texto { padding: 16px; }
+
 /* Catálogo */
 .filtros { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; padding: 12px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--radio); }
 .filtros label { display: grid; gap: 4px; font-size: .85rem; color: var(--tenue); }
@@ -164,6 +171,8 @@ main { padding: 12px var(--gutter) 48px; max-width: 1280px; margin: 0 auto; }
 
 /* Móvil: la tabla se vuelve tarjetas para no obligar a desplazar en horizontal. */
 @media (max-width: 640px) {
+  .barra { flex-wrap: wrap; }
+  .barra__nav { width: 100%; margin: 0 -8px; }
   .tabla thead { display: none; }
   .tabla, .tabla tbody, .tabla tr, .tabla th, .tabla td { display: block; }
   .tabla tr { display: grid; grid-template-columns: auto 1fr auto; gap: 2px 12px; padding: 10px 12px; border-bottom: 1px solid var(--linea); }
