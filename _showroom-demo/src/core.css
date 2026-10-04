@@ -145,6 +145,19 @@ body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="p
 .escena__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .7s var(--ease), transform 1.2s var(--ease); }
 .escena__img--entrando { opacity: 0; transform: scale(1.025); }
 .escena__img--entera { object-fit: contain; }
+.portada__giro { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.4s var(--ease); }
+.portada__giro--lista { opacity: 1; }
+/* Vecinos como maqueta: la variante entra encima al elegir un piso. */
+.escena__img--fantasma { opacity: 0; transform: none; pointer-events: none; transition: opacity .45s var(--ease); }
+.inmersiva--fantasma .escena__img--fantasma { opacity: 1; }
+/* Giro 360: se arrastra; los cuadros cambian sin fundido ni fondo difuso. */
+.inmersiva--edificio[data-giro] .escena { cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.inmersiva--edificio[data-giro] .escena:active { cursor: grabbing; }
+.inmersiva--edificio[data-giro] .escena__img { transition: none; -webkit-user-drag: none; }
+.inmersiva--edificio[data-giro] .escena__fondo { display: none; }
+.pista-giro { position: absolute; bottom: 84px; left: calc(50% - var(--col-w) / 2); transform: translateX(-50%); z-index: 6; display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 9px 16px; border-radius: 999px; background: rgb(20 20 20 / .74); color: #fff; font-size: .9rem; font-weight: 700; white-space: nowrap; pointer-events: none; transition: opacity .4s var(--ease); }
+.pista-giro .ic { width: 18px; height: 18px; }
+.pista-giro--oculta { opacity: 0; }
 .franjas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .franja { fill: var(--acento); fill-opacity: 0; stroke: #fff; stroke-opacity: 0; stroke-width: 2; vector-effect: non-scaling-stroke; pointer-events: all; cursor: pointer; transition: fill-opacity .3s var(--ease), stroke-opacity .3s var(--ease); }
 .franja--activa { fill-opacity: .42; stroke-opacity: .9; }
@@ -199,6 +212,14 @@ body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="p
 .pin-unidad--elegido { background: var(--acento); color: var(--acento-tinta); }
 .pin-unidad--elegido .pin-unidad__punto { background: var(--acento-tinta); }
 .zoom { display: grid; gap: 6px; }
+/* Espacios comunes de la planta (piso 1, azotea) */
+.espacio polygon { fill: var(--acento); fill-opacity: .07; stroke: #fff; stroke-width: 2; stroke-dasharray: 7 6; vector-effect: non-scaling-stroke; }
+.pin-espacio { position: absolute; top: 0; left: 0; display: grid; justify-items: center; gap: 1px; max-width: 190px; padding: 7px 13px; border-radius: 14px; background: rgb(255 255 255 / .94); color: var(--tinta); text-align: center; text-decoration: none; box-shadow: var(--sombra); pointer-events: auto; }
+.pin-espacio b { font-size: .88rem; font-weight: 800; line-height: 1.2; }
+.pin-espacio small { color: var(--tenue); font-size: .74rem; font-weight: 600; line-height: 1.25; }
+.pin-espacio--enlace { background: var(--acento); color: var(--acento-tinta); }
+.pin-espacio--enlace small { color: inherit; opacity: .85; text-decoration: underline; }
+.pin-espacio--enlace:hover { filter: brightness(1.08); }
 .circulo--blanco { background: var(--superficie); color: var(--tinta); }
 .flotante--abajo-izq { align-items: flex-end; }
 .escena__vacia { position: absolute; inset: 120px calc(var(--col-w) + 48px) 40px 40px; display: grid; place-items: center; }
@@ -390,6 +411,7 @@ body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="p
   .flecha--izq { left: 10px; }
   .flecha--der { right: 10px; }
   .parada { left: 50%; bottom: 108px; }
+  .pista-giro { left: 50%; bottom: 164px; font-size: .82rem; }
 
   .columna-pisos { inset: auto 0 0 0; transform: none; width: auto; max-height: none; overflow-x: auto; overflow-y: hidden; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); border-radius: 22px 22px 0 0; }
   .columna-pisos ol { grid-auto-flow: column; grid-auto-columns: minmax(70px, auto); }

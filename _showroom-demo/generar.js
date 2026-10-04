@@ -149,9 +149,17 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 async function recursosFaltantes(d) {
   const rutas = new Set();
   const recorrer = (v) => {
-    if (typeof v === 'string' && v.startsWith('assets/')) rutas.add(v);
+    if (typeof v === 'string' && v.startsWith('assets/')) { if (!v.includes('{n}')) rutas.add(v); }
     else if (Array.isArray(v)) v.forEach(recorrer);
-    else if (v && typeof v === 'object') Object.values(v).forEach(recorrer);
+    else if (v && typeof v === 'object') {
+      // giro 360: un patrón con {n} que debe existir para cada cuadro
+      if (v.cuadros) {
+        for (const p of Object.values(v)) {
+          if (typeof p === 'string' && p.includes('{n}')) for (let k = 0; k < v.cuadros; k++) rutas.add(p.replace('{n}', String(k).padStart(3, '0')));
+        }
+      }
+      Object.values(v).forEach(recorrer);
+    }
   };
   recorrer(d);
   const faltan = [];

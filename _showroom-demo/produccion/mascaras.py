@@ -60,39 +60,46 @@ def envolvente(puntos):
     return inf[:-1] + sup[:-1]
 
 
+def franjas_camara(s, cam):
+    """Contorno de cada piso visto desde `cam` (coordenadas de imagen 0-1)."""
+    P = E.PARAM
+    W, D, v = P['frente'], P['fondo'], P['vuelo']
+    ojo = cam.matrix_world.translation
+    yf = -v / 2       # plano de fachada (entre el muro y el vuelo de los balcones)
+    yb = D + v / 2    # la posterior es la delantera reflejada
+    # caras verticales del edificio: (normal, esquinas en planta)
+    caras = [((0, -1, 0), [(0, yf), (W, yf)]), ((-1, 0, 0), [(0, yf), (0, yb)]),
+             ((1, 0, 0), [(W, yf), (W, yb)]), ((0, 1, 0), [(0, yb), (W, yb)])]
+    franjas = {}
+    for pid, (z0, z1) in pisos(P).items():
+        esquinas = []
+        for n, planta in caras:
+            cx = sum(p[0] for p in planta) / 2
+            cy = sum(p[1] for p in planta) / 2
+            # solo las caras que miran a la cámara
+            if n[0] * (ojo.x - cx) + n[1] * (ojo.y - cy) <= 0:
+                continue
+            esquinas += [Vector((x, y, z)) for x, y in planta for z in (z0, z1)]
+        proy = [world_to_camera_view(s, cam, c) for c in esquinas]
+        pts = [(round(p.x, 4), round(1 - p.y, 4)) for p in proy if p.z > 0]
+        franjas[pid] = [[x, y] for x, y in envolvente(pts)]
+    return franjas
+
+
 def main():
     argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     salida = argv[argv.index('--out') + 1] if '--out' in argv else 'mascaras.json'
-    P = E.PARAM
-    W, D, v = P['frente'], P['fondo'], P['vuelo']
     resultado = {}
     for vista, (ancho, alto) in CAMARAS.items():
         E.limpiar()
         E.camara(vista)
         s = bpy.context.scene
         s.render.resolution_x, s.render.resolution_y = ancho, alto
-        cam = s.camera
         bpy.context.view_layer.update()
-        franjas = {}
-        ojo = cam.matrix_world.translation
-        yf = -v / 2  # plano de fachada (entre el muro y el vuelo de los balcones)
-        # caras verticales del edificio: (normal, esquinas en planta)
-        caras = [((0, -1, 0), [(0, yf), (W, yf)]), ((-1, 0, 0), [(0, yf), (0, D)]), ((1, 0, 0), [(W, yf), (W, D)])]
-        for pid, (z0, z1) in pisos(P).items():
-            esquinas = []
-            for n, planta in caras:
-                cx = sum(p[0] for p in planta) / 2
-                cy = sum(p[1] for p in planta) / 2
-                # solo las caras que miran a la cámara: la trasera nunca se ve
-                if n[0] * (ojo.x - cx) + n[1] * (ojo.y - cy) <= 0:
-                    continue
-                esquinas += [Vector((x, y, z)) for x, y in planta for z in (z0, z1)]
-            proy = [world_to_camera_view(s, cam, c) for c in esquinas]
-            pts = [(round(p.x, 4), round(1 - p.y, 4)) for p in proy if p.z > 0]
-            franjas[pid] = [[x, y] for x, y in envolvente(pts)]
-        resultado[vista] = franjas
+        resultado[vista] = franjas_camara(s, s.camera)
     Path(salida).write_text(json.dumps(resultado, indent=1), encoding='utf8')
     print(f'MASCARAS OK -> {salida}')
 
 
-main()
+if __name__ == '__main__':
+    main()

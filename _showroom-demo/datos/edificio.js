@@ -58,6 +58,39 @@ export const plantillas = {
   },
 };
 
+// Piso 1 y azotea: sin departamentos, con sus espacios rotulados sobre la
+// planta. Mismo encuadre y contexto que el piso típico. La azotea es un cenital
+// de la misma escena del giro 360 (edificio.py --vista planta_azotea); el
+// piso 1 sale de produccion/comunes.py.
+const contexto = { imagen: 'assets/plantas/contexto-piso-v2.webp', marco: [-2.0833, -1.0, 3.0833, 2.1818] };
+plantillas.primer = {
+  nombre: 'Piso 1',
+  orientacionPlano: 'La avenida queda en la parte inferior de la planta.',
+  aspecto: F / P,
+  imagen: 'assets/plantas/piso1-v1.webp',
+  contexto,
+  posiciones: {},
+  espacios: [
+    { id: 'recepcion', nombre: 'Recepción', detalle: 'Counter, sala de espera y casilleros', poligono: rect(0, 0, 6.0, 8.4) },
+    { id: 'servicio', nombre: 'Depósitos y cuarto de bombas', poligono: rect(0, 8.4, 6.0, 14.0) },
+    { id: 'cocheras', nombre: '6 estacionamientos', detalle: 'E-01 a E-06 · se venden aparte', poligono: rect(8.4, 0, F, P) },
+  ],
+};
+plantillas.azotea = {
+  nombre: 'Azotea',
+  orientacionPlano: 'La avenida queda en la parte inferior de la planta.',
+  aspecto: F / P,
+  imagen: 'assets/plantas/azotea-v1.webp',
+  contexto,
+  posiciones: {},
+  espacios: [
+    { id: 't601', nombre: 'Terraza privada', unidad: '601', poligono: rect(0.2, 0.2, 5.9, 8.3) },
+    { id: 't602', nombre: 'Terraza privada', unidad: '602', poligono: rect(8.5, 0.2, 14.2, 8.3) },
+    { id: 'comun', nombre: 'Terraza común', detalle: 'Pérgola, comedor y parrilla', poligono: rect(0.2, 14.2, 14.2, 21.8) },
+    { id: 'tecnica', nombre: 'Tanques y área técnica', poligono: rect(0.2, 8.3, 6.0, 14.0) },
+  ],
+};
+
 const pisosTipicos = Array.from({ length: 5 }, (_, i) => {
   const n = String(i + 2);
   return { id: n, etiqueta: `Piso ${n}`, plantilla: 'tipica' };
@@ -65,9 +98,9 @@ const pisosTipicos = Array.from({ length: 5 }, (_, i) => {
 
 // Orden de abajo hacia arriba. `uso` describe los pisos sin departamentos.
 export const pisos = [
-  { id: '1', etiqueta: 'Piso 1', plantilla: null, uso: 'Recepción, ascensor y cocheras' },
+  { id: '1', etiqueta: 'Piso 1', plantilla: 'primer', uso: 'Recepción, ascensor y cocheras' },
   ...pisosTipicos,
-  { id: 'azotea', etiqueta: 'Azotea', plantilla: null, uso: 'Terraza común con parrillas y terrazas privadas de los dptos. 601 y 602' },
+  { id: 'azotea', etiqueta: 'Azotea', plantilla: 'azotea', uso: 'Terraza común con parrillas y terrazas privadas de los dptos. 601 y 602' },
 ];
 
 export const amenidades = [

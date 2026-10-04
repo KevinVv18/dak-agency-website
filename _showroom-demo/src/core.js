@@ -95,6 +95,19 @@
   // el render 16:9 recortaría el edificio o lo dejaría diminuto.
   const vertical = matchMedia('(max-aspect-ratio: 1/1)');
   const imagenVista = (v, modo = 'dia') => (vertical.matches && v.imagen[`${modo}Movil`]) || v.imagen[modo] || v.imagen.dia;
+  // Variante con los vecinos inmediatos como maqueta translúcida: entra al
+  // elegir un piso, así la franja no cae sobre la casa de al lado.
+  const imagenFantasma = (v, modo = 'dia') => (vertical.matches && v.imagen[`${modo}MovilFantasma`]) || v.imagen[`${modo}Fantasma`] || null;
+  // Giro 360: un patrón con {n} por modo; cada cuadro es una toma de dron
+  // alrededor del edificio (produccion/edificio.py --orbita).
+  const modoGiro = (v, modo) => (modo === 'noche' && v.giro.noche ? 'noche' : 'dia');
+  const giroMovil = (v) => vertical.matches && !!v.giro.diaMovil;
+  const cuadroSrc = (v, k, modo = 'dia') => {
+    const g = v.giro;
+    const patron = (giroMovil(v) && (g[`${modo}Movil`] || g.diaMovil)) || g[modo] || g.dia;
+    return patron.replace('{n}', String(k).padStart(3, '0'));
+  };
+  const puntosFranja = (poli, aw, ah) => poli.map(([x, y]) => `${(x * aw).toFixed(3)},${(y * ah).toFixed(3)}`).join(' ');
 
   function precioTexto(u) {
     if (u.estado === 'vendido') return 'Vendido';
@@ -154,7 +167,7 @@
   // Columna de pisos de arriba hacia abajo, como el tablero de un ascensor.
   function columnaPisos(activo) {
     const filas = [...D.pisos].reverse().map((p) => {
-      const disp = p.plantilla ? unidadesDePiso(p.id).filter((u) => u.estado === 'disponible').length : null;
+      const disp = unidadesDePiso(p.id).length ? unidadesDePiso(p.id).filter((u) => u.estado === 'disponible').length : null;
       const etiqueta = p.id === 'azotea' ? 'Azotea' : `${p.id}°`;
       const detalle = disp === null ? (p.id === '1' ? 'Ingreso' : 'Común') : disp ? plural(disp, 'disponible') : 'Agotado';
       const corto = disp === null ? detalle : disp ? `${disp} disp.` : 'Agotado';
@@ -190,8 +203,9 @@
   function vistaPortada() {
     const p = D.proyecto;
     // La portada usa la imagen que el proyecto elija o, si no, la primera vista.
-    const dia = (vertical.matches && p.portadaMovil) || p.portada || (D.vistas[0] && imagenVista(D.vistas[0]));
-    const noche = D.vistas[0] && D.vistas[0].imagen.noche ? imagenVista(D.vistas[0], 'noche') : null;
+    const vp = D.vistas.find((v) => !v.giro) || D.vistas[0];
+    const dia = (vertical.matches && p.portadaMovil) || p.portada || (vp && imagenVista(vp));
+    const noche = vp && vp.imagen.noche ? imagenVista(vp, 'noche') : null;
     const disp = D.unidades.filter((u) => u.estado === 'disponible');
     const desde = disp.filter((u) => u.precio).map((u) => u.precio).sort((a, b) => a - b)[0];
     return `
@@ -200,6 +214,7 @@
         <div class="portada__escena" aria-hidden="true">
           ${dia ? `<img class="portada__img" src="${esc(recurso(dia))}" alt="" fetchpriority="high">` : marcador('Video de portada', 'Fachada al atardecer')}
           ${noche ? `<img class="portada__img portada__img--noche" src="${esc(recurso(noche))}" alt="">` : ''}
+          ${D.vistas.some((v) => v.giro) ? '<canvas class="portada__giro" data-intro></canvas>' : ''}
         </div>
         <p class="marca marca--portada"><span class="marca__nombre">${esc(p.marca)}</span></p>
         <div class="portada__contenido">
@@ -219,13 +234,24 @@
   // Franjas de piso calculadas desde la geometría (produccion/mascaras.py).
   // El SVG usa el mismo encuadre que la imagen: «slice» cuando la imagen llena
   // la pantalla y «meet» cuando se muestra entera, así la franja no se corre.
-  function franjasSvg(v, img) {
-    const movil = img && (img === v.imagen.diaMovil || img === v.imagen.nocheMovil);
-    const set = movil ? v.pisosMovil : v.pisos;
+  function franjasSvg(v, img, k = 0) {
+    let movil;
+    let set;
+    if (v.giro) {
+      // en el giro hay un polígono por piso aunque en este cuadro no se vea:
+      // mostrarCuadro() solo cambia sus puntos
+      movil = giroMovil(v);
+      const cuadro = (movil ? v.giro.franjasMovil : v.giro.franjas)?.[k];
+      if (!cuadro) return '';
+      set = Object.fromEntries(D.pisos.map((p) => [p.id, cuadro[p.id] || []]));
+    } else {
+      movil = img && (img === v.imagen.diaMovil || img === v.imagen.nocheMovil);
+      set = movil ? v.pisosMovil : v.pisos;
+    }
     if (!set) return '';
     const [aw, ah] = movil ? [9, 16] : [16, 9];
-    const polis = Object.entries(set).filter(([id, poli]) => pisoPorId[id] && poli.length > 2).map(([id, poli]) =>
-      `<polygon class="franja" data-franja="${esc(id)}" points="${poli.map(([x, y]) => `${(x * aw).toFixed(3)},${(y * ah).toFixed(3)}`).join(' ')}"/>`).join('');
+    const polis = Object.entries(set).filter(([id, poli]) => pisoPorId[id] && (v.giro || poli.length > 2)).map(([id, poli]) =>
+      `<polygon class="franja" data-franja="${esc(id)}" points="${poli.length > 2 ? puntosFranja(poli, aw, ah) : ''}"/>`).join('');
     return `<svg class="franjas" viewBox="0 0 ${aw} ${ah}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${polis}</svg>`;
   }
 
@@ -236,17 +262,21 @@
     const hayNoche = D.vistas.some((v) => v.imagen.noche);
     const modo = hayNoche && q.modo === 'noche' ? 'noche' : 'dia';
     const v = D.vistas[i];
-    const img = imagenVista(v, modo);
+    const k = v.giro ? Math.min(v.giro.cuadros - 1, Math.max(0, Number(q.giro) || 0)) : 0;
+    const img = v.giro ? cuadroSrc(v, k, modoGiro(v, modo)) : imagenVista(v, modo);
+    const fantasma = !v.giro && imagenFantasma(v, modo);
     const n = D.vistas.length;
     return `
       ${aviso()}
-      <main class="inmersiva inmersiva--edificio" data-vista-actual="${i}">
+      <main class="inmersiva inmersiva--edificio" data-vista-actual="${i}"${v.giro ? ` data-giro data-cuadro="${k}"` : ''}>
         <div class="escena">
           ${img ? `<img class="escena__fondo" src="${esc(recurso(img))}" alt="" aria-hidden="true">
-          <img class="escena__img" data-escena-img src="${esc(recurso(img))}" alt="${esc(D.proyecto.nombre)}, vista ${esc(v.nombre.toLowerCase())}">
-          ${franjasSvg(v, img)}`
+          <img class="escena__img" data-escena-img src="${esc(recurso(img))}" alt="${esc(D.proyecto.nombre)}, ${v.giro ? 'giro de 360 grados alrededor del edificio' : `vista ${esc(v.nombre.toLowerCase())}`}">
+          ${fantasma ? `<img class="escena__img escena__img--fantasma" data-fantasma src="${esc(recurso(fantasma))}" alt="" aria-hidden="true">` : ''}
+          ${franjasSvg(v, img, k)}`
             : marcador(`Vista ${v.nombre.toLowerCase()}`, `Parada ${i + 1} de ${n} · render del exterior`)}
         </div>
+        ${v.giro ? `<p class="pista-giro" data-pista-giro>${icono('giro')}<span>Arrastra para girar el edificio</span></p>` : ''}
         <p class="franja-rotulo" data-franja-rotulo hidden></p>
         ${controles(url(''))}
         <h1 class="etiqueta">${esc(D.proyecto.nombre)}</h1>
@@ -258,8 +288,8 @@
           <button class="circulo" data-pantalla aria-label="Pantalla completa">${icono('pantalla')}</button>
         </div>
         ${n > 1 ? `
-          <button class="flecha flecha--izq" data-paso="-1" aria-label="Vista anterior">${icono('izq')}</button>
-          <button class="flecha flecha--der" data-paso="1" aria-label="Vista siguiente">${icono('der')}</button>
+          <button class="flecha flecha--izq" data-paso="-1" aria-label="${v.giro ? 'Girar a la izquierda' : 'Vista anterior'}">${icono('izq')}</button>
+          <button class="flecha flecha--der" data-paso="1" aria-label="${v.giro ? 'Girar a la derecha' : 'Vista siguiente'}">${icono('der')}</button>
           <div class="parada" aria-live="polite">
             <span data-parada-nombre>${esc(v.nombre)}</span>
             <ol class="parada__puntos">${D.vistas.map((x, k) => `<li><button data-ir-vista="${k}" aria-label="${esc(x.nombre)}"${k === i ? ' aria-current="true"' : ''}></button></li>`).join('')}</ol>
@@ -303,6 +333,12 @@
           <circle class="ancla" data-ancla="${u.id}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="1"/>
         </g>`;
     }).join('');
+    // Espacios sin departamento (recepción, cocheras, terrazas): polígono tenue y
+    // un marcador con su nombre que pone vistaPiso().
+    const espacios = (pl.espacios || []).map((e) => {
+      const [cx, cy] = centro(e.poligono);
+      return `<g class="espacio" aria-hidden="true"><polygon points="${pts(e.poligono)}"/><circle class="ancla" data-ancla="e-${esc(e.id)}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="1"/></g>`;
+    }).join('');
     return `
       <svg class="plano${ctx ? ' plano--contexto' : ''}" viewBox="${caja}" preserveAspectRatio="xMidYMid ${ctx ? 'slice' : 'meet'}" role="img" aria-label="Planta del ${esc(piso.etiqueta.toLowerCase())}">
         <defs>
@@ -311,6 +347,7 @@
         </defs>
         ${fondo}
         <rect class="limite" data-limite x="0" y="0" width="${W}" height="${H}"/>
+        ${espacios}
         ${zonas}
       </svg>`;
   }
@@ -355,12 +392,17 @@
     if (piso.plantilla) {
       // Marcadores HTML de tamaño fijo en pantalla: se leen igual con cualquier
       // zoom. Los coloca colocarPines() sobre las anclas del SVG.
-      const pines = unidadesDePiso(id).map((u) => `<button class="pin-unidad pin-unidad--${u.estado}${u.id === elegida ? ' pin-unidad--elegido' : ''}" data-unidad="${u.id}" data-pin="${u.id}" aria-pressed="${u.id === elegida}" aria-label="Departamento ${u.id}, ${esc(tipoPorId[u.tipologia].nombre)}, ${ESTADO[u.estado].txt}"><span class="pin-unidad__punto" aria-hidden="true"></span>${u.id}</button>`).join('');
+      const pl = D.plantillas[piso.plantilla];
+      const pinesEspacios = (pl.espacios || []).map((e) => (e.unidad
+        ? `<a class="pin-espacio pin-espacio--enlace" data-pin="e-${esc(e.id)}" href="${url(`departamento/${e.unidad}/`)}"><b>${esc(e.nombre)}</b><small>Ver dpto. ${esc(e.unidad)}</small></a>`
+        : `<span class="pin-espacio" data-pin="e-${esc(e.id)}"><b>${esc(e.nombre)}</b>${e.detalle ? `<small>${esc(e.detalle)}</small>` : ''}</span>`)).join('');
+      const pines = pinesEspacios + unidadesDePiso(id).map((u) => `<button class="pin-unidad pin-unidad--${u.estado}${u.id === elegida ? ' pin-unidad--elegido' : ''}" data-unidad="${u.id}" data-pin="${u.id}" aria-pressed="${u.id === elegida}" aria-label="Departamento ${u.id}, ${esc(tipoPorId[u.tipologia].nombre)}, ${ESTADO[u.estado].txt}"><span class="pin-unidad__punto" aria-hidden="true"></span>${u.id}</button>`).join('');
       escena = `<div class="lienzo-plano" data-piso="${esc(id)}">${planoPiso(piso, elegida)}</div><div class="pines">${pines}</div>`;
     } else {
       escena = `<div class="escena__vacia">${marcador(piso.etiqueta, piso.uso)}</div>`;
     }
-    const disp = piso.plantilla ? unidadesDePiso(id).filter((u) => u.estado === 'disponible').length : null;
+    const conUnidades = unidadesDePiso(id).length > 0;
+    const disp = conUnidades ? unidadesDePiso(id).filter((u) => u.estado === 'disponible').length : null;
     return `
       ${aviso()}
       <main class="inmersiva inmersiva--piso${elegida ? ' inmersiva--con-tarjeta' : ''}">
@@ -377,9 +419,9 @@
             <button class="circulo circulo--blanco" data-zoom="1" aria-label="Acercar">${icono('mas')}</button>
             <button class="circulo circulo--blanco" data-zoom="-1" aria-label="Alejar">${icono('menos')}</button>
           </div>
-          ${leyenda}
+          ${conUnidades ? leyenda : ''}
         </div>` : ''}
-        ${elegida ? tarjetaUnidad(unidadPorId[elegida], id) : piso.plantilla ? '<p class="pista">Toca un departamento para ver su precio y su planta</p>' : ''}
+        ${elegida ? tarjetaUnidad(unidadPorId[elegida], id) : conUnidades ? '<p class="pista">Toca un departamento para ver su precio y su planta</p>' : ''}
         ${menu()}
       </main>`;
   }
@@ -675,6 +717,10 @@
     const q = query();
     const modo = q.modo === 'noche' ? 'noche' : 'dia';
     const v = D.vistas[i];
+    if (v.giro || D.vistas[Number(cont.dataset.vistaActual)]?.giro) {
+      fijarQuery({ vista: v.id, giro: null });
+      return render({ foco: false });
+    }
     const src = imagenVista(v, modo);
     cont.dataset.vistaActual = i;
     fijarQuery({ vista: v.id });
@@ -689,9 +735,22 @@
     nueva.alt = `${D.proyecto.nombre}, vista ${v.nombre.toLowerCase()}`;
     nueva.classList.add('escena__img--entrando');
     const fondo = cont.querySelector('.escena__fondo');
+    cont.querySelector('[data-fantasma]')?.remove();
+    cont.classList.remove('inmersiva--fantasma');
+    const fs = imagenFantasma(v, modo);
     const listo = () => {
       actual.after(nueva);
       ajustarEncaje(nueva);
+      if (fs) {
+        const f = document.createElement('img');
+        f.className = 'escena__img escena__img--fantasma';
+        f.dataset.fantasma = '';
+        f.alt = '';
+        f.setAttribute('aria-hidden', 'true');
+        f.src = recurso(fs);
+        nueva.after(f);
+        ajustarEncaje(f);
+      }
       requestAnimationFrame(() => nueva.classList.remove('escena__img--entrando'));
       if (fondo) fondo.src = nueva.src;
       setTimeout(() => actual.remove(), 700);
@@ -716,8 +775,176 @@
   // Precarga las demás paradas para que el fundido no espere a la red.
   function precargarVistas() {
     if (!app.querySelector('.inmersiva--edificio')) return;
-    for (const v of D.vistas) { const src = imagenVista(v); if (src) { const im = new Image(); im.src = recurso(src); } }
+    for (const v of D.vistas) {
+      if (v.giro) continue;
+      for (const src of [imagenVista(v), imagenFantasma(v)]) if (src) { const im = new Image(); im.src = recurso(src); }
+    }
   }
+
+  // ── Intro de la portada ───────────────────────────────────────────────────
+  // Toma de dron: el edificio gira solo mientras pasa del día a la noche y
+  // vuelve, en bucle. Usa los cuadros del giro con fundido entre cuadro y
+  // cuadro, así la rotación se ve continua aunque haya uno cada 6 grados.
+
+  let intro = null;
+  function detenerIntro() {
+    if (intro) cancelAnimationFrame(intro.raf);
+    intro = null;
+  }
+  function montarIntro() {
+    detenerIntro();
+    const cv = app.querySelector('[data-intro]');
+    const v = D.vistas.find((x) => x.giro);
+    if (!cv || !v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const n = v.giro.cuadros;
+    const cargar = (modo) => [...Array(n).keys()].map((k) => { const im = new Image(); im.src = recurso(cuadroSrc(v, k, modo)); return im; });
+    const dia = cargar('dia');
+    const noche = v.giro.noche ? cargar('noche') : null;
+    const ctx = cv.getContext('2d');
+    const est = { raf: 0, t0: 0 };
+    intro = est;
+    const listo = (im) => im.complete && im.naturalWidth;
+    const dibujar = (im, alfa) => {
+      if (!listo(im) || alfa <= 0) return;
+      const k = Math.max(cv.width / im.naturalWidth, cv.height / im.naturalHeight);
+      const w = im.naturalWidth * k;
+      const h = im.naturalHeight * k;
+      ctx.globalAlpha = alfa;
+      ctx.drawImage(im, (cv.width - w) / 2, (cv.height - h) / 2, w, h);
+    };
+    const cuadro = (t) => {
+      if (intro !== est || !cv.isConnected) return;
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      const W = Math.round(cv.clientWidth * dpr);
+      const H = Math.round(cv.clientHeight * dpr);
+      if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+      // espera a tener todos los cuadros de día (y de noche, si hay)
+      if (!dia.every(listo) || (noche && !noche.every(listo))) { est.raf = requestAnimationFrame(cuadro); return; }
+      if (!est.t0) { est.t0 = t; cv.classList.add('portada__giro--lista'); }
+      const s = (t - est.t0) / 1000;
+      const pos = s * 7;                       // cuadros por segundo: una vuelta cada ~8,5 s
+      const k = Math.floor(pos) % n;
+      const f = pos - Math.floor(pos);
+      const k2 = (k + 1) % n;
+      // día → noche → día cada 26 s, con la noche sostenida un rato
+      const ciclo = (1 - Math.cos((2 * Math.PI * s) / 26)) / 2;
+      const nn = noche ? Math.min(1, Math.max(0, (ciclo - 0.15) / 0.6)) : 0;
+      ctx.globalAlpha = 1;
+      dibujar(dia[k], 1);
+      dibujar(dia[k2], f);
+      if (nn) { dibujar(noche[k], nn); dibujar(noche[k2], nn * f); }
+      est.raf = requestAnimationFrame(cuadro);
+    };
+    est.raf = requestAnimationFrame(cuadro);
+  }
+
+  // ── Giro 360 ──────────────────────────────────────────────────────────────
+  // Los cuadros se precargan (primero uno de cada cuatro, para poder girar
+  // cuanto antes) y se cambian sin fundido. Arrastrar gira el edificio como si
+  // se lo tomara con la mano; mientras nadie lo toca, da vueltas solo.
+
+  const giro = { cache: [], auto: null, anim: null, tocado: false, arr: null };
+  const contGiro = () => app.querySelector('.inmersiva--edificio[data-giro]');
+
+  function mostrarCuadro(k) {
+    const cont = contGiro();
+    const v = cont && D.vistas[Number(cont.dataset.vistaActual)];
+    if (!v?.giro) return;
+    const n = v.giro.cuadros;
+    const j = ((Math.round(k) % n) + n) % n;
+    cont.dataset.cuadro = j;
+    const img = cont.querySelector('[data-escena-img]');
+    if (img) img.src = recurso(cuadroSrc(v, j, modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia')));
+    const movil = giroMovil(v);
+    const cuadro = (movil ? v.giro.franjasMovil : v.giro.franjas)?.[j] || {};
+    const [aw, ah] = movil ? [9, 16] : [16, 9];
+    cont.querySelectorAll('.franja').forEach((p) => {
+      const poli = cuadro[p.dataset.franja];
+      p.setAttribute('points', poli && poli.length > 2 ? puntosFranja(poli, aw, ah) : '');
+    });
+  }
+
+  function detenerGiro() {
+    clearInterval(giro.auto);
+    giro.auto = null;
+    cancelAnimationFrame(giro.anim);
+    giro.anim = null;
+  }
+
+  function tocarGiro() {
+    giro.tocado = true;
+    detenerGiro();
+    app.querySelector('[data-pista-giro]')?.classList.add('pista-giro--oculta');
+  }
+
+  // Gira `pasos` cuadros con animación (flechas y teclado).
+  function animarGiro(pasos) {
+    const cont = contGiro();
+    if (!cont) return;
+    tocarGiro();
+    const k0 = Number(cont.dataset.cuadro);
+    const dir = Math.sign(pasos);
+    let hechos = 0;
+    let t0 = 0;
+    const paso = (t) => {
+      if (t - t0 >= 40) { t0 = t; hechos += 1; mostrarCuadro(k0 + dir * hechos); }
+      if (hechos < Math.abs(pasos)) giro.anim = requestAnimationFrame(paso);
+      else fijarQuery({ giro: contGiro()?.dataset.cuadro || null });
+    };
+    giro.anim = requestAnimationFrame(paso);
+  }
+
+  function precargarGiro() {
+    detenerGiro();
+    const cont = contGiro();
+    const v = cont && D.vistas[Number(cont.dataset.vistaActual)];
+    if (!v?.giro) return;
+    giro.tocado = Boolean(query().giro);
+    const n = v.giro.cuadros;
+    const modo = modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia');
+    const orden = [...Array(n).keys()].sort((a, b) => (a % 4 ? 1 : 0) - (b % 4 ? 1 : 0));
+    let listos = 0;
+    giro.cache = orden.map((k) => {
+      const im = new Image();
+      im.onload = im.onerror = () => { listos += 1; if (listos === n) arrancarGiro(); };
+      im.src = recurso(cuadroSrc(v, k, modo));
+      return im;
+    });
+  }
+
+  function arrancarGiro() {
+    if (giro.tocado || giro.auto || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    giro.auto = setInterval(() => {
+      const cont = contGiro();
+      if (!cont || giro.tocado) return detenerGiro();
+      mostrarCuadro(Number(cont.dataset.cuadro) + 1);
+    }, 110);
+  }
+
+  document.addEventListener('pointerdown', (e) => {
+    const escena = e.target.closest('.inmersiva--edificio[data-giro] .escena');
+    if (!escena || e.button !== 0) return;
+    tocarGiro();
+    giro.arr = { id: e.pointerId, x: e.clientX, k: Number(contGiro().dataset.cuadro), movido: false };
+  });
+  document.addEventListener('pointermove', (e) => {
+    if (!giro.arr || e.pointerId !== giro.arr.id) return;
+    const dx = e.clientX - giro.arr.x;
+    if (!giro.arr.movido && Math.abs(dx) < 6) return;
+    giro.arr.movido = true;
+    // arrastrar a la izquierda trae el costado derecho: el edificio sigue a la mano
+    mostrarCuadro(giro.arr.k - dx / 14);
+  });
+  document.addEventListener('pointerup', (e) => {
+    if (!giro.arr || e.pointerId !== giro.arr.id) return;
+    if (giro.arr.movido) {
+      const bloquear = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
+      document.addEventListener('click', bloquear, { capture: true, once: true });
+      setTimeout(() => document.removeEventListener('click', bloquear, { capture: true }), 50);
+      fijarQuery({ giro: contGiro()?.dataset.cuadro || null });
+    }
+    giro.arr = null;
+  });
 
   // ── Planta: zoom, arrastre y marcadores ───────────────────────────────────
   // El estado del encuadre sobrevive al elegir otra unidad (la vista se vuelve
@@ -857,12 +1084,14 @@
     const cont = app.querySelector('.inmersiva--edificio');
     if (!cont) return;
     cont.querySelectorAll('.franja').forEach((f) => f.classList.toggle('franja--activa', f.dataset.franja === id));
+    cont.classList.toggle('inmersiva--fantasma', Boolean(id && cont.querySelector('[data-fantasma]')));
+    if (id && giro.auto) tocarGiro();
     cont.querySelectorAll('.piso-pildora').forEach((a) => a.classList.toggle('piso-pildora--resaltado', a.dataset.piso === id));
     const rotulo = cont.querySelector('[data-franja-rotulo]');
     const piso = id && pisoPorId[id];
     if (rotulo) {
       if (piso) {
-        const disp = piso.plantilla ? unidadesDePiso(id).filter((u) => u.estado === 'disponible').length : null;
+        const disp = unidadesDePiso(id).length ? unidadesDePiso(id).filter((u) => u.estado === 'disponible').length : null;
         rotulo.textContent = `${piso.etiqueta}${disp === null ? '' : ` · ${disp ? plural(disp, 'disponible') : 'sin disponibles'}`}`;
         rotulo.hidden = false;
         // Desde la columna no hay cursor sobre la fachada: el rótulo se pega
@@ -908,7 +1137,9 @@
     document.body.dataset.vista = partes[0] || 'portada';
     montarVisor();
     precargarVistas();
-    app.querySelectorAll('[data-escena-img]').forEach(ajustarEncaje);
+    precargarGiro();
+    montarIntro();
+    app.querySelectorAll('[data-escena-img], [data-fantasma]').forEach(ajustarEncaje);
     montarPlano();
     actualizarTitulo(partes);
     // Al cambiar de pantalla, el lector de pantalla arranca por el título nuevo.
@@ -984,6 +1215,7 @@
       return;
     }
     const paso = t.closest('[data-paso]');
+    if (paso && contGiro()) return animarGiro(Number(paso.dataset.paso) * 5);
     if (paso) return irAVista(Number(app.querySelector('.inmersiva--edificio').dataset.vistaActual) + Number(paso.dataset.paso));
     const irVista = t.closest('[data-ir-vista]');
     if (irVista) return irAVista(Number(irVista.dataset.irVista));
@@ -1013,13 +1245,14 @@
     // Flechas del teclado recorren las paradas del exterior.
     const ed = app.querySelector('.inmersiva--edificio');
     if (ed && !e.target.closest('input, select, textarea') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
-      irAVista(Number(ed.dataset.vistaActual) + (e.key === 'ArrowRight' ? 1 : -1));
+      if (contGiro()) animarGiro(e.key === 'ArrowRight' ? 3 : -3);
+      else irAVista(Number(ed.dataset.vistaActual) + (e.key === 'ArrowRight' ? 1 : -1));
     }
   });
 
   // Deslizar con el dedo sobre la escena cambia de parada en el celular.
   let toqueX = null;
-  document.addEventListener('touchstart', (e) => { if (e.target.closest('.inmersiva--edificio .escena')) toqueX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchstart', (e) => { if (e.target.closest('.inmersiva--edificio:not([data-giro]) .escena')) toqueX = e.touches[0].clientX; }, { passive: true });
   document.addEventListener('touchend', (e) => {
     if (toqueX === null) return;
     const dx = e.changedTouches[0].clientX - toqueX;
@@ -1038,7 +1271,7 @@
 
   window.addEventListener('popstate', () => render());
   // Girar el celular cambia qué versión de imagen corresponde.
-  addEventListener('resize', () => app.querySelectorAll('[data-escena-img]').forEach(ajustarEncaje));
+  addEventListener('resize', () => app.querySelectorAll('[data-escena-img], [data-fantasma]').forEach(ajustarEncaje));
   vertical.addEventListener('change', () => { if (/^(portada|edificio)$/.test(document.body.dataset.vista)) render({ foco: false }); });
   render({ foco: false });
 })();
