@@ -60,10 +60,11 @@ VISTAS = {
     # versiones verticales para celular (1080x1920): misma cámara, lente más
     # abierto para que el edificio entre entero en una pantalla parada
     # Cenital del barrio SIN el edificio: va debajo de la planta de piso en la
-    # web. Marco x -12..26,4 m, y -20..34 m (la planta del edificio es 0..14,4 x
-    # 0..22). En coordenadas normalizadas de la planta: [-0,8333, -0,5455,
-    # 1,8333, 1,9091]; ese marco lo declara datos/edificio.js.
-    'planta_contexto': dict(orto=True, centro_xy=(7.2, 7.0), escala=54.0),
+    # web. Marco amplio (x -30..44,4 m, y -26..44 m) para que cubra la pantalla
+    # aun con el edificio entero encuadrado. En coordenadas normalizadas de la
+    # planta: [-2,0833, -1,0, 3,0833, 2,1818]; ese marco lo declara
+    # datos/edificio.js.
+    'planta_contexto': dict(orto=True, centro_xy=(7.2, 9.0), escala=74.4),
     'movil_frente':   dict(pos=(7.2, -27.0, 1.6), giro=0.0, focal=30, centro=10.5),
     'movil_diag_izq': dict(pos=(-12.0, -22.5, 1.6), giro=-36.0, focal=27, centro=10.5),
     'movil_diag_der': dict(pos=(29.0, -26.0, 1.6), giro=38.0, focal=27, centro=10.5),

@@ -793,16 +793,19 @@
     const b = lienzo.getBoundingClientRect();
     const r = limite.getBoundingClientRect();
     const movil = innerWidth <= 760;
-    const zona = movil
-      ? { x0: b.left + 12, x1: b.right - 12, y0: b.top + 118, y1: b.bottom - 100 }
-      : { x0: b.left + 24, x1: b.right - 156, y0: b.top + 84, y1: b.bottom - 72 };
+    const aSangre = svg.classList.contains('plano--contexto');
+    const zona = !aSangre
+      ? { x0: b.left, x1: b.right, y0: b.top, y1: b.bottom }
+      : movil
+        ? { x0: b.left + 12, x1: b.right - 12, y0: b.top + 118, y1: b.bottom - 100 }
+        : { x0: b.left + 24, x1: b.right - 156, y0: b.top + 84, y1: b.bottom - 72 };
     const s = Math.min((zona.x1 - zona.x0) / r.width, (zona.y1 - zona.y0) / r.height);
     const cx = b.left + b.width / 2;
     const cy = b.top + b.height / 2;
     // con transform-origin al centro: posición final = c + (p - c)·s + t
     const rcx = r.left + r.width / 2;
     const rcy = r.top + r.height / 2;
-    return { s, x: (zona.x0 + zona.x1) / 2 - (cx + (rcx - cx) * s), y: (zona.y0 + zona.y1) / 2 - (cy + (rcy - cy) * s), min: s * 0.85 };
+    return { s, x: (zona.x0 + zona.x1) / 2 - (cx + (rcx - cx) * s), y: (zona.y0 + zona.y1) / 2 - (cy + (rcy - cy) * s), min: aSangre ? Math.max(1, s * 0.85) : s };
   }
 
   function montarPlano() {
@@ -862,11 +865,20 @@
         const disp = piso.plantilla ? unidadesDePiso(id).filter((u) => u.estado === 'disponible').length : null;
         rotulo.textContent = `${piso.etiqueta}${disp === null ? '' : ` · ${disp ? plural(disp, 'disponible') : 'sin disponibles'}`}`;
         rotulo.hidden = false;
+        // Desde la columna no hay cursor sobre la fachada: el rótulo se pega
+        // al borde derecho de la franja iluminada.
+        const f = cont.querySelector(`.franja[data-franja="${id}"]`);
+        if (f && !rotulo.dataset.cursor) {
+          const r = f.getBoundingClientRect();
+          rotulo.style.transform = `translate(${Math.round(r.right + 12)}px, ${Math.round(r.top + r.height / 2 - 16)}px)`;
+        }
       } else rotulo.hidden = true;
     }
   }
   document.addEventListener('pointerover', (e) => {
     const f = e.target.closest?.('.franja, .piso-pildora');
+    const rot = app.querySelector('[data-franja-rotulo]');
+    if (rot) { if (f?.classList.contains('franja')) rot.dataset.cursor = '1'; else delete rot.dataset.cursor; }
     if (app.querySelector('.inmersiva--edificio')) resaltarPiso(f ? (f.dataset.franja || f.dataset.piso) : null);
   });
   document.addEventListener('focusin', (e) => {

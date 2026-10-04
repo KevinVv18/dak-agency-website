@@ -43,7 +43,7 @@ export const plantillas = {
     // Cenital del barrio sin el edificio (edificio.py --vista planta_contexto):
     // la planta queda a pantalla completa rodeada de su manzana real. `marco`
     // es lo que cubre esa imagen en coordenadas normalizadas de la planta.
-    contexto: { imagen: 'assets/plantas/contexto-piso-v1.webp', marco: [-0.8333, -0.5455, 1.8333, 1.9091] },
+    contexto: { imagen: 'assets/plantas/contexto-piso-v2.webp', marco: [-2.0833, -1.0, 3.0833, 2.1818] },
     esquema: {
       contorno: rect(0, 0, F, P),
       pasillo: rect(6.0, 0, 8.4, P),
