@@ -32,6 +32,13 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["_sales-center/node_modules/vite/bin/vite.js", "_sales-center", "--port", "4330", "--strictPort"],
       "port": 4330
+    },
+    {
+      "//": "Showroom de edificios. Sirve el dist/ generado: correr antes `node _showroom-demo/generar.js`.",
+      "name": "showroom",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "4340", "--bind", "127.0.0.1", "--directory", "_showroom-demo/dist"],
+      "port": 4340
     }
   ]
 }

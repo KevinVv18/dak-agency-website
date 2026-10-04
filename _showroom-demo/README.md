@@ -5,7 +5,36 @@ Segunda línea de producto inmobiliario: showroom web para edificios en preventa
 experiencia de President Tower / Urbania 3D, sin usar ninguno de sus materiales.
 
 - Plan maestro: [`docs/PLAN-MAESTRO.md`](docs/PLAN-MAESTRO.md)
-- Estado: **Fase 1 (búsqueda del ejemplar)**. Nada desplegado.
+- Resultados de la búsqueda y del mercado: [`docs/INVESTIGACION-FASE1.md`](docs/INVESTIGACION-FASE1.md)
+- Estado: Fase 1 cerrada con candidato; **motor en esquema** (cajas grises, sin
+  material visual). Nada desplegado.
+
+## Cómo se trabaja
+
+```
+node _showroom-demo/generar.js     # valida datos y escribe dist/
+```
+
+Vista local: configuración `showroom` de `.claude/launch.json` (sirve `dist/` en
+el puerto 4340).
+
+- `datos/` — proyecto, edificio (vistas, plantillas, pisos), tipologías,
+  unidades. **Única fuente de verdad**: el generador la serializa a
+  `dist/datos.js` y el navegador lee lo mismo.
+- `src/core.js` / `src/core.css` — el motor. No contiene ningún dato del
+  proyecto; clonar para otro edificio = cambiar `datos/`.
+- `generar.js` — **falla el build** si los datos se contradicen: IDs
+  duplicados, precio 0, vendido con precio, posición de planta sin unidad o con
+  dos, tipología inexistente, coordenadas fuera de 0–1.
+- Una página por ruta (`piso/7/`, `departamento/701/`), así un enlace o un QR
+  abre directo sin reescrituras en Apache. El estado de interfaz (vista, modo,
+  depto elegido, pestaña, filtros) va en la query; nunca datos personales.
+- La consulta está en **modo demo**: muestra lo que llegaría al asesor y no
+  envía nada.
+
+Cada recurso visual pendiente se dibuja como marcador que dice qué irá ahí.
+Cuando llegue el material, se rellenan los `null` de `datos/` (`imagen`,
+`planta.amoblada`, etc.) y el motor deja de dibujar el marcador.
 
 > Carpeta **sin workflow ni subdominio** todavía. Cuando se cree el subdominio en
 > hPanel, seguir el patrón de `AGENTS.md` («Cómo se añade una superficie que no es
