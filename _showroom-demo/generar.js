@@ -122,10 +122,20 @@ function shell(pag, v) {
 <title>${esc(pag.titulo)}</title>
 <meta name="description" content="${esc(pag.desc)}">
 <meta name="robots" content="noindex, nofollow">
+<link rel="preload" href="${base}vendor/fonts/manrope-latin-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${base}core.css?v=${v.css}">
+<style>:root{${v.marca}}</style>
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
+<!--
+THESIS: El edificio a pantalla completa es la interfaz; los controles flotan encima y nunca lo enmarcan. Rechaza la web inmobiliaria de secciones apiladas.
+OWN-WORLD: Imagen a sangre; píldoras y círculos flotantes blancos y negros con sombra real y un único acento por proyecto; tarjeta blanca de radio 20; Manrope; estados como punto dibujado + palabra.
+STORY: El comprador entra al edificio, elige piso en la columna, toca el marcador de un departamento, ve precio y bono, abre planta o recorrido y consulta sin perder la unidad.
+FIRST VIEWPORT: Render del frente a sangre con acercamiento lento; marca arriba a la izquierda; nombre grande abajo a la izquierda sobre degradado; Ingresar en acento; aviso de demo arriba.
+FORM: estándar de la categoría (canon), vara President Tower; seed 889aa60c.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
 <div id="app" aria-live="polite"><noscript><p class="sin-js">Este showroom necesita JavaScript para mostrar el edificio y los departamentos.</p></noscript></div>
 <script src="${base}datos.js?v=${v.datos}"></script>
 <script src="${base}core.js?v=${v.js}"></script>
@@ -159,7 +169,10 @@ async function generar() {
   const css = await readFile(join(RAIZ, 'src/core.css'), 'utf8');
   const js = await readFile(join(RAIZ, 'src/core.js'), 'utf8');
   const datosJs = `window.SHOWROOM = ${JSON.stringify(datos)};\n`;
-  const v = { css: firma(css), js: firma(js), datos: firma(datosJs) };
+  // La marca de cada proyecto entra como variables CSS: misma hoja, otro acento.
+  const e = datos.proyecto.estilo || {};
+  const marca = [e.acento && `--acento:${e.acento}`, e.acentoTinta && `--acento-tinta:${e.acentoTinta}`].filter(Boolean).join(';');
+  const v = { css: firma(css), js: firma(js), datos: firma(datosJs), marca };
 
   await rm(DIST, { recursive: true, force: true });
   await mkdir(DIST, { recursive: true });

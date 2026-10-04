@@ -8,10 +8,16 @@
 // Estado de interfaz en la query (vista, modo, departamento elegido, sección,
 // filtros): sobrevive a recargar y a compartir el enlace. Nunca datos
 // personales en la URL.
+//
+// Dos registros visuales: las vistas inmersivas (portada, edificio, piso) son
+// la imagen a pantalla completa con los controles flotando encima; las de
+// consulta (ficha, catálogo, modelos) son páginas claras con barra.
 
 (() => {
   const D = window.SHOWROOM;
   const app = document.getElementById('app');
+  // Sin modo demo no hay franja de aviso: las vistas inmersivas suben a tope.
+  if (!D.proyecto.modoDemo) document.documentElement.style.setProperty('--aviso-h', '0px');
   const BASE = new URL(document.documentElement.dataset.base || './', location.href);
 
   // ── Índices ────────────────────────────────────────────────────────────────
@@ -22,10 +28,36 @@
   const pisosResidenciales = D.pisos.filter((p) => p.plantilla);
 
   const ESTADO = {
-    disponible: { txt: 'Disponible', icono: '●' },
-    reservado: { txt: 'Reservado', icono: '◐' },
-    vendido: { txt: 'Vendido', icono: '○' },
+    disponible: { txt: 'Disponible' },
+    reservado: { txt: 'Reservado' },
+    vendido: { txt: 'Vendido' },
   };
+
+  // ── Íconos ─────────────────────────────────────────────────────────────────
+  // Un solo trazo (1,8) sobre una retícula de 24: dibujados, no caracteres.
+  const IC = {
+    menu: 'M4 7h16M4 12h16M4 17h16',
+    izq: 'M15 5l-7 7 7 7',
+    der: 'M9 5l7 7-7 7',
+    volver: 'M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11',
+    enlace: 'M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1',
+    pantalla: 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',
+    pisos: 'M12 3l9 5-9 5-9-5 9-5zM3 12.5l9 5 9-5M3 17l9 5 9-5',
+    buscar: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4.2-4.2',
+    cerrar: 'M6 6l12 12M18 6 6 18',
+    area: 'M4 4h16v16H4zM9 4v5H4M15 20v-5h5',
+    cama: 'M3 18v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7M3 14h18M7 9V6.5h4V9M3 18v2M21 18v2',
+    bano: 'M4 12h16v1.5A5.5 5.5 0 0 1 14.5 19h-5A5.5 5.5 0 0 1 4 13.5zM6.5 12V5.5a2 2 0 0 1 4 0M8 19l-1 2M16 19l1 2',
+    brujula: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM15.5 8.5l-2 5-5 2 2-5z',
+    edificio: 'M5 21V4h10v17M15 9h4v12M3 21h18M8 7h1M11 7h1M8 10h1M11 10h1M8 13h1M11 13h1M8 16h4',
+    giro: 'M21 12c0 2.2-4 4-9 4s-9-1.8-9-4 4-4 9-4M14 6l2.5 2L14 10',
+    plano: 'M4 5h16v14H4zM10 5v6H4M14 19v-5h6M10 14h4',
+    chat: 'M4 5h16v11H9l-5 4z',
+    sol: 'M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1 1M17.4 17.4l1 1M5.6 18.4l1-1M17.4 6.6l1-1M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',
+    luna: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+    imprimir: 'M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2M7 14h10v6H7z',
+  };
+  const icono = (n) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[n]}"/></svg>`;
 
   // ── Utilidades ─────────────────────────────────────────────────────────────
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -55,6 +87,12 @@
     const techada = tipoPorId[u.tipologia].areaTechada;
     return techada == null ? null : techada + areaLibreDe(u);
   };
+  const plural = (n, s, p = `${s}s`) => `${n} ${n === 1 ? s : p}`;
+
+  // Pantalla parada (celular): si la vista trae versión vertical, se usa esa;
+  // el render 16:9 recortaría el edificio o lo dejaría diminuto.
+  const vertical = matchMedia('(max-aspect-ratio: 1/1)');
+  const imagenVista = (v, modo = 'dia') => (vertical.matches && v.imagen[`${modo}Movil`]) || v.imagen[modo] || v.imagen.dia;
 
   function precioTexto(u) {
     if (u.estado === 'vendido') return 'Vendido';
@@ -68,55 +106,113 @@
     return b.tramos.find((t) => u.precio > t.desde && u.precio <= t.hasta) || null;
   }
 
-  const chipEstado =(estado) => `<span class="estado estado--${estado}"><span aria-hidden="true">${ESTADO[estado].icono}</span> ${ESTADO[estado].txt}</span>`;
+  // Estado: punto dibujado + palabra. Nunca solo color.
+  const chipEstado = (estado) => `<span class="estado estado--${estado}"><span class="estado__punto" aria-hidden="true"></span>${ESTADO[estado].txt}</span>`;
 
   // Marcador para cualquier recurso visual que todavía no existe. Dice qué
   // irá ahí, para que la estructura se pueda revisar sin imágenes falsas.
   const marcador = (titulo, detalle = '', clase = '') =>
     `<div class="marcador ${clase}" role="img" aria-label="${esc(titulo)} (pendiente)"><span class="marcador__t">${esc(titulo)}</span>${detalle ? `<span class="marcador__d">${esc(detalle)}</span>` : ''}</div>`;
 
-  // ── Marco común ────────────────────────────────────────────────────────────
-  function marco(contenido, migas = []) {
+  const aviso = () => (D.proyecto.modoDemo ? `<div class="aviso-demo" role="note">${esc(D.proyecto.avisoDemo)}</div>` : '');
+
+  // ── Menú y controles flotantes ─────────────────────────────────────────────
+
+  function menu() {
     const p = D.proyecto;
     const ruta = location.pathname.slice(BASE.pathname.length);
-    // La ficha de un departamento pertenece al recorrido del edificio; solo el
-    // catálogo marca «Departamentos».
-    const enCatalogo = ruta.startsWith('departamentos/');
-    const enModelos = ruta.startsWith('modelos/');
-    const actual = (si) => (si ? ' aria-current="page"' : '');
+    const actual = (pref) => (pref === '' ? ruta === '' : ruta.startsWith(pref)) ? ' aria-current="page"' : '';
     return `
-      ${p.modoDemo ? `<div class="aviso-demo">${esc(p.avisoDemo)}</div>` : ''}
-      <header class="barra">
-        <a class="barra__marca" href="${url('')}"><strong>${esc(p.marca)}</strong><span>${esc(p.nombre)}</span></a>
-        <nav class="barra__nav" aria-label="Principal">
-          <a href="${url('edificio/')}"${actual(ruta && !enCatalogo && !enModelos)}>Edificio</a>
-          <a href="${url('modelos/')}"${actual(enModelos)}>Modelos</a>
-          <a href="${url('departamentos/')}"${actual(enCatalogo)}>Departamentos</a>
-        </nav>
-      </header>
-      ${migas.length ? `<nav class="migas" aria-label="Estás en"><ol>${migas.map((m, i) => (i === migas.length - 1 ? `<li aria-current="page">${esc(m.txt)}</li>` : `<li><a href="${m.href}">${esc(m.txt)}</a></li>`)).join('')}</ol></nav>` : ''}
-      <main id="principal">${contenido}</main>`;
+      <div class="menu" id="menu" hidden>
+        <div class="menu__panel" role="dialog" aria-modal="true" aria-label="Menú">
+          <div class="menu__cabeza">
+            <p class="marca"><span class="marca__nombre">${esc(p.marca)}</span>${esc(p.nombre)}</p>
+            <button class="circulo circulo--claro" data-menu-cerrar aria-label="Cerrar menú">${icono('cerrar')}</button>
+          </div>
+          <nav class="menu__nav" aria-label="Secciones">
+            <a href="${url('')}"${actual('')}>Inicio</a>
+            <a href="${url('edificio/')}"${actual('edificio')}>Edificio</a>
+            <a href="${url(`piso/${pisosResidenciales[0]?.id || D.pisos[0].id}/`)}"${actual('piso')}>Pisos</a>
+            <a href="${url('departamentos/')}"${actual('departamento')}>Departamentos</a>
+            <a href="${url('modelos/')}"${actual('modelos')}>Modelos</a>
+          </nav>
+          <p class="menu__pie">${esc(p.lema)} · ${p.zona ? `${esc(p.zona)}, ` : ''}${esc(p.ciudad)}</p>
+        </div>
+      </div>`;
   }
 
-  // ── Vistas ─────────────────────────────────────────────────────────────────
+  // Botonera de arriba a la izquierda, igual en todas las vistas inmersivas.
+  const controles = (atras) => `
+    <div class="flotante flotante--arriba-izq">
+      <button class="pildora pildora--acento" data-menu aria-expanded="false" aria-controls="menu">${icono('menu')}<span>Menú</span></button>
+      <a class="circulo" href="${atras}" aria-label="Volver">${icono('volver')}</a>
+      <button class="circulo" data-compartir aria-label="Copiar enlace de esta vista">${icono('enlace')}</button>
+    </div>`;
+
+  // Columna de pisos de arriba hacia abajo, como el tablero de un ascensor.
+  function columnaPisos(activo) {
+    const filas = [...D.pisos].reverse().map((p) => {
+      const disp = p.plantilla ? unidadesDePiso(p.id).filter((u) => u.estado === 'disponible').length : null;
+      const etiqueta = p.id === 'azotea' ? 'Azotea' : `${p.id}°`;
+      const detalle = disp === null ? (p.id === '1' ? 'Ingreso' : 'Común') : disp ? plural(disp, 'disponible') : 'Agotado';
+      const corto = disp === null ? detalle : disp ? `${disp} disp.` : 'Agotado';
+      return `<li><a class="piso-pildora${p.id === activo ? ' piso-pildora--activo' : ''}${disp === 0 ? ' piso-pildora--agotado' : ''}" href="${url(`piso/${p.id}/`)}"${p.id === activo ? ' aria-current="page"' : ''} aria-label="${esc(p.etiqueta)}: ${esc(detalle)}"><b>${etiqueta}</b><small><span class="largo">${esc(detalle)}</span><span class="corto" aria-hidden="true">${esc(corto)}</span></small></a></li>`;
+    }).join('');
+    return `<nav class="columna-pisos" aria-label="Pisos"><ol>${filas}</ol></nav>`;
+  }
+
+  // ── Barra de las páginas de consulta ───────────────────────────────────────
+
+  function pagina(contenido, { atras, atrasTxt } = {}) {
+    const p = D.proyecto;
+    const ruta = location.pathname.slice(BASE.pathname.length);
+    const actual = (pref) => (ruta.startsWith(pref) ? ' aria-current="page"' : '');
+    return `
+      ${aviso()}
+      <header class="barra">
+        <a class="marca" href="${url('')}"><span class="marca__nombre">${esc(p.marca)}</span>${esc(p.nombre)}</a>
+        <nav class="barra__nav" aria-label="Principal">
+          <a href="${url('edificio/')}"${actual('edificio')}>Edificio</a>
+          <a href="${url('departamentos/')}"${actual('departamentos')}>Departamentos</a>
+          <a href="${url('modelos/')}"${actual('modelos')}>Modelos</a>
+        </nav>
+      </header>
+      <main id="principal" class="pagina">
+        ${atras ? `<a class="volver" href="${atras}">${icono('izq')}${esc(atrasTxt)}</a>` : ''}
+        ${contenido}
+      </main>`;
+  }
+
+  // ── Portada ────────────────────────────────────────────────────────────────
 
   function vistaPortada() {
     const p = D.proyecto;
+    // La portada usa la imagen que el proyecto elija o, si no, la primera vista.
+    const dia = (vertical.matches && p.portadaMovil) || p.portada || (D.vistas[0] && imagenVista(D.vistas[0]));
+    const noche = D.vistas[0] && D.vistas[0].imagen.noche ? imagenVista(D.vistas[0], 'noche') : null;
+    const disp = D.unidades.filter((u) => u.estado === 'disponible');
+    const desde = disp.filter((u) => u.precio).map((u) => u.precio).sort((a, b) => a - b)[0];
     return `
-      ${p.modoDemo ? `<div class="aviso-demo">${esc(p.avisoDemo)}</div>` : ''}
+      ${aviso()}
       <main class="portada">
-        ${marcador('Video de portada', 'Fachada al atardecer, se encienden las luces · se puede saltar', 'portada__fondo')}
-        <div class="portada__texto">
-          <p class="portada__marca">${esc(p.marca)}</p>
+        <div class="portada__escena" aria-hidden="true">
+          ${dia ? `<img class="portada__img" src="${esc(recurso(dia))}" alt="" fetchpriority="high">` : marcador('Video de portada', 'Fachada al atardecer')}
+          ${noche ? `<img class="portada__img portada__img--noche" src="${esc(recurso(noche))}" alt="">` : ''}
+        </div>
+        <p class="marca marca--portada"><span class="marca__nombre">${esc(p.marca)}</span></p>
+        <div class="portada__contenido">
           <h1>${esc(p.nombre)}</h1>
-          <p>${esc(p.lema)} · ${p.zona ? `${esc(p.zona)}, ` : ''}${esc(p.ciudad)}${p.zona && p.zonaReferencial ? ' <span class="nota">(ubicación referencial)</span>' : ''}</p>
-          <div class="acciones">
-            <a class="boton boton--primario" href="${url('edificio/')}">Ingresar</a>
-            <a class="boton" href="${url('departamentos/')}">Ver departamentos</a>
+          <p class="portada__lema">${esc(p.lema)} · ${p.zona ? `${esc(p.zona)}, ` : ''}${esc(p.ciudad)}${p.zona && p.zonaReferencial ? ' (ubicación referencial)' : ''}</p>
+          <div class="portada__acciones">
+            <a class="pildora pildora--acento pildora--grande" href="${url('edificio/')}">Ingresar</a>
+            <a class="pildora pildora--grande" href="${url('departamentos/')}">Ver departamentos</a>
           </div>
+          ${disp.length ? `<p class="portada__dato">${plural(disp.length, 'departamento disponible', 'departamentos disponibles')}${desde ? ` · desde ${soles(desde)}` : ''}</p>` : ''}
         </div>
       </main>`;
   }
+
+  // ── Edificio ───────────────────────────────────────────────────────────────
 
   function vistaEdificio() {
     const q = query();
@@ -125,35 +221,38 @@
     const hayNoche = D.vistas.some((v) => v.imagen.noche);
     const modo = hayNoche && q.modo === 'noche' ? 'noche' : 'dia';
     const v = D.vistas[i];
-    const img = v.imagen[modo];
-    const listaPisos = [...D.pisos].reverse().map((p) => {
-      if (!p.plantilla) return `<li><a class="piso piso--comun" href="${url(`piso/${p.id}/`)}"><span>${esc(p.etiqueta)}</span><small>${esc(p.uso)}</small></a></li>`;
-      const disp = unidadesDePiso(p.id).filter((u) => u.estado === 'disponible').length;
-      return `<li><a class="piso" href="${url(`piso/${p.id}/`)}"><span>${esc(p.etiqueta)}</span><small>${disp ? `${disp} disponible${disp > 1 ? 's' : ''}` : 'Sin disponibles'}</small></a></li>`;
-    }).join('');
-
-    return marco(`
-      <div class="edificio">
-        <section class="escena" aria-label="Vista exterior">
-          <div class="escena__lienzo">
-            ${img ? `<img src="${esc(recurso(img))}" alt="${esc(D.proyecto.nombre)}, vista ${esc(v.nombre.toLowerCase())}">` : marcador(`Vista ${v.nombre.toLowerCase()} · ${modo === 'dia' ? 'día' : 'noche'}`, `Parada ${i + 1} de ${D.vistas.length} · render del exterior`)}
-          </div>
-          <div class="escena__controles">
-            <button class="boton" data-vista="${(i - 1 + D.vistas.length) % D.vistas.length}" aria-label="Vista anterior">←</button>
-            <span class="escena__nombre">${esc(v.nombre)} <small>${i + 1}/${D.vistas.length}</small></span>
-            <button class="boton" data-vista="${(i + 1) % D.vistas.length}" aria-label="Vista siguiente">→</button>
-            ${hayNoche ? `<div class="conmutador" role="group" aria-label="Iluminación">
-              <button class="boton" data-modo="dia" aria-pressed="${modo === 'dia'}">Día</button>
-              <button class="boton" data-modo="noche" aria-pressed="${modo === 'noche'}">Noche</button>
-            </div>` : ''}
-          </div>
-        </section>
-        <aside class="selector-pisos" aria-label="Pisos">
-          <h1>Elige un piso</h1>
-          <ol>${listaPisos}</ol>
-        </aside>
-      </div>`, [{ txt: 'Edificio' }]);
+    const img = imagenVista(v, modo);
+    const n = D.vistas.length;
+    return `
+      ${aviso()}
+      <main class="inmersiva inmersiva--edificio" data-vista-actual="${i}">
+        <div class="escena">
+          ${img ? `<img class="escena__fondo" src="${esc(recurso(img))}" alt="" aria-hidden="true">
+          <img class="escena__img" data-escena-img src="${esc(recurso(img))}" alt="${esc(D.proyecto.nombre)}, vista ${esc(v.nombre.toLowerCase())}">`
+            : marcador(`Vista ${v.nombre.toLowerCase()}`, `Parada ${i + 1} de ${n} · render del exterior`)}
+        </div>
+        ${controles(url(''))}
+        <h1 class="etiqueta">${esc(D.proyecto.nombre)}</h1>
+        <div class="flotante flotante--arriba-der">
+          ${hayNoche ? `<div class="segmentado" role="group" aria-label="Iluminación">
+            <button data-modo="dia" aria-pressed="${modo === 'dia'}">${icono('sol')}<span>Día</span></button>
+            <button data-modo="noche" aria-pressed="${modo === 'noche'}">${icono('luna')}<span>Noche</span></button>
+          </div>` : ''}
+          <button class="circulo" data-pantalla aria-label="Pantalla completa">${icono('pantalla')}</button>
+        </div>
+        ${n > 1 ? `
+          <button class="flecha flecha--izq" data-paso="-1" aria-label="Vista anterior">${icono('izq')}</button>
+          <button class="flecha flecha--der" data-paso="1" aria-label="Vista siguiente">${icono('der')}</button>
+          <div class="parada" aria-live="polite">
+            <span data-parada-nombre>${esc(v.nombre)}</span>
+            <ol class="parada__puntos">${D.vistas.map((x, k) => `<li><button data-ir-vista="${k}" aria-label="${esc(x.nombre)}"${k === i ? ' aria-current="true"' : ''}></button></li>`).join('')}</ol>
+          </div>` : ''}
+        ${columnaPisos(null)}
+        ${menu()}
+      </main>`;
   }
+
+  // ── Planta del piso ────────────────────────────────────────────────────────
 
   function planoPiso(piso, elegida) {
     const pl = D.plantillas[piso.plantilla];
@@ -170,7 +269,8 @@
           <polygon points="${pts(pl.esquema.contorno)}" class="esquema__contorno"/>
           <polygon points="${pts(pl.esquema.pasillo)}" class="esquema__comun"/>
           <polygon points="${pts(pl.esquema.nucleo)}" class="esquema__nucleo"/>
-          <text x="${centro(pl.esquema.nucleo)[0]}" y="${centro(pl.esquema.nucleo)[1]}" class="esquema__rotulo">Ascensor · escalera</text>
+          <text x="${centro(pl.esquema.nucleo)[0]}" y="${centro(pl.esquema.nucleo)[1] - 12}" class="esquema__rotulo">Ascensor</text>
+          <text x="${centro(pl.esquema.nucleo)[0]}" y="${centro(pl.esquema.nucleo)[1] + 14}" class="esquema__rotulo">escalera</text>
           ${(pl.esquema.areas || []).map((a) => `
             <polygon points="${pts(a.poligono)}" class="esquema__area"/>
             <text x="${centro(a.poligono)[0]}" y="${centro(a.poligono)[1]}" class="esquema__rotulo esquema__rotulo--area">${esc(a.rotulo)}</text>`).join('')}
@@ -179,90 +279,94 @@
       const poli = pl.posiciones[u.posicion].poligono;
       const [cx, cy] = centro(poli);
       const t = tipoPorId[u.tipologia];
+      const ancho = 70 + u.id.length * 38;
       return `<g class="zona zona--${u.estado}${u.id === elegida ? ' zona--elegida' : ''}" data-unidad="${u.id}" tabindex="0" role="button"
                  aria-pressed="${u.id === elegida}" aria-label="Departamento ${u.id}, ${t.nombre}, ${ESTADO[u.estado].txt}">
           <polygon points="${pts(poli)}"/>
-          <text x="${cx}" y="${cy - 6}" class="zona__num">${u.id}</text>
-          <text x="${cx}" y="${cy + 34}" class="zona__estado">${ESTADO[u.estado].txt}</text>
+          <g class="pin" transform="translate(${cx - ancho / 2} ${cy - 42})">
+            <rect width="${ancho}" height="84" rx="42"/>
+            <circle cx="42" cy="42" r="14" class="pin__punto"/>
+            <text x="66" y="57">${u.id}</text>
+          </g>
         </g>`;
     }).join('');
     return `
-      <svg class="plano" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+      <svg class="plano" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="group" aria-label="Planta del ${esc(piso.etiqueta.toLowerCase())}">
         <defs>
-          <pattern id="rayado" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="14" class="patron"/></pattern>
-          <pattern id="cruzado" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M0 0L14 14M14 0L0 14" class="patron"/></pattern>
+          <pattern id="rayado" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="16" height="16" class="patron-fondo"/><line x1="0" y1="0" x2="0" y2="16" class="patron"/></pattern>
+          <pattern id="cruzado" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" class="patron-fondo"/><path d="M0 0L16 16M16 0L0 16" class="patron"/></pattern>
         </defs>
         ${fondo}
         ${zonas}
-      </svg>
-      ${pl.orientacionPlano ? `<p class="nota">${esc(pl.orientacionPlano)}</p>` : ''}
-      ${pl.imagen ? '' : '<p class="nota">Esquema de posiciones. La planta amoblada renderizada reemplaza este dibujo.</p>'}`;
+      </svg>`;
   }
 
-  function fichaBreve(u) {
+  function tarjetaUnidad(u, idPiso) {
     const t = tipoPorId[u.tipologia];
-    const ctaVendido = `<a class="boton" href="${url('departamentos/', { tipo: u.tipologia, estado: 'disponible' })}">Ver ${esc(t.nombre)} disponibles</a>`;
+    const b = bono(u);
+    const consultable = u.estado !== 'vendido';
     return `
-      <div class="ficha-breve">
-        <p class="ficha-breve__titulo"><strong>Dpto. ${u.id}</strong> · ${esc(t.nombre)}</p>
-        ${chipEstado(u.estado)}
-        <dl class="datos">
-          <div><dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
-          <div><dt>Baños</dt><dd>${t.banos}</dd></div>
-          <div><dt>Área total</dt><dd>${m2(areaTotalDe(u))}</dd></div>
-          <div><dt>Orientación</dt><dd>${esc(orientacion(u))}</dd></div>
-          <div><dt>Precio</dt><dd>${precioTexto(u)}</dd></div>
-        </dl>
-        <div class="acciones">
-          <a class="boton boton--primario" href="${url(`departamento/${u.id}/`)}">Ver departamento</a>
-          ${u.estado === 'vendido' ? ctaVendido : ''}
+      <article class="tarjeta tarjeta--flotante" aria-labelledby="t-${u.id}">
+        <div class="tarjeta__cabeza">
+          <h2 id="t-${u.id}">Dpto. ${u.id}</h2>
+          ${chipEstado(u.estado)}
+          <a class="circulo circulo--claro circulo--chico" href="${url(`piso/${idPiso}/`)}" data-cerrar-tarjeta aria-label="Cerrar">${icono('cerrar')}</a>
         </div>
-      </div>`;
+        <p class="tarjeta__tipo">${esc(t.nombre)} · ${esc(t.resumen)}</p>
+        <p class="tarjeta__precio">${precioTexto(u)}</p>
+        ${b ? `<p class="tarjeta__bono">Califica al Bono del Buen Pagador de ${soles(b.monto)} <span>(referencial)</span></p>` : ''}
+        ${consultable
+          ? `<button class="pildora pildora--acento pildora--ancha" data-consultar="${u.id}" data-seccion="planta-piso">${icono('chat')}<span>${u.precio ? 'Consultar' : 'Consultar precio'}</span></button>`
+          : `<a class="pildora pildora--ancha" href="${url('departamentos/', { tipo: u.tipologia, estado: 'disponible' })}">Ver ${esc(t.nombre)} disponibles</a>`}
+        <dl class="filas">
+          <div>${icono('area')}<dt>Área total</dt><dd>${m2(areaTotalDe(u))}</dd></div>
+          <div>${icono('cama')}<dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
+          <div>${icono('bano')}<dt>Baños</dt><dd>${t.banos}</dd></div>
+          <div>${icono('brujula')}<dt>Vista</dt><dd>${esc(orientacion(u))}</dd></div>
+        </dl>
+        <div class="tarjeta__acciones">
+          <a class="pildora pildora--oscura" href="${url(`departamento/${u.id}/`)}">${icono('plano')}<span>Ver ficha</span></a>
+          ${t.escenas.length ? `<a class="pildora" href="${url(`departamento/${u.id}/`, { seccion: 'recorrido' })}">${icono('giro')}<span>Recorrido 360°</span></a>` : ''}
+        </div>
+      </article>`;
   }
 
   function vistaPiso(id) {
     const piso = pisoPorId[id];
     if (!piso) return vistaNoEncontrada();
-    const orden = D.pisos.indexOf(piso);
-    const abajo = D.pisos[orden - 1];
-    const arriba = D.pisos[orden + 1];
-    const migas = [{ txt: 'Edificio', href: url('edificio/') }, { txt: piso.etiqueta }];
-    const cambioPiso = `
-      <div class="cambio-piso">
-        ${arriba ? `<a class="boton" href="${url(`piso/${arriba.id}/`)}" aria-label="Subir a ${esc(arriba.etiqueta)}">↑ ${esc(arriba.etiqueta)}</a>` : ''}
-        ${abajo ? `<a class="boton" href="${url(`piso/${abajo.id}/`)}" aria-label="Bajar a ${esc(abajo.etiqueta)}">↓ ${esc(abajo.etiqueta)}</a>` : ''}
-      </div>`;
-
-    if (!piso.plantilla) {
-      return marco(`
-        <div class="cabecera"><h1>${esc(piso.etiqueta)}</h1>${cambioPiso}</div>
-        <p>${esc(piso.uso)}</p>
-        ${marcador(piso.etiqueta, 'Galería o panorama del piso')}`, migas);
-    }
-
     const q = query();
     const elegida = unidadPorId[q.d]?.piso === id ? q.d : null;
-    return marco(`
-      <div class="cabecera"><h1>${esc(piso.etiqueta)}</h1>${cambioPiso}</div>
-      <div class="piso-vista">
-        <section class="piso-vista__plano" aria-label="Planta del ${esc(piso.etiqueta.toLowerCase())}">
-          ${planoPiso(piso, elegida)}
-          <ul class="leyenda">${Object.keys(ESTADO).map((e) => `<li>${chipEstado(e)}</li>`).join('')}</ul>
-        </section>
-        <aside class="piso-vista__panel" aria-live="polite">
-          ${elegida ? fichaBreve(unidadPorId[elegida]) : '<p class="nota">Toca un departamento en la planta para ver sus datos.</p>'}
-          <h2>En este piso</h2>
-          <ul class="lista-unidades">
-            ${unidadesDePiso(id).map((u) => `<li><a href="${url(`piso/${id}/`, { d: u.id })}" data-elegir="${u.id}"${u.id === elegida ? ' aria-current="true"' : ''}><span>Dpto. ${u.id} · ${esc(tipoPorId[u.tipologia].nombre)}</span>${chipEstado(u.estado)}</a></li>`).join('')}
-          </ul>
-        </aside>
-      </div>`, migas);
+    const leyenda = `<ul class="leyenda">${Object.keys(ESTADO).map((e) => `<li>${chipEstado(e)}</li>`).join('')}</ul>`;
+    let escena;
+    if (piso.plantilla) {
+      escena = planoPiso(piso, elegida);
+    } else {
+      escena = `<div class="escena__vacia">${marcador(piso.etiqueta, piso.uso)}</div>`;
+    }
+    const disp = piso.plantilla ? unidadesDePiso(id).filter((u) => u.estado === 'disponible').length : null;
+    return `
+      ${aviso()}
+      <main class="inmersiva inmersiva--piso${elegida ? ' inmersiva--con-tarjeta' : ''}">
+        <div class="escena escena--plano">${escena}</div>
+        ${controles(url('edificio/'))}
+        <div class="insignia">
+          <h1>${esc(piso.etiqueta)}</h1>
+          <p>${disp === null ? esc(piso.uso) : disp ? plural(disp, 'disponible') : 'Sin disponibles'}</p>
+        </div>
+        <a class="pildora pildora--buscar" href="${url('departamentos/')}">${icono('buscar')}<span>Buscar departamentos</span></a>
+        ${columnaPisos(id)}
+        ${piso.plantilla ? `<div class="flotante flotante--abajo-izq">${leyenda}</div>` : ''}
+        ${elegida ? tarjetaUnidad(unidadPorId[elegida], id) : piso.plantilla ? '<p class="pista">Toca un departamento para ver su precio y su planta</p>' : ''}
+        ${menu()}
+      </main>`;
   }
 
+  // ── Ficha del departamento ─────────────────────────────────────────────────
+
   const SECCIONES = [
-    { id: 'planta', txt: 'Planta' },
-    { id: 'recorrido', txt: 'Recorrido 360°' },
-    { id: 'vistas', txt: 'Vista' },
+    { id: 'planta', txt: 'Planta', ic: 'plano' },
+    { id: 'recorrido', txt: 'Recorrido 360°', ic: 'giro' },
+    { id: 'vistas', txt: 'Vista', ic: 'brujula' },
   ];
 
   function seccionUnidad(u, sec, q) {
@@ -274,11 +378,10 @@
         : marcador(`Recorrido 360° · ${escena.nombre}`, `${t.nombre} · panorama equirectangular`, 'marcador--panorama');
       return `
         ${visor}
-        <nav class="escenas" aria-label="Ambientes">
-          ${t.escenas.map((e) => `<a class="boton" data-escena-btn="${esc(e.id)}" href="${url(`departamento/${u.id}/`, { seccion: 'recorrido', escena: e.id })}" aria-current="${e.id === escena.id}">${esc(e.nombre)}</a>`).join('')}
+        <nav class="ambientes-360" aria-label="Ambientes">
+          ${t.escenas.map((e) => `<a class="pildora pildora--chica" data-escena-btn="${esc(e.id)}" href="${url(`departamento/${u.id}/`, { seccion: 'recorrido', escena: e.id })}" aria-current="${e.id === escena.id}">${esc(e.nombre)}</a>`).join('')}
         </nav>
-        <p class="nota">Arrastra para mirar alrededor y usa las flechas para pasar de un ambiente a otro.</p>
-        <p class="nota">El recorrido es de la tipología ${esc(t.nombre)}; acabados iguales en todos los pisos.</p>`;
+        <p class="nota">Arrastra para mirar alrededor y usa las flechas para pasar de un ambiente a otro. Recorrido de la tipología ${esc(t.nombre)}, con los mismos acabados en todos los pisos.</p>`;
     }
     if (sec === 'vistas') {
       return `
@@ -288,11 +391,11 @@
     const modo = q.plano === 'tecnico' ? 'tecnico' : 'amoblada';
     const img = modo === 'tecnico' ? t.planta.plano : t.planta.amoblada;
     return `
-      <div class="conmutador" role="group" aria-label="Tipo de planta">
-        <a class="boton" href="${url(`departamento/${u.id}/`, { seccion: 'planta' })}" aria-pressed="${modo === 'amoblada'}">Amoblada</a>
-        <a class="boton" href="${url(`departamento/${u.id}/`, { seccion: 'planta', plano: 'tecnico' })}" aria-pressed="${modo === 'tecnico'}">Plano técnico</a>
+      <div class="segmentado segmentado--claro" role="group" aria-label="Tipo de planta">
+        <a href="${url(`departamento/${u.id}/`, { seccion: 'planta' })}" aria-pressed="${modo === 'amoblada'}">Amoblada</a>
+        <a href="${url(`departamento/${u.id}/`, { seccion: 'planta', plano: 'tecnico' })}" aria-pressed="${modo === 'tecnico'}">Plano técnico</a>
       </div>
-      ${img ? `<img src="${esc(recurso(img))}" alt="Planta ${modo} del ${esc(t.nombre)}">` : marcador(modo === 'tecnico' ? `Plano técnico · ${t.nombre}` : `Planta amoblada · ${t.nombre}`, 'Vista cenital del mismo modelo que los interiores')}`;
+      <div class="lamina">${img ? `<img src="${esc(recurso(img))}" alt="Planta ${modo === 'tecnico' ? 'técnica' : 'amoblada'} del ${esc(t.nombre)}">` : marcador(modo === 'tecnico' ? `Plano técnico · ${t.nombre}` : `Planta amoblada · ${t.nombre}`, 'Vista cenital del mismo modelo que los interiores')}</div>`;
   }
 
   function vistaUnidad(id) {
@@ -305,50 +408,48 @@
     const secciones = SECCIONES.filter((s) => s.id !== 'recorrido' || t.escenas.length);
     const sec = secciones.some((s) => s.id === q.seccion) ? q.seccion : 'planta';
     const consultable = u.estado !== 'vendido';
-    return marco(`
-      <div class="cabecera">
-        <div>
-          <h1>Dpto. ${u.id} <span class="tenue">· ${esc(t.nombre)}</span></h1>
-          <p>${esc(t.resumen)} · ${esc(piso.etiqueta)} · ${chipEstado(u.estado)}</p>
-        </div>
-        <a class="boton" href="${url(`piso/${u.piso}/`, { d: u.id })}">Ver en la planta</a>
-      </div>
-      <div class="unidad">
-        <section class="unidad__contenido">
-          <nav class="pestanas" aria-label="Contenido del departamento">
-            ${secciones.map((s) => `<a href="${url(`departamento/${u.id}/`, { seccion: s.id })}"${s.id === sec ? ' aria-current="page"' : ''}>${s.txt}</a>`).join('')}
-          </nav>
-          <div class="unidad__seccion">${seccionUnidad(u, sec, q)}</div>
-        </section>
-        <aside class="unidad__ficha">
-          <p class="precio">${precioTexto(u)}</p>
-          ${u.estado === 'disponible' && u.precio ? '<p class="nota">Precio de ejemplo.</p>' : ''}
-          ${bono(u) ? `<p class="bono"><strong>Bono del Buen Pagador: ${soles(bono(u).monto)}</strong><span class="nota">${esc(D.proyecto.bonoBuenPagador.referencia)}. Sujeto a calificación.</span></p>` : ''}
-          <dl class="datos">
-            <div><dt>Área techada</dt><dd>${m2(t.areaTechada)}</dd></div>
-            ${areaLibreDe(u) ? `<div><dt>Área libre</dt><dd>${m2(areaLibreDe(u))}</dd></div>` : ''}
-            <div><dt>Área total</dt><dd>${m2(areaTotalDe(u))}</dd></div>
-            <div><dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
-            <div><dt>Baños</dt><dd>${t.banos}</dd></div>
-            <div><dt>Piso</dt><dd>${esc(piso.etiqueta.replace('Piso ', ''))}</dd></div>
-            <div><dt>Orientación</dt><dd>${esc(orientacion(u))}</dd></div>
-          </dl>
-          <h2>Ambientes</h2>
-          <ul class="ambientes">${[...t.ambientes, ...(u.extras || [])].map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
-          <div class="acciones acciones--columna">
-            ${consultable
-              ? `<button class="boton boton--primario" data-consultar="${u.id}" data-seccion="${sec}">Consultar por este departamento</button>`
-              : `<a class="boton boton--primario" href="${url('departamentos/', { tipo: u.tipologia, estado: 'disponible' })}">Ver ${esc(t.nombre)} disponibles</a>`}
-            <button class="boton" data-compartir>Copiar enlace</button>
+    const b = bono(u);
+    return pagina(`
+      <div class="ficha">
+        <section class="ficha__media" aria-label="Contenido del departamento">
+          <div class="ficha__titulo">
+            <h1>Dpto. ${u.id}</h1>
+            <p>${esc(t.nombre)} · ${esc(t.resumen)} · ${esc(piso.etiqueta)}</p>
           </div>
-          <p class="nota">Áreas de ejemplo hasta tener los planos del proyecto.</p>
+          <nav class="pestanas" aria-label="Secciones">
+            ${secciones.map((s) => `<a href="${url(`departamento/${u.id}/`, { seccion: s.id })}"${s.id === sec ? ' aria-current="page"' : ''}>${icono(s.ic)}<span>${s.txt}</span></a>`).join('')}
+          </nav>
+          <div class="ficha__seccion">${seccionUnidad(u, sec, q)}</div>
+        </section>
+        <aside class="tarjeta ficha__tarjeta">
+          <div class="tarjeta__cabeza"><p class="tarjeta__precio">${precioTexto(u)}</p>${chipEstado(u.estado)}</div>
+          ${u.estado === 'disponible' && u.precio ? '<p class="nota">Precio de ejemplo.</p>' : ''}
+          ${b ? `<p class="tarjeta__bono">Califica al Bono del Buen Pagador de ${soles(b.monto)} <span>(${esc(D.proyecto.bonoBuenPagador.referencia.toLowerCase())}; sujeto a calificación)</span></p>` : ''}
+          ${consultable
+            ? `<button class="pildora pildora--acento pildora--ancha" data-consultar="${u.id}" data-seccion="${sec}">${icono('chat')}<span>Consultar por este departamento</span></button>`
+            : `<a class="pildora pildora--acento pildora--ancha" href="${url('departamentos/', { tipo: u.tipologia, estado: 'disponible' })}">Ver ${esc(t.nombre)} disponibles</a>`}
+          <dl class="filas">
+            <div>${icono('area')}<dt>Área techada</dt><dd>${m2(t.areaTechada)}</dd></div>
+            ${areaLibreDe(u) ? `<div>${icono('area')}<dt>Área libre</dt><dd>${m2(areaLibreDe(u))}</dd></div>` : ''}
+            <div>${icono('area')}<dt>Área total</dt><dd>${m2(areaTotalDe(u))}</dd></div>
+            <div>${icono('cama')}<dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
+            <div>${icono('bano')}<dt>Baños</dt><dd>${t.banos}</dd></div>
+            <div>${icono('edificio')}<dt>Piso</dt><dd>${esc(piso.etiqueta.replace('Piso ', ''))}</dd></div>
+            <div>${icono('brujula')}<dt>Vista</dt><dd>${esc(orientacion(u))}</dd></div>
+          </dl>
+          <h2 class="tarjeta__sub">Ambientes</h2>
+          <ul class="lista-ambientes">${[...t.ambientes, ...(u.extras || [])].map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
+          <div class="tarjeta__acciones">
+            <a class="pildora" href="${url(`piso/${u.piso}/`, { d: u.id })}">${icono('pisos')}<span>Ver en la planta</span></a>
+            <button class="pildora" data-compartir>${icono('enlace')}<span>Copiar enlace</span></button>
+            <button class="pildora" data-imprimir>${icono('imprimir')}<span>Imprimir ficha</span></button>
+          </div>
+          <p class="nota">Áreas y precios de ejemplo hasta tener los planos y la lista de precios del proyecto.</p>
         </aside>
-      </div>`, [
-      { txt: 'Edificio', href: url('edificio/') },
-      { txt: piso.etiqueta, href: url(`piso/${u.piso}/`, { d: u.id }) },
-      { txt: `Dpto. ${u.id}` },
-    ]);
+      </div>`, { atras: url(`piso/${u.piso}/`, { d: u.id }), atrasTxt: piso.etiqueta });
   }
+
+  // ── Catálogo ───────────────────────────────────────────────────────────────
 
   function filtrar(q) {
     return D.unidades.filter((u) => {
@@ -371,9 +472,12 @@
       if (!filas.length) return '';
       return `
         <section class="grupo">
-          <h2>${esc(t.nombre)} <span class="tenue">· ${esc(t.resumen)} · ${m2(areaTotal(t))}</span></h2>
+          <div class="grupo__cabeza">
+            ${t.planta.amoblada ? `<img src="${esc(recurso(t.planta.amoblada))}" alt="" loading="lazy">` : ''}
+            <div><h2>${esc(t.nombre)}</h2><p>${esc(t.resumen)} · ${m2(areaTotal(t))}</p></div>
+          </div>
           <table class="tabla">
-            <thead><tr><th scope="col">Dpto.</th><th scope="col">Piso</th><th scope="col">Orientación</th><th scope="col">Estado</th><th scope="col">Precio</th></tr></thead>
+            <thead><tr><th scope="col">Dpto.</th><th scope="col">Piso</th><th scope="col">Vista</th><th scope="col">Estado</th><th scope="col">Precio</th></tr></thead>
             <tbody>
               ${filas.map((u) => `<tr>
                 <th scope="row"><a href="${url(`departamento/${u.id}/`)}">${u.id}</a></th>
@@ -387,46 +491,46 @@
         </section>`;
     }).join('');
     const disp = res.filter((u) => u.estado === 'disponible').length;
-    return marco(`
-      <div class="cabecera"><h1>Departamentos</h1></div>
+    return pagina(`
+      <div class="encabezado"><h1>Departamentos</h1><p>${plural(res.length, 'departamento')} · ${plural(disp, 'disponible')}</p></div>
       <form class="filtros" aria-label="Filtros">
-        <label>Tipología<select name="tipo"><option value="">Todas</option>${opciones(D.tipologias.map((t) => [t.id, t.nombre]), q.tipo)}</select></label>
-        <label>Dormitorios<select name="dorm"><option value="">Todos</option>${opciones(dorms.map((n) => [String(n), String(n)]), q.dorm)}</select></label>
-        <label>Estado<select name="estado"><option value="">Todos</option>${opciones(Object.entries(ESTADO).map(([k, v]) => [k, v.txt]), q.estado)}</select></label>
-        <label>Desde el piso<select name="desde"><option value="">Cualquiera</option>${opciones(pisosResidenciales.map((p) => [p.id, p.id]), q.desde)}</select></label>
-        ${Object.keys(q).length ? `<a class="boton" href="${url('departamentos/')}">Limpiar</a>` : ''}
+        <label><span>Tipología</span><select name="tipo"><option value="">Todas</option>${opciones(D.tipologias.map((t) => [t.id, t.nombre]), q.tipo)}</select></label>
+        <label><span>Dormitorios</span><select name="dorm"><option value="">Todos</option>${opciones(dorms.map((n) => [String(n), String(n)]), q.dorm)}</select></label>
+        <label><span>Estado</span><select name="estado"><option value="">Todos</option>${opciones(Object.entries(ESTADO).map(([k, v]) => [k, v.txt]), q.estado)}</select></label>
+        <label><span>Desde el piso</span><select name="desde"><option value="">Cualquiera</option>${opciones(pisosResidenciales.map((p) => [p.id, p.id]), q.desde)}</select></label>
+        ${Object.keys(q).length ? `<a class="pildora pildora--chica" href="${url('departamentos/')}">Limpiar filtros</a>` : ''}
       </form>
-      <p class="resumen">${res.length} departamento${res.length === 1 ? '' : 's'} · ${disp} disponible${disp === 1 ? '' : 's'}</p>
-      ${grupos || (D.unidades.length ? '<p>Ningún departamento coincide con esos filtros.</p>' : `<p>Inventario por confirmar. Mientras tanto puedes ver los <a href="${url('modelos/')}">modelos de departamento</a>.</p>`)}`, [{ txt: 'Departamentos' }]);
+      ${grupos || (D.unidades.length ? '<p class="vacio">Ningún departamento coincide con esos filtros.</p>' : `<p class="vacio">Inventario por confirmar. Mientras tanto puedes ver los <a href="${url('modelos/')}">modelos de departamento</a>.</p>`)}`);
   }
 
-  // Modelos: una tarjeta por tipología con su planta amoblada. Es la puerta de
-  // entrada de quien todavía no sabe en qué piso quiere vivir.
+  // ── Modelos ────────────────────────────────────────────────────────────────
+  // Una lámina por tipología con su planta amoblada: la puerta de entrada de
+  // quien todavía no sabe en qué piso quiere vivir.
+
   function vistaModelos() {
-    const tarjetas = D.tipologias.map((t) => {
+    const laminas = D.tipologias.map((t) => {
       const suyas = D.unidades.filter((u) => u.tipologia === t.id);
       const disp = suyas.filter((u) => u.estado === 'disponible').length;
-      const area = m2(areaTotal(t));
       return `
         <article class="modelo">
-          ${t.planta.amoblada ? `<img src="${esc(recurso(t.planta.amoblada))}" alt="Planta amoblada del ${esc(t.nombre)}" loading="lazy">` : marcador(`Planta amoblada · ${t.nombre}`)}
+          <div class="modelo__lamina">${t.planta.amoblada ? `<img src="${esc(recurso(t.planta.amoblada))}" alt="Planta amoblada del ${esc(t.nombre)}" loading="lazy">` : marcador(`Planta amoblada · ${t.nombre}`)}</div>
           <div class="modelo__texto">
             <h2>${esc(t.nombre)}</h2>
-            <p class="tenue">${esc(t.resumen)}</p>
-            <dl class="datos">
-              <div><dt>Área</dt><dd>${area}</dd></div>
-              <div><dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
-              <div><dt>Baños</dt><dd>${t.banos}</dd></div>
-            </dl>
-            ${suyas.length ? `<a class="boton" href="${url('departamentos/', { tipo: t.id })}">${disp ? `Ver ${disp} disponible${disp > 1 ? 's' : ''}` : `Ver los ${suyas.length} departamentos`}</a>` : ''}
+            <p>${esc(t.resumen)}</p>
+            <ul class="modelo__datos">
+              <li>${icono('area')}${m2(areaTotal(t))}</li>
+              <li>${icono('cama')}${plural(t.dormitorios, 'dormitorio')}</li>
+              <li>${icono('bano')}${plural(t.banos, 'baño')}</li>
+            </ul>
+            ${suyas.length ? `<a class="pildora pildora--chica" href="${url('departamentos/', { tipo: t.id })}">${disp ? `Ver ${plural(disp, 'disponible')}` : `Ver los ${suyas.length} departamentos`}</a>` : ''}
           </div>
         </article>`;
     }).join('');
-    return marco(`<div class="cabecera"><h1>Modelos</h1></div><div class="modelos">${tarjetas}</div>`, [{ txt: 'Modelos' }]);
+    return pagina(`<div class="encabezado"><h1>Modelos</h1><p>${plural(D.tipologias.length, 'distribución', 'distribuciones')}</p></div><div class="modelos">${laminas}</div>`);
   }
 
   function vistaNoEncontrada() {
-    return marco(`<div class="cabecera"><h1>No encontramos esa página</h1></div><p><a href="${url('edificio/')}">Volver al edificio</a></p>`);
+    return pagina(`<div class="encabezado"><h1>No encontramos esa página</h1><p><a href="${url('edificio/')}">Volver al edificio</a></p></div>`);
   }
 
   // ── Consulta ───────────────────────────────────────────────────────────────
@@ -441,14 +545,14 @@
     dlg.innerHTML = `
       <form method="dialog" class="consulta__form">
         <h2>Consultar por el Dpto. ${u.id}</h2>
-        <p class="tenue">${esc(t.nombre)} · ${esc(pisoPorId[u.piso].etiqueta)} · ${ESTADO[u.estado].txt}</p>
+        <p class="consulta__contexto">${esc(t.nombre)} · ${esc(pisoPorId[u.piso].etiqueta)} · ${precioTexto(u)}</p>
         <label>Nombre<input name="nombre" autocomplete="name" required></label>
         <label>Celular<input name="celular" type="tel" autocomplete="tel" inputmode="tel" required></label>
         <label>Mensaje<textarea name="mensaje" rows="3">Hola, me interesa el Dpto. ${u.id} (${t.nombre}, piso ${u.piso}). ¿Me envían más información?</textarea></label>
         ${D.proyecto.contacto.modo === 'demo' ? '<p class="nota">Modo demo: esta consulta no se envía a nadie.</p>' : ''}
-        <div class="acciones">
-          <button class="boton boton--primario" value="enviar">Enviar consulta</button>
-          <button class="boton" value="cancelar" formnovalidate>Cancelar</button>
+        <div class="consulta__acciones">
+          <button class="pildora pildora--acento" value="enviar">Enviar consulta</button>
+          <button class="pildora" value="cancelar" formnovalidate>Cancelar</button>
         </div>
       </form>`;
     document.body.append(dlg);
@@ -460,9 +564,9 @@
       dlg.innerHTML = `
         <form method="dialog" class="consulta__form">
           <h2>Consulta registrada (demo)</h2>
-          <p>En producción esto llegaría al asesor con el contexto del departamento:</p>
+          <p>En producción esto le llegaría al asesor con el contexto del departamento:</p>
           <pre>${esc(JSON.stringify(resumen, null, 2))}</pre>
-          <button class="boton boton--primario">Cerrar</button>
+          <div class="consulta__acciones"><button class="pildora pildora--acento">Cerrar</button></div>
         </form>`;
     });
     dlg.addEventListener('close', () => dlg.remove());
@@ -527,6 +631,58 @@
     });
   }
 
+  // ── Paradas del exterior ──────────────────────────────────────────────────
+  // Cambiar de parada no rehace la página: la imagen nueva entra con un
+  // fundido sobre la anterior, como el corte entre tomas de la referencia.
+
+  function irAVista(k) {
+    const cont = app.querySelector('.inmersiva--edificio');
+    if (!cont) return;
+    const n = D.vistas.length;
+    const i = ((k % n) + n) % n;
+    const q = query();
+    const modo = q.modo === 'noche' ? 'noche' : 'dia';
+    const v = D.vistas[i];
+    const src = imagenVista(v, modo);
+    cont.dataset.vistaActual = i;
+    fijarQuery({ vista: v.id });
+    cont.querySelector('[data-parada-nombre]').textContent = v.nombre;
+    cont.querySelectorAll('[data-ir-vista]').forEach((b, j) => (j === i ? b.setAttribute('aria-current', 'true') : b.removeAttribute('aria-current')));
+    const actual = cont.querySelector('[data-escena-img]');
+    if (!src || !actual) return render({ foco: false });
+    const nueva = actual.cloneNode();
+    nueva.src = recurso(src);
+    nueva.alt = `${D.proyecto.nombre}, vista ${v.nombre.toLowerCase()}`;
+    nueva.classList.add('escena__img--entrando');
+    const fondo = cont.querySelector('.escena__fondo');
+    const listo = () => {
+      ajustarEncaje(nueva);
+      actual.after(nueva);
+      requestAnimationFrame(() => nueva.classList.remove('escena__img--entrando'));
+      if (fondo) fondo.src = nueva.src;
+      setTimeout(() => actual.remove(), 700);
+    };
+    if (nueva.complete) listo(); else nueva.addEventListener('load', listo, { once: true });
+  }
+
+  // Encuadre según la imagen real: si su proporción se parece a la de la
+  // pantalla, la llena; si no (un render vertical en escritorio, uno 16:9 en un
+  // celular sin versión vertical), se muestra entera sobre su fondo difuso.
+  function ajustarEncaje(img) {
+    const aplicar = () => {
+      if (!img.naturalWidth) return;
+      const r = (img.naturalWidth / img.naturalHeight) / (innerWidth / innerHeight);
+      img.classList.toggle('escena__img--entera', r < 0.72 || r > 1.45);
+    };
+    if (img.complete) aplicar(); else img.addEventListener('load', aplicar, { once: true });
+  }
+
+  // Precarga las demás paradas para que el fundido no espere a la red.
+  function precargarVistas() {
+    if (!app.querySelector('.inmersiva--edificio')) return;
+    for (const v of D.vistas) { const src = imagenVista(v); if (src) { const im = new Image(); im.src = recurso(src); } }
+  }
+
   // ── Enrutado ───────────────────────────────────────────────────────────────
 
   function render({ foco = true } = {}) {
@@ -540,7 +696,10 @@
     else if (partes[0] === 'departamento' && partes[1]) html = vistaUnidad(partes[1]);
     else html = vistaNoEncontrada();
     app.innerHTML = html;
+    document.body.dataset.vista = partes[0] || 'portada';
     montarVisor();
+    precargarVistas();
+    app.querySelectorAll('[data-escena-img]').forEach(ajustarEncaje);
     actualizarTitulo(partes);
     // Al cambiar de pantalla, el lector de pantalla arranca por el título nuevo.
     const h1 = app.querySelector('h1');
@@ -562,7 +721,7 @@
   }
 
   // Rerender sin mover el scroll ni el foco: para cambios de estado dentro de
-  // la misma pantalla (vista, modo, departamento elegido, filtros).
+  // la misma pantalla (modo, departamento elegido, filtros).
   function refrescar(cambios) {
     fijarQuery(cambios);
     const activo = document.activeElement?.dataset?.unidad;
@@ -570,38 +729,57 @@
     if (activo) app.querySelector(`[data-unidad="${activo}"]`)?.focus();
   }
 
+  function abrirMenu(abrir) {
+    const m = app.querySelector('#menu');
+    const b = app.querySelector('[data-menu]');
+    if (!m) return;
+    m.hidden = !abrir;
+    b?.setAttribute('aria-expanded', String(abrir));
+    if (abrir) m.querySelector('a, button')?.focus(); else b?.focus();
+  }
+
+  function copiarEnlace(btn) {
+    const etiqueta = btn.querySelector('span') || null;
+    const original = etiqueta ? etiqueta.textContent : btn.getAttribute('aria-label');
+    const avisar = (txt) => {
+      if (etiqueta) etiqueta.textContent = txt; else btn.setAttribute('aria-label', txt);
+      btn.classList.add('copiado');
+      setTimeout(() => { if (etiqueta) etiqueta.textContent = original; else btn.setAttribute('aria-label', original); btn.classList.remove('copiado'); }, 1800);
+    };
+    navigator.clipboard?.writeText(location.href).then(() => avisar('Enlace copiado'), () => avisar('No se pudo copiar'));
+  }
+
   const esPropio = (a) => a && a.origin === location.origin && a.pathname.startsWith(BASE.pathname) && !a.target && !a.hasAttribute('download');
 
   document.addEventListener('click', (e) => {
     const t = e.target;
+    if (t.closest('[data-menu]')) return abrirMenu(true);
+    if (t.closest('[data-menu-cerrar]') || t.classList?.contains('menu')) return abrirMenu(false);
     const zona = t.closest('[data-unidad]');
-    if (zona) {
-      refrescar({ d: zona.dataset.unidad });
-      // En móvil el panel queda debajo de la planta: se trae a la vista para
-      // que el toque tenga respuesta visible.
-      const panel = app.querySelector('.ficha-breve');
-      if (panel && panel.getBoundingClientRect().top > innerHeight * 0.8) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      return;
-    }
-    const elegir = t.closest('[data-elegir]');
-    if (elegir) { e.preventDefault(); return refrescar({ d: elegir.dataset.elegir }); }
+    if (zona) return refrescar({ d: zona.dataset.unidad });
+    const cerrarTarjeta = t.closest('[data-cerrar-tarjeta]');
+    if (cerrarTarjeta) { e.preventDefault(); return refrescar({ d: null }); }
     const btnEscena = t.closest('[data-escena-btn]');
     if (btnEscena && visor360) {
       e.preventDefault();
       visor360.loadScene(btnEscena.dataset.escenaBtn);
       return;
     }
-    const vista = t.closest('[data-vista]');
-    if (vista) return refrescar({ vista: D.vistas[Number(vista.dataset.vista)].id });
+    const paso = t.closest('[data-paso]');
+    if (paso) return irAVista(Number(app.querySelector('.inmersiva--edificio').dataset.vistaActual) + Number(paso.dataset.paso));
+    const irVista = t.closest('[data-ir-vista]');
+    if (irVista) return irAVista(Number(irVista.dataset.irVista));
     const modo = t.closest('[data-modo]');
     if (modo) return refrescar({ modo: modo.dataset.modo === 'dia' ? null : 'noche' });
-    const consultar = t.closest('[data-consultar]');
-    if (consultar) return abrirConsulta(consultar.dataset.consultar, consultar.dataset.seccion);
-    if (t.closest('[data-compartir]')) {
-      const btn = t.closest('[data-compartir]');
-      navigator.clipboard?.writeText(location.href).then(() => { btn.textContent = 'Enlace copiado'; }, () => { btn.textContent = 'No se pudo copiar'; });
+    if (t.closest('[data-pantalla]')) {
+      if (document.fullscreenElement) document.exitFullscreen?.(); else document.documentElement.requestFullscreen?.();
       return;
     }
+    const consultar = t.closest('[data-consultar]');
+    if (consultar) return abrirConsulta(consultar.dataset.consultar, consultar.dataset.seccion);
+    if (t.closest('[data-imprimir]')) return window.print();
+    const compartir = t.closest('[data-compartir]');
+    if (compartir) return copiarEnlace(compartir);
     const a = t.closest('a[href]');
     if (a && esPropio(a) && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && e.button === 0) {
       e.preventDefault();
@@ -611,9 +789,26 @@
   });
 
   document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !app.querySelector('#menu')?.hidden) return abrirMenu(false);
     const zona = e.target.closest?.('[data-unidad]');
-    if (zona && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); refrescar({ d: zona.dataset.unidad }); }
+    if (zona && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); refrescar({ d: zona.dataset.unidad }); return; }
+    // Flechas del teclado recorren las paradas del exterior.
+    const ed = app.querySelector('.inmersiva--edificio');
+    if (ed && !e.target.closest('input, select, textarea') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      irAVista(Number(ed.dataset.vistaActual) + (e.key === 'ArrowRight' ? 1 : -1));
+    }
   });
+
+  // Deslizar con el dedo sobre la escena cambia de parada en el celular.
+  let toqueX = null;
+  document.addEventListener('touchstart', (e) => { if (e.target.closest('.inmersiva--edificio .escena')) toqueX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (toqueX === null) return;
+    const dx = e.changedTouches[0].clientX - toqueX;
+    toqueX = null;
+    const ed = app.querySelector('.inmersiva--edificio');
+    if (ed && Math.abs(dx) > 50) irAVista(Number(ed.dataset.vistaActual) + (dx < 0 ? 1 : -1));
+  }, { passive: true });
 
   document.addEventListener('change', (e) => {
     const form = e.target.closest('.filtros');
@@ -624,5 +819,8 @@
   });
 
   window.addEventListener('popstate', () => render());
+  // Girar el celular cambia qué versión de imagen corresponde.
+  addEventListener('resize', () => app.querySelectorAll('[data-escena-img]').forEach(ajustarEncaje));
+  vertical.addEventListener('change', () => { if (/^(portada|edificio)$/.test(document.body.dataset.vista)) render({ foco: false }); });
   render({ foco: false });
 })();

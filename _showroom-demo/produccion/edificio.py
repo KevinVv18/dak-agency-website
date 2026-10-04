@@ -57,6 +57,12 @@ VISTAS = {
     'web_diag_izq': dict(pos=(-12.0, -22.5, 1.6), giro=-36.0, focal=24, centro=10.0),
     'web_diag_der': dict(pos=(29.0, -26.0, 1.6), giro=38.0, focal=24, centro=10.0),
     'web_aerea':    dict(pos=(-22.0, -40.0, 27.0), giro=-30.0, focal=28, inclinacion=24.0),
+    # versiones verticales para celular (1080x1920): misma cámara, lente más
+    # abierto para que el edificio entre entero en una pantalla parada
+    'movil_frente':   dict(pos=(7.2, -27.0, 1.6), giro=0.0, focal=30, centro=10.5),
+    'movil_diag_izq': dict(pos=(-12.0, -22.5, 1.6), giro=-36.0, focal=27, centro=10.5),
+    'movil_diag_der': dict(pos=(29.0, -26.0, 1.6), giro=38.0, focal=27, centro=10.5),
+    'movil_aerea':    dict(pos=(-22.0, -40.0, 27.0), giro=-30.0, focal=27, inclinacion=24.0),
 }
 
 
@@ -70,6 +76,7 @@ def argumentos():
     p.add_argument('--ancho', type=int, default=1080)
     p.add_argument('--alto', type=int, default=1350)
     p.add_argument('--blend', default='', help='guardar el .blend aquí')
+    p.add_argument('--noche', action='store_true', help='hora azul con luces encendidas')
     return p.parse_args(argv)
 
 
@@ -149,6 +156,17 @@ def material_tex(nombre, id_, tinte=None, escala=2.0, normal=0.5):
     return m
 
 
+def emisivo(nombre, color, fuerza):
+    """Superficie que emite luz (ventana encendida, letrero)."""
+    m = bpy.data.materials.new(nombre)
+    m.use_nodes = True
+    bsdf = m.node_tree.nodes.get('Principled BSDF')
+    bsdf.inputs['Base Color'].default_value = color
+    bsdf.inputs['Emission Color'].default_value = color
+    bsdf.inputs['Emission Strength'].default_value = fuerza
+    return m
+
+
 def material(nombre, color, rugosidad=0.6, metal=0.0, transmision=0.0, ruido=0.0):
     m = bpy.data.materials.new(nombre)
     m.use_nodes = True
@@ -216,6 +234,10 @@ def texto(cuerpo, x, y, z, tam, mat, extrusion=0.03):
 
 VEGETACION = {}
 
+# Modo noche: hora azul, ventanas encendidas, alumbrado público. Lo fija main()
+# desde --noche; con False todo se construye exactamente como de día.
+NOCHE = False
+
 
 def cargar_vegetacion(ids):
     """Importa cada modelo una vez a una colección fuera de escena; luego se
@@ -256,15 +278,16 @@ def ventana(x0, x1, z0, z1, y, M, hojas=2, s=1):
     """Vano con marco negro, vidrio que refleja y, detrás, un interior en penumbra
     con cortinas a medio correr: lo que hace que una fachada se vea habitada."""
     caja('vidrio', x0, x1, y + 0.02 * s, y + 0.03 * s, z0, z1, M['vidrio'], bisel=0)
-    caja('interior', x0, x1, y + 0.05 * s, y + 0.06 * s, z0, z1, M['interior'], bisel=0)
     rnd = random.Random(round(x0 * 37 + z0 * 101))
     cubierto = rnd.choice((0.0, 0.25, 0.35, 0.5, 0.65, 1.0))
+    encendida = NOCHE and random.Random(round(x0 * 53 + z0 * 71)).random() < 0.58
+    caja('interior', x0, x1, y + 0.05 * s, y + 0.06 * s, z0, z1, M['interior_luz' if encendida else 'interior'], bisel=0)
     if cubierto:
         ancho = (x1 - x0) * cubierto
         if rnd.random() < 0.5:
-            caja('cortina', x0, x0 + ancho, y + 0.035 * s, y + 0.045 * s, z0, z1, M['cortina'], bisel=0)
+            caja('cortina', x0, x0 + ancho, y + 0.035 * s, y + 0.045 * s, z0, z1, M['cortina_luz' if encendida else 'cortina'], bisel=0)
         else:
-            caja('cortina', x1 - ancho, x1, y + 0.035 * s, y + 0.045 * s, z0, z1, M['cortina'], bisel=0)
+            caja('cortina', x1 - ancho, x1, y + 0.035 * s, y + 0.045 * s, z0, z1, M['cortina_luz' if encendida else 'cortina'], bisel=0)
     t = 0.05
     caja('marco', x0, x1, y, y + 0.06 * s, z0, z0 + t, M['marco'], bisel=0)
     caja('marco', x0, x1, y, y + 0.06 * s, z1 - t, z1, M['marco'], bisel=0)
@@ -336,6 +359,14 @@ def balcon_enmarcado(x0, x1, z0, P, M, lado_celosia='izq'):
     caja('cielo', x0 + t, x1 - t, -v + 0.02, 0, z0 + h - t - 0.02, z0 + h - t, M['blanco'], bisel=0)
     bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=0.02, location=((x0 + x1) / 2, -v / 2, z0 + h - t - 0.03))
     bpy.context.active_object.data.materials.append(M['luminaria'])
+    if NOCHE:
+        luz = bpy.data.lights.new('downlight', 'SPOT')
+        luz.energy = 60
+        luz.spot_size = math.radians(110)
+        luz.color = (1.0, 0.82, 0.6)
+        ob = bpy.data.objects.new('downlight', luz)
+        ob.location = ((x0 + x1) / 2, -v / 2, z0 + h - t - 0.06)
+        bpy.context.collection.objects.link(ob)
     ancho_cel = 1.4
     if lado_celosia == 'izq':
         celosia(x0 + t, x0 + t + ancho_cel, z0 + t, z0 + h - t, -v + 0.05, M)
@@ -486,6 +517,9 @@ def entorno(P, M):
         if id_ in VEGETACION:
             instancia(VEGETACION[id_], x, y, 0.15 if y < 0 else 0.0, alto, giro)
 
+    if NOCHE:
+        alumbrado(P, M)
+
     # Sardineles: el borde de concreto que separa pista, berma y vereda.
     caja('sardinel', -30, 40, -r - 11.65, -r - 11.5, -0.05, 0.22, M['concreto'], bisel=0.01)
     caja('sardinel', -30, 40, -r - 3.35, -r - 3.2, -0.05, 0.2, M['concreto'], bisel=0.01)
@@ -595,6 +629,23 @@ def barrio(P, M):
         caja('pista_fondo', -130, 140, y + 32, y + 40, -0.05, 0.0, M['asfalto'], bisel=0)
 
 
+def alumbrado(P, M):
+    """Postes con luz de sodio naranja, como en las avenidas de Chiclayo."""
+    r = P['retiro']
+    for x in range(-60, 80, 26):
+        for y, brazo in ((-r - 3.0, -1.6), (-r - 13.2, 1.6)):
+            caja('poste', x - 0.08, x + 0.08, y - 0.08, y + 0.08, 0, 8.2, M['acero'], bisel=0)
+            caja('brazo', x - 0.05, x + 0.05, min(y, y + brazo), max(y, y + brazo), 8.0, 8.1, M['acero'], bisel=0)
+            caja('farol', x - 0.25, x + 0.25, y + brazo - 0.18, y + brazo + 0.18, 7.8, 8.0, M['farol'], bisel=0)
+            luz = bpy.data.lights.new('sodio', 'POINT')
+            luz.energy = 3600
+            luz.shadow_soft_size = 0.3
+            luz.color = (1.0, 0.62, 0.28)
+            ob = bpy.data.objects.new('sodio', luz)
+            ob.location = (x, y + brazo, 7.6)
+            bpy.context.collection.objects.link(ob)
+
+
 def pasto(x0, x1, y0, y1, z, por_m2=5):
     """Matas de pasto reales repartidas al azar; solo donde las ve la cámara."""
     veg = VEGETACION.get('grass_medium_01')
@@ -613,6 +664,8 @@ def materiales(acento):
         'acento': material_tex('acento', 'plastered_wall_04', tinte=hex_rgb(acento), escala=2.5, normal=0.3),
         'vidrio': material('vidrio', (0.85, 0.92, 0.95, 1), 0.02, transmision=1.0),
         'interior': material('interior', (0.035, 0.03, 0.028, 1), 0.8),
+        'interior_luz': emisivo('interior_luz', (1.0, 0.62, 0.32, 1), 1.3),
+        'cortina_luz': emisivo('cortina_luz', (1.0, 0.7, 0.42, 1), 1.8),
         'cortina': material('cortina', (0.62, 0.6, 0.56, 1), 1.0, ruido=0.3),
         'vidrio_oscuro': material('vidrio_oscuro', (0.02, 0.025, 0.03, 1), 0.05, metal=0.0),
         'marco': material('marco', (0.015, 0.015, 0.015, 1), 0.4),
@@ -629,6 +682,7 @@ def materiales(acento):
         'grass': material('pasto', (0.03, 0.05, 0.015, 1), 0.95, ruido=0.7),
         'vecino1': material('vecino1', (0.62, 0.61, 0.58, 1), 0.9, ruido=0.3),
         'tanque': material('tanque', (0.012, 0.012, 0.012, 1), 0.45),
+        'farol': emisivo('farol', (1.0, 0.6, 0.25, 1), 12.0),
         'casas': {c: material_tex(f'casa_{c}', 'plastered_wall_04', tinte=hex_rgb(c), escala=2.5, normal=0.35)
                   for c, _ in PALETA_CASAS},
         'vecino2': material('vecino2', (0.55, 0.53, 0.5, 1), 0.9, ruido=0.3),
@@ -649,15 +703,15 @@ def cielo():
             continue
     # Tarde de Chiclayo: sol bajo desde la izquierda-frente, cielo despejado.
     if hasattr(sky, 'sun_elevation'):
-        sky.sun_elevation = math.radians(34)
+        sky.sun_elevation = math.radians(-3 if NOCHE else 34)
         sky.sun_rotation = math.radians(SOL_GIRO + 180)
     if hasattr(sky, 'air_density'):
         sky.air_density = 1.2
     bg = n.get('Background')
-    bg.inputs['Strength'].default_value = 0.09
+    bg.inputs['Strength'].default_value = 0.5 if NOCHE else 0.09
     # Sol físico: da las sombras duras de tarde que el cielo solo no produce.
     sol = bpy.data.lights.new('sol', 'SUN')
-    sol.energy = 5.5
+    sol.energy = 0.0 if NOCHE else 5.5
     sol.angle = math.radians(0.6)
     sol.color = (1.0, 0.93, 0.84)
     ob = bpy.data.objects.new('sol', sol)
@@ -671,7 +725,7 @@ def cielo():
         env = n.new('ShaderNodeTexEnvironment')
         env.image = bpy.data.images.load(str(hdri))
         bg_foto = n.new('ShaderNodeBackground')
-        bg_foto.inputs['Strength'].default_value = 1.5
+        bg_foto.inputs['Strength'].default_value = 0.16 if NOCHE else 1.5
         w.node_tree.links.new(env.outputs['Color'], bg_foto.inputs['Color'])
         rayo = n.new('ShaderNodeLightPath')
         mezcla = n.new('ShaderNodeMixShader')
@@ -724,13 +778,15 @@ def render(a):
             break
         except TypeError:
             continue
-    s.view_settings.exposure = -0.4
+    s.view_settings.exposure = 1.25 if NOCHE else -0.4
     s.render.filepath = a.out
     s.render.image_settings.file_format = 'PNG'
 
 
 def main():
+    global NOCHE
     a = argumentos()
+    NOCHE = a.noche
     limpiar()
     cargar_vegetacion(['grass_medium_01', 'fern_02', 'island_tree_01', 'island_tree_03', 'jacaranda_tree', 'tree_small_02'])
     M = materiales(a.acento)

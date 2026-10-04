@@ -15,6 +15,9 @@ export default {
   descripcion:
     'Edificio boutique de 6 pisos con departamentos de 2 y 3 dormitorios, cocheras y terraza en azotea.',
   moneda: 'PEN',
+  // Acento de marca de la demo: cobre, por la tierra del bosque seco.
+  // Texto blanco sobre el acento: contraste 5,1 (AA).
+  estilo: { acento: '#a9581f', acentoTinta: '#ffffff' },
   modoDemo: true,
   avisoDemo: 'Proyecto conceptual · inventario, precios y vistas de ejemplo',
   // Bono del Buen Pagador (Crédito Mivivienda), tramos vigentes desde junio

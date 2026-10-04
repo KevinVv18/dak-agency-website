@@ -9,10 +9,10 @@
 // produccion/edificio.py: así cada imagen se puede regenerar sabiendo de dónde
 // sale. Con `imagen` en null el motor dibuja un marcador en su lugar.
 export const vistas = [
-  { id: 'frente', nombre: 'Frente', camara: 'web_frente', imagen: { dia: 'assets/exterior/frente-dia-v1.webp', noche: null } },
-  { id: 'diagonal-izq', nombre: 'Desde la avenida', camara: 'web_diag_izq', imagen: { dia: 'assets/exterior/diagonal-izq-dia-v1.webp', noche: null } },
-  { id: 'diagonal-der', nombre: 'Esquina opuesta', camara: 'web_diag_der', imagen: { dia: 'assets/exterior/diagonal-der-dia-v1.webp', noche: null } },
-  { id: 'aerea', nombre: 'Vista aérea', camara: 'web_aerea', imagen: { dia: 'assets/exterior/aerea-dia-v1.webp', noche: null } },
+  { id: 'frente', nombre: 'Frente', camara: 'web_frente', imagen: { dia: 'assets/exterior/frente-dia-v1.webp', diaMovil: 'assets/exterior/frente-movil-v1.webp', noche: null } },
+  { id: 'diagonal-izq', nombre: 'Desde la avenida', camara: 'web_diag_izq', imagen: { dia: 'assets/exterior/diagonal-izq-dia-v1.webp', diaMovil: 'assets/exterior/diagonal-izq-movil-v1.webp', noche: null } },
+  { id: 'diagonal-der', nombre: 'Esquina opuesta', camara: 'web_diag_der', imagen: { dia: 'assets/exterior/diagonal-der-dia-v1.webp', diaMovil: 'assets/exterior/diagonal-der-movil-v1.webp', noche: null } },
+  { id: 'aerea', nombre: 'Vista aérea', camara: 'web_aerea', imagen: { dia: 'assets/exterior/aerea-dia-v1.webp', diaMovil: 'assets/exterior/aerea-movil-v1.webp', noche: null } },
 ];
 
 // Clip de transición entre paradas consecutivas, clave "origen>destino".
