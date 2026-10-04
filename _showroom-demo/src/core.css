@@ -138,7 +138,8 @@ main { padding: 12px var(--gutter) 48px; max-width: 1280px; margin: 0 auto; }
 .unidad__ficha { background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--radio); padding: 16px; align-self: start; }
 .precio { font-size: 1.5rem; font-weight: 700; margin: 0; font-variant-numeric: tabular-nums; }
 .ambientes { margin: 0; padding-left: 1.1em; }
-.bono { display: grid; gap: 2px; margin: 8px 0; padding: 10px 12px; border-left: 4px solid var(--disponible); background: var(--fondo); border-radius: var(--radio); }
+.bono { display: grid; gap: 2px; margin: 8px 0; padding: 10px 12px; border: 1px solid var(--linea); background: var(--fondo); border-radius: var(--radio); }
+.bono strong { color: var(--disponible); }
 .bono .nota { margin: 0; }
 .bono-mini { display: block; color: var(--disponible); font-size: .8rem; }
 
