@@ -169,6 +169,8 @@ def argumentos():
     p.add_argument('--plano', default='', help='escribir el plano técnico SVG aquí')
     p.add_argument('--escenas-json', default='', help='escribir escenas y enlaces del recorrido aquí')
     p.add_argument('--muestras', type=int, default=256)
+    p.add_argument('--vista-ventana', default='', help='render de la vista exterior para ver por el ventanal (360)')
+    p.add_argument('--espejo', action='store_true', help='voltear la vista (unidades del fondo, giradas en planta)')
     p.add_argument('--ancho', type=int, default=0)
     return p.parse_args(argv)
 
@@ -207,7 +209,7 @@ def blender_main(a):
     tex = E.material_tex
     mat = E.material
     M = {
-        'pared': mat('pared', (0.82, 0.8, 0.76, 1), 0.85),
+        'pared': tex('pared', 'plastered_wall_04', tinte=E.hex_rgb('efe9df'), escala=2.5, normal=0.12),
         'corte': mat('corte', (0.12, 0.12, 0.12, 1), 0.9),
         'porcelanato': tex('porcelanato', 'large_floor_tiles_02', tinte=E.hex_rgb('e6dfd2'), escala=1.6, normal=0.3),
         'ceramico': tex('ceramico', 'grey_tiles', tinte=E.hex_rgb('d3d6d8'), escala=1.0, normal=0.4),
@@ -311,6 +313,8 @@ def blender_main(a):
     if modo == '360':
         caja('techo', -0.2, W + 0.2, -0.2, F + 0.2, ALTO, ALTO + 0.1, M['pared'], bisel=0)
         luces(L, bpy)
+        if a.vista_ventana:
+            ventana_exterior(bpy, a.vista_ventana, a.espejo)
     mundo(bpy, E, modo)
     camara(bpy, L, a, modo)
     render(bpy, a, modo, L)
@@ -473,7 +477,7 @@ def amoblar(L, tipo, M, caja, inst, VEG, E):
     planta('potted_plant_02', 0.35, 0.4, 1.1)
     # vestir la sala: cojines, lámpara de pie, libros, planta, colgante del comedor
     for x0 in (3.75, 4.95):
-        caja('cojin_deco', x0, x0 + 0.42, 0.62, 0.72, 0.55, 0.95, M['manta'], bisel=0.06)
+        caja('cojin_deco', x0, x0 + 0.42, 0.56, 0.78, 0.52, 0.95, M['manta'], bisel=0.09)
     caja('lampara_pie', 5.72, 5.76, 0.38, 0.42, 0, 1.45, M['negro'], bisel=0)
     bpy.ops.mesh.primitive_cone_add(vertices=24, radius1=0.24, radius2=0.16, depth=0.3, location=(5.74, 0.4, 1.5))
     bpy.context.active_object.data.materials.append(M['pantalla_luz'])
@@ -571,6 +575,30 @@ def cuadro(M, caja, eje, pos, centro, z, ancho, alto, color):
         caja('lienzo', centro - ancho / 2 + 0.04, centro + ancho / 2 - 0.04, pos - 0.035, pos - 0.03, z - alto / 2 + 0.04, z + alto / 2 - 0.04, lienzo, bisel=0)
 
 
+def ventana_exterior(bpy, ruta, espejo=False):
+    """Lo que se ve por el ventanal: la vista renderizada desde ese piso
+    (edificio.py --vista vista_*), en un plano emisivo a 6 m de la fachada,
+    del tamaño que cubre el campo del lente de 16 mm. No proyecta sombras."""
+    bpy.ops.mesh.primitive_plane_add(size=1, location=(3.0, -6.0, 1.5))
+    ob = bpy.context.active_object
+    ob.scale = (-13.6 if espejo else 13.6, 7.65, 1)
+    ob.rotation_euler = (math.radians(90), 0, math.radians(180))
+    ob.visible_shadow = False
+    m = bpy.data.materials.new('vista_exterior')
+    m.use_nodes = True
+    n, l = m.node_tree.nodes, m.node_tree.links
+    for x in list(n):
+        if x.type == 'BSDF_PRINCIPLED':
+            n.remove(x)
+    img = n.new('ShaderNodeTexImage')
+    img.image = bpy.data.images.load(ruta)
+    em = n.new('ShaderNodeEmission')
+    em.inputs['Strength'].default_value = 1.6
+    l.new(img.outputs['Color'], em.inputs['Color'])
+    l.new(em.outputs['Emission'], n.get('Material Output').inputs['Surface'])
+    ob.data.materials.append(m)
+
+
 def luces(L, bpy):
     """Una luz de techo por ambiente, cálida, con potencia según el área."""
     for _, nombre, x0, y0, x1, y1, _ in L['ambientes']:
@@ -601,8 +629,9 @@ def mundo(bpy, E, modo):
     sol.angle = math.radians(1.0)
     sol.color = (1.0, 0.94, 0.86)
     ob = bpy.data.objects.new('sol', sol)
-    # entra por el ventanal de fachada (y=0) desde arriba a la izquierda
-    ob.rotation_euler = (math.radians(55), 0, math.radians(200))
+    # El sol entra por el ventanal (fachada en y=0) y deja manchas en el piso;
+    # de lado contrario la luz quedaba pareja y plana.
+    ob.rotation_euler = (math.radians(58), 0, math.radians(15)) if modo == '360' else (math.radians(55), 0, math.radians(200))
     bpy.context.collection.objects.link(ob)
 
 

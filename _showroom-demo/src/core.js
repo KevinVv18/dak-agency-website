@@ -310,6 +310,7 @@
           <pattern id="cruzado" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" class="patron-fondo"/><path d="M0 0L16 16M16 0L0 16" class="patron"/></pattern>
         </defs>
         ${fondo}
+        <rect class="limite" data-limite x="0" y="0" width="${W}" height="${H}"/>
         ${zonas}
       </svg>`;
   }
@@ -406,9 +407,18 @@
         <p class="nota">Arrastra para mirar alrededor y usa las flechas para pasar de un ambiente a otro. Recorrido de la tipología ${esc(t.nombre)}, con los mismos acabados en todos los pisos.</p>`;
     }
     if (sec === 'vistas') {
-      return `
-        ${marcador(`Vista desde el piso ${u.piso}`, orientacion(u))}
-        <p class="nota">Cada vista se etiquetará como real, proyectada o ilustrativa según cómo se obtuvo.</p>`;
+      // La fidelidad se declara siempre: una vista proyectada no es una foto.
+      const FIDELIDAD = {
+        real: 'Foto tomada desde esa altura y orientación.',
+        proyectada: 'Vista proyectada: render del entorno a la altura y orientación de este piso. No es una foto.',
+        ilustrativa: 'Vista ilustrativa: referencial, no corresponde a la altura exacta.',
+      };
+      const v = u.vista;
+      return v?.imagen
+        ? `<figure class="vista-piso"><img src="${esc(recurso(v.imagen))}" alt="Vista desde el piso ${esc(u.piso)}, ${esc(orientacion(u).toLowerCase())}" loading="lazy">
+            <figcaption><b>Desde el piso ${esc(u.piso)} · ${esc(orientacion(u))}</b><span>${esc(FIDELIDAD[v.fidelidad] || '')}</span></figcaption></figure>`
+        : `${marcador(`Vista desde el piso ${u.piso}`, orientacion(u))}
+          <p class="nota">Cada vista se etiqueta como real, proyectada o ilustrativa según cómo se obtuvo.</p>`;
     }
     const modo = q.plano === 'tecnico' ? 'tecnico' : 'amoblada';
     const img = modo === 'tecnico' ? t.planta.plano : t.planta.amoblada;
@@ -436,7 +446,7 @@
         <section class="ficha__media" aria-label="Contenido del departamento">
           <div class="ficha__titulo">
             <h1>Dpto. ${u.id}</h1>
-            <p>${esc(t.nombre)} · ${esc(t.resumen)} · ${esc(piso.etiqueta)}</p>
+            <p>${esc(t.nombre)} · ${esc(t.resumen)} · ${esc(piso.etiqueta).replace(' ', '&nbsp;')}</p>
           </div>
           <nav class="pestanas" aria-label="Secciones">
             ${secciones.map((s) => `<a href="${url(`departamento/${u.id}/`, { seccion: s.id })}"${s.id === sec ? ' aria-current="page"' : ''}>${icono(s.ic)}<span>${s.txt}</span></a>`).join('')}
@@ -742,7 +752,7 @@
     const b = lienzo.getBoundingClientRect();
     const cx = b.left + b.width / 2;
     const cy = b.top + b.height / 2;
-    const s2 = limitar(encuadre.s * factor, 1, 4);
+    const s2 = limitar(encuadre.s * factor, encuadre.min || 0.5, 4);
     const k = s2 / encuadre.s;
     encuadre.x = (px - cx) - (px - cx - encuadre.x) * k;
     encuadre.y = (py - cy) - (py - cy - encuadre.y) * k;
@@ -773,10 +783,32 @@
     aplicarEncuadre();
   }
 
+  // Encuadre inicial: el edificio entero dentro de la zona libre de controles
+  // (arriba la botonera, abajo la leyenda, a la derecha la columna de pisos).
+  function encuadreInicial(lienzo) {
+    const svg = lienzo.querySelector('.plano');
+    const limite = svg?.querySelector('[data-limite]');
+    if (!limite) return { s: 1, x: 0, y: 0 };
+    svg.style.transform = 'none';
+    const b = lienzo.getBoundingClientRect();
+    const r = limite.getBoundingClientRect();
+    const movil = innerWidth <= 760;
+    const zona = movil
+      ? { x0: b.left + 12, x1: b.right - 12, y0: b.top + 118, y1: b.bottom - 100 }
+      : { x0: b.left + 24, x1: b.right - 156, y0: b.top + 84, y1: b.bottom - 72 };
+    const s = Math.min((zona.x1 - zona.x0) / r.width, (zona.y1 - zona.y0) / r.height);
+    const cx = b.left + b.width / 2;
+    const cy = b.top + b.height / 2;
+    // con transform-origin al centro: posición final = c + (p - c)·s + t
+    const rcx = r.left + r.width / 2;
+    const rcy = r.top + r.height / 2;
+    return { s, x: (zona.x0 + zona.x1) / 2 - (cx + (rcx - cx) * s), y: (zona.y0 + zona.y1) / 2 - (cy + (rcy - cy) * s), min: s * 0.85 };
+  }
+
   function montarPlano() {
     const lienzo = app.querySelector('.lienzo-plano');
     if (!lienzo) { encuadre = null; return; }
-    if (!encuadre || encuadre.piso !== lienzo.dataset.piso) encuadre = { piso: lienzo.dataset.piso, s: 1, x: 0, y: 0 };
+    if (!encuadre || encuadre.piso !== lienzo.dataset.piso) encuadre = { piso: lienzo.dataset.piso, ...encuadreInicial(lienzo) };
     aplicarEncuadre();
     const elegida = query().d;
     if (elegida) requestAnimationFrame(() => asegurarVisible(elegida));

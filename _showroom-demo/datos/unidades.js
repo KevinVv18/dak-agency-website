@@ -16,8 +16,15 @@
 // los alterna: el 01 tiene balcón en los pisos 2, 4 y 6; el 02 en los pisos
 // 3 y 5. El 601 y el 602 suman terraza propia en la azotea.
 
+// Vista desde la unidad: render del barrio a la altura de su piso, hacia la
+// avenida (01, 02) o hacia el patio (03, 04). Declarada «proyectada».
+const vista = (piso, posicion) => ({
+  imagen: `assets/vistas/${['01', '02'].includes(posicion) ? 'frente' : 'fondo'}-p${piso}-v1.webp`,
+  fidelidad: 'proyectada',
+});
+
 const u = (id, piso, posicion, tipologia, estado, precio = null, excepciones = {}) => ({
-  id, piso, posicion, tipologia, estado, precio, ...excepciones,
+  id, piso, posicion, tipologia, estado, precio, vista: vista(piso, posicion), ...excepciones,
 });
 
 const BALCON = 3.4;

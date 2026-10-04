@@ -71,6 +71,16 @@ VISTAS = {
 }
 
 
+# Vista desde cada piso: cámara justo afuera del ventanal de la sala, a la
+# altura de los ojos de ese piso. Frente = hacia la avenida (dptos 01 y 02);
+# fondo = hacia el patio posterior (03 y 04). Alimenta la pestaña «Vista» de la
+# ficha y el exterior que se ve por la ventana en los panoramas 360.
+for _n in range(2, 7):
+    _z = PARAM['h_piso1'] + (_n - 2) * PARAM['h_piso'] + 1.5
+    VISTAS[f'vista_frente_p{_n}'] = dict(pos=(3.0, -1.5, _z), giro=180.0, focal=16, centro=_z)
+    VISTAS[f'vista_fondo_p{_n}'] = dict(pos=(3.0, PARAM['fondo'] + 0.6, _z), giro=0.0, focal=16, centro=_z)
+
+
 def argumentos():
     argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     p = argparse.ArgumentParser()
