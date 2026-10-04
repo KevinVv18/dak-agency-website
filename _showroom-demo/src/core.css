@@ -133,7 +133,7 @@ body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="p
 .portada h1 { font-size: clamp(2.7rem, 7.6vw, 6rem); font-weight: 800; line-height: .98; letter-spacing: -.035em; max-width: 12ch; text-shadow: 0 2px 30px rgb(0 0 0 / .25); }
 .portada__lema { margin: 16px 0 0; max-width: 42ch; font-size: 1rem; color: #fff; }
 .portada__acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
-.portada__dato { margin: 18px 0 0; font-size: .9rem; font-weight: 600; color: #dfe2e6; font-variant-numeric: tabular-nums; }
+.portada__dato { margin: 18px 0 0; font-size: .94rem; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; }
 @keyframes acercar { from { transform: scale(1.08); } to { transform: scale(1); } }
 @keyframes anochecer { 0%, 35% { opacity: 0; } 65%, 100% { opacity: 1; } }
 
