@@ -1,0 +1,504 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-04T05:16:51.057Z",
+  "title": "Design System: Showroom de edificios DAK",
+  "extensions": {
+    "colorMeta": {
+      "acento": {
+        "role": "primary",
+        "displayName": "Terracota Faique (por defecto; lo reemplaza estilo.acento de cada proyecto)",
+        "canonical": "#a9581f",
+        "tonalRamp": [
+          "oklch(15.0% 0.126 51.3)",
+          "oklch(27.0% 0.126 51.3)",
+          "oklch(39.0% 0.126 51.3)",
+          "oklch(51.0% 0.126 51.3)",
+          "oklch(63.0% 0.126 51.3)",
+          "oklch(75.0% 0.126 51.3)",
+          "oklch(86.0% 0.126 51.3)",
+          "oklch(95.0% 0.126 51.3)"
+        ]
+      },
+      "acento-tinta": {
+        "role": "primary",
+        "displayName": "Tinta del acento",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 89.9)",
+          "oklch(27.0% 0.000 89.9)",
+          "oklch(39.0% 0.000 89.9)",
+          "oklch(51.0% 0.000 89.9)",
+          "oklch(63.0% 0.000 89.9)",
+          "oklch(75.0% 0.000 89.9)",
+          "oklch(86.0% 0.000 89.9)",
+          "oklch(95.0% 0.000 89.9)"
+        ]
+      },
+      "tinta": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#141414",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 89.9)",
+          "oklch(27.0% 0.000 89.9)",
+          "oklch(39.0% 0.000 89.9)",
+          "oklch(51.0% 0.000 89.9)",
+          "oklch(63.0% 0.000 89.9)",
+          "oklch(75.0% 0.000 89.9)",
+          "oklch(86.0% 0.000 89.9)",
+          "oklch(95.0% 0.000 89.9)"
+        ]
+      },
+      "tenue": {
+        "role": "neutral",
+        "displayName": "Gris tenue",
+        "canonical": "#5f6368",
+        "tonalRamp": [
+          "oklch(15.0% 0.009 253.9)",
+          "oklch(27.0% 0.009 253.9)",
+          "oklch(39.0% 0.009 253.9)",
+          "oklch(51.0% 0.009 253.9)",
+          "oklch(63.0% 0.009 253.9)",
+          "oklch(75.0% 0.009 253.9)",
+          "oklch(86.0% 0.009 253.9)",
+          "oklch(95.0% 0.009 253.9)"
+        ]
+      },
+      "fondo": {
+        "role": "neutral",
+        "displayName": "Hueso",
+        "canonical": "#f4f4f2",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 106.4)",
+          "oklch(27.0% 0.003 106.4)",
+          "oklch(39.0% 0.003 106.4)",
+          "oklch(51.0% 0.003 106.4)",
+          "oklch(63.0% 0.003 106.4)",
+          "oklch(75.0% 0.003 106.4)",
+          "oklch(86.0% 0.003 106.4)",
+          "oklch(95.0% 0.003 106.4)"
+        ]
+      },
+      "superficie": {
+        "role": "neutral",
+        "displayName": "Blanco superficie",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15.0% 0.000 89.9)",
+          "oklch(27.0% 0.000 89.9)",
+          "oklch(39.0% 0.000 89.9)",
+          "oklch(51.0% 0.000 89.9)",
+          "oklch(63.0% 0.000 89.9)",
+          "oklch(75.0% 0.000 89.9)",
+          "oklch(86.0% 0.000 89.9)",
+          "oklch(95.0% 0.000 89.9)"
+        ]
+      },
+      "gris": {
+        "role": "neutral",
+        "displayName": "Gris píldora",
+        "canonical": "#f1f1ef",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 106.4)",
+          "oklch(27.0% 0.003 106.4)",
+          "oklch(39.0% 0.003 106.4)",
+          "oklch(51.0% 0.003 106.4)",
+          "oklch(63.0% 0.003 106.4)",
+          "oklch(75.0% 0.003 106.4)",
+          "oklch(86.0% 0.003 106.4)",
+          "oklch(95.0% 0.003 106.4)"
+        ]
+      },
+      "linea": {
+        "role": "neutral",
+        "displayName": "Línea",
+        "canonical": "#e6e5e1",
+        "tonalRamp": [
+          "oklch(15.0% 0.005 95.1)",
+          "oklch(27.0% 0.005 95.1)",
+          "oklch(39.0% 0.005 95.1)",
+          "oklch(51.0% 0.005 95.1)",
+          "oklch(63.0% 0.005 95.1)",
+          "oklch(75.0% 0.005 95.1)",
+          "oklch(86.0% 0.005 95.1)",
+          "oklch(95.0% 0.005 95.1)"
+        ]
+      },
+      "linea-fuerte": {
+        "role": "neutral",
+        "displayName": "Línea fuerte",
+        "canonical": "#c9c8c3",
+        "tonalRamp": [
+          "oklch(15.0% 0.007 97.4)",
+          "oklch(27.0% 0.007 97.4)",
+          "oklch(39.0% 0.007 97.4)",
+          "oklch(51.0% 0.007 97.4)",
+          "oklch(63.0% 0.007 97.4)",
+          "oklch(75.0% 0.007 97.4)",
+          "oklch(86.0% 0.007 97.4)",
+          "oklch(95.0% 0.007 97.4)"
+        ]
+      },
+      "papel": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "canonical": "#e9e8e4",
+        "tonalRamp": [
+          "oklch(15.0% 0.005 95.1)",
+          "oklch(27.0% 0.005 95.1)",
+          "oklch(39.0% 0.005 95.1)",
+          "oklch(51.0% 0.005 95.1)",
+          "oklch(63.0% 0.005 95.1)",
+          "oklch(75.0% 0.005 95.1)",
+          "oklch(86.0% 0.005 95.1)",
+          "oklch(95.0% 0.005 95.1)"
+        ]
+      },
+      "escena": {
+        "role": "neutral",
+        "displayName": "Negro escena",
+        "canonical": "#0b0c0e",
+        "tonalRamp": [
+          "oklch(15.0% 0.005 264.4)",
+          "oklch(27.0% 0.005 264.4)",
+          "oklch(39.0% 0.005 264.4)",
+          "oklch(51.0% 0.005 264.4)",
+          "oklch(63.0% 0.005 264.4)",
+          "oklch(75.0% 0.005 264.4)",
+          "oklch(86.0% 0.005 264.4)",
+          "oklch(95.0% 0.005 264.4)"
+        ]
+      },
+      "disponible": {
+        "role": "estado",
+        "displayName": "Verde disponible",
+        "canonical": "#1a7f4b",
+        "tonalRamp": [
+          "oklch(15.0% 0.121 155.0)",
+          "oklch(27.0% 0.121 155.0)",
+          "oklch(39.0% 0.121 155.0)",
+          "oklch(51.0% 0.121 155.0)",
+          "oklch(63.0% 0.121 155.0)",
+          "oklch(75.0% 0.121 155.0)",
+          "oklch(86.0% 0.121 155.0)",
+          "oklch(95.0% 0.121 155.0)"
+        ]
+      },
+      "disponible-fondo": {
+        "role": "estado",
+        "displayName": "Fondo disponible",
+        "canonical": "#e3f3ea",
+        "tonalRamp": [
+          "oklch(15.0% 0.021 161.5)",
+          "oklch(27.0% 0.021 161.5)",
+          "oklch(39.0% 0.021 161.5)",
+          "oklch(51.0% 0.021 161.5)",
+          "oklch(63.0% 0.021 161.5)",
+          "oklch(75.0% 0.021 161.5)",
+          "oklch(86.0% 0.021 161.5)",
+          "oklch(95.0% 0.021 161.5)"
+        ]
+      },
+      "reservado": {
+        "role": "estado",
+        "displayName": "Ocre reservado",
+        "canonical": "#8a5a07",
+        "tonalRamp": [
+          "oklch(15.0% 0.106 72.4)",
+          "oklch(27.0% 0.106 72.4)",
+          "oklch(39.0% 0.106 72.4)",
+          "oklch(51.0% 0.106 72.4)",
+          "oklch(63.0% 0.106 72.4)",
+          "oklch(75.0% 0.106 72.4)",
+          "oklch(86.0% 0.106 72.4)",
+          "oklch(95.0% 0.106 72.4)"
+        ]
+      },
+      "reservado-fondo": {
+        "role": "estado",
+        "displayName": "Fondo reservado",
+        "canonical": "#fbefd8",
+        "tonalRamp": [
+          "oklch(15.0% 0.033 83.7)",
+          "oklch(27.0% 0.033 83.7)",
+          "oklch(39.0% 0.033 83.7)",
+          "oklch(51.0% 0.033 83.7)",
+          "oklch(63.0% 0.033 83.7)",
+          "oklch(75.0% 0.033 83.7)",
+          "oklch(86.0% 0.033 83.7)",
+          "oklch(95.0% 0.033 83.7)"
+        ]
+      },
+      "vendido": {
+        "role": "estado",
+        "displayName": "Gris vendido",
+        "canonical": "#575d65",
+        "tonalRamp": [
+          "oklch(15.0% 0.015 255.6)",
+          "oklch(27.0% 0.015 255.6)",
+          "oklch(39.0% 0.015 255.6)",
+          "oklch(51.0% 0.015 255.6)",
+          "oklch(63.0% 0.015 255.6)",
+          "oklch(75.0% 0.015 255.6)",
+          "oklch(86.0% 0.015 255.6)",
+          "oklch(95.0% 0.015 255.6)"
+        ]
+      },
+      "vendido-fondo": {
+        "role": "estado",
+        "displayName": "Fondo vendido",
+        "canonical": "#eceef0",
+        "tonalRamp": [
+          "oklch(15.0% 0.003 247.9)",
+          "oklch(27.0% 0.003 247.9)",
+          "oklch(39.0% 0.003 247.9)",
+          "oklch(51.0% 0.003 247.9)",
+          "oklch(63.0% 0.003 247.9)",
+          "oklch(75.0% 0.003 247.9)",
+          "oklch(86.0% 0.003 247.9)",
+          "oklch(95.0% 0.003 247.9)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Solo el nombre del edificio en la portada."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Título de las páginas de consulta."
+      },
+      "precio": {
+        "displayName": "Precio",
+        "purpose": "Precio de la unidad en la tarjeta, cifras tabulares."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Unidad, grupos, modelos, insignia del piso."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto corrido."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Píldoras, pestañas, navegación, conmutadores."
+      },
+      "estado": {
+        "displayName": "Estado",
+        "purpose": "Etiqueta de disponibilidad."
+      },
+      "cabecera-tabla": {
+        "displayName": "Cabecera de tabla",
+        "purpose": "Solo cabeceras de columna y rótulos de filtros."
+      }
+    },
+    "shadows": [
+      {
+        "name": "flotante",
+        "value": "0 8px 24px rgb(0 0 0 / .16), 0 2px 6px rgb(0 0 0 / .08)",
+        "purpose": "Toda pieza que flota sobre la imagen."
+      },
+      {
+        "name": "alta",
+        "value": "0 22px 48px rgb(0 0 0 / .22), 0 6px 14px rgb(0 0 0 / .1)",
+        "purpose": "Tarjeta flotante, menú, diálogo de consulta y hover de píldora."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Curva única de todas las transiciones y entradas."
+      },
+      {
+        "name": "pieza",
+        "value": ".25s",
+        "purpose": "Hover y presión de píldoras y círculos."
+      },
+      {
+        "name": "franja",
+        "value": ".3s",
+        "purpose": "Aparición de la franja de piso."
+      },
+      {
+        "name": "tarjeta",
+        "value": ".45s",
+        "purpose": "Entrada de la tarjeta de unidad (ascenso 10px + escala .98)."
+      },
+      {
+        "name": "cambio-vista",
+        "value": ".7s opacity / 1.2s transform",
+        "purpose": "Fundido entre vistas del edificio."
+      },
+      {
+        "name": "acercar",
+        "value": "22s",
+        "purpose": "Acercamiento lento del render de portada (escala 1.08 a 1)."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "movil",
+        "value": "760px"
+      },
+      {
+        "name": "ficha-dos-columnas",
+        "value": "960px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Píldora",
+      "kind": "button",
+      "refersTo": "pildora",
+      "description": "Control flotante blanco con sombra real sobre la imagen.",
+      "html": "<button class=\"ds-pildora\">Ver planta</button>",
+      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-pildora{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:var(--superficie);color:var(--tinta);font:700 .94rem Manrope,system-ui,sans-serif;cursor:pointer;box-shadow:var(--sombra);transition:transform .25s var(--ease),box-shadow .25s var(--ease)}.ds-pildora:hover{transform:translateY(-1px);box-shadow:var(--sombra-alta)}.ds-pildora:active{transform:scale(.98)}.ds-pildora:focus-visible{outline:3px solid var(--acento);outline-offset:3px}"
+    },
+    {
+      "name": "Píldora de acento",
+      "kind": "button",
+      "refersTo": "pildora-acento",
+      "description": "La acción principal de cada vista, en el acento del proyecto.",
+      "html": "<button class=\"ds-pildora ds-pildora--acento\">Buscar departamento</button>",
+      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-pildora{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:var(--superficie);color:var(--tinta);font:700 .94rem Manrope,system-ui,sans-serif;cursor:pointer;box-shadow:var(--sombra);transition:transform .25s var(--ease),box-shadow .25s var(--ease)}.ds-pildora:hover{transform:translateY(-1px);box-shadow:var(--sombra-alta)}.ds-pildora:active{transform:scale(.98)}.ds-pildora:focus-visible{outline:3px solid var(--acento);outline-offset:3px}.ds-pildora--acento{background:var(--acento);color:var(--acento-tinta)}"
+    },
+    {
+      "name": "Píldora oscura",
+      "kind": "button",
+      "refersTo": "pildora-oscura",
+      "description": "Acción secundaria fuerte sobre fondo claro.",
+      "html": "<button class=\"ds-pildora ds-pildora--oscura\">Consultar</button>",
+      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-pildora{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:var(--superficie);color:var(--tinta);font:700 .94rem Manrope,system-ui,sans-serif;cursor:pointer;box-shadow:var(--sombra);transition:transform .25s var(--ease),box-shadow .25s var(--ease)}.ds-pildora:hover{transform:translateY(-1px);box-shadow:var(--sombra-alta)}.ds-pildora:active{transform:scale(.98)}.ds-pildora:focus-visible{outline:3px solid var(--acento);outline-offset:3px}.ds-pildora--oscura{background:var(--tinta);color:#fff}"
+    },
+    {
+      "name": "Círculo",
+      "kind": "button",
+      "refersTo": "circulo",
+      "description": "Botón redondo de 44px para menú, cerrar y compartir.",
+      "html": "<button class=\"ds-circulo\" aria-label=\"Menú\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 7h16M4 12h16M4 17h16\"/></svg></button>",
+      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-circulo{display:inline-grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:var(--tinta);color:#fff;cursor:pointer;box-shadow:var(--sombra);transition:transform .25s var(--ease)}.ds-circulo:hover{transform:translateY(-1px)}.ds-circulo:focus-visible{outline:3px solid var(--acento);outline-offset:3px}"
+    },
+    {
+      "name": "Etiquetas de estado",
+      "kind": "chip",
+      "refersTo": "estado-disponible",
+      "description": "Disponibilidad como punto dibujado + palabra, nunca solo color.",
+      "html": "<span class=\"ds-estado ds-d\"><i></i>Disponible</span> <span class=\"ds-estado ds-r\"><i></i>Reservado</span> <span class=\"ds-estado ds-v\"><i></i>Vendido</span>",
+      "css": ".ds-estado{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:999px;font:800 .78rem Manrope,system-ui,sans-serif}.ds-estado i{width:8px;height:8px;border-radius:50%;background:currentColor}.ds-d{color:#1a7f4b;background:#e3f3ea}.ds-r{color:#8a5a07;background:#fbefd8}.ds-v{color:#575d65;background:#eceef0}"
+    },
+    {
+      "name": "Conmutador segmentado",
+      "kind": "nav",
+      "refersTo": "pildora-chica-actual",
+      "description": "Día/Noche y modos de vista; solo existe si hay algo que conmutar.",
+      "html": "<div class=\"ds-seg\"><button aria-pressed=\"true\">Día</button><button aria-pressed=\"false\">Noche</button></div>",
+      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-seg{display:inline-flex;gap:2px;padding:4px;border-radius:999px;background:rgb(255 255 255 / .94);box-shadow:var(--sombra)}.ds-seg button{min-height:36px;padding:0 14px;border:0;border-radius:999px;background:transparent;color:var(--tenue);font:700 .88rem Manrope,system-ui,sans-serif;cursor:pointer}.ds-seg button[aria-pressed=true]{background:var(--tinta);color:#fff}.ds-seg button:focus-visible{outline:3px solid var(--acento);outline-offset:2px}"
+    },
+    {
+      "name": "Columna de pisos",
+      "kind": "custom",
+      "refersTo": "piso-pildora",
+      "description": "Tablero de ascensor: elegir piso con unidades libres a la vista.",
+      "html": "<ol class=\"ds-col\"><li><a href=\"#\">8<small>3 libres</small></a></li><li><a href=\"#\" class=\"ds-act\">7<small>2 libres</small></a></li><li><a href=\"#\">6<small>Agotado</small></a></li></ol>",
+      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-col{display:grid;gap:6px;width:116px;margin:0;padding:8px;list-style:none;border-radius:20px;background:rgb(255 255 255 / .95);box-shadow:var(--sombra)}.ds-col a{display:grid;justify-items:center;padding:8px 6px;border-radius:14px;background:var(--gris);color:var(--tinta);font:800 1.02rem Manrope,system-ui,sans-serif;font-variant-numeric:tabular-nums;text-decoration:none}.ds-col a:hover{background:#e7e6e2}.ds-col a:focus-visible{outline:3px solid var(--acento);outline-offset:2px}.ds-col small{font-size:.7rem;font-weight:700;color:var(--tenue)}.ds-col .ds-act{background:var(--acento);color:var(--acento-tinta)}.ds-col .ds-act small{color:inherit}"
+    },
+    {
+      "name": "Marcador de unidad",
+      "kind": "custom",
+      "refersTo": "pin-unidad",
+      "description": "Botón HTML de tamaño fijo sobre la planta: punto de estado + ID.",
+      "html": "<button class=\"ds-pin\"><i style=\"background:#1f9a5c\"></i>401</button> <button class=\"ds-pin ds-pin--el\"><i></i>402</button>",
+      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-pin{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px 0 10px;border:0;border-radius:999px;background:var(--superficie);color:var(--tinta);font:800 .95rem/1 Manrope,system-ui,sans-serif;font-variant-numeric:tabular-nums;cursor:pointer;box-shadow:var(--sombra)}.ds-pin:hover{background:#f4f4f2}.ds-pin:focus-visible{outline:3px solid var(--acento);outline-offset:3px}.ds-pin i{width:10px;height:10px;border-radius:50%}.ds-pin--el{background:var(--acento);color:var(--acento-tinta)}.ds-pin--el i{background:var(--acento-tinta)}"
+    },
+    {
+      "name": "Tarjeta de unidad",
+      "kind": "card",
+      "refersTo": "tarjeta",
+      "description": "Tarjeta blanca flotante de radio 20 con precio, bono, datos y acciones.",
+      "html": "<article class=\"ds-tar\"><h2>Dpto. 402</h2><p class=\"ds-tipo\">Tipo A · 3 dormitorios</p><p class=\"ds-pre\">S/ 389,000</p><p class=\"ds-bono\">Bono aplicable a esta unidad</p><dl><div><dt>Área</dt><dd>86 m²</dd></div><div><dt>Piso</dt><dd>4</dd></div></dl></article>",
+      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-tar{width:348px;padding:20px;border-radius:20px;background:var(--superficie);color:var(--tinta);box-shadow:var(--sombra-alta);font-family:Manrope,system-ui,sans-serif}.ds-tar h2{margin:0;font-size:1.5rem;font-weight:800}.ds-tipo{margin:4px 0 0;font-size:.9rem;color:var(--tenue)}.ds-pre{margin:14px 0 0;font-size:1.85rem;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.ds-bono{margin:10px 0 0;padding:9px 12px;border-radius:12px;background:#e3f3ea;color:#1a7f4b;font-size:.86rem;font-weight:700}.ds-tar dl{margin:14px 0 0}.ds-tar dl div{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--linea)}.ds-tar dt{font-size:.9rem;color:var(--tenue)}.ds-tar dd{margin:0;font-weight:800;font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Campo",
+      "kind": "input",
+      "refersTo": "campo",
+      "description": "Campo de la consulta y selects del catálogo.",
+      "html": "<input class=\"ds-campo\" placeholder=\"Tu nombre\">",
+      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-campo{min-height:44px;padding:12px 14px;border:1px solid var(--linea);border-radius:12px;background:#f7f7f5;color:var(--tinta);font:500 1rem Manrope,system-ui,sans-serif}.ds-campo:hover{border-color:#c9c8c3}.ds-campo:focus{outline:2px solid var(--acento);outline-offset:0;background:#fff}"
+    }
+  ],
+  "narrative": {
+    "northStar": "El edificio es la pantalla",
+    "overview": "Este es el estándar de la categoría (el showroom de Urbania 3D, con President Tower como vara de acabado) ejecutado a fondo. El render del edificio ocupa la pantalla entera en la portada, en la vista del edificio y en la planta del piso, y los controles flotan encima como piezas blancas y negras con sombra real. Nada enmarca la imagen: no hay cabecera fija, barra lateral ni secciones apiladas en las vistas inmersivas. El carácter propio sale del oficio y del material (renders, plantas, geometría y datos coherentes), no de un mundo excéntrico.\n\nHay dos registros. Las **vistas inmersivas** (portada, edificio, piso) son oscuras o de papel, a sangre, con piezas flotantes. Las **páginas de consulta** (ficha, catálogo, modelos) son claras, sobre fondo hueso, con tarjetas blancas para leer y comparar. El mismo vocabulario de píldoras, círculos, tarjeta de radio 20 y estados atraviesa ambos.\n\nUna sola hoja sirve a todas las inmobiliarias: el color de marca entra por proyecto como variable CSS, y todo lo demás (neutros, estados, formas, sombras) es fijo. Se rechaza la web inmobiliaria de plantilla, el lujo exagerado y esconder precio o disponibilidad.",
+    "keyCharacteristics": [
+      "Imagen a sangre como interfaz; controles flotantes que nunca la enmarcan.",
+      "Piezas blancas y negras con sombra real de dos capas; un único acento por proyecto.",
+      "Tarjeta blanca de radio 20; píldoras y círculos totalmente redondos.",
+      "Manrope de peso 800 para todo lo que se lee como dato o título; cifras tabulares.",
+      "Estados de disponibilidad siempre como punto dibujado + palabra (y trama en la planta), nunca solo color.",
+      "Aviso de demo obligatorio en una franja fina fija arriba."
+    ],
+    "rules": [
+      {
+        "name": "La Regla del Acento Prestado",
+        "body": "El acento nunca se escribe en la hoja ni en un componente: llega del proyecto. Un componente que necesite color de marca usa `var(--acento)` y `var(--acento-tinta)`, sin excepción.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Voz Única",
+        "body": "El acento marca la acción y la selección actual, nada más. Un viewport inmersivo lleva a lo sumo la acción principal, la selección actual y la navegación de recorrido en acento; el resto es blanco y negro.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Cifra Tabular",
+        "body": "Todo número que se compara (pisos, precios, áreas, conteos, IDs de unidad) va con `font-variant-numeric: tabular-nums`.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla de una Familia",
+        "body": "Manrope y nada más. No se introduce una segunda familia de display.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Marco Ausente",
+        "body": "En una vista inmersiva nada ocupa un borde completo de la pantalla salvo el aviso de demo y, en móvil, la columna de pisos y la hoja de la tarjeta. Todo lo demás es una pieza flotante con aire alrededor.",
+        "section": "layout"
+      },
+      {
+        "name": "La Regla del Mismo Encuadre",
+        "body": "Cualquier capa dibujada sobre un render (franjas, polígonos, marcadores) comparte el sistema de coordenadas de la imagen y su modo `slice`/`meet`. Una capa que no lo comparte se desalinea en cuanto cambia la proporción de la pantalla.",
+        "section": "layout"
+      },
+      {
+        "name": "La Regla de la Sombra Real",
+        "body": "Sobre imagen, una pieza flotante lleva sombra; sobre blanco, borde de 1px de línea y ninguna sombra. Nunca las dos a la vez, nunca ninguna sobre imagen.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** llevar el render a sangre (`object-fit: cover`) en portada, edificio y piso, con las piezas flotando a 16px de los bordes.",
+      "**Do** tomar el color de marca solo de `var(--acento)` / `var(--acento-tinta)`, inyectados por `generar.js` desde `estilo.acento` del proyecto.",
+      "**Do** dibujar franjas y polígonos con el mismo `viewBox` y el mismo modo `slice`/`meet` que la imagen que cubren.",
+      "**Do** mostrar el estado como punto dibujado + palabra, y en la planta añadir trama (rayado para reservado, cruzado para vendido).",
+      "**Do** mantener los marcadores de la planta como HTML de tamaño fijo que siguen al plano sin escalarse.",
+      "**Do** dar sombra flotante a lo que va sobre imagen y borde de línea sin sombra a lo que va sobre blanco.",
+      "**Do** guardar cada imagen reemplazada con un nombre nuevo (`-v2`, `-v3`…) y actualizar la referencia en `datos/`; el servidor cachea por nombre.",
+      "**Do** mostrar el aviso de demo en toda vista mientras el proyecto esté en modo demo.",
+      "**Do** dibujar el conmutador Día/Noche solo cuando el proyecto tenga renders nocturnos.",
+      "**Do** convertir la tarjeta de unidad en hoja inferior y la columna de pisos en tira horizontal por debajo de 760px."
+    ],
+    "donts": [
+      "**Don't** enmarcar las vistas inmersivas con cabeceras, barras laterales o secciones apiladas; rechazar la web inmobiliaria de secciones apiladas es la tesis.",
+      "**Don't** escribir un color de marca fijo en `core.css` ni en un componente.",
+      "**Don't** comunicar disponibilidad solo con color.",
+      "**Don't** sobrescribir una imagen publicada con el mismo nombre de archivo.",
+      "**Don't** esconder el precio o la disponibilidad detrás de una consulta.",
+      "**Don't** introducir una segunda familia tipográfica ni íconos de fuente o glifos; los íconos son SVG de trazo 1.8 en retícula 24.",
+      "**Don't** usar texto pequeño espaciado en mayúsculas como rótulo encima de un título; las mayúsculas espaciadas quedan para las cabeceras de tabla y filtros, y las versalitas en acento solo para el bloque de marca."
+    ]
+  }
+}
