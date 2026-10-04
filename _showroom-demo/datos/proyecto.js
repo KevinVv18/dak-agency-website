@@ -18,6 +18,13 @@ export default {
   // Acento de marca de la demo: cobre, por la tierra del bosque seco.
   // Texto blanco sobre el acento: contraste 5,1 (AA).
   estilo: { acento: '#a9581f', acentoTinta: '#ffffff' },
+  // Portada: timelapse de cámara fija del día a la noche (edificio.py --vista
+  // portada --timelapse), con pase de realismo. Se funden en bucle.
+  timelapse: ['dia', 'atardecer', 'crepusculo', 'noche'].map((e) => ({
+    id: e,
+    imagen: `assets/portada/${e}-v1.webp`,
+    imagenMovil: `assets/portada/${e}-movil-v1.webp`,
+  })),
   modoDemo: true,
   avisoDemo: 'Proyecto conceptual · inventario, precios y vistas de ejemplo',
   // Bono del Buen Pagador (Crédito Mivivienda), tramos vigentes desde junio
@@ -36,5 +43,16 @@ export default {
     // 'demo' no envía nada: muestra lo que se habría enviado.
     modo: 'demo',
   },
-  creditos: [],
+  // Modelos de terceros con licencia CC BY 4.0 (la atribución es obligatoria);
+  // texturas y cielos de Poly Haven, CC0.
+  creditos: [
+    'Modelos 3D (CC BY 4.0): 2020 Toyota GR Yaris, supercarmodels',
+    'Generic passenger car pack, comrade1280',
+    'MotoTaxi, aramburustephano',
+    'Realistic Palm Tree, NextSpring',
+    'Date Palm, evolveduk',
+    'Chinese Banyan (Ficus microcarpa), Valery.Li',
+    'Personas: Renderpeople',
+    'Texturas y cielos: Poly Haven (CC0)',
+  ],
 };

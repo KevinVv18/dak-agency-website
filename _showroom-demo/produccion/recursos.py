@@ -54,6 +54,13 @@ RECURSOS = {
     # Ronda de acabado (oct-2026): la vara son los renders de Domaria.
     # Noche: hora azul con nubes (la cámara lo ve; la luz sigue saliendo del cielo físico).
     'qwantani_dusk_2_puresky': ('hdri', '4k', 'cielo de hora azul'),
+    # Timelapse de la portada: misma serie fotográfica a distintas horas, así
+    # el paso del día a la noche es coherente (luz y cielo del mismo lugar).
+    'qwantani_sunset_puresky': ('hdri', '4k', 'atardecer'),
+    'kloofendal_48d_partly_cloudy_puresky': ('hdri', '4k', 'día con nubes'),
+    'concrete_wall_008': ('textura', '2k', 'muros laterales de cemento de las casas'),
+    'qwantani_dusk_1_puresky': ('hdri', '4k', 'crepúsculo'),
+    'qwantani_night_puresky': ('hdri', '4k', 'noche con estrellas'),
     # Telas y maderas reales para los muebles procedurales.
     'wool_boucle': ('textura', '2k', 'tapiz del sofá'),
     'rough_linen': ('textura', '2k', 'cortinas, cojines y ropa de cama'),

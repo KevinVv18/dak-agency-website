@@ -104,7 +104,7 @@
   const giroMovil = (v) => vertical.matches && !!v.giro.diaMovil;
   const cuadroSrc = (v, k, modo = 'dia') => {
     const g = v.giro;
-    const patron = (giroMovil(v) && (g[`${modo}Movil`] || g.diaMovil)) || g[modo] || g.dia;
+    const patron = (giroMovil(v) && !modo.endsWith('Fantasma') && (g[`${modo}Movil`] || g.diaMovil)) || g[modo] || g.dia;
     return patron.replace('{n}', String(k).padStart(3, '0'));
   };
   const puntosFranja = (poli, aw, ah) => poli.map(([x, y]) => `${(x * aw).toFixed(3)},${(y * ah).toFixed(3)}`).join(' ');
@@ -152,6 +152,7 @@
             <a href="${url('modelos/')}"${actual('modelos')}>Modelos</a>
           </nav>
           <p class="menu__pie">${esc(p.lema)} · ${p.zona ? `${esc(p.zona)}, ` : ''}${esc(p.ciudad)}</p>
+          ${p.creditos?.length ? `<p class="menu__creditos">${p.creditos.map(esc).join(' · ')}</p>` : ''}
         </div>
       </div>`;
   }
@@ -204,17 +205,19 @@
     const p = D.proyecto;
     // La portada usa la imagen que el proyecto elija o, si no, la primera vista.
     const vp = D.vistas.find((v) => !v.giro) || D.vistas[0];
+    const tl = p.timelapse && p.timelapse.length > 1 ? p.timelapse : null;
     const dia = (vertical.matches && p.portadaMovil) || p.portada || (vp && imagenVista(vp));
     const noche = vp && vp.imagen.noche ? imagenVista(vp, 'noche') : null;
     const disp = D.unidades.filter((u) => u.estado === 'disponible');
     const desde = disp.filter((u) => u.precio).map((u) => u.precio).sort((a, b) => a - b)[0];
     return `
       ${aviso()}
-      <main class="portada">
+      <main class="portada${tl ? ' portada--timelapse' : ''}">
         <div class="portada__escena" aria-hidden="true">
-          ${dia ? `<img class="portada__img" src="${esc(recurso(dia))}" alt="" fetchpriority="high">` : marcador('Video de portada', 'Fachada al atardecer')}
-          ${noche ? `<img class="portada__img portada__img--noche" src="${esc(recurso(noche))}" alt="">` : ''}
-          ${D.vistas.some((v) => v.giro) ? '<canvas class="portada__giro" data-intro></canvas>' : ''}
+          ${tl
+            ? tl.map((e, k) => `<img class="portada__img portada__tl" data-tl="${k}" src="${esc(recurso((vertical.matches && e.imagenMovil) || e.imagen))}" alt=""${k ? ' style="opacity:0"' : ' fetchpriority="high"'}>`).join('')
+            : `${dia ? `<img class="portada__img" src="${esc(recurso(dia))}" alt="" fetchpriority="high">` : marcador('Video de portada', 'Fachada al atardecer')}
+          ${noche ? `<img class="portada__img portada__img--noche" src="${esc(recurso(noche))}" alt="">` : ''}`}
         </div>
         <p class="marca marca--portada"><span class="marca__nombre">${esc(p.marca)}</span></p>
         <div class="portada__contenido">
@@ -264,19 +267,27 @@
     const v = D.vistas[i];
     const k = v.giro ? Math.min(v.giro.cuadros - 1, Math.max(0, Number(q.giro) || 0)) : 0;
     const img = v.giro ? cuadroSrc(v, k, modoGiro(v, modo)) : imagenVista(v, modo);
-    const fantasma = !v.giro && imagenFantasma(v, modo);
+    const mg = v.giro ? modoGiro(v, modo) : null;
+    const fantasma = v.giro ? (v.giro[`${mg}Fantasma`] && cuadroSrc(v, k, `${mg}Fantasma`)) : imagenFantasma(v, modo);
     const n = D.vistas.length;
     return `
       ${aviso()}
       <main class="inmersiva inmersiva--edificio" data-vista-actual="${i}"${v.giro ? ` data-giro data-cuadro="${k}"` : ''}>
         <div class="escena">
           ${img ? `<img class="escena__fondo" src="${esc(recurso(img))}" alt="" aria-hidden="true">
+          ${v.giro ? '<div class="giro-zoom" data-giro-zoom>' : ''}
           <img class="escena__img" data-escena-img src="${esc(recurso(img))}" alt="${esc(D.proyecto.nombre)}, ${v.giro ? 'giro de 360 grados alrededor del edificio' : `vista ${esc(v.nombre.toLowerCase())}`}">
+          ${v.giro ? `<img class="escena__img escena__img--siguiente" data-giro-sig src="${esc(recurso(img))}" alt="" aria-hidden="true">` : ''}
           ${fantasma ? `<img class="escena__img escena__img--fantasma" data-fantasma src="${esc(recurso(fantasma))}" alt="" aria-hidden="true">` : ''}
-          ${franjasSvg(v, img, k)}`
+          ${franjasSvg(v, img, k)}
+          ${v.giro ? '</div>' : ''}`
             : marcador(`Vista ${v.nombre.toLowerCase()}`, `Parada ${i + 1} de ${n} · render del exterior`)}
         </div>
-        ${v.giro ? `<p class="pista-giro" data-pista-giro>${icono('giro')}<span>Arrastra para girar el edificio</span></p>` : ''}
+        ${v.giro ? `<p class="pista-giro" data-pista-giro>${icono('giro')}<span>Arrastra para girar el edificio · rueda o pellizca para acercar</span></p>
+        <div class="flotante flotante--abajo-izq flotante--giro"><div class="zoom" role="group" aria-label="Acercar o alejar el edificio">
+          <button class="circulo circulo--blanco" data-zoom="1" aria-label="Acercar">${icono('mas')}</button>
+          <button class="circulo circulo--blanco" data-zoom="-1" aria-label="Alejar">${icono('menos')}</button>
+        </div></div>` : ''}
         <p class="franja-rotulo" data-franja-rotulo hidden></p>
         ${controles(url(''))}
         <h1 class="etiqueta">${esc(D.proyecto.nombre)}</h1>
@@ -781,61 +792,41 @@
     }
   }
 
-  // ── Intro de la portada ───────────────────────────────────────────────────
-  // Toma de dron: el edificio gira solo mientras pasa del día a la noche y
-  // vuelve, en bucle. Usa los cuadros del giro con fundido entre cuadro y
-  // cuadro, así la rotación se ve continua aunque haya uno cada 6 grados.
+  // ── Timelapse de la portada ───────────────────────────────────────────────
+  // Cámara fija y el día que pasa: cada estado (día, atardecer, crepúsculo,
+  // noche) se sostiene y se funde en el siguiente; al llegar a la noche vuelve.
 
-  let intro = null;
-  function detenerIntro() {
-    if (intro) cancelAnimationFrame(intro.raf);
-    intro = null;
-  }
-  function montarIntro() {
-    detenerIntro();
-    const cv = app.querySelector('[data-intro]');
-    const v = D.vistas.find((x) => x.giro);
-    if (!cv || !v || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const n = v.giro.cuadros;
-    const cargar = (modo) => [...Array(n).keys()].map((k) => { const im = new Image(); im.src = recurso(cuadroSrc(v, k, modo)); return im; });
-    const dia = cargar('dia');
-    const noche = v.giro.noche ? cargar('noche') : null;
-    const ctx = cv.getContext('2d');
+  let tl = null;
+  function montarTimelapse() {
+    if (tl) cancelAnimationFrame(tl.raf);
+    tl = null;
+    const imgs = [...app.querySelectorAll('[data-tl]')];
+    if (imgs.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const n = imgs.length;
+    const orden = [...Array(n).keys(), ...Array.from({ length: n - 2 }, (_, k) => n - 2 - k)];
+    const SOSTEN = 2600;
+    const FUNDIDO = 3600;
     const est = { raf: 0, t0: 0 };
-    intro = est;
-    const listo = (im) => im.complete && im.naturalWidth;
-    const dibujar = (im, alfa) => {
-      if (!listo(im) || alfa <= 0) return;
-      const k = Math.max(cv.width / im.naturalWidth, cv.height / im.naturalHeight);
-      const w = im.naturalWidth * k;
-      const h = im.naturalHeight * k;
-      ctx.globalAlpha = alfa;
-      ctx.drawImage(im, (cv.width - w) / 2, (cv.height - h) / 2, w, h);
+    tl = est;
+    const paso = (t) => {
+      if (tl !== est || !imgs[0].isConnected) return;
+      if (!imgs.every((im) => im.complete)) { est.raf = requestAnimationFrame(paso); return; }
+      if (!est.t0) est.t0 = t;
+      const tramo = SOSTEN + FUNDIDO;
+      const u = (t - est.t0) % (orden.length * tramo);
+      const i = Math.floor(u / tramo);
+      const r = u - i * tramo;
+      const a = orden[i];
+      const b = orden[(i + 1) % orden.length];
+      const f = r < SOSTEN ? 0 : (r - SOSTEN) / FUNDIDO;
+      const suave = f * f * (3 - 2 * f);
+      imgs.forEach((im, k) => {
+        im.style.zIndex = k === b ? 2 : k === a ? 1 : 0;
+        im.style.opacity = k === a ? 1 : k === b ? suave : 0;
+      });
+      est.raf = requestAnimationFrame(paso);
     };
-    const cuadro = (t) => {
-      if (intro !== est || !cv.isConnected) return;
-      const dpr = Math.min(devicePixelRatio || 1, 2);
-      const W = Math.round(cv.clientWidth * dpr);
-      const H = Math.round(cv.clientHeight * dpr);
-      if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
-      // espera a tener todos los cuadros de día (y de noche, si hay)
-      if (!dia.every(listo) || (noche && !noche.every(listo))) { est.raf = requestAnimationFrame(cuadro); return; }
-      if (!est.t0) { est.t0 = t; cv.classList.add('portada__giro--lista'); }
-      const s = (t - est.t0) / 1000;
-      const pos = s * 7;                       // cuadros por segundo: una vuelta cada ~8,5 s
-      const k = Math.floor(pos) % n;
-      const f = pos - Math.floor(pos);
-      const k2 = (k + 1) % n;
-      // día → noche → día cada 26 s, con la noche sostenida un rato
-      const ciclo = (1 - Math.cos((2 * Math.PI * s) / 26)) / 2;
-      const nn = noche ? Math.min(1, Math.max(0, (ciclo - 0.15) / 0.6)) : 0;
-      ctx.globalAlpha = 1;
-      dibujar(dia[k], 1);
-      dibujar(dia[k2], f);
-      if (nn) { dibujar(noche[k], nn); dibujar(noche[k2], nn * f); }
-      est.raf = requestAnimationFrame(cuadro);
-    };
-    est.raf = requestAnimationFrame(cuadro);
+    est.raf = requestAnimationFrame(paso);
   }
 
   // ── Giro 360 ──────────────────────────────────────────────────────────────
@@ -851,10 +842,20 @@
     const v = cont && D.vistas[Number(cont.dataset.vistaActual)];
     if (!v?.giro) return;
     const n = v.giro.cuadros;
-    const j = ((Math.round(k) % n) + n) % n;
+    const base = Math.floor(k);
+    const frac = k - base;
+    const a = ((base % n) + n) % n;
+    const b = (a + 1) % n;
+    const j = frac < 0.5 ? a : b;
     cont.dataset.cuadro = j;
+    const modo = modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia');
     const img = cont.querySelector('[data-escena-img]');
-    if (img) img.src = recurso(cuadroSrc(v, j, modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia')));
+    if (img) img.src = recurso(cuadroSrc(v, a, modo));
+    // fundido con el cuadro siguiente: entre dos tomas cada 5° el giro se lee continuo
+    const sig = cont.querySelector('[data-giro-sig]');
+    if (sig) { sig.src = recurso(cuadroSrc(v, b, modo)); sig.style.opacity = frac.toFixed(3); }
+    const fan = cont.querySelector('[data-fantasma]');
+    if (fan && v.giro[`${modo}Fantasma`]) fan.src = recurso(cuadroSrc(v, j, `${modo}Fantasma`));
     const movil = giroMovil(v);
     const cuadro = (movil ? v.giro.franjasMovil : v.giro.franjas)?.[j] || {};
     const [aw, ah] = movil ? [9, 16] : [16, 9];
@@ -883,12 +884,14 @@
     if (!cont) return;
     tocarGiro();
     const k0 = Number(cont.dataset.cuadro);
-    const dir = Math.sign(pasos);
-    let hechos = 0;
+    const dur = 140 * Math.abs(pasos);
     let t0 = 0;
     const paso = (t) => {
-      if (t - t0 >= 40) { t0 = t; hechos += 1; mostrarCuadro(k0 + dir * hechos); }
-      if (hechos < Math.abs(pasos)) giro.anim = requestAnimationFrame(paso);
+      if (!t0) t0 = t;
+      const u = Math.min(1, (t - t0) / dur);
+      const suave = u < 0.5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2;
+      mostrarCuadro(k0 + pasos * suave);
+      if (u < 1) giro.anim = requestAnimationFrame(paso);
       else fijarQuery({ giro: contGiro()?.dataset.cuadro || null });
     };
     giro.anim = requestAnimationFrame(paso);
@@ -900,35 +903,83 @@
     const v = cont && D.vistas[Number(cont.dataset.vistaActual)];
     if (!v?.giro) return;
     giro.tocado = Boolean(query().giro);
+    zoomG.s = 1; zoomG.x = 0; zoomG.y = 0;
     const n = v.giro.cuadros;
     const modo = modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia');
     const orden = [...Array(n).keys()].sort((a, b) => (a % 4 ? 1 : 0) - (b % 4 ? 1 : 0));
     let listos = 0;
     giro.cache = orden.map((k) => {
       const im = new Image();
-      im.onload = im.onerror = () => { listos += 1; if (listos === n) arrancarGiro(); };
+      im.onload = im.onerror = () => { listos += 1; };
       im.src = recurso(cuadroSrc(v, k, modo));
       return im;
     });
   }
 
-  function arrancarGiro() {
-    if (giro.tocado || giro.auto || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    giro.auto = setInterval(() => {
-      const cont = contGiro();
-      if (!cont || giro.tocado) return detenerGiro();
-      mostrarCuadro(Number(cont.dataset.cuadro) + 1);
-    }, 110);
+  // Zoom del giro: rueda o botones (alrededor del cursor o del centro) y
+  // pellizco en el celular. En 1 se ve el cuadro entero; hasta 3 de cerca.
+  const zoomG = { s: 1, x: 0, y: 0 };
+  function aplicarZoomGiro() {
+    const z = app.querySelector('[data-giro-zoom]');
+    if (!z) return;
+    const W = z.clientWidth;
+    const H = z.clientHeight;
+    zoomG.x = limitar(zoomG.x, W - zoomG.s * W, 0);
+    zoomG.y = limitar(zoomG.y, H - zoomG.s * H, 0);
+    z.style.transform = `translate(${zoomG.x}px, ${zoomG.y}px) scale(${zoomG.s})`;
   }
+  function zoomGiro(factor, px, py) {
+    const z = app.querySelector('[data-giro-zoom]');
+    if (!z) return;
+    const b = z.parentElement.getBoundingClientRect();
+    const cx = (px ?? b.left + b.width / 2) - b.left;
+    const cy = (py ?? b.top + b.height / 2) - b.top;
+    const s2 = limitar(zoomG.s * factor, 1, 3);
+    const ux = (cx - zoomG.x) / zoomG.s;
+    const uy = (cy - zoomG.y) / zoomG.s;
+    zoomG.s = s2;
+    zoomG.x = cx - s2 * ux;
+    zoomG.y = cy - s2 * uy;
+    aplicarZoomGiro();
+  }
+  document.addEventListener('wheel', (e) => {
+    if (!e.target.closest('.inmersiva--edificio[data-giro] .escena')) return;
+    e.preventDefault();
+    tocarGiro();
+    zoomGiro(e.deltaY < 0 ? 1.12 : 1 / 1.12, e.clientX, e.clientY);
+  }, { passive: false });
+  const dedos = new Map();
+  document.addEventListener('pointerdown', (e) => {
+    if (!e.target.closest('.inmersiva--edificio[data-giro] .escena')) return;
+    dedos.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (dedos.size === 2) {
+      giro.arr = null;
+      const [a, b] = [...dedos.values()];
+      giro.pellizco = Math.hypot(a.x - b.x, a.y - b.y);
+    }
+  });
+  document.addEventListener('pointermove', (e) => {
+    if (!dedos.has(e.pointerId)) return;
+    dedos.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (dedos.size === 2 && giro.pellizco) {
+      const [a, b] = [...dedos.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      zoomGiro(d / giro.pellizco, (a.x + b.x) / 2, (a.y + b.y) / 2);
+      giro.pellizco = d;
+    }
+  });
+  const soltar = (e) => { dedos.delete(e.pointerId); if (dedos.size < 2) giro.pellizco = 0; };
+  document.addEventListener('pointerup', soltar);
+  document.addEventListener('pointercancel', soltar);
 
   document.addEventListener('pointerdown', (e) => {
     const escena = e.target.closest('.inmersiva--edificio[data-giro] .escena');
-    if (!escena || e.button !== 0) return;
+    if (!escena || e.button !== 0 || dedos.size > 1) return;
     tocarGiro();
     giro.arr = { id: e.pointerId, x: e.clientX, k: Number(contGiro().dataset.cuadro), movido: false };
   });
   document.addEventListener('pointermove', (e) => {
-    if (!giro.arr || e.pointerId !== giro.arr.id) return;
+    if (!giro.arr || e.pointerId !== giro.arr.id || giro.pellizco) return;
     const dx = e.clientX - giro.arr.x;
     if (!giro.arr.movido && Math.abs(dx) < 6) return;
     giro.arr.movido = true;
@@ -941,6 +992,7 @@
       const bloquear = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
       document.addEventListener('click', bloquear, { capture: true, once: true });
       setTimeout(() => document.removeEventListener('click', bloquear, { capture: true }), 50);
+      mostrarCuadro(Number(contGiro()?.dataset.cuadro || 0));
       fijarQuery({ giro: contGiro()?.dataset.cuadro || null });
     }
     giro.arr = null;
@@ -1138,7 +1190,7 @@
     montarVisor();
     precargarVistas();
     precargarGiro();
-    montarIntro();
+    montarTimelapse();
     app.querySelectorAll('[data-escena-img], [data-fantasma]').forEach(ajustarEncaje);
     montarPlano();
     actualizarTitulo(partes);
@@ -1199,6 +1251,7 @@
     const franja = t.closest('[data-franja]');
     if (franja && pisoPorId[franja.dataset.franja]) return navegar(url(`piso/${franja.dataset.franja}/`));
     const zoom = t.closest('[data-zoom]');
+    if (zoom && contGiro()) { tocarGiro(); zoomGiro(Number(zoom.dataset.zoom) > 0 ? 1.35 : 1 / 1.35); return; }
     if (zoom) {
       const b = app.querySelector('.lienzo-plano')?.getBoundingClientRect();
       if (b) zoomEn(Number(zoom.dataset.zoom) > 0 ? 1.4 : 1 / 1.4, b.left + b.width / 2, b.top + b.height / 2);

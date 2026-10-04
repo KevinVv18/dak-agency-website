@@ -68,6 +68,10 @@ VISTAS = {
     # Azotea vista desde arriba, encuadre exacto al rectángulo del edificio
     # (renderizar a 1440x2200): es la planta del piso «azotea» en la web.
     'planta_azotea': dict(orto=True, centro_xy=(7.2, 11.0), escala=22.0),
+    # Portada: toma fija desde la azotea de enfrente, a media altura del
+    # edificio, verticales rectas (lens shift). Es el timelapse día-noche.
+    'portada':       dict(pos=(-2.0, -38.0, 13.8), giro=-13.0, focal=33, centro=10.6),
+    'portada_movil': dict(pos=(-2.0, -38.0, 13.8), giro=-13.0, focal=26, centro=10.9),
     'movil_frente':   dict(pos=(7.2, -27.0, 1.6), giro=0.0, focal=30, centro=10.5),
     'movil_diag_izq': dict(pos=(-12.0, -22.5, 1.6), giro=-36.0, focal=27, centro=10.5),
     'movil_diag_der': dict(pos=(29.0, -26.0, 1.6), giro=38.0, focal=27, centro=10.5),
@@ -100,11 +104,13 @@ def argumentos():
     # giro 360: N cuadros alrededor del edificio en una sola sesión de Blender
     p.add_argument('--orbita', type=int, default=0, help='cantidad de cuadros del giro (0 = render normal)')
     p.add_argument('--orbita-dir', default='giro')
-    p.add_argument('--orbita-radio', type=float, default=46.0)
-    p.add_argument('--orbita-alto', type=float, default=24.0)
-    p.add_argument('--orbita-mira', type=float, default=9.8, help='altura del punto al que mira la cámara')
-    p.add_argument('--orbita-focal', type=float, default=31.0)
+    p.add_argument('--orbita-radio', type=float, default=54.0)
+    p.add_argument('--orbita-alto', type=float, default=14.5)
+    p.add_argument('--orbita-mira', type=float, default=9.0, help='altura del punto al que mira la cámara')
+    p.add_argument('--orbita-focal', type=float, default=34.0)
     p.add_argument('--solo-franjas', action='store_true', help='escribir franjas.json del giro sin renderizar')
+    p.add_argument('--timelapse', default='', help='estados separados por coma (dia,atardecer,crepusculo,noche): una imagen por estado, misma escena')
+    p.add_argument('--timelapse-dir', default='timelapse')
     return p.parse_args(argv)
 
 
@@ -242,11 +248,59 @@ def material(nombre, color, rugosidad=0.6, metal=0.0, transmision=0.0, ruido=0.0
     return m
 
 
+# Mientras se arma el barrio, las cajas no son objetos sino geometría que se
+# acumula por material (y por lote en los vecinos inmediatos, que el modo
+# fantasma necesita aparte). Cientos de casas como miles de objetos tardaban
+# 14 minutos en armarse; como un puñado de mallas, segundos.
+LOTE = None
+GRUPO = 'barrio'
+# (x, y, radio): nada alto se coloca aquí (la cámara de portada está encima)
+DESPEJE = [(-2.0, -38.0, 7.0)]
+
+
+def despejado(x, y):
+    return all((x - a) ** 2 + (y - b) ** 2 > r * r for a, b, r in DESPEJE)
+
+
+def acumular(v, f, mat):
+    d = LOTE.setdefault((mat.name, GRUPO), {'v': [], 'f': [], 'mat': mat})
+    o = len(d['v'])
+    d['v'].extend(v)
+    d['f'].extend(tuple(i + o for i in cara) for cara in f)
+
+
+def volcar_lote():
+    for (nombre, grupo), d in LOTE.items():
+        me = bpy.data.meshes.new(f'{grupo}_{nombre}')
+        me.from_pydata(d['v'], [], d['f'])
+        me.update()
+        ob = bpy.data.objects.new(f'{grupo}_{nombre}', me)
+        ob.data.materials.append(d['mat'])
+        bpy.context.collection.objects.link(ob)
+
+
+def cilindro_lote(x, y, z0, z1, r, mat, lados=20):
+    """Cilindro (tanque de agua) como geometría del lote."""
+    v, f = [], []
+    for k in range(lados):
+        a = 2 * math.pi * k / lados
+        v += [(x + r * math.cos(a), y + r * math.sin(a), z0), (x + r * math.cos(a), y + r * math.sin(a), z1)]
+    for k in range(lados):
+        a, b = 2 * k, 2 * ((k + 1) % lados)
+        f.append((a, b, b + 1, a + 1))
+    f.append(tuple(2 * k + 1 for k in range(lados)))
+    f.append(tuple(2 * k for k in reversed(range(lados))))
+    acumular(v, f, mat)
+
+
 def caja(nombre, x0, x1, y0, y1, z0, z1, mat, bisel=0.012):
     x0, x1 = sorted((x0, x1)); y0, y1 = sorted((y0, y1)); z0, z1 = sorted((z0, z1))
     v = [(x0, y0, z0), (x1, y0, z0), (x1, y1, z0), (x0, y1, z0),
          (x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)]
     f = [(0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)]
+    if LOTE is not None:
+        acumular(v, f, mat)
+        return None
     me = bpy.data.meshes.new(nombre)
     me.from_pydata(v, [], f)
     me.update()
@@ -339,8 +393,12 @@ def ventana(x0, x1, z0, z1, y, M, hojas=2, s=1):
     if con_cuarto:
         cuarto(x0, x1, z0, z1, y, M, encendida, rnd)
         cubierto = min(cubierto, 0.35)
+    elif encendida:
+        # casas del barrio: el muro de la casa tapa lo que queda detrás del
+        # vidrio, así que la luz de la ventana va por delante de él
+        caja('interior', x0, x1, y + 0.008 * s, y + 0.014 * s, z0, z1, M['interior_luz'], bisel=0)
     else:
-        caja('interior', x0, x1, y + 0.05 * s, y + 0.06 * s, z0, z1, M['interior_luz' if encendida else 'interior'], bisel=0)
+        caja('interior', x0, x1, y + 0.05 * s, y + 0.06 * s, z0, z1, M['interior'], bisel=0)
     if cubierto:
         ancho = (x1 - x0) * cubierto
         if rnd.random() < 0.5:
@@ -768,6 +826,7 @@ def entorno(P, M):
 
     if NOCHE:
         alumbrado(P, M)
+    poblar(P, random.Random(23))
 
     # Sardineles: el borde de concreto que separa pista, berma y vereda.
     caja('sardinel', -30, 40, -r - 11.65, -r - 11.5, -0.05, 0.22, M['concreto'], bisel=0.01)
@@ -798,12 +857,21 @@ def casa(x0, x1, y_fachada, fondo, pisos, mat, M, rnd, mira):
     mira=-1: fachada hacia -y (cuerpo hacia +y); mira=+1: fachada hacia +y."""
     h = 0.3 + pisos * 2.7
     y0, y1 = (y_fachada, y_fachada + fondo) if mira < 0 else (y_fachada - fondo, y_fachada)
-    caja('casa', x0, x1, y0, y1, 0, h, mat)
+    # Solo la fachada va tarrajeada y pintada; los costados y el fondo que
+    # quedan a la vista son de ladrillo o de cemento, como en cualquier calle
+    # de Chiclayo. Una caja de un solo color se leía como maqueta.
+    lateral = mat if mat is M['ladrillo'] else (M['ladrillo'] if rnd.random() < 0.55 else M['cemento'])
+    caja('casa', x0, x1, y0, y1, 0, h, lateral)
     e = 0.15
-    caja('parapeto', x0, x1, y0, y0 + e, h, h + 0.9, mat, bisel=0)
-    caja('parapeto', x0, x1, y1 - e, y1, h, h + 0.9, mat, bisel=0)
-    caja('parapeto', x0, x0 + e, y0, y1, h, h + 0.9, mat, bisel=0)
-    caja('parapeto', x1 - e, x1, y0, y1, h, h + 0.9, mat, bisel=0)
+    if mira < 0:
+        caja('fachada', x0, x1, y0 - 0.005, y0 + 0.02, 0, h + 0.9, mat, bisel=0)
+    else:
+        caja('fachada', x0, x1, y1 - 0.02, y1 + 0.005, 0, h + 0.9, mat, bisel=0)
+    caja('parapeto', x0, x1, y0, y0 + e, h, h + 0.9, mat if mira > 0 else lateral, bisel=0)
+    caja('parapeto', x0, x1, y1 - e, y1, h, h + 0.9, mat if mira < 0 else lateral, bisel=0)
+    caja('parapeto', x0, x0 + e, y0, y1, h, h + 0.9, lateral, bisel=0)
+    caja('parapeto', x1 - e, x1, y0, y1, h, h + 0.9, lateral, bisel=0)
+    caja('azotea_casa', x0 + e, x1 - e, y0 + e, y1 - e, h, h + 0.02, M['concreto'], bisel=0)
     yf = y_fachada - 0.03 if mira < 0 else y_fachada + 0.03
     sv = 1 if mira < 0 else -1
     ancho = x1 - x0
@@ -819,6 +887,7 @@ def casa(x0, x1, y_fachada, fondo, pisos, mat, M, rnd, mira):
             else:
                 caja('puerta', x0 + 0.8, x0 + 1.8, yf - 0.02 * sv, yf, 0.3, 2.4, M['marco'], bisel=0)
                 ventana(x0 + 2.6, min(x1 - 0.8, x0 + 5.0), z0 + 0.9, z0 + 2.2, yf, M, hojas=2, s=sv)
+                rejas(x0 + 2.6, min(x1 - 0.8, x0 + 5.0), z0 + 0.9, z0 + 2.2, yf, sv, M)
         else:
             n = 1 if ancho < 7.5 else 2
             paso = ancho / n
@@ -826,16 +895,30 @@ def casa(x0, x1, y_fachada, fondo, pisos, mat, M, rnd, mira):
                 cx = x0 + (k + 0.5) * paso
                 mitad = min(1.2, paso / 2 - 0.6) * rnd.uniform(0.75, 1.0)
                 ventana(cx - mitad, cx + mitad, z0 + 0.9, z0 + 2.2, yf, M, hojas=2, s=sv)
-    if rnd.random() < 0.8:
-        tx = rnd.uniform(x0 + 0.9, x1 - 0.9)
-        ty = rnd.uniform(y0 + 1.5, y1 - 1.5)
+    tx = rnd.uniform(x0 + 0.9, x1 - 0.9)
+    ty = rnd.uniform(y0 + 1.5, y1 - 1.5)
+    if rnd.random() < 0.8 and despejado(tx, ty):
         caja('base_tanque', tx - 0.7, tx + 0.7, ty - 0.7, ty + 0.7, h, h + 0.5, M['blanco'], bisel=0)
-        bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.55, depth=1.15, location=(tx, ty, h + 0.5 + 0.575))
-        bpy.context.active_object.data.materials.append(M['tanque'])
+        if LOTE is not None:
+            cilindro_lote(tx, ty, h + 0.5, h + 1.65, 0.55, M['tanque'])
+        else:
+            bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.55, depth=1.15, location=(tx, ty, h + 0.5 + 0.575))
+            bpy.context.active_object.data.materials.append(M['tanque'])
     return h
 
 
-def fila_casas(x_desde, x_hasta, y_fachada, mira, M, rnd, pisos_max=3, fondo=(16, 21)):
+def rejas(x0, x1, z0, z1, yf, s, M):
+    """Reja de fierro delante de una ventana de primer piso."""
+    y = yf - 0.06 * s
+    caja('reja', x0 - 0.05, x1 + 0.05, y - 0.012, y + 0.012, z0 - 0.05, z0 - 0.02, M['marco'], bisel=0)
+    caja('reja', x0 - 0.05, x1 + 0.05, y - 0.012, y + 0.012, z1 + 0.02, z1 + 0.05, M['marco'], bisel=0)
+    n = max(3, int((x1 - x0) / 0.13))
+    for k in range(n + 1):
+        x = x0 + (x1 - x0) * k / n
+        caja('reja', x - 0.008, x + 0.008, y - 0.008, y + 0.008, z0 - 0.05, z1 + 0.05, M['marco'], bisel=0)
+
+
+def fila_casas(x_desde, x_hasta, y_fachada, mira, M, rnd, pisos_max=3, fondo=(16, 21), sueltos=0):
     """Llena un tramo de manzana con lotes de 7 a 11 m. Devuelve la lista de
     (x0, x1, h) para que el edificio sepa cuánto miden sus vecinos."""
     lotes = []
@@ -850,7 +933,10 @@ def fila_casas(x_desde, x_hasta, y_fachada, mira, M, rnd, pisos_max=3, fondo=(16
         # ladrillo sin tarrajear: casas a medio terminar, muy comunes
         mat = M['ladrillo'] if rnd.random() < 0.22 else M['casas'][tinte]
         yf = y_fachada + rnd.uniform(-0.3, 0.3)
+        global GRUPO
+        GRUPO = f'vecino_{xa:.1f}' if len(lotes) < sueltos else 'barrio'
         h = casa(xa + 0.05, xb - 0.05, yf, rnd.uniform(*fondo), pisos, mat, M, rnd, mira)
+        GRUPO = 'barrio'
         lotes.append((xa, xb, h))
         x += w * direccion
     return lotes
@@ -861,33 +947,257 @@ def barrio(P, M):
     rnd = random.Random(14)
     z_top = P['h_piso1'] + P['pisos'] * P['h_piso'] + 0.25
     # nuestra vereda: los vecinos inmediatos fijan las medianeras
-    izq = fila_casas(-0.7, -130, -r + 0.2, -1, M, rnd)
-    der = fila_casas(W + 0.7, 140, -r + 0.2, -1, M, rnd)
+    global LOTE
+    LOTE = {}
+    izq = fila_casas(-0.7, -190, -r + 0.2, -1, M, rnd, sueltos=2)
+    der = fila_casas(W + 0.7, 200, -r + 0.2, -1, M, rnd, sueltos=2)
     # Medianeras tarrajeadas con cada losa marcada en el color de acento, como en
     # Varú I: en el giro 360 los costados se ven enteros y un muro de ladrillo
     # de 17 m se leía a obra gris.
+    lote, LOTE = LOTE, None
     caja('medianera_izq', -0.03, 0.0, 0.0, D, izq[0][2], z_top, M['blanco'], bisel=0)
     caja('medianera_der', W, W + 0.03, 0.0, D, der[0][2], z_top, M['blanco'], bisel=0)
     for i in range(P['pisos'] + 1):
         zl = P['h_piso1'] + i * P['h_piso']
         caja('losa_lateral', -0.08, 0.0, 0.0, D, zl - 0.09, zl + 0.09, M['acento'], bisel=0)
         caja('losa_lateral', W, W + 0.08, 0.0, D, zl - 0.09, zl + 0.09, M['acento'], bisel=0)
+    # jardineras con helechos colgantes en los costados, cerca de las esquinas:
+    # la medianera deja de ser un plano blanco en el giro
+    helecho = VEGETACION.get('fern_02')
+    rj = random.Random(5)
+    for i in range(P['pisos']):
+        zj = P['h_piso1'] + i * P['h_piso'] + 0.1
+        for ya, yb in ((2.2, 4.4), (D - 4.4, D - 2.2)):
+            for xa, xb, xh in ((-0.45, 0.0, -0.25), (W, W + 0.45, W + 0.25)):
+                caja('jardinera_lateral', xa, xb, ya, yb, zj, zj + 0.3, M['acento'])
+                if helecho:
+                    for k in range(5):
+                        yy = ya + 0.25 + k * (yb - ya - 0.5) / 4
+                        instancia(helecho, xh, yy, zj + 0.27, alto=rj.uniform(0.35, 0.5), giro=rj.uniform(0, 6.28))
+                        col = instancia(helecho, xh + (0.12 if xh > W else -0.12), yy + 0.1, zj + 0.25, alto=rj.uniform(0.45, 0.6), giro=rj.uniform(0, 6.28))
+                        col.rotation_euler.y = math.radians(rj.uniform(70, 110)) * (1 if xh > W else -1)
     # el marco de acento dobla la esquina: paños de 1,8 m al frente y al fondo
     for y0, y1 in ((0.0, 1.8), (D - 1.8, D)):
         caja('esquina_acento', -0.1, 0.0, y0, y1, P['h_piso1'], z_top, M['acento'], bisel=0)
         caja('esquina_acento', W, W + 0.1, y0, y1, P['h_piso1'], z_top, M['acento'], bisel=0)
+    LOTE = lote
+    # manzana de enfrente, mirando hacia nosotros
+    fila_casas(-190, 200, -r - 26.5, 1, M, rnd, pisos_max=4)
+    # manzana posterior: sus espaldas se ven por detrás del edificio
+    fila_casas(-190, 200, 40, 1, M, rnd, pisos_max=3, fondo=(17, 20))
+    # más allá, manzanas hasta el horizonte en los cuatro sentidos: desde el
+    # dron y desde la azotea de enfrente el barrio no puede terminarse
+    for y in (48, 88, 128):
+        fila_casas(-190, 200, y, -1, M, rnd, pisos_max=3, fondo=(17, 20))
+        fila_casas(-190, 200, y + 40 - 8, 1, M, rnd, pisos_max=3, fondo=(12, 14))
+        caja('pista_fondo', -190, 200, y + 32, y + 40, -0.05, 0.0, M['asfalto'], bisel=0)
+    for y in (-58, -98, -138):
+        caja('pista_sur', -190, 200, y, y + 8, -0.05, 0.0, M['asfalto'], bisel=0)
+        fila_casas(-190, 200, y, 1, M, rnd, pisos_max=3, fondo=(17, 20))
+        fila_casas(-190, 200, y - 32, -1, M, rnd, pisos_max=3, fondo=(12, 14))
+    volcar_lote()
+    LOTE = None
     if FANTASMA:
         # dos lotes por lado: desde el dron, el segundo vecino también tapa los pisos bajos
         fantasmas(izq[:2] + der[:2], P)
-    # manzana de enfrente, mirando hacia nosotros
-    fila_casas(-130, 140, -r - 26.5, 1, M, rnd, pisos_max=4)
-    # manzana posterior: sus espaldas se ven por detrás del edificio
-    fila_casas(-130, 140, 40, 1, M, rnd, pisos_max=3, fondo=(17, 20))
-    # más allá, manzanas hasta el horizonte de la toma aérea
+    arboleda(P, rnd)
+
+
+def arboleda(P, rnd):
+    """Árboles en todas las veredas y en los fondos de las manzanas. Chiclayo
+    es verde desde arriba: sin esto el barrio se leía como maqueta de cajas."""
+    ids = [i for i in ('island_tree_01', 'island_tree_03', 'jacaranda_tree', 'tree_small_02') if i in VEGETACION]
+    if not ids:
+        return
+    # el ficus es EL árbol de las calles de Chiclayo: pesa el doble
+    extra = [a for a in ('ficus', 'ficus', 'palmera_datil') if cargar_asset(a)]
+    pool = [VEGETACION[i] for i in ids] + [ASSETS[a] for a in extra]
+    W, D, r = P['frente'], P['fondo'], P['retiro']
+
+    def libre(x, y):
+        return not (-5 < x < W + 5 and -r - 4 < y < D + 4) and despejado(x, y)
+    veredas = [-r - 1.9, -r - 24.8, 40.6, 47.4]
     for y in (48, 88, 128):
-        fila_casas(-130, 140, y, -1, M, rnd, pisos_max=3, fondo=(17, 20))
-        fila_casas(-130, 140, y + 40 - 8, 1, M, rnd, pisos_max=3, fondo=(12, 14))
-        caja('pista_fondo', -130, 140, y + 32, y + 40, -0.05, 0.0, M['asfalto'], bisel=0)
+        veredas += [y + 31.4, y + 40.6]
+    for y in (-58, -98, -138):
+        veredas += [y - 0.6, y + 8.6]
+    for y in veredas:
+        x = -188 + rnd.uniform(0, 6)
+        while x < 198:
+            if libre(x, y) and rnd.random() < 0.85:
+                instancia(rnd.choice(pool), x, y, 0.15, rnd.uniform(5.0, 9.0), rnd.uniform(0, 6.28))
+            x += rnd.uniform(7, 11)
+    # fondos de manzana: copas que asoman entre las azoteas
+    for y in (19.5, 67.5, 107.5, 147.5, -50.5, -77.5, -117.5):
+        for _ in range(55):
+            x = rnd.uniform(-188, 198)
+            if libre(x, y):
+                instancia(rnd.choice(pool), x, y + rnd.uniform(-1.5, 1.5), 0.0, rnd.uniform(6, 11), rnd.uniform(0, 6.28))
+
+
+# ── Modelos de Sketchfab (CC-BY, créditos en sketchfab/creditos.json) ──────
+SKETCHFAB = RECURSOS / 'sketchfab'
+ASSETS = {}
+
+
+def importar(nombre):
+    gltf = SKETCHFAB / nombre / 'scene.gltf'
+    if not gltf.exists():
+        return None
+    antes = set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=str(gltf))
+    bpy.context.view_layer.update()
+    return [o for o in bpy.data.objects if o not in antes]
+
+
+def a_coleccion(nombre, objs):
+    """Saca los objetos de la escena a una colección instanciable con su base
+    centrada: devuelve (colección, alto, z mínima) como VEGETACION."""
+    pts = [o.matrix_world @ Vector(c) for o in objs if o.type == 'MESH' for c in o.bound_box]
+    col = bpy.data.collections.new(nombre)
+    for o in objs:
+        for c in list(o.users_collection):
+            c.objects.unlink(o)
+        col.objects.link(o)
+    cx = (max(q.x for q in pts) + min(q.x for q in pts)) / 2
+    cy = (max(q.y for q in pts) + min(q.y for q in pts)) / 2
+    col.instance_offset = (cx, cy, 0)
+    zs = [q.z for q in pts]
+    return (col, max(zs) - min(zs), min(zs))
+
+
+def cargar_asset(nombre):
+    if nombre not in ASSETS:
+        objs = importar(nombre)
+        ASSETS[nombre] = a_coleccion(nombre, objs) if objs else None
+    return ASSETS[nombre]
+
+
+def rumbo(objs):
+    """Ángulo del eje largo (en planta) de un grupo de mallas."""
+    import numpy as np
+    pts = []
+    for o in objs:
+        if o.type == 'MESH':
+            m = o.matrix_world
+            vs = o.data.vertices
+            paso = max(1, len(vs) // 400)
+            pts += [(m @ vs[i].co)[:2] for i in range(0, len(vs), paso)]
+    a = np.array(pts) - np.mean(pts, axis=0)
+    w, v = np.linalg.eigh(a.T @ a)
+    x, y = v[:, -1]
+    return math.atan2(y, x)
+
+
+def cargar_autos():
+    """Autos para estacionar: el Yaris en cinco colores y los del pack separados
+    uno por uno. Cada entrada: (colección, alto, z mínima, rumbo del modelo)."""
+    if 'autos' in ASSETS:
+        return ASSETS['autos']
+    autos = []
+    objs = importar('auto_yaris')
+    if objs:
+        cuerpo = next((m for m in bpy.data.materials if m.name.startswith('Whbody')), None)
+        r0 = rumbo(objs)
+        for k, color in enumerate(((1, 1, 1), (0.42, 0.43, 0.45), (0.05, 0.05, 0.055), (0.55, 0.04, 0.04), (0.08, 0.16, 0.4))):
+            if k == 0:
+                grupo = objs
+            else:
+                grupo = []
+                mapa = {}
+                for o in objs:
+                    c = o.copy()
+                    bpy.context.collection.objects.link(c)
+                    mapa[o] = c
+                    grupo.append(c)
+                for o, c in mapa.items():
+                    if o.parent in mapa:
+                        c.parent = mapa[o.parent]
+                if cuerpo:
+                    tinte = cuerpo.copy()
+                    b = tinte.node_tree.nodes.get('Principled BSDF')
+                    enlace = b.inputs['Base Color'].links[0] if b.inputs['Base Color'].links else None
+                    if enlace:
+                        mx = tinte.node_tree.nodes.new('ShaderNodeMix')
+                        mx.data_type = 'RGBA'
+                        mx.blend_type = 'MULTIPLY'
+                        enchufe(mx.inputs, 'Factor', 'VALUE').default_value = 1.0
+                        enchufe(mx.inputs, 'B', 'RGBA').default_value = (*color, 1)
+                        tinte.node_tree.links.new(enlace.from_socket, enchufe(mx.inputs, 'A', 'RGBA'))
+                        tinte.node_tree.links.new(enchufe(mx.outputs, 'Result', 'RGBA'), b.inputs['Base Color'])
+                    for c in grupo:
+                        if c.type == 'MESH':
+                            for slot in c.material_slots:
+                                if slot.material == cuerpo:
+                                    slot.link = 'OBJECT'
+                                    slot.material = tinte
+            bpy.context.view_layer.update()
+            col, alto, zmin = a_coleccion(f'yaris_{k}', grupo)
+            autos.append((col, alto, zmin, r0, 1.46))
+    objs = importar('auto_pack')
+    if objs:
+        mallas = [o for o in objs if o.type == 'MESH']
+        centros = {o: (o.matrix_world @ Vector([sum(c[i] for c in o.bound_box) / 8 for i in range(3)])) for o in mallas}
+        grupos = []
+        for o in mallas:
+            c = centros[o]
+            g = next((g for g in grupos if any((c - centros[x]).length < 1.9 for x in g)), None)
+            (g.append(o) if g else grupos.append([o]))
+        for k, g in enumerate(grupos):
+            if len(g) < 2:
+                continue
+            r0 = rumbo(g)
+            col, alto, zmin = a_coleccion(f'auto_{k}', g)
+            autos.append((col, alto, zmin, r0, 1.5))
+        sobrantes = [o for o in objs if o.users_collection and o.users_collection[0] == bpy.context.collection]
+        for o in sobrantes:
+            if o.type == 'MESH':
+                bpy.data.objects.remove(o, do_unlink=True)
+    ASSETS['autos'] = autos
+    return autos
+
+
+def estacionar(auto, x, y, sentido):
+    """Auto con su eje largo a lo largo de x (sentido +1 o -1)."""
+    col, alto_m, zmin, r0, alto = auto
+    e = instancia((col, alto_m, zmin), x, y, 0.0, alto, giro=(0 if sentido > 0 else math.pi) - r0)
+    return e
+
+
+def poblar(P, rnd):
+    """Autos estacionados, mototaxis, gente en la vereda y palmeras en la
+    berma: lo que hace que una calle se lea como calle de Chiclayo."""
+    r, W = P['retiro'], P['frente']
+    autos = cargar_autos()
+    if autos:
+        carriles = [(-r - 4.3, 1), (-r - 22.2, -1), (41.3, 1), (46.7, -1), (-51.3, 1), (-56.7, -1), (81.3, 1), (86.7, -1)]
+        for y, sentido in carriles:
+            x = -150 + rnd.uniform(0, 8)
+            while x < 160:
+                cerca = abs(y) < 30
+                libre_portada = not (4.0 < x < W + 1.5 and y > -r - 6)
+                if libre_portada and rnd.random() < (0.55 if cerca else 0.35):
+                    estacionar(rnd.choice(autos), x, y, sentido)
+                x += rnd.uniform(5.5, 9.5)
+    moto = cargar_asset('mototaxi')
+    if moto:
+        for x, y, g in ((-9.5, -r - 4.3, 0.0), (26.0, -r - 8.5, math.pi), (-24.0, -r - 18.5, 0.3)):
+            instancia(moto, x, y, 0.0, 1.75, giro=g + math.pi / 2)
+    gente = [a for a in ('persona_nathan', 'persona_sophia', 'persona_mei') if cargar_asset(a)]
+    for (x, y, g), quien in zip(((3.4, -r - 1.6, math.radians(80)), (-4.2, -r - 2.2, math.radians(-95)),
+                                 (18.5, -r - 1.4, math.radians(-90)), (9.0, -r - 24.8, math.radians(90)),
+                                 (-14.0, -r - 1.8, math.radians(70))),
+                                ['persona_nathan', 'persona_sophia', 'persona_mei', 'persona_nathan', 'persona_sophia']):
+        if quien in gente:
+            instancia(ASSETS[quien], x, y, 0.15, rnd.uniform(1.62, 1.8), giro=g)
+    # palmeras en la berma de la avenida, alternando alturas
+    palmas = [a for a in ('palmera4', 'palmera') if cargar_asset(a)]
+    if palmas:
+        for k, x in enumerate(range(-66, 90, 13)):
+            if 2 < x < W - 2:
+                continue
+            a = palmas[k % len(palmas)]
+            instancia(ASSETS[a], x + rnd.uniform(-1, 1), -r - 13.3, 0.18, rnd.uniform(9, 12) if a == 'palmera4' else rnd.uniform(6, 8), rnd.uniform(0, 6.28))
 
 
 def fantasmas(lotes, P):
@@ -900,7 +1210,7 @@ def fantasmas(lotes, P):
     b.inputs['Alpha'].default_value = 0.16
     for xa, xb, _ in lotes:
         for o in list(bpy.context.scene.objects):
-            if o.type != 'MESH' or o.name.startswith('medianera'):
+            if o.type != 'MESH' or not o.name.startswith('vecino_'):
                 continue
             bb = [o.matrix_world @ Vector(c) for c in o.bound_box]
             cx = sum(q.x for q in bb) / 8
@@ -914,8 +1224,11 @@ def fantasmas(lotes, P):
 def alumbrado(P, M):
     """Postes con luz de sodio naranja, como en las avenidas de Chiclayo."""
     r = P['retiro']
-    for x in range(-60, 80, 26):
-        for y, brazo in ((-r - 3.0, -1.6), (-r - 13.2, 1.6)):
+    postes = [(x, y, b) for x in range(-90, 110, 26) for y, b in ((-r - 3.0, -1.6), (-r - 13.2, 1.6))]
+    # calles de atrás y de adelante: la ciudad iluminada hasta el horizonte
+    postes += [(x, y, b) for x in range(-150, 170, 30) for y, b in ((40.6, 1.4), (-58.6, -1.4), (79.4, 1.4))]
+    for x, y, brazo in postes:
+        if True:
             caja('poste', x - 0.08, x + 0.08, y - 0.08, y + 0.08, 0, 8.2, M['acero'], bisel=0)
             caja('brazo', x - 0.05, x + 0.05, min(y, y + brazo), max(y, y + brazo), 8.0, 8.1, M['acero'], bisel=0)
             caja('farol', x - 0.25, x + 0.25, y + brazo - 0.18, y + brazo + 0.18, 7.8, 8.0, M['farol'], bisel=0)
@@ -959,6 +1272,7 @@ def materiales(acento):
         'madera': material('madera', (0.25, 0.12, 0.05, 1), 0.6),
         'lona': material('lona', (0.22, 0.18, 0.14, 1), 0.9),
         'ladrillo': material_tex('ladrillo', 'red_brick_03', escala=1.2, normal=0.8),
+        'cemento': material_tex('cemento', 'concrete_wall_008', tinte=(0.42, 0.4, 0.37, 1), escala=2.5, normal=0.5),
         'concreto': material_tex('concreto', 'concrete_pavement', escala=2.0, normal=0.6),
         'asfalto': material_tex('asfalto', 'asphalt_02', escala=3.0, normal=0.6),
         'grass': material('pasto', (0.03, 0.05, 0.015, 1), 0.95, ruido=0.7),
@@ -1119,6 +1433,116 @@ def rotulos_camara(s, cam):
     return cajas
 
 
+# Estados del timelapse: misma serie fotográfica (Qwantani) para atardecer,
+# crepúsculo y noche; el día conserva el cielo físico con sol propio.
+# rot: giro del HDRI (grados) para dejar su sol donde conviene a la toma.
+ESTADOS = {
+    'dia':        dict(hdri='kloofendal_48d_partly_cloudy_puresky', rot=180, luz='fisica', fuerza_cam=1.2, luces=0.0, exposicion=-0.4, mojado=0.0),
+    'atardecer':  dict(hdri='qwantani_sunset_puresky', rot=40, luz='hdri', fuerza=0.35, luces=0.4, exposicion=0.0, mojado=0.2),
+    'crepusculo': dict(hdri='qwantani_dusk_1_puresky', rot=40, luz='hdri', fuerza=0.11, luces=0.85, exposicion=0.2, mojado=0.7),
+    'noche':      dict(hdri='qwantani_night_puresky', rot=180, luz='hdri', fuerza=0.05, luces=1.0, exposicion=0.3, mojado=1.0, tinte=(0.45, 0.6, 1.0)),
+}
+
+
+def cielo_estado(e):
+    """Mundo y sol de un estado del timelapse."""
+    w = bpy.data.worlds.new('cielo_' + e['hdri'])
+    bpy.context.scene.world = w
+    w.use_nodes = True
+    n, l = w.node_tree.nodes, w.node_tree.links
+    salida = n.get('World Output')
+    bg = n.get('Background')
+    coord = n.new('ShaderNodeTexCoord')
+    mapeo = n.new('ShaderNodeMapping')
+    mapeo.inputs['Rotation'].default_value = (0, 0, math.radians(e['rot']))
+    l.new(coord.outputs['Generated'], mapeo.inputs['Vector'])
+    env = n.new('ShaderNodeTexEnvironment')
+    env.image = bpy.data.images.load(str(RECURSOS / e['hdri'] / f"{e['hdri']}_4k.hdr"), check_existing=True)
+    l.new(mapeo.outputs['Vector'], env.inputs['Vector'])
+    color = env.outputs['Color']
+    if e.get('tinte'):
+        t = n.new('ShaderNodeMix')
+        t.data_type = 'RGBA'
+        t.blend_type = 'MULTIPLY'
+        enchufe(t.inputs, 'Factor', 'VALUE').default_value = 1.0
+        enchufe(t.inputs, 'B', 'RGBA').default_value = (*e['tinte'], 1.0)
+        l.new(color, enchufe(t.inputs, 'A', 'RGBA'))
+        color = enchufe(t.outputs, 'Result', 'RGBA')
+    sol = bpy.data.objects.get('sol')
+    if e['luz'] == 'fisica':
+        # luz del cielo físico y del sol; la cámara ve el HDRI
+        sky = n.new('ShaderNodeTexSky')
+        for tipo in ('MULTIPLE_SCATTERING', 'SINGLE_SCATTERING', 'NISHITA'):
+            try:
+                sky.sky_type = tipo
+                break
+            except TypeError:
+                continue
+        if hasattr(sky, 'sun_elevation'):
+            sky.sun_elevation = math.radians(30)
+            sky.sun_rotation = math.radians(SOL_GIRO + 180)
+        bg.inputs['Strength'].default_value = 0.09
+        l.new(sky.outputs['Color'], bg.inputs['Color'])
+        foto = n.new('ShaderNodeBackground')
+        foto.inputs['Strength'].default_value = e['fuerza_cam']
+        l.new(color, foto.inputs['Color'])
+        rayo = n.new('ShaderNodeLightPath')
+        mezcla = n.new('ShaderNodeMixShader')
+        l.new(rayo.outputs['Is Camera Ray'], mezcla.inputs['Fac'])
+        l.new(bg.outputs['Background'], mezcla.inputs[1])
+        l.new(foto.outputs['Background'], mezcla.inputs[2])
+        l.new(mezcla.outputs['Shader'], salida.inputs['Surface'])
+        if sol:
+            sol.data.energy = 5.0
+            sol.rotation_euler = (math.radians(90 - 30), 0, math.radians(SOL_GIRO))
+    else:
+        bg.inputs['Strength'].default_value = e['fuerza']
+        l.new(color, bg.inputs['Color'])
+        if sol:
+            sol.data.energy = 0.0
+
+
+def timelapse(a):
+    """Una imagen por estado (día → noche) con la misma escena y la misma
+    cámara: la portada las funde en bucle como un timelapse. Las luces y los
+    emisivos se escalan por estado; la pista se moja al anochecer."""
+    import json
+    s = bpy.context.scene
+    luces = [(o, o.data.energy) for o in s.objects if o.type == 'LIGHT' and o.name != 'sol']
+    emisivos = []
+    for m in bpy.data.materials:
+        if not m.use_nodes:
+            continue
+        b = m.node_tree.nodes.get('Principled BSDF')
+        if b and b.inputs['Emission Strength'].default_value > 0 and m.name != 'fantasma':
+            emisivos.append((b, b.inputs['Emission Strength'].default_value))
+    mojados = []
+    for nombre in ('asfalto', 'concreto'):
+        m = bpy.data.materials.get(nombre)
+        r = m and next((x for x in m.node_tree.nodes if x.type == 'MAP_RANGE'), None)
+        if r:
+            mojados.append((r, r.inputs['To Min'].default_value, r.inputs['To Max'].default_value))
+    salida = Path(a.timelapse_dir)
+    salida.mkdir(parents=True, exist_ok=True)
+    (salida / 'rotulos.json').write_text(json.dumps(rotulos_camara(s, s.camera)), encoding='utf8')
+    for nombre in [x for x in a.timelapse.split(',') if x]:
+        e = ESTADOS[nombre]
+        cielo_estado(e)
+        for o, base in luces:
+            o.data.energy = base * e['luces']
+        for b, base in emisivos:
+            b.inputs['Emission Strength'].default_value = base * e['luces']
+        for r, lo, hi in mojados:
+            # seco: rugosidad de siempre; mojado: la del modo noche
+            r.inputs['To Min'].default_value = 0.6 + (lo - 0.6) * e['mojado']
+            r.inputs['To Max'].default_value = 1.0 + (hi - 1.0) * e['mojado']
+        s.view_settings.exposure = e['exposicion']
+        s.render.filepath = str(salida / f'{nombre}.png')
+        bpy.ops.render.render(write_still=True)
+        print(f'ESTADO OK {nombre}', flush=True)
+    print(f'TIMELAPSE OK -> {salida}')
+
+
 def orbita(a):
     """Giro 360: la cámara da la vuelta al edificio a altura de dron y deja un
     cuadro cada 360/N grados, más las franjas de cada piso proyectadas con la
@@ -1143,7 +1567,10 @@ def orbita(a):
     poses = []
     for i in range(a.orbita):
         th = 2 * math.pi * i / a.orbita
-        pos = Vector((cx + a.orbita_radio * math.sin(th), cy - a.orbita_radio * math.cos(th), a.orbita_alto))
+        # vuelo de dron: bajo sobre la avenida (adelante, campo abierto) y más
+        # alto atrás, donde las azoteas vecinas taparían la toma
+        alto = a.orbita_alto + 9.5 * (1 - math.cos(th)) / 2
+        pos = Vector((cx + a.orbita_radio * math.sin(th), cy - a.orbita_radio * math.cos(th), alto))
         poses.append((pos, (mira - pos).to_track_quat('-Z', 'Y').to_euler()))
     franjas, rotulos = [], []
     for pos, rot in poses:
@@ -1170,8 +1597,8 @@ def orbita(a):
 def main():
     global NOCHE, FANTASMA
     a = argumentos()
-    NOCHE = a.noche
-    FANTASMA = a.fantasma or a.orbita > 0
+    NOCHE = a.noche or bool(a.timelapse)
+    FANTASMA = a.fantasma
     limpiar()
     cargar_vegetacion(['grass_medium_01', 'fern_02', 'island_tree_01', 'island_tree_03', 'jacaranda_tree', 'tree_small_02'])
     M = materiales(a.acento)
@@ -1186,6 +1613,10 @@ def main():
         return
     camara(a.vista)
     render(a)
+    if a.timelapse:
+        bpy.context.view_layer.update()
+        timelapse(a)
+        return
     bpy.context.view_layer.update()
     import json
     Path(str(a.out) + '.rotulos.json').write_text(json.dumps(rotulos_camara(bpy.context.scene, bpy.context.scene.camera)), encoding='utf8')

@@ -145,8 +145,16 @@ body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="p
 .escena__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .7s var(--ease), transform 1.2s var(--ease); }
 .escena__img--entrando { opacity: 0; transform: scale(1.025); }
 .escena__img--entera { object-fit: contain; }
-.portada__giro { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.4s var(--ease); }
-.portada__giro--lista { opacity: 1; }
+/* Timelapse de la portada: cámara fija, acercamiento muy lento */
+.portada--timelapse .portada__escena { overflow: hidden; z-index: 0; }
+.portada__tl { transition: none; animation: acercar-lento 48s ease-in-out infinite alternate; }
+.portada--timelapse .portada__escena::after { z-index: 3; }
+@keyframes acercar-lento { from { transform: scale(1); } to { transform: scale(1.06); } }
+/* Giro: imagen y franjas escalan juntas */
+.giro-zoom { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; }
+.escena__img--siguiente { opacity: 0; pointer-events: none; }
+.menu__creditos { margin: 10px 0 0; color: var(--tenue); font-size: .72rem; line-height: 1.45; }
+.flotante--giro { bottom: 84px; }
 /* Vecinos como maqueta: la variante entra encima al elegir un piso. */
 .escena__img--fantasma { opacity: 0; transform: none; pointer-events: none; transition: opacity .45s var(--ease); }
 .inmersiva--fantasma .escena__img--fantasma { opacity: 1; }
