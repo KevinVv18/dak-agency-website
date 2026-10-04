@@ -910,7 +910,13 @@
     let listos = 0;
     giro.cache = orden.map((k) => {
       const im = new Image();
-      im.onload = im.onerror = () => { listos += 1; };
+      im.onload = im.onerror = () => {
+        listos += 1;
+        // con el giro listo, en segundo plano los cuadros con vecinos de maqueta
+        if (listos === n && v.giro[`${modo}Fantasma`]) {
+          giro.cacheFantasma = orden.map((j) => { const f = new Image(); f.src = recurso(cuadroSrc(v, j, `${modo}Fantasma`)); return f; });
+        }
+      };
       im.src = recurso(cuadroSrc(v, k, modo));
       return im;
     });

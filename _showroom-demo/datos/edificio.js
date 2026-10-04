@@ -15,7 +15,7 @@ const mascaras = JSON.parse(readFileSync(new URL('./mascaras.json', import.meta.
 const franjas = (camara) => ({ pisos: mascaras[`web_${camara}`], pisosMovil: mascaras[`movil_${camara}`] });
 
 const giro = JSON.parse(readFileSync(new URL('./giro.json', import.meta.url), 'utf8'));
-const cuadros = (modo) => `assets/giro/${modo}-v2/f{n}.webp`;
+const cuadros = (modo) => `assets/giro/${modo}-v3/f{n}.webp`;
 const ext = (vista, modo, extra = '') => `assets/exterior/${vista}-${modo}${extra}-v2.webp`;
 // Imágenes de una vista de calle: día/noche, versión vertical para celular y,
 // en las diagonales, la variante con los vecinos como maqueta translúcida.
@@ -29,12 +29,18 @@ const imagenes = (vista, fantasma = false) => ({
 });
 
 export const vistas = [
-  // Giro 360 de dron (edificio.py --orbita 60): un cuadro cada 6 grados, con los
-  // vecinos como maqueta. Las franjas de cada cuadro salen de la misma cámara.
+  // Giro 360 de dron (edificio.py --orbita 72): un cuadro cada 5 grados, bajo al
+  // frente y más alto atrás. Las franjas de cada cuadro salen de la misma cámara.
   {
     id: 'giro', nombre: 'Giro 360°',
-    giro: { cuadros: 60, dia: cuadros('dia'), diaMovil: cuadros('dia-movil'), noche: cuadros('noche'), nocheMovil: cuadros('noche-movil'), franjas: giro.franjas, franjasMovil: giro.franjasMovil },
-    imagen: { dia: 'assets/giro/dia-v2/f000.webp', diaMovil: 'assets/giro/dia-movil-v2/f000.webp', noche: 'assets/giro/noche-v2/f000.webp', nocheMovil: 'assets/giro/noche-movil-v2/f000.webp' },
+    giro: {
+      cuadros: 72,
+      dia: cuadros('dia'), diaMovil: cuadros('dia-movil'), noche: cuadros('noche'), nocheMovil: cuadros('noche-movil'),
+      // al elegir un piso, los vecinos se vuelven maqueta (mismo cuadro, otra toma)
+      diaFantasma: cuadros('dia-fantasma'), nocheFantasma: cuadros('noche-fantasma'),
+      franjas: giro.franjas, franjasMovil: giro.franjasMovil,
+    },
+    imagen: { dia: 'assets/giro/dia-v3/f000.webp', diaMovil: 'assets/giro/dia-movil-v3/f000.webp', noche: 'assets/giro/noche-v3/f000.webp', nocheMovil: 'assets/giro/noche-movil-v3/f000.webp' },
   },
   { id: 'frente', nombre: 'Frente', camara: 'web_frente', ...franjas('frente'), imagen: imagenes('frente') },
   { id: 'diagonal-izq', nombre: 'Desde la avenida', camara: 'web_diag_izq', ...franjas('diag_izq'), imagen: imagenes('diagonal-izq', true) },
