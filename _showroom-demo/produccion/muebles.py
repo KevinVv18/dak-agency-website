@@ -860,7 +860,7 @@ def amoblar(L, tipo, M):
     # ── dormitorio principal (0..4.2 x 8.3..11): cama queen, cabecera en y=11
     if hay_bk('cama', 'velador', 'alfombra', 'planta_monstera'):
         bk('alfombra', 2.0, 9.3, giro=math.pi / 2, ancho=1.7, prof=2.6, alto=0.02)
-        bk('cama', 2.0, 9.86, ancho=1.75)
+        bk('cama', 2.0, 9.93, ancho=1.75)
         for xx in (0.78, 3.22):
             bk('velador', xx, 10.75, ancho=0.46, alto=0.52)
             lampara_mesa(M, xx, 10.78, 0.52)

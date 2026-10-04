@@ -16,7 +16,7 @@ const franjas = (camara) => ({ pisos: mascaras[`web_${camara}`], pisosMovil: mas
 
 const giro = JSON.parse(readFileSync(new URL('./giro.json', import.meta.url), 'utf8'));
 const cuadros = (modo) => `assets/giro/${modo}-v3/f{n}.webp`;
-const ext = (vista, modo, extra = '') => `assets/exterior/${vista}-${modo}${extra}-v3.webp`;
+const ext = (vista, modo, extra = '') => `assets/exterior/${vista}-${modo}${extra}-v4.webp`;
 // Imágenes de una vista de calle: día/noche, versión vertical para celular y,
 // en las diagonales, la variante con los vecinos como maqueta translúcida.
 const imagenes = (vista, fantasma = false) => ({
@@ -65,11 +65,11 @@ export const plantillas = {
     aspecto: F / P,
     // Render cenital de produccion/interior.py --salida piso, encuadrado exacto
     // al rectángulo del edificio (100 px/m): los polígonos calzan sin ajuste.
-    imagen: 'assets/plantas/piso-tipico-v3.webp',
+    imagen: 'assets/plantas/piso-tipico-v4.webp',
     // Cenital del barrio sin el edificio (edificio.py --vista planta_contexto):
     // la planta queda a pantalla completa rodeada de su manzana real. `marco`
     // es lo que cubre esa imagen en coordenadas normalizadas de la planta.
-    contexto: { imagen: 'assets/plantas/contexto-piso-v3.webp', marco: [-2.0833, -1.0, 3.0833, 2.1818] },
+    contexto: { imagen: 'assets/plantas/contexto-piso-v4.webp', marco: [-2.0833, -1.0, 3.0833, 2.1818] },
     esquema: {
       contorno: rect(0, 0, F, P),
       pasillo: rect(6.0, 0, 8.4, P),
@@ -88,7 +88,7 @@ export const plantillas = {
 // planta. Mismo encuadre y contexto que el piso típico. La azotea es un cenital
 // de la misma escena del giro 360 (edificio.py --vista planta_azotea); el
 // piso 1 sale de produccion/comunes.py.
-const contexto = { imagen: 'assets/plantas/contexto-piso-v3.webp', marco: [-2.0833, -1.0, 3.0833, 2.1818] };
+const contexto = { imagen: 'assets/plantas/contexto-piso-v4.webp', marco: [-2.0833, -1.0, 3.0833, 2.1818] };
 plantillas.primer = {
   nombre: 'Piso 1',
   orientacionPlano: 'La avenida queda en la parte inferior de la planta.',
@@ -106,7 +106,7 @@ plantillas.azotea = {
   nombre: 'Azotea',
   orientacionPlano: 'La avenida queda en la parte inferior de la planta.',
   aspecto: F / P,
-  imagen: 'assets/plantas/azotea-v3.webp',
+  imagen: 'assets/plantas/azotea-v4.webp',
   contexto,
   posiciones: {},
   espacios: [

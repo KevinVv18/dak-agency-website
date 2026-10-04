@@ -25,19 +25,19 @@ export default [
       'Dos dormitorios',
       'Baño completo',
     ],
-    planta: { amoblada: 'assets/plantas/tipo-a-amoblada-v3.webp', plano: 'assets/plantas/tipo-a-plano-v1.svg' },
+    planta: { amoblada: 'assets/plantas/tipo-a-amoblada-v4.webp', plano: 'assets/plantas/tipo-a-plano-v1.svg' },
     escenas: [
       {
         id: 'sala',
         nombre: 'Sala y comedor',
-        panorama: 'assets/360/tipo-a-sala-v4.jpg',
+        panorama: 'assets/360/tipo-a-sala-v5.jpg',
         yaw: -160,
         enlaces: [{ a: 'cocina', yaw: -51.1, pitch: -29.4, texto: 'Cocina' }, { a: 'principal', yaw: -9.5, pitch: -12.7, texto: 'Dormitorio principal' }],
       },
       {
         id: 'cocina',
         nombre: 'Cocina',
-        panorama: 'assets/360/tipo-a-cocina-v4.jpg',
+        panorama: 'assets/360/tipo-a-cocina-v5.jpg',
         yaw: 10,
         // sin flecha directa al dormitorio: atravesaría la pared de la cocina
         enlaces: [{ a: 'sala', yaw: 128.9, pitch: -29.4, texto: 'Sala y comedor' }],
@@ -45,7 +45,7 @@ export default [
       {
         id: 'principal',
         nombre: 'Dormitorio principal',
-        panorama: 'assets/360/tipo-a-principal-v4.jpg',
+        panorama: 'assets/360/tipo-a-principal-v5.jpg',
         yaw: 0,
         enlaces: [{ a: 'sala', yaw: 170.5, pitch: -12.7, texto: 'Sala y comedor' }],
       },
@@ -67,19 +67,19 @@ export default [
       'Estudio o ambiente flex',
       'Baño completo',
     ],
-    planta: { amoblada: 'assets/plantas/tipo-b-amoblada-v3.webp', plano: 'assets/plantas/tipo-b-plano-v1.svg' },
+    planta: { amoblada: 'assets/plantas/tipo-b-amoblada-v4.webp', plano: 'assets/plantas/tipo-b-plano-v1.svg' },
     escenas: [
       {
         id: 'sala',
         nombre: 'Sala y cocina',
-        panorama: 'assets/360/tipo-b-sala-v4.jpg',
+        panorama: 'assets/360/tipo-b-sala-v5.jpg',
         yaw: -160,
         enlaces: [{ a: 'principal', yaw: -9.5, pitch: -12.7, texto: 'Dormitorio principal' }],
       },
       {
         id: 'principal',
         nombre: 'Dormitorio principal',
-        panorama: 'assets/360/tipo-b-principal-v4.jpg',
+        panorama: 'assets/360/tipo-b-principal-v5.jpg',
         yaw: 0,
         enlaces: [{ a: 'sala', yaw: 170.5, pitch: -12.7, texto: 'Sala y cocina' }],
       },
