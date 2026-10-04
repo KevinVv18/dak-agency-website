@@ -40,6 +40,29 @@ Cuando llegue el material, se rellenan los `null` de `datos/` (`imagen`,
 > hPanel, seguir el patrón de `AGENTS.md` («Cómo se añade una superficie que no es
 > la SPA»): workflow propio + entrada en `deploy-protect.txt` mergeada el mismo día.
 
+## Producción visual (gratis, en local)
+
+Todo el material visual sale de un **edificio procedural** en Blender: no hay
+modelo comprado ni dibujado a mano.
+
+```
+python  _showroom-demo/produccion/recursos.py      # baja los recursos CC0 (una vez)
+blender -b -P _showroom-demo/produccion/edificio.py -- --vista web_frente --ancho 1920 --alto 1080 --out x.png
+```
+
+- Blender 5.2 LTS portable en `C:\Users\kevin\tools\blender\` (Cycles por GPU).
+- `edificio.py`: el edificio sale de `PARAM` (frente, fondo, pisos, alturas) y
+  el color de acento es un argumento. Incluye el barrio alrededor (casas de 1–4
+  pisos con la paleta de Chiclayo, tanques de agua, avenida con berma central)
+  y medianeras de ladrillo a la altura real de los vecinos.
+- `recursos.py`: lista versionada de recursos de **Poly Haven (CC0)** —árboles
+  tipo faique/algarrobo, helechos, pasto, texturas, cielo—. Los archivos van a
+  una caché fuera del repo (`~/tools/recursos-showroom`).
+- Las vistas `web_*` de `edificio.py` son las mismas que `datos/edificio.js`
+  declara en `camara`: cada imagen publicada se puede regenerar.
+- Referencia de estilo: el tipo de edificio del cliente objetivo (VARU I).
+  Sus renders son **solo referencia y no se publican**.
+
 ## Hallazgo técnico sobre la referencia (3-oct-2026)
 
 Inspeccionando las peticiones de red de `president-tower.urbania3d.app`:

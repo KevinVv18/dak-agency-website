@@ -8,7 +8,7 @@
 //
 //   node _showroom-demo/generar.js
 
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -143,6 +143,9 @@ async function generar() {
   await writeFile(join(DIST, 'core.css'), css);
   await writeFile(join(DIST, 'core.js'), js);
   await writeFile(join(DIST, 'datos.js'), datosJs);
+  // Renders optimizados para web (los produce produccion/). Reemplazar una
+  // imagen exige renombrarla: el .htaccess cachea imágenes por meses.
+  if (await stat(join(RAIZ, 'assets')).catch(() => null)) await cp(join(RAIZ, 'assets'), join(DIST, 'assets'), { recursive: true });
 
   const lista = paginas(datos);
   for (const pag of lista) {

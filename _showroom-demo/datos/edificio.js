@@ -5,45 +5,43 @@
 // llegue la planta amoblada renderizada se rellena `imagen` y el esquema deja
 // de dibujarse; las coordenadas se recalibran contra esa imagen.
 
-// Paradas de cámara del exterior. `imagen` y `transicion` quedan en null hasta
-// tener renders: el motor dibuja un marcador en su lugar.
+// Paradas de cámara del exterior. `camara` es la vista homónima de
+// produccion/edificio.py: así cada imagen se puede regenerar sabiendo de dónde
+// sale. Con `imagen` en null el motor dibuja un marcador en su lugar.
 export const vistas = [
-  { id: 'frente', nombre: 'Frente', imagen: { dia: null, noche: null } },
-  { id: 'diagonal', nombre: 'Diagonal', imagen: { dia: null, noche: null } },
-  { id: 'balcones', nombre: 'Balcones', imagen: { dia: null, noche: null } },
-  { id: 'cenital', nombre: 'Cocheras', imagen: { dia: null, noche: null } },
+  { id: 'frente', nombre: 'Frente', camara: 'web_frente', imagen: { dia: null, noche: null } },
+  { id: 'diagonal-izq', nombre: 'Desde la avenida', camara: 'web_diag_izq', imagen: { dia: null, noche: null } },
+  { id: 'diagonal-der', nombre: 'Esquina opuesta', camara: 'web_diag_der', imagen: { dia: null, noche: null } },
+  { id: 'aerea', nombre: 'Vista aérea', camara: 'web_aerea', imagen: { dia: null, noche: null } },
 ];
 
 // Clip de transición entre paradas consecutivas, clave "origen>destino".
 export const transiciones = {};
 
+// Planta típica en coordenadas normalizadas sobre el rectángulo del edificio
+// (14,4 m de frente x 22 m de fondo), con la avenida ABAJO: u = x / 14,4,
+// v = 1 - y / 22. Son las mismas medidas de PARAM en produccion/edificio.py.
+const F = 14.4;
+const P = 22;
+const pt = (x, y) => [+(x / F).toFixed(4), +(1 - y / P).toFixed(4)];
+const rect = (x0, y0, x1, y1) => [pt(x0, y0), pt(x1, y0), pt(x1, y1), pt(x0, y1)];
+
 export const plantillas = {
   tipica: {
     nombre: 'Planta típica',
-    aspecto: 1000 / 640,
+    orientacionPlano: 'La avenida queda en la parte inferior de la planta.',
+    aspecto: F / P,
     imagen: null,
     esquema: {
-      contorno: [[0.05, 0.08], [0.95, 0.08], [0.95, 0.92], [0.05, 0.92]],
-      nucleo: [[0.50, 0.30], [0.58, 0.30], [0.58, 0.70], [0.50, 0.70]],
-      pasillo: [[0.05, 0.44], [0.95, 0.44], [0.95, 0.56], [0.05, 0.56]],
+      contorno: rect(0, 0, F, P),
+      pasillo: rect(6.0, 0, 8.4, P),
+      nucleo: rect(6.0, 8.5, 8.4, 13.5),
     },
     posiciones: {
-      '01': {
-        orientacion: 'Frente a la calle',
-        poligono: [[0.05, 0.08], [0.54, 0.08], [0.54, 0.30], [0.50, 0.30], [0.50, 0.44], [0.05, 0.44]],
-      },
-      '02': {
-        orientacion: 'Frente a la calle',
-        poligono: [[0.54, 0.08], [0.95, 0.08], [0.95, 0.44], [0.58, 0.44], [0.58, 0.30], [0.54, 0.30]],
-      },
-      '03': {
-        orientacion: 'Hacia el patio posterior',
-        poligono: [[0.58, 0.56], [0.95, 0.56], [0.95, 0.92], [0.54, 0.92], [0.54, 0.70], [0.58, 0.70]],
-      },
-      '04': {
-        orientacion: 'Hacia el patio posterior',
-        poligono: [[0.05, 0.56], [0.50, 0.56], [0.50, 0.70], [0.54, 0.70], [0.54, 0.92], [0.05, 0.92]],
-      },
+      '01': { orientacion: 'Frente a la avenida', poligono: rect(0, 0, 6.0, 11) },
+      '02': { orientacion: 'Frente a la avenida', poligono: rect(8.4, 0, F, 11) },
+      '03': { orientacion: 'Hacia el patio posterior', poligono: rect(8.4, 11, F, P) },
+      '04': { orientacion: 'Hacia el patio posterior', poligono: rect(0, 11, 6.0, P) },
     },
   },
 };

@@ -15,9 +15,17 @@ Uso (sin abrir la interfaz):
 
 import argparse
 import math
+import os
+import random
 import sys
+from pathlib import Path
 
 import bpy
+from mathutils import Vector
+
+# Caché de recursos CC0 que baja recursos.py. Si falta un recurso, el script
+# cae a una versión procedural en vez de fallar.
+RECURSOS = Path(os.environ.get('SHOWROOM_RECURSOS', Path.home() / 'tools' / 'recursos-showroom'))
 
 # ── Parámetros ───────────────────────────────────────────────────────────────
 
@@ -39,17 +47,24 @@ PARAM = {
 SOL_GIRO = -52
 
 VISTAS = {
-    # x, y, z de cámara; giro en planta (grados); focal (mm); centro vertical del encuadre (m)
+    # x, y, z de cámara; giro en planta (grados); focal (mm); centro vertical del
+    # encuadre (m) para el lens shift; inclinación hacia abajo (grados) solo en
+    # tomas aéreas, donde las verticales convergen como en una toma de dron.
     'frente':   dict(pos=(7.2, -24.0, 1.6), giro=0.0, focal=32, centro=10.5),
     'diagonal': dict(pos=(-9.5, -21.0, 1.6), giro=-38.0, focal=30, centro=10.0),
+    # paradas del exterior en la web (renderizar a 16:9)
+    'web_frente':   dict(pos=(7.2, -27.0, 1.6), giro=0.0, focal=24, centro=10.0),
+    'web_diag_izq': dict(pos=(-12.0, -22.5, 1.6), giro=-36.0, focal=24, centro=10.0),
+    'web_diag_der': dict(pos=(29.0, -26.0, 1.6), giro=38.0, focal=24, centro=10.0),
+    'web_aerea':    dict(pos=(-22.0, -40.0, 27.0), giro=-30.0, focal=28, inclinacion=24.0),
 }
 
 
 def argumentos():
     argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     p = argparse.ArgumentParser()
-    p.add_argument('--vista', default='frente', choices=VISTAS.keys())
-    p.add_argument('--acento', default='9c4a2f', help='hex sin #')
+    p.add_argument('--vista', default='frente', choices=list(VISTAS.keys()))
+    p.add_argument('--acento', default='1c2c72', help='hex sin #')
     p.add_argument('--out', default='//render.png')
     p.add_argument('--muestras', type=int, default=128)
     p.add_argument('--ancho', type=int, default=1080)
@@ -71,6 +86,69 @@ def limpiar():
     bpy.ops.wm.read_factory_settings(use_empty=True)
 
 
+def enchufe(sockets, nombre, tipo):
+    """El nodo Mix tiene varias entradas con el mismo nombre, una por tipo."""
+    return next(x for x in sockets if x.name == nombre and x.type == tipo)
+
+
+def material_tex(nombre, id_, tinte=None, escala=2.0, normal=0.5):
+    """Material con mapas reales (color, rugosidad, normal) en proyección de caja.
+
+    Con `tinte`, la textura aporta solo la variación de luminancia y el color lo
+    pone el tinte: así el mismo tarrajeo sirve para el blanco y para el acento.
+    """
+    def ruta(mapa):
+        return RECURSOS / id_ / f'{id_}_{mapa}_2k.jpg'
+    if not ruta('diff').exists():
+        return material(nombre, tinte or (0.5, 0.5, 0.5, 1), 0.85, ruido=0.3)
+    m = bpy.data.materials.new(nombre)
+    m.use_nodes = True
+    n, l = m.node_tree.nodes, m.node_tree.links
+    bsdf = n.get('Principled BSDF')
+    coord = n.new('ShaderNodeTexCoord')
+    mapeo = n.new('ShaderNodeMapping')
+    mapeo.inputs['Scale'].default_value = (1 / escala,) * 3
+    l.new(coord.outputs['Object'], mapeo.inputs['Vector'])
+
+    def imagen(mapa, color=True):
+        t = n.new('ShaderNodeTexImage')
+        t.image = bpy.data.images.load(str(ruta(mapa)), check_existing=True)
+        if not color:
+            t.image.colorspace_settings.name = 'Non-Color'
+        t.projection = 'BOX'
+        t.projection_blend = 0.3
+        l.new(mapeo.outputs['Vector'], t.inputs['Vector'])
+        return t
+
+    dif = imagen('diff')
+    if tinte:
+        bn = n.new('ShaderNodeRGBToBW')
+        l.new(dif.outputs['Color'], bn.inputs['Color'])
+        rango = n.new('ShaderNodeMapRange')
+        rango.inputs['From Min'].default_value = 0.25
+        rango.inputs['From Max'].default_value = 0.75
+        rango.inputs['To Min'].default_value = 0.82
+        rango.inputs['To Max'].default_value = 1.04
+        l.new(bn.outputs['Val'], rango.inputs['Value'])
+        mezcla = n.new('ShaderNodeMix')
+        mezcla.data_type = 'RGBA'
+        mezcla.blend_type = 'MULTIPLY'
+        enchufe(mezcla.inputs, 'Factor', 'VALUE').default_value = 1.0
+        enchufe(mezcla.inputs, 'A', 'RGBA').default_value = tinte
+        l.new(rango.outputs['Result'], enchufe(mezcla.inputs, 'B', 'RGBA'))
+        l.new(enchufe(mezcla.outputs, 'Result', 'RGBA'), bsdf.inputs['Base Color'])
+    else:
+        l.new(dif.outputs['Color'], bsdf.inputs['Base Color'])
+    rug = imagen('rough', False)
+    l.new(rug.outputs['Color'], bsdf.inputs['Roughness'])
+    nor = imagen('nor_gl', False)
+    nm = n.new('ShaderNodeNormalMap')
+    nm.inputs['Strength'].default_value = normal
+    l.new(nor.outputs['Color'], nm.inputs['Color'])
+    l.new(nm.outputs['Normal'], bsdf.inputs['Normal'])
+    return m
+
+
 def material(nombre, color, rugosidad=0.6, metal=0.0, transmision=0.0, ruido=0.0):
     m = bpy.data.materials.new(nombre)
     m.use_nodes = True
@@ -89,12 +167,11 @@ def material(nombre, color, rugosidad=0.6, metal=0.0, transmision=0.0, ruido=0.0
         tex.inputs['Detail'].default_value = 8.0
         mix = n.new('ShaderNodeMix')
         mix.data_type = 'RGBA'
-        mix.inputs['Factor'].default_value = ruido
-        mix.inputs['A'].default_value = color
-        mix.inputs['B'].default_value = tuple(c * 0.86 for c in color[:3]) + (1.0,)
+        enchufe(mix.inputs, 'A', 'RGBA').default_value = color
+        enchufe(mix.inputs, 'B', 'RGBA').default_value = tuple(c * 0.86 for c in color[:3]) + (1.0,)
         lt = m.node_tree.links
-        lt.new(tex.outputs['Fac'], mix.inputs['Factor'])
-        lt.new(mix.outputs['Result'], bsdf.inputs['Base Color'])
+        lt.new(tex.outputs['Fac'], enchufe(mix.inputs, 'Factor', 'VALUE'))
+        lt.new(enchufe(mix.outputs, 'Result', 'RGBA'), bsdf.inputs['Base Color'])
         bump = n.new('ShaderNodeBump')
         bump.inputs['Strength'].default_value = 0.08
         lt.new(tex.outputs['Fac'], bump.inputs['Height'])
@@ -135,17 +212,65 @@ def texto(cuerpo, x, y, z, tam, mat, extrusion=0.03):
     return ob
 
 
+# ── Vegetación (modelos CC0 de Poly Haven) ──────────────────────────────────
+
+VEGETACION = {}
+
+
+def cargar_vegetacion(ids):
+    """Importa cada modelo una vez a una colección fuera de escena; luego se
+    instancia, así veinte helechos cuestan lo mismo en memoria que uno."""
+    for id_ in ids:
+        gltf = RECURSOS / id_ / f'{id_}_2k.gltf'
+        if not gltf.exists():
+            continue
+        antes = set(bpy.data.objects)
+        bpy.ops.import_scene.gltf(filepath=str(gltf))
+        nuevos = [o for o in bpy.data.objects if o not in antes]
+        col = bpy.data.collections.new(id_)
+        for o in nuevos:
+            for c in list(o.users_collection):
+                c.objects.unlink(o)
+            col.objects.link(o)
+        bpy.context.view_layer.update()
+        zs = [(o.matrix_world @ Vector(v)).z for o in nuevos if o.type == 'MESH' for v in o.bound_box]
+        VEGETACION[id_] = (col, max(zs) - min(zs), min(zs))
+
+
+def instancia(veg, x, y, z, alto, giro=0.0):
+    col, alto_modelo, base = veg
+    e = bpy.data.objects.new(col.name, None)
+    e.instance_type = 'COLLECTION'
+    e.instance_collection = col
+    k = alto / alto_modelo
+    e.scale = (k, k, k)
+    e.location = (x, y, z - base * k)
+    e.rotation_euler = (0, 0, giro)
+    bpy.context.collection.objects.link(e)
+    return e
+
+
 # ── Piezas ───────────────────────────────────────────────────────────────────
 
-def ventana(x0, x1, z0, z1, y, M, hojas=2):
-    """Vano con marco negro y vidrio oscuro, ligeramente hundido en el muro."""
-    caja('vidrio', x0, x1, y + 0.02, y + 0.06, z0, z1, M['vidrio_oscuro'], bisel=0)
+def ventana(x0, x1, z0, z1, y, M, hojas=2, s=1):
+    """Vano con marco negro, vidrio que refleja y, detrás, un interior en penumbra
+    con cortinas a medio correr: lo que hace que una fachada se vea habitada."""
+    caja('vidrio', x0, x1, y + 0.02 * s, y + 0.03 * s, z0, z1, M['vidrio'], bisel=0)
+    caja('interior', x0, x1, y + 0.05 * s, y + 0.06 * s, z0, z1, M['interior'], bisel=0)
+    rnd = random.Random(round(x0 * 37 + z0 * 101))
+    cubierto = rnd.choice((0.0, 0.25, 0.35, 0.5, 0.65, 1.0))
+    if cubierto:
+        ancho = (x1 - x0) * cubierto
+        if rnd.random() < 0.5:
+            caja('cortina', x0, x0 + ancho, y + 0.035 * s, y + 0.045 * s, z0, z1, M['cortina'], bisel=0)
+        else:
+            caja('cortina', x1 - ancho, x1, y + 0.035 * s, y + 0.045 * s, z0, z1, M['cortina'], bisel=0)
     t = 0.05
-    caja('marco', x0, x1, y, y + 0.06, z0, z0 + t, M['marco'], bisel=0)
-    caja('marco', x0, x1, y, y + 0.06, z1 - t, z1, M['marco'], bisel=0)
+    caja('marco', x0, x1, y, y + 0.06 * s, z0, z0 + t, M['marco'], bisel=0)
+    caja('marco', x0, x1, y, y + 0.06 * s, z1 - t, z1, M['marco'], bisel=0)
     for i in range(hojas + 1):
         xm = x0 + (x1 - x0) * i / hojas
-        caja('marco', xm - t / 2, xm + t / 2, y, y + 0.06, z0, z1, M['marco'], bisel=0)
+        caja('marco', xm - t / 2, xm + t / 2, y, y + 0.06 * s, z0, z1, M['marco'], bisel=0)
 
 
 def baranda_vidrio(x0, x1, y, z, M, alto=1.0):
@@ -178,9 +303,16 @@ def celosia(x0, x1, z0, z1, y, M):
 
 def jardinera(x0, x1, z, y, M):
     caja('jardinera', x0, x1, y - 0.45, y, z, z + 0.35, M['acento'])
-    # Follaje: grupo de esferas irregulares, suficiente para leer «verde vivo» a distancia.
-    import random
     rnd = random.Random(int(x0 * 100 + z * 10))
+    helecho = VEGETACION.get('fern_02')
+    if helecho:
+        # Helechos reales: unos erguidos y otros volcados hacia afuera, que cuelgan.
+        for i in range(int((x1 - x0) / 0.4)):
+            x = x0 + 0.22 + i * 0.4 + rnd.uniform(-0.05, 0.05)
+            instancia(helecho, x, y - 0.22, z + 0.3, alto=rnd.uniform(0.32, 0.45), giro=rnd.uniform(0, 6.28))
+            colgante = instancia(helecho, x + 0.08, y - 0.42, z + 0.28, alto=rnd.uniform(0.38, 0.52), giro=rnd.uniform(0, 6.28))
+            colgante.rotation_euler.x = math.radians(rnd.uniform(70, 110))
+        return
     for i in range(int((x1 - x0) / 0.07)):
         bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=rnd.uniform(0.12, 0.22),
                                               location=(rnd.uniform(x0 + 0.1, x1 - 0.1), y - rnd.uniform(0.15, 0.4),
@@ -188,7 +320,6 @@ def jardinera(x0, x1, z, y, M):
         ob = bpy.context.active_object
         ob.scale = (1.0, 0.8, rnd.uniform(0.7, 1.4))
         ob.data.materials.append(M['follaje'])
-        # algunas cuelgan por delante de la jardinera
         if i % 2 == 0:
             ob.location.z -= rnd.uniform(0.2, 0.55)
             ob.scale.z *= 1.6
@@ -322,26 +453,163 @@ def cerco(P, M):
 
 def entorno(P, M):
     W, r = P['frente'], P['retiro']
-    caja('vereda', -30, 40, -r - 3.2, -r, 0, 0.15, M['concreto'], bisel=0)
+    # Avenida con berma central, como las de Santa Victoria:
+    # vereda | pista | berma | pista | vereda, y la manzana de enfrente.
+    caja('vereda', -90, 100, -r - 3.2, -r, 0, 0.15, M['concreto'], bisel=0)
     caja('jardin_retiro', -0.6, W + 0.6, -r, 0, 0, 0.05, M['concreto'], bisel=0)
-    caja('pista', -30, 40, -r - 11.5, -r - 3.2, -0.05, 0.0, M['asfalto'], bisel=0)
-    caja('berma', -30, 40, -r - 15, -r - 11.5, 0, 0.18, M['grass'], bisel=0)
-    caja('suelo', -60, 80, -60, 60, -0.06, -0.05, M['concreto'], bisel=0)
-    # vecinos: volúmenes simples, para que el edificio no flote en el vacío
-    caja('vecino_izq', -10.0, -0.7, 0, 16, 0, 7.2, M['vecino1'])
-    caja('vecino_izq_cerco', -10.0, -0.7, -r - 0.25, -r, 0, 2.6, M['vecino1'])
-    caja('vecino_der', W + 0.7, W + 11, 2.0, 18, 0, 5.4, M['vecino2'])
-    caja('vecino_der_cerco', W + 0.7, W + 11, -r - 0.25, -r, 0, 2.4, M['vecino2'])
-    caja('fondo_alto', -8, 26, 22, 30, 0, 14, M['vecino1'])
+    caja('pista', -90, 100, -r - 11.5, -r - 3.2, -0.05, 0.0, M['asfalto'], bisel=0)
+    caja('berma', -90, 100, -r - 15, -r - 11.5, 0, 0.18, M['grass'], bisel=0)
+    caja('pista2', -90, 100, -r - 23.3, -r - 15, -0.05, 0.0, M['asfalto'], bisel=0)
+    caja('vereda2', -90, 100, -r - 26.5, -r - 23.3, 0, 0.15, M['concreto'], bisel=0)
+    caja('pista_posterior', -90, 100, 40, 48, -0.05, 0.0, M['asfalto'], bisel=0)
+    caja('suelo', -160, 180, -160, 200, -0.06, -0.05, M['concreto'], bisel=0)
+    barrio(P, M)
+
+    # Árboles: faiques y algarrobos en la berma y al fondo, jacarandá en vereda.
+    arboles = [
+        ('island_tree_01', 0.8, -r - 13.4, 7.5, 0.4),      # primer plano, enmarca por la izquierda
+        ('island_tree_01', 27.0, -r - 13.6, 8.0, 2.1),
+        ('tree_small_02', 14.0, -r - 12.6, 4.5, 1.0),
+        ('jacaranda_tree', -6.5, -r - 1.9, 6.5, 0.8),
+        ('jacaranda_tree', W + 4.0, -r - 1.9, 6.0, 2.6),
+        ('island_tree_03', -5.0, 19.0, 9.0, 0.3),
+        ('island_tree_03', 22.0, 21.0, 10.0, 1.7),
+        ('island_tree_01', 8.0, 27.0, 11.0, 4.0),
+        ('jacaranda_tree', -22.0, -r - 24.8, 6.0, 1.3),
+        ('jacaranda_tree', 3.0, -r - 24.8, 5.5, 3.3),
+        ('island_tree_01', 30.0, -r - 13.3, 7.0, 5.0),
+        ('island_tree_01', -25.0, -r - 13.3, 7.5, 2.4),
+        ('tree_small_02', -38.0, -r - 1.9, 5.0, 0.2),
+        ('tree_small_02', 42.0, -r - 1.9, 5.0, 1.9),
+    ]
+    for id_, x, y, alto, giro in arboles:
+        if id_ in VEGETACION:
+            instancia(VEGETACION[id_], x, y, 0.15 if y < 0 else 0.0, alto, giro)
+
+    # Sardineles: el borde de concreto que separa pista, berma y vereda.
+    caja('sardinel', -30, 40, -r - 11.65, -r - 11.5, -0.05, 0.22, M['concreto'], bisel=0.01)
+    caja('sardinel', -30, 40, -r - 3.35, -r - 3.2, -0.05, 0.2, M['concreto'], bisel=0.01)
+    pasto(-16, 32, -r - 15, -r - 11.65, 0.18)
+
+
+# Colores de fachada que se ven en cualquier calle de Chiclayo (sRGB).
+PALETA_CASAS = [
+    'e3cfa4',   # crema
+    'd4a35f',   # ocre
+    'a8a6a0',   # gris cemento
+    'e6dfd0',   # blanco hueso
+    'dc9f80',   # durazno
+    '9fbfa9',   # verde agua
+    'e2c06a',   # amarillo maíz
+    'a9c4d4',   # celeste pálido
+    'c97f5f',   # terracota
+]
+
+
+def casa(x0, x1, y_fachada, fondo, pisos, mat, M, rnd, mira):
+    """Casa limeña-norteña típica: caja tarrajeada, parapeto, ventanas, portón
+    o puerta, y casi siempre un tanque de agua negro en la azotea.
+    mira=-1: fachada hacia -y (cuerpo hacia +y); mira=+1: fachada hacia +y."""
+    h = 0.3 + pisos * 2.7
+    y0, y1 = (y_fachada, y_fachada + fondo) if mira < 0 else (y_fachada - fondo, y_fachada)
+    caja('casa', x0, x1, y0, y1, 0, h, mat)
+    e = 0.15
+    caja('parapeto', x0, x1, y0, y0 + e, h, h + 0.9, mat, bisel=0)
+    caja('parapeto', x0, x1, y1 - e, y1, h, h + 0.9, mat, bisel=0)
+    caja('parapeto', x0, x0 + e, y0, y1, h, h + 0.9, mat, bisel=0)
+    caja('parapeto', x1 - e, x1, y0, y1, h, h + 0.9, mat, bisel=0)
+    yf = y_fachada - 0.03 if mira < 0 else y_fachada + 0.03
+    sv = 1 if mira < 0 else -1
+    ancho = x1 - x0
+    for f in range(pisos):
+        z0 = 0.3 + f * 2.7
+        if f == 0:
+            if ancho > 6.5 and rnd.random() < 0.6:
+                # portón de cochera de plancha
+                for k in range(10):
+                    zz = 0.3 + k * 0.22
+                    caja('porton', x0 + 0.6, x0 + 3.4, yf - 0.02 * sv, yf, zz, zz + 0.2, M['marco'], bisel=0)
+                ventana(x0 + 4.2, min(x1 - 0.8, x0 + 6.6), z0 + 0.9, z0 + 2.2, yf, M, hojas=2, s=sv)
+            else:
+                caja('puerta', x0 + 0.8, x0 + 1.8, yf - 0.02 * sv, yf, 0.3, 2.4, M['marco'], bisel=0)
+                ventana(x0 + 2.6, min(x1 - 0.8, x0 + 5.0), z0 + 0.9, z0 + 2.2, yf, M, hojas=2, s=sv)
+        else:
+            n = 1 if ancho < 7.5 else 2
+            paso = ancho / n
+            for k in range(n):
+                cx = x0 + (k + 0.5) * paso
+                mitad = min(1.2, paso / 2 - 0.6) * rnd.uniform(0.75, 1.0)
+                ventana(cx - mitad, cx + mitad, z0 + 0.9, z0 + 2.2, yf, M, hojas=2, s=sv)
+    if rnd.random() < 0.8:
+        tx = rnd.uniform(x0 + 0.9, x1 - 0.9)
+        ty = rnd.uniform(y0 + 1.5, y1 - 1.5)
+        caja('base_tanque', tx - 0.7, tx + 0.7, ty - 0.7, ty + 0.7, h, h + 0.5, M['blanco'], bisel=0)
+        bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.55, depth=1.15, location=(tx, ty, h + 0.5 + 0.575))
+        bpy.context.active_object.data.materials.append(M['tanque'])
+    return h
+
+
+def fila_casas(x_desde, x_hasta, y_fachada, mira, M, rnd, pisos_max=3, fondo=(16, 21)):
+    """Llena un tramo de manzana con lotes de 7 a 11 m. Devuelve la lista de
+    (x0, x1, h) para que el edificio sepa cuánto miden sus vecinos."""
+    lotes = []
+    direccion = 1 if x_hasta > x_desde else -1
+    x = x_desde
+    while (x_hasta - x) * direccion > 4:
+        w = rnd.uniform(7, 11)
+        xa, xb = sorted((x, x + w * direccion))
+        pisos = rnd.choices([1, 2, 3, 4], weights=[2, 5, 4, 1 if pisos_max >= 4 else 0])[0]
+        pisos = min(pisos, pisos_max)
+        tinte = rnd.choice(PALETA_CASAS)
+        mat = M['ladrillo'] if rnd.random() < 0.12 else M['casas'][tinte]
+        yf = y_fachada + rnd.uniform(-0.3, 0.3)
+        h = casa(xa + 0.05, xb - 0.05, yf, rnd.uniform(*fondo), pisos, mat, M, rnd, mira)
+        lotes.append((xa, xb, h))
+        x += w * direccion
+    return lotes
+
+
+def barrio(P, M):
+    W, r, D = P['frente'], P['retiro'], P['fondo']
+    rnd = random.Random(14)
+    z_top = P['h_piso1'] + P['pisos'] * P['h_piso'] + 0.25
+    # nuestra vereda: los vecinos inmediatos fijan las medianeras
+    izq = fila_casas(-0.7, -130, -r + 0.2, -1, M, rnd)
+    der = fila_casas(W + 0.7, 140, -r + 0.2, -1, M, rnd)
+    # Medianeras de ladrillo caravista: en Chiclayo el muro que queda por encima
+    # del vecino casi nunca se tarrajea.
+    caja('medianera_izq', -0.03, 0.0, 0.0, D, izq[0][2], z_top, M['ladrillo'], bisel=0)
+    caja('medianera_der', W, W + 0.03, 0.0, D, der[0][2], z_top, M['ladrillo'], bisel=0)
+    # manzana de enfrente, mirando hacia nosotros
+    fila_casas(-130, 140, -r - 26.5, 1, M, rnd, pisos_max=4)
+    # manzana posterior: sus espaldas se ven por detrás del edificio
+    fila_casas(-130, 140, 40, 1, M, rnd, pisos_max=3, fondo=(17, 20))
+    # más allá, manzanas hasta el horizonte de la toma aérea
+    for y in (48, 88, 128):
+        fila_casas(-130, 140, y, -1, M, rnd, pisos_max=3, fondo=(17, 20))
+        fila_casas(-130, 140, y + 40 - 8, 1, M, rnd, pisos_max=3, fondo=(12, 14))
+        caja('pista_fondo', -130, 140, y + 32, y + 40, -0.05, 0.0, M['asfalto'], bisel=0)
+
+
+def pasto(x0, x1, y0, y1, z, por_m2=5):
+    """Matas de pasto reales repartidas al azar; solo donde las ve la cámara."""
+    veg = VEGETACION.get('grass_medium_01')
+    if not veg:
+        return
+    rnd = random.Random(7)
+    for _ in range(int((x1 - x0) * (y1 - y0) * por_m2)):
+        instancia(veg, rnd.uniform(x0, x1), rnd.uniform(y0, y1), z, alto=rnd.uniform(0.18, 0.32), giro=rnd.uniform(0, 6.28))
 
 
 # ── Escena ───────────────────────────────────────────────────────────────────
 
 def materiales(acento):
     return {
-        'blanco': material('blanco', (0.78, 0.78, 0.76, 1), 0.85, ruido=0.25),
-        'acento': material('acento', hex_rgb(acento), 0.75, ruido=0.35),
+        'blanco': material_tex('blanco', 'plastered_wall_04', tinte=(0.8, 0.8, 0.78, 1), escala=2.5, normal=0.3),
+        'acento': material_tex('acento', 'plastered_wall_04', tinte=hex_rgb(acento), escala=2.5, normal=0.3),
         'vidrio': material('vidrio', (0.85, 0.92, 0.95, 1), 0.02, transmision=1.0),
+        'interior': material('interior', (0.035, 0.03, 0.028, 1), 0.8),
+        'cortina': material('cortina', (0.62, 0.6, 0.56, 1), 1.0, ruido=0.3),
         'vidrio_oscuro': material('vidrio_oscuro', (0.02, 0.025, 0.03, 1), 0.05, metal=0.0),
         'marco': material('marco', (0.015, 0.015, 0.015, 1), 0.4),
         'acero': material('acero', (0.8, 0.8, 0.8, 1), 0.25, metal=1.0),
@@ -351,11 +619,14 @@ def materiales(acento):
         'luminaria': material('luminaria', (1, 1, 1, 1), 0.3),
         'madera': material('madera', (0.25, 0.12, 0.05, 1), 0.6),
         'lona': material('lona', (0.22, 0.18, 0.14, 1), 0.9),
-        'ladrillo': material('ladrillo', (0.32, 0.11, 0.06, 1), 0.9, ruido=0.5),
-        'concreto': material('concreto', (0.42, 0.42, 0.41, 1), 0.9, ruido=0.4),
-        'asfalto': material('asfalto', (0.06, 0.06, 0.065, 1), 0.85, ruido=0.3),
-        'grass': material('pasto', (0.04, 0.12, 0.025, 1), 0.9, ruido=0.6),
+        'ladrillo': material_tex('ladrillo', 'red_brick_03', escala=1.2, normal=0.8),
+        'concreto': material_tex('concreto', 'concrete_pavement', escala=2.0, normal=0.6),
+        'asfalto': material_tex('asfalto', 'asphalt_02', escala=3.0, normal=0.6),
+        'grass': material('pasto', (0.03, 0.05, 0.015, 1), 0.95, ruido=0.7),
         'vecino1': material('vecino1', (0.62, 0.61, 0.58, 1), 0.9, ruido=0.3),
+        'tanque': material('tanque', (0.012, 0.012, 0.012, 1), 0.45),
+        'casas': {c: material_tex(f'casa_{c}', 'plastered_wall_04', tinte=hex_rgb(c), escala=2.5, normal=0.35)
+                  for c in PALETA_CASAS},
         'vecino2': material('vecino2', (0.55, 0.53, 0.5, 1), 0.9, ruido=0.3),
     }
 
@@ -389,6 +660,22 @@ def cielo():
     ob.rotation_euler = (math.radians(90 - 34), 0, math.radians(SOL_GIRO))
     bpy.context.collection.objects.link(ob)
     w.node_tree.links.new(sky.outputs['Color'], bg.inputs['Color'])
+    hdri = RECURSOS / 'kloofendal_43d_clear_puresky' / 'kloofendal_43d_clear_puresky_4k.hdr'
+    if hdri.exists():
+        # La cámara ve un cielo fotográfico; la luz sigue saliendo del cielo físico
+        # y del sol, así no hay dos soles proyectando sombras distintas.
+        env = n.new('ShaderNodeTexEnvironment')
+        env.image = bpy.data.images.load(str(hdri))
+        bg_foto = n.new('ShaderNodeBackground')
+        bg_foto.inputs['Strength'].default_value = 1.5
+        w.node_tree.links.new(env.outputs['Color'], bg_foto.inputs['Color'])
+        rayo = n.new('ShaderNodeLightPath')
+        mezcla = n.new('ShaderNodeMixShader')
+        salida = n.get('World Output')
+        w.node_tree.links.new(rayo.outputs['Is Camera Ray'], mezcla.inputs['Fac'])
+        w.node_tree.links.new(bg.outputs['Background'], mezcla.inputs[1])
+        w.node_tree.links.new(bg_foto.outputs['Background'], mezcla.inputs[2])
+        w.node_tree.links.new(mezcla.outputs['Shader'], salida.inputs['Surface'])
 
 
 def camara(vista):
@@ -400,9 +687,10 @@ def camara(vista):
     bpy.context.collection.objects.link(ob)
     ob.location = c['pos']
     # cámara a nivel (verticales rectas, como foto de arquitectura) y lens shift
-    ob.rotation_euler = (math.radians(90), 0, math.radians(c['giro']))
-    dist = abs(c['pos'][1]) + 2
-    cam.shift_y = (c['centro'] - c['pos'][2]) / dist * c['focal'] / 36
+    ob.rotation_euler = (math.radians(90 - c.get('inclinacion', 0.0)), 0, math.radians(c['giro']))
+    if 'centro' in c:
+        dist = math.hypot(c['pos'][0] - PARAM['frente'] / 2, c['pos'][1])
+        cam.shift_y = (c['centro'] - c['pos'][2]) / dist * c['focal'] / 36
     bpy.context.scene.camera = ob
 
 
@@ -440,6 +728,7 @@ def render(a):
 def main():
     a = argumentos()
     limpiar()
+    cargar_vegetacion(['grass_medium_01', 'fern_02', 'island_tree_01', 'island_tree_03', 'jacaranda_tree', 'tree_small_02'])
     M = materiales(a.acento)
     edificio(PARAM, M)
     cerco(PARAM, M)

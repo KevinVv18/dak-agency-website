@@ -36,6 +36,9 @@
     for (const [k, v] of Object.entries(query)) if (v !== null && v !== undefined && v !== '') u.searchParams.set(k, v);
     return u.pathname + u.search;
   };
+  // Las rutas de recursos en los datos son relativas a la raíz del sitio, no a
+  // la página actual: sin esto, una imagen se rompe en departamento/701/.
+  const recurso = (ruta) => new URL(ruta, BASE).pathname;
   const query = () => Object.fromEntries(new URLSearchParams(location.search));
   const fijarQuery = (cambios) => {
     const q = { ...query(), ...cambios };
@@ -125,7 +128,7 @@
       <div class="edificio">
         <section class="escena" aria-label="Vista exterior">
           <div class="escena__lienzo">
-            ${img ? `<img src="${esc(img)}" alt="${esc(D.proyecto.nombre)}, vista ${esc(v.nombre.toLowerCase())}">` : marcador(`Vista ${v.nombre.toLowerCase()} · ${modo === 'dia' ? 'día' : 'noche'}`, `Parada ${i + 1} de ${D.vistas.length} · render del exterior`)}
+            ${img ? `<img src="${esc(recurso(img))}" alt="${esc(D.proyecto.nombre)}, vista ${esc(v.nombre.toLowerCase())}">` : marcador(`Vista ${v.nombre.toLowerCase()} · ${modo === 'dia' ? 'día' : 'noche'}`, `Parada ${i + 1} de ${D.vistas.length} · render del exterior`)}
           </div>
           <div class="escena__controles">
             <button class="boton" data-vista="${(i - 1 + D.vistas.length) % D.vistas.length}" aria-label="Vista anterior">←</button>
@@ -154,7 +157,7 @@
       return [((Math.min(...xs) + Math.max(...xs)) / 2) * W, ((Math.min(...ys) + Math.max(...ys)) / 2) * H];
     };
     const fondo = pl.imagen
-      ? `<image href="${esc(pl.imagen)}" x="0" y="0" width="${W}" height="${H}"/>`
+      ? `<image href="${esc(recurso(pl.imagen))}" x="0" y="0" width="${W}" height="${H}"/>`
       : `<g class="esquema">
           <polygon points="${pts(pl.esquema.contorno)}" class="esquema__contorno"/>
           <polygon points="${pts(pl.esquema.pasillo)}" class="esquema__comun"/>
@@ -181,6 +184,7 @@
         ${fondo}
         ${zonas}
       </svg>
+      ${pl.orientacionPlano ? `<p class="nota">${esc(pl.orientacionPlano)}</p>` : ''}
       ${pl.imagen ? '' : '<p class="nota">Esquema de posiciones. La planta amoblada renderizada reemplaza este dibujo.</p>'}`;
   }
 
@@ -273,7 +277,7 @@
         <a class="boton" href="${url(`departamento/${u.id}/`, { seccion: 'planta' })}" aria-pressed="${modo === 'amoblada'}">Amoblada</a>
         <a class="boton" href="${url(`departamento/${u.id}/`, { seccion: 'planta', plano: 'tecnico' })}" aria-pressed="${modo === 'tecnico'}">Plano técnico</a>
       </div>
-      ${img ? `<img src="${esc(img)}" alt="Planta ${modo} del ${esc(t.nombre)}">` : marcador(modo === 'tecnico' ? `Plano técnico · ${t.nombre}` : `Planta amoblada · ${t.nombre}`, 'Vista cenital del mismo modelo que los interiores')}`;
+      ${img ? `<img src="${esc(recurso(img))}" alt="Planta ${modo} del ${esc(t.nombre)}">` : marcador(modo === 'tecnico' ? `Plano técnico · ${t.nombre}` : `Planta amoblada · ${t.nombre}`, 'Vista cenital del mismo modelo que los interiores')}`;
   }
 
   function vistaUnidad(id) {

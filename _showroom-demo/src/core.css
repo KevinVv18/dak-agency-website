@@ -96,7 +96,7 @@ main { padding: 12px var(--gutter) 48px; max-width: 1280px; margin: 0 auto; }
 /* Piso */
 .cambio-piso { display: flex; gap: 8px; }
 .piso-vista { display: grid; gap: 16px; }
-.plano { width: 100%; height: auto; background: var(--superficie); border-radius: var(--radio); border: 1px solid var(--linea); touch-action: manipulation; }
+.plano { width: 100%; height: auto; max-height: 72vh; background: var(--superficie); border-radius: var(--radio); border: 1px solid var(--linea); touch-action: manipulation; }
 .esquema__contorno { fill: none; stroke: var(--tinta); stroke-width: 6; }
 .esquema__comun { fill: #ecebe6; }
 .esquema__nucleo { fill: #dcdad3; stroke: var(--tenue); stroke-width: 2; }
