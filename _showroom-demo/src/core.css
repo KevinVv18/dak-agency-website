@@ -100,7 +100,9 @@ main { padding: 12px var(--gutter) 48px; max-width: 1280px; margin: 0 auto; }
 .esquema__contorno { fill: none; stroke: var(--tinta); stroke-width: 6; }
 .esquema__comun { fill: #ecebe6; }
 .esquema__nucleo { fill: #dcdad3; stroke: var(--tenue); stroke-width: 2; }
-.esquema__rotulo { font-size: 14px; fill: var(--tenue); text-anchor: middle; dominant-baseline: middle; }
+.esquema__area { fill: #e6e4de; stroke: var(--tenue); stroke-width: 2; stroke-dasharray: 8 6; }
+.esquema__rotulo--area { font-size: 40px; fill: var(--tenue); }
+.esquema__rotulo { font-size: 22px; fill: var(--tenue); text-anchor: middle; dominant-baseline: middle; }
 .patron { stroke: currentColor; stroke-width: 2; }
 .zona { cursor: pointer; outline: none; }
 .zona polygon { stroke: var(--tinta); stroke-width: 2; fill-opacity: .18; transition: fill-opacity .15s; }
@@ -134,6 +136,7 @@ main { padding: 12px var(--gutter) 48px; max-width: 1280px; margin: 0 auto; }
 .pestanas a { padding: 10px 14px; color: var(--tenue); text-decoration: none; border-bottom: 3px solid transparent; white-space: nowrap; }
 .pestanas a[aria-current] { color: var(--tinta); border-color: var(--tinta); font-weight: 600; }
 .unidad__seccion .conmutador { margin: 0 0 12px; }
+.visor360 { width: 100%; aspect-ratio: 16 / 10; max-height: 70vh; border-radius: var(--radio); overflow: hidden; background: var(--tinta); }
 .escenas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .unidad__ficha { background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--radio); padding: 16px; align-self: start; }
 .precio { font-size: 1.5rem; font-weight: 700; margin: 0; font-variant-numeric: tabular-nums; }

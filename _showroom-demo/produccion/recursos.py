@@ -33,6 +33,18 @@ RECURSOS = {
     'fern_02': ('modelo', '2k', 'helechos colgantes de las jardineras'),
     'grass_medium_01': ('modelo', '2k', 'pasto de la berma'),
     'potted_plant_01': ('modelo', '2k', 'macetas de terrazas e interiores'),
+    # Interiores (muebles modernos; sofás, camas, cocina y baños son procedurales)
+    'modern_coffee_table_01': ('modelo', '2k', 'mesa de centro'),
+    'modern_arm_chair_01': ('modelo', '2k', 'sillón de sala'),
+    'modern_wooden_cabinet': ('modelo', '2k', 'mueble de TV'),
+    'side_table_01': ('modelo', '2k', 'mesas de noche'),
+    'potted_plant_02': ('modelo', '2k', 'planta de interior'),
+    'potted_plant_04': ('modelo', '2k', 'planta de interior'),
+    'large_floor_tiles_02': ('textura', '2k', 'porcelanato de sala y cocina'),
+    'grey_tiles': ('textura', '2k', 'cerámico de baños'),
+    'laminate_floor_02': ('textura', '2k', 'piso laminado de dormitorios'),
+    'wood_table_001': ('textura', '2k', 'madera de muebles y puertas'),
+    'marble_01': ('textura', '2k', 'encimera de cocina'),
     # Superficies
     'plastered_wall_04': ('textura', '2k', 'tarrajeo pintado de fachada'),
     'concrete_pavement': ('textura', '2k', 'vereda'),

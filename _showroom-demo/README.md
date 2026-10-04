@@ -60,6 +60,26 @@ blender -b -P _showroom-demo/produccion/edificio.py -- --vista web_frente --anch
   una caché fuera del repo (`~/tools/recursos-showroom`).
 - Las vistas `web_*` de `edificio.py` son las mismas que `datos/edificio.js`
   declara en `camara`: cada imagen publicada se puede regenerar.
+- `interior.py`: un layout por tipología (ambientes, muros con vanos, escenas)
+  del que salen **la planta amoblada** (render cenital con muros cortados), **el
+  plano técnico** (SVG con áreas, sin Blender) y **los panoramas 360**
+  (equirectangulares, con los enlaces entre escenas calculados de las
+  posiciones de cámara). Por eso planta, plano, recorrido y ficha cuadran.
+
+  ```
+  python  produccion/interior.py --tipo A --plano assets/plantas/tipo-a-plano-v1.svg --escenas-json escenas.json
+  blender -b -P produccion/interior.py -- --tipo A --salida planta --out planta.png
+  blender -b -P produccion/interior.py -- --tipo A --salida 360 --escena sala --out sala.jpg
+  ```
+
+- El visor 360 es **Pannellum 2.5.7 (MIT)** en `vendor/`, cargado solo al
+  abrir un recorrido.
+
+## Varios proyectos con el mismo motor
+
+`node generar.js` genera la vitrina pública (esta carpeta). `node generar.js
+privado/<cliente>` genera el showroom de un cliente real desde su carpeta,
+excluida de git porque **el repo es público**. Ver `privado/<cliente>/FICHA.md`.
 - Referencia de estilo: el tipo de edificio del cliente objetivo (VARU I).
   Sus renders son **solo referencia y no se publican**.
 

@@ -29,7 +29,8 @@
 
   // ── Utilidades ─────────────────────────────────────────────────────────────
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-  const m2 = (n) => `${n.toLocaleString('es-PE', { minimumFractionDigits: 1, maximumFractionDigits: 2 })} m²`;
+  // Un área desconocida se dice, nunca se convierte en cero.
+  const m2 = (n) => (n == null ? 'Por confirmar' : `${n.toLocaleString('es-PE', { minimumFractionDigits: 1, maximumFractionDigits: 2 })} m²`);
   const soles = (n) => `S/ ${n.toLocaleString('es-PE')}`;
   const url = (ruta, query = {}) => {
     const u = new URL(ruta, BASE);
@@ -46,11 +47,14 @@
     history.replaceState(null, '', url(ruta, q));
   };
   const orientacion = (u) => u.orientacion || D.plantillas[pisoPorId[u.piso].plantilla].posiciones[u.posicion].orientacion;
-  const areaTotal = (t) => t.areaTechada + (t.areaLibre || 0);
+  const areaTotal = (t) => (t.areaTechada == null ? null : t.areaTechada + (t.areaLibre || 0));
   // Una unidad puede traer excepciones sobre su tipología (p.ej. terraza en
   // azotea): el área libre de la unidad manda sobre la de la tipología.
   const areaLibreDe = (u) => u.areaLibre ?? tipoPorId[u.tipologia].areaLibre ?? 0;
-  const areaTotalDe = (u) => tipoPorId[u.tipologia].areaTechada + areaLibreDe(u);
+  const areaTotalDe = (u) => {
+    const techada = tipoPorId[u.tipologia].areaTechada;
+    return techada == null ? null : techada + areaLibreDe(u);
+  };
 
   function precioTexto(u) {
     if (u.estado === 'vendido') return 'Vendido';
@@ -167,6 +171,9 @@
           <polygon points="${pts(pl.esquema.pasillo)}" class="esquema__comun"/>
           <polygon points="${pts(pl.esquema.nucleo)}" class="esquema__nucleo"/>
           <text x="${centro(pl.esquema.nucleo)[0]}" y="${centro(pl.esquema.nucleo)[1]}" class="esquema__rotulo">Ascensor · escalera</text>
+          ${(pl.esquema.areas || []).map((a) => `
+            <polygon points="${pts(a.poligono)}" class="esquema__area"/>
+            <text x="${centro(a.poligono)[0]}" y="${centro(a.poligono)[1]}" class="esquema__rotulo esquema__rotulo--area">${esc(a.rotulo)}</text>`).join('')}
         </g>`;
     const zonas = unidadesDePiso(piso.id).map((u) => {
       const poli = pl.posiciones[u.posicion].poligono;
@@ -262,11 +269,15 @@
     const t = tipoPorId[u.tipologia];
     if (sec === 'recorrido') {
       const escena = t.escenas.find((e) => e.id === q.escena) || t.escenas[0];
+      const visor = escena.panorama
+        ? `<div id="visor360" class="visor360" data-tipo="${esc(t.id)}" data-escena="${esc(escena.id)}" role="application" aria-label="Recorrido 360° de ${esc(t.nombre)}: arrastra para mirar alrededor"></div>`
+        : marcador(`Recorrido 360° · ${escena.nombre}`, `${t.nombre} · panorama equirectangular`, 'marcador--panorama');
       return `
-        ${marcador(`Recorrido 360° · ${escena.nombre}`, `${t.nombre} · panorama equirectangular`, 'marcador--panorama')}
+        ${visor}
         <nav class="escenas" aria-label="Ambientes">
-          ${t.escenas.map((e) => `<a class="boton" href="${url(`departamento/${u.id}/`, { seccion: 'recorrido', escena: e.id })}" aria-current="${e.id === escena.id}">${esc(e.nombre)}</a>`).join('')}
+          ${t.escenas.map((e) => `<a class="boton" data-escena-btn="${esc(e.id)}" href="${url(`departamento/${u.id}/`, { seccion: 'recorrido', escena: e.id })}" aria-current="${e.id === escena.id}">${esc(e.nombre)}</a>`).join('')}
         </nav>
+        <p class="nota">Arrastra para mirar alrededor y usa las flechas para pasar de un ambiente a otro.</p>
         <p class="nota">El recorrido es de la tipología ${esc(t.nombre)}; acabados iguales en todos los pisos.</p>`;
     }
     if (sec === 'vistas') {
@@ -290,7 +301,9 @@
     const t = tipoPorId[u.tipologia];
     const piso = pisoPorId[u.piso];
     const q = query();
-    const sec = SECCIONES.some((s) => s.id === q.seccion) ? q.seccion : 'planta';
+    // Solo las secciones con contenido: sin escenas no hay pestaña de recorrido.
+    const secciones = SECCIONES.filter((s) => s.id !== 'recorrido' || t.escenas.length);
+    const sec = secciones.some((s) => s.id === q.seccion) ? q.seccion : 'planta';
     const consultable = u.estado !== 'vendido';
     return marco(`
       <div class="cabecera">
@@ -303,7 +316,7 @@
       <div class="unidad">
         <section class="unidad__contenido">
           <nav class="pestanas" aria-label="Contenido del departamento">
-            ${SECCIONES.map((s) => `<a href="${url(`departamento/${u.id}/`, { seccion: s.id })}"${s.id === sec ? ' aria-current="page"' : ''}>${s.txt}</a>`).join('')}
+            ${secciones.map((s) => `<a href="${url(`departamento/${u.id}/`, { seccion: s.id })}"${s.id === sec ? ' aria-current="page"' : ''}>${s.txt}</a>`).join('')}
           </nav>
           <div class="unidad__seccion">${seccionUnidad(u, sec, q)}</div>
         </section>
@@ -393,7 +406,7 @@
     const tarjetas = D.tipologias.map((t) => {
       const suyas = D.unidades.filter((u) => u.tipologia === t.id);
       const disp = suyas.filter((u) => u.estado === 'disponible').length;
-      const area = t.areaTechada ? m2(areaTotal(t)) : 'Área por confirmar';
+      const area = m2(areaTotal(t));
       return `
         <article class="modelo">
           ${t.planta.amoblada ? `<img src="${esc(recurso(t.planta.amoblada))}" alt="Planta amoblada del ${esc(t.nombre)}" loading="lazy">` : marcador(`Planta amoblada · ${t.nombre}`)}
@@ -456,6 +469,64 @@
     dlg.showModal();
   }
 
+  // ── Recorrido 360 ─────────────────────────────────────────────────────────
+  // Pannellum se carga solo al abrir un recorrido: quien no lo usa no paga
+  // sus ~65 KB ni descarga ningún panorama.
+
+  let promesaPannellum = null;
+  function cargarPannellum() {
+    if (window.pannellum) return Promise.resolve();
+    if (!promesaPannellum) {
+      promesaPannellum = new Promise((ok, mal) => {
+        const css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = recurso('vendor/pannellum.css');
+        document.head.append(css);
+        const js = document.createElement('script');
+        js.src = recurso('vendor/pannellum.js');
+        js.onload = ok;
+        js.onerror = mal;
+        document.head.append(js);
+      });
+    }
+    return promesaPannellum;
+  }
+
+  let visor360 = null;
+  function montarVisor() {
+    if (visor360) {
+      try { visor360.destroy(); } catch { /* ya no existe */ }
+      visor360 = null;
+    }
+    const el = app.querySelector('#visor360');
+    if (!el) return;
+    const t = tipoPorId[el.dataset.tipo];
+    cargarPannellum().then(() => {
+      if (!el.isConnected) return;
+      const scenes = {};
+      for (const e of t.escenas) {
+        scenes[e.id] = {
+          title: e.nombre,
+          type: 'equirectangular',
+          panorama: recurso(e.panorama),
+          hfov: 105,
+          yaw: e.yaw || 0,
+          hotSpots: (e.enlaces || []).map((h) => ({ pitch: h.pitch, yaw: h.yaw, type: 'scene', text: h.texto, sceneId: h.a })),
+        };
+      }
+      visor360 = window.pannellum.viewer(el, {
+        default: { firstScene: el.dataset.escena, sceneFadeDuration: 500, autoLoad: true, compass: false, showFullscreenCtrl: true },
+        scenes,
+      });
+      visor360.on('scenechange', (id) => {
+        fijarQuery({ escena: id });
+        app.querySelectorAll('[data-escena-btn]').forEach((b) => b.setAttribute('aria-current', String(b.dataset.escenaBtn === id)));
+      });
+    }).catch(() => {
+      el.innerHTML = '<p class="nota">No se pudo cargar el recorrido 360°.</p>';
+    });
+  }
+
   // ── Enrutado ───────────────────────────────────────────────────────────────
 
   function render({ foco = true } = {}) {
@@ -469,6 +540,7 @@
     else if (partes[0] === 'departamento' && partes[1]) html = vistaUnidad(partes[1]);
     else html = vistaNoEncontrada();
     app.innerHTML = html;
+    montarVisor();
     actualizarTitulo(partes);
     // Al cambiar de pantalla, el lector de pantalla arranca por el título nuevo.
     const h1 = app.querySelector('h1');
@@ -513,6 +585,12 @@
     }
     const elegir = t.closest('[data-elegir]');
     if (elegir) { e.preventDefault(); return refrescar({ d: elegir.dataset.elegir }); }
+    const btnEscena = t.closest('[data-escena-btn]');
+    if (btnEscena && visor360) {
+      e.preventDefault();
+      visor360.loadScene(btnEscena.dataset.escenaBtn);
+      return;
+    }
     const vista = t.closest('[data-vista]');
     if (vista) return refrescar({ vista: D.vistas[Number(vista.dataset.vista)].id });
     const modo = t.closest('[data-modo]');

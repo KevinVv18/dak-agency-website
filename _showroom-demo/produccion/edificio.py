@@ -746,4 +746,6 @@ def main():
     print(f'RENDER OK -> {a.out} (dispositivo: {bpy.context.scene.cycles.device})')
 
 
-main()
+# Importable desde interior.py sin disparar el render del exterior.
+if __name__ == '__main__':
+    main()

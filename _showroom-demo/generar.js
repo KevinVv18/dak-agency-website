@@ -105,7 +105,7 @@ function paginas(d) {
     lista.push({
       ruta: `departamento/${u.id}/`,
       titulo: `Dpto. ${u.id} · ${t.nombre} · ${p.nombre}`,
-      desc: `${t.resumen}, ${t.areaTechada} m² techados, piso ${u.piso}.`,
+      desc: `${t.resumen}${t.areaTechada == null ? '' : `, ${t.areaTechada} m² techados`}, piso ${u.piso}.`,
     });
   }
   return lista;
@@ -134,8 +134,23 @@ function shell(pag, v) {
 `;
 }
 
+// Toda ruta 'assets/...' citada en los datos tiene que existir: una imagen que
+// falta es un hueco en la demo justo cuando se está mostrando.
+async function recursosFaltantes(d) {
+  const rutas = new Set();
+  const recorrer = (v) => {
+    if (typeof v === 'string' && v.startsWith('assets/')) rutas.add(v);
+    else if (Array.isArray(v)) v.forEach(recorrer);
+    else if (v && typeof v === 'object') Object.values(v).forEach(recorrer);
+  };
+  recorrer(d);
+  const faltan = [];
+  for (const r of rutas) if (!(await stat(join(SITIO, r)).catch(() => null))) faltan.push(`recurso inexistente: ${r}`);
+  return faltan;
+}
+
 async function generar() {
-  const errores = validar(datos);
+  const errores = [...validar(datos), ...(await recursosFaltantes(datos))];
   if (errores.length) {
     console.error(`✗ ${errores.length} error(es) en los datos:\n  - ${errores.join('\n  - ')}`);
     process.exit(1);
@@ -154,6 +169,8 @@ async function generar() {
   // Renders optimizados para web (los produce produccion/). Reemplazar una
   // imagen exige renombrarla: el .htaccess cachea imágenes por meses.
   if (await stat(join(SITIO, 'assets')).catch(() => null)) await cp(join(SITIO, 'assets'), join(DIST, 'assets'), { recursive: true });
+  // Librerías de terceros del motor (Pannellum, MIT), comunes a todos los proyectos.
+  await cp(join(RAIZ, 'vendor'), join(DIST, 'vendor'), { recursive: true });
 
   const lista = paginas(datos);
   for (const pag of lista) {

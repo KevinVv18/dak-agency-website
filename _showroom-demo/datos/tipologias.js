@@ -4,6 +4,10 @@
 // procedural (14,4 x 22 m, 4 dptos por piso alrededor de un núcleo central):
 // en Chiclayo domina el depa Mivivienda de 3 dormitorios y 2 baños de ~65 m².
 
+// Planta amoblada, plano técnico y panoramas salen del mismo layout de
+// produccion/interior.py; los enlaces del recorrido (yaw) se calculan de las
+// posiciones reales de cámara.
+
 export default [
   {
     id: 'A',
@@ -20,11 +24,26 @@ export default [
       'Dos dormitorios',
       'Baño completo',
     ],
-    planta: { amoblada: null, plano: null },
+    planta: { amoblada: 'assets/plantas/tipo-a-amoblada-v1.webp', plano: 'assets/plantas/tipo-a-plano-v1.svg' },
     escenas: [
-      { id: 'sala', nombre: 'Sala y comedor' },
-      { id: 'cocina', nombre: 'Cocina' },
-      { id: 'principal', nombre: 'Dormitorio principal' },
+      {
+        id: 'sala',
+        nombre: 'Sala y comedor',
+        panorama: 'assets/360/tipo-a-sala-v1.jpg',
+        enlaces: [{ a: 'cocina', yaw: -41.4, pitch: -29.8, texto: 'Cocina' }, { a: 'principal', yaw: 5.3, pitch: -11.3, texto: 'Dormitorio principal' }],
+      },
+      {
+        id: 'cocina',
+        nombre: 'Cocina',
+        panorama: 'assets/360/tipo-a-cocina-v1.jpg',
+        enlaces: [{ a: 'sala', yaw: 138.6, pitch: -29.8, texto: 'Sala y comedor' }, { a: 'principal', yaw: 23.6, pitch: -13.9, texto: 'Dormitorio principal' }],
+      },
+      {
+        id: 'principal',
+        nombre: 'Dormitorio principal',
+        panorama: 'assets/360/tipo-a-principal-v1.jpg',
+        enlaces: [{ a: 'sala', yaw: -174.7, pitch: -11.3, texto: 'Sala y comedor' }, { a: 'cocina', yaw: -156.4, pitch: -13.9, texto: 'Cocina' }],
+      },
     ],
   },
   {
@@ -32,7 +51,7 @@ export default [
     nombre: 'Tipo B',
     dormitorios: 2,
     banos: 2,
-    areaTechada: 61.8,
+    areaTechada: 65.9,
     areaLibre: 0,
     resumen: '2 dormitorios + estudio, hacia el patio',
     ambientes: [
@@ -43,10 +62,20 @@ export default [
       'Estudio o ambiente flex',
       'Baño completo',
     ],
-    planta: { amoblada: null, plano: null },
+    planta: { amoblada: 'assets/plantas/tipo-b-amoblada-v1.webp', plano: 'assets/plantas/tipo-b-plano-v1.svg' },
     escenas: [
-      { id: 'sala', nombre: 'Sala y cocina' },
-      { id: 'principal', nombre: 'Dormitorio principal' },
+      {
+        id: 'sala',
+        nombre: 'Sala y cocina',
+        panorama: 'assets/360/tipo-b-sala-v1.jpg',
+        enlaces: [{ a: 'principal', yaw: 5.3, pitch: -11.3, texto: 'Dormitorio principal' }],
+      },
+      {
+        id: 'principal',
+        nombre: 'Dormitorio principal',
+        panorama: 'assets/360/tipo-b-principal-v1.jpg',
+        enlaces: [{ a: 'sala', yaw: -174.7, pitch: -11.3, texto: 'Sala y cocina' }],
+      },
     ],
   },
 ];
