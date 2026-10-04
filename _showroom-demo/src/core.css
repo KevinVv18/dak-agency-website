@@ -150,6 +150,18 @@ body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="p
 .portada__tl { transition: none; animation: acercar-lento 48s ease-in-out infinite alternate; }
 .portada--timelapse .portada__escena::after { z-index: 3; }
 @keyframes acercar-lento { from { transform: scale(1); } to { transform: scale(1.06); } }
+/* Capas: el cielo es 1,6 veces más ancho que el frente y corre detrás. Todas
+   las capas comparten la misma animación, así que al fundirse coinciden. */
+.portada__capa { position: absolute; inset: 0; }
+.portada__cielo { position: absolute; top: 0; left: -30%; width: 160%; height: 100%; animation: nubes 90s linear infinite alternate; }
+.portada__cielo img, .portada__frente { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.portada__estrellas { position: absolute; inset: 0; }
+.portada__estrellas i { position: absolute; border-radius: 50%; background: #fff; box-shadow: 0 0 4px rgb(255 255 255 / .7); animation: titilar 5s ease-in-out infinite alternate; }
+@keyframes nubes { from { transform: translateX(-9%); } to { transform: translateX(9%); } }
+@keyframes titilar { from { opacity: .25; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .portada__cielo, .portada__estrellas i { animation: none; }
+}
 /* Giro: imagen y franjas escalan juntas */
 .giro-zoom { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; }
 .escena__img--siguiente { opacity: 0; pointer-events: none; }

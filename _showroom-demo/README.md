@@ -79,18 +79,34 @@ blender -b -P _showroom-demo/produccion/edificio.py -- --vista web_frente --anch
   entrada. Poly Haven casi no tiene mobiliario actual: los muebles se modelan
   aquí y de Poly Haven salen telas, maderas y accesorios. La vara de acabado son
   los renders de Domaria (oct-2026).
+- **Modelos de BlenderKit** (gratuitos, royalty free o CC0): sofá, comedor,
+  mesa de centro, aparador, taburetes, lámpara de pie, colgante de ratán,
+  refrigeradora, cama principal, veladores, alfombras y plantas. Se bajan con
+  la API a `~/tools/recursos-showroom/blenderkit/<nombre>.blend` (más
+  `registro.json` con id y licencia) y `muebles.bk()` los instancia a la medida
+  del hueco del mueble que reemplazan. Si falta un archivo, vuelve al mueble
+  modelado. El token va solo como variable de entorno, nunca en el repo.
+- **Escena del exterior**: barrio detallado de ±440 m, anillo de manzanas
+  simples hasta 950 m (`ciudad_lejana`) para que el horizonte sea ciudad, autos,
+  mototaxis, gente y palmeras de Sketchfab (CC-BY, créditos en el menú). Las
+  casas se acumulan en pocas mallas por material: la escena se arma en ~40 s.
+- **Portada por capas** (`edificio.py --vista portada --capas --timelapse
+  dia,atardecer,crepusculo,noche`): cada estado sale como frente con cielo
+  transparente más un cielo 1,6 veces más ancho. La web corre el cielo detrás
+  del frente (nubes en movimiento) y enciende estrellas en crepúsculo y noche.
 - Noche (`edificio.py --noche`): cada ventana del edificio tiene un cuarto real
   detrás (vaciado del volumen con un booleano), con plafón cálido y siluetas de
   muebles; luz rasante en las celosías, pista mojada, LED en el cerco y cielo
   de hora azul. Antes el muro macizo tapaba los interiores y las ventanas no se
   veían encendidas.
-- **Giro 360 de dron** (`edificio.py --orbita 60`): la cámara da la vuelta al
-  edificio a altura de dron y deja un cuadro cada 6°, más `franjas.json` (piso
-  por cuadro) y `rotulos.json` (dónde caen los letreros). La escena se arma una
-  sola vez; los cuadros existentes se saltan. Los vecinos de dos lotes por lado
-  van como maqueta translúcida (`--fantasma`), y la fachada posterior es la
-  delantera reflejada. En la web se arrastra para girar; la portada usa los
-  mismos cuadros como intro que pasa del día a la noche.
+- **Giro 360 de dron** (`edificio.py --orbita 72`): la cámara da la vuelta al
+  edificio con altura variable (más alta de espaldas, sobre los techos) y deja
+  un cuadro cada 5°, más `franjas.json` (piso por cuadro) y `rotulos.json`
+  (dónde caen los letreros). La escena se arma una sola vez; los cuadros
+  existentes se saltan. `--fantasma` da la variante con los vecinos
+  translúcidos, que la web funde al elegir un piso. La fachada posterior es la
+  delantera reflejada. En la web se arrastra para girar (con fundido entre
+  cuadros y algo de inclinación vertical) y se acerca con la rueda o pellizco.
 - **Vistas de calle con vecino fantasma**: las diagonales tienen una variante
   `--fantasma` que la web funde encima al elegir un piso, así la franja no cae
   sobre la casa de al lado.

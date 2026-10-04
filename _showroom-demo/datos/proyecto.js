@@ -19,11 +19,15 @@ export default {
   // Texto blanco sobre el acento: contraste 5,1 (AA).
   estilo: { acento: '#a9581f', acentoTinta: '#ffffff' },
   // Portada: timelapse de cámara fija del día a la noche (edificio.py --vista
-  // portada --timelapse), con pase de realismo. Se funden en bucle.
+  // portada --capas --timelapse), con pase de realismo. Cada estado es un
+  // frente recortado y un cielo más ancho que corre detrás; se funden en bucle.
   timelapse: ['dia', 'atardecer', 'crepusculo', 'noche'].map((e) => ({
     id: e,
-    imagen: `assets/portada/${e}-v1.webp`,
-    imagenMovil: `assets/portada/${e}-movil-v1.webp`,
+    imagen: `assets/portada/${e}-v2.webp`,
+    imagenMovil: `assets/portada/${e}-movil-v2.webp`,
+    cielo: `assets/portada/${e}-cielo-v1.webp`,
+    cieloMovil: `assets/portada/${e}-cielo-movil-v1.webp`,
+    estrellas: { crepusculo: 0.35, noche: 1 }[e] || 0,
   })),
   modoDemo: true,
   avisoDemo: 'Proyecto conceptual · inventario, precios y vistas de ejemplo',
@@ -53,6 +57,7 @@ export default {
     'Date Palm, evolveduk',
     'Chinese Banyan (Ficus microcarpa), Valery.Li',
     'Personas: Renderpeople',
+    'Muebles y plantas: BlenderKit (gratuitos)',
     'Texturas y cielos: Poly Haven (CC0)',
   ],
 };

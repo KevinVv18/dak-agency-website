@@ -201,6 +201,39 @@
 
   // ── Portada ────────────────────────────────────────────────────────────────
 
+  // Un estado del timelapse. Con cielo propio, el frente (edificio y barrio)
+  // viene recortado sobre transparente y el cielo, más ancho, corre detrás:
+  // las nubes avanzan y, al anochecer, aparecen las estrellas.
+  function capaTimelapse(e, k) {
+    const movil = vertical.matches;
+    const frente = (movil && e.imagenMovil) || e.imagen;
+    const cielo = (movil && e.cieloMovil) || e.cielo;
+    const oculto = k ? ' style="opacity:0"' : '';
+    const prioridad = k ? '' : ' fetchpriority="high"';
+    if (!cielo) return `<img class="portada__img portada__tl" data-tl="${k}" src="${esc(recurso(frente))}" alt=""${oculto}${prioridad}>`;
+    return `
+      <div class="portada__capa portada__tl" data-tl="${k}"${oculto}>
+        <div class="portada__cielo">
+          <img src="${esc(recurso(cielo))}" alt=""${prioridad}>
+          ${e.estrellas ? estrellas(e.estrellas) : ''}
+        </div>
+        <img class="portada__frente" src="${esc(recurso(frente))}" alt=""${prioridad}>
+      </div>`;
+  }
+
+  // Estrellas en la mitad alta del cielo, siempre en las mismas posiciones
+  // (semilla fija) para que crepúsculo y noche coincidan al fundirse.
+  function estrellas(brillo) {
+    let s = 7;
+    const azar = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+    const puntos = Array.from({ length: 140 }, () => {
+      const t = azar();
+      const tam = t > 0.93 ? 2.4 : t > 0.7 ? 1.7 : 1.1;
+      return `<i style="left:${(azar() * 100).toFixed(2)}%;top:${(azar() ** 1.4 * 48).toFixed(2)}%;width:${tam}px;height:${tam}px;animation-delay:-${(azar() * 6).toFixed(2)}s;animation-duration:${(3 + azar() * 4).toFixed(2)}s"></i>`;
+    }).join('');
+    return `<div class="portada__estrellas" style="opacity:${brillo}">${puntos}</div>`;
+  }
+
   function vistaPortada() {
     const p = D.proyecto;
     // La portada usa la imagen que el proyecto elija o, si no, la primera vista.
@@ -215,7 +248,7 @@
       <main class="portada${tl ? ' portada--timelapse' : ''}">
         <div class="portada__escena" aria-hidden="true">
           ${tl
-            ? tl.map((e, k) => `<img class="portada__img portada__tl" data-tl="${k}" src="${esc(recurso((vertical.matches && e.imagenMovil) || e.imagen))}" alt=""${k ? ' style="opacity:0"' : ' fetchpriority="high"'}>`).join('')
+            ? tl.map((e, k) => capaTimelapse(e, k)).join('')
             : `${dia ? `<img class="portada__img" src="${esc(recurso(dia))}" alt="" fetchpriority="high">` : marcador('Video de portada', 'Fachada al atardecer')}
           ${noche ? `<img class="portada__img portada__img--noche" src="${esc(recurso(noche))}" alt="">` : ''}`}
         </div>
@@ -801,7 +834,13 @@
     if (tl) cancelAnimationFrame(tl.raf);
     tl = null;
     const imgs = [...app.querySelectorAll('[data-tl]')];
-    if (imgs.length < 2 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (imgs.length < 2) return;
+    // el cielo pesa poco y llega antes: sin esperar al frente se vería un
+    // cielo vacío. El primer estado aparece cuando sus dos capas están listas.
+    const cargadas = () => imgs.every((c) => (c.tagName === 'IMG' ? [c] : [...c.querySelectorAll('img')]).every((im) => im.complete));
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let revelar = !cargadas();
+    if (revelar) imgs[0].style.opacity = 0;
     const n = imgs.length;
     const orden = [...Array(n).keys(), ...Array.from({ length: n - 2 }, (_, k) => n - 2 - k)];
     const SOSTEN = 2600;
@@ -810,7 +849,13 @@
     tl = est;
     const paso = (t) => {
       if (tl !== est || !imgs[0].isConnected) return;
-      if (!imgs.every((im) => im.complete)) { est.raf = requestAnimationFrame(paso); return; }
+      if (!cargadas()) { est.raf = requestAnimationFrame(paso); return; }
+      if (revelar) {
+        revelar = false;
+        imgs[0].style.transition = 'opacity .9s ease';
+        setTimeout(() => { imgs[0].style.transition = ''; }, 1000);
+      }
+      if (quieto) { imgs[0].style.opacity = 1; return; }
       if (!est.t0) est.t0 = t;
       const tramo = SOSTEN + FUNDIDO;
       const u = (t - est.t0) % (orden.length * tramo);
@@ -903,7 +948,7 @@
     const v = cont && D.vistas[Number(cont.dataset.vistaActual)];
     if (!v?.giro) return;
     giro.tocado = Boolean(query().giro);
-    centrarZoomGiro(1.1);
+    centrarZoomGiro(1.18);
     const n = v.giro.cuadros;
     const modo = modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia');
     const orden = [...Array(n).keys()].sort((a, b) => (a % 4 ? 1 : 0) - (b % 4 ? 1 : 0));
@@ -1002,7 +1047,7 @@
     // arrastrar a la izquierda trae el costado derecho: el edificio sigue a la mano
     mostrarCuadro(giro.arr.k - dx / 14);
     // y en vertical la toma se inclina, con resistencia, hasta el borde del cuadro
-    zoomG.y = giro.arr.zy + dy * 0.55;
+    zoomG.y = giro.arr.zy + dy * 0.75;
     aplicarZoomGiro();
   });
   document.addEventListener('pointerup', (e) => {

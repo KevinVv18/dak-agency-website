@@ -111,6 +111,7 @@ def argumentos():
     p.add_argument('--solo-franjas', action='store_true', help='escribir franjas.json del giro sin renderizar')
     p.add_argument('--timelapse', default='', help='estados separados por coma (dia,atardecer,crepusculo,noche): una imagen por estado, misma escena')
     p.add_argument('--timelapse-dir', default='timelapse')
+    p.add_argument('--capas', action='store_true', help='timelapse en capas: primer plano sin cielo + cielo ancho aparte')
     return p.parse_args(argv)
 
 
@@ -793,14 +794,14 @@ def entorno(P, M):
     W, r = P['frente'], P['retiro']
     # Avenida con berma central, como las de Santa Victoria:
     # vereda | pista | berma | pista | vereda, y la manzana de enfrente.
-    caja('vereda', -90, 100, -r - 3.2, -r, 0, 0.15, M['concreto'], bisel=0)
+    caja('vereda', -460, 470, -r - 3.2, -r, 0, 0.15, M['concreto'], bisel=0)
     caja('jardin_retiro', -0.6, W + 0.6, -r, 0, 0, 0.05, M['concreto'], bisel=0)
-    caja('pista', -90, 100, -r - 11.5, -r - 3.2, -0.05, 0.0, M['asfalto'], bisel=0)
-    caja('berma', -90, 100, -r - 15, -r - 11.5, 0, 0.18, M['grass'], bisel=0)
-    caja('pista2', -90, 100, -r - 23.3, -r - 15, -0.05, 0.0, M['asfalto'], bisel=0)
-    caja('vereda2', -90, 100, -r - 26.5, -r - 23.3, 0, 0.15, M['concreto'], bisel=0)
-    caja('pista_posterior', -90, 100, 40, 48, -0.05, 0.0, M['asfalto'], bisel=0)
-    caja('suelo', -160, 180, -160, 200, -0.06, -0.05, M['concreto'], bisel=0)
+    caja('pista', -460, 470, -r - 11.5, -r - 3.2, -0.05, 0.0, M['asfalto'], bisel=0)
+    caja('berma', -460, 470, -r - 15, -r - 11.5, 0, 0.18, M['grass'], bisel=0)
+    caja('pista2', -460, 470, -r - 23.3, -r - 15, -0.05, 0.0, M['asfalto'], bisel=0)
+    caja('vereda2', -460, 470, -r - 26.5, -r - 23.3, 0, 0.15, M['concreto'], bisel=0)
+    caja('pista_posterior', -460, 470, 40, 48, -0.05, 0.0, M['asfalto'], bisel=0)
+    caja('suelo', -900, 900, -900, 900, -0.06, -0.05, M['concreto'], bisel=0)
     barrio(P, M)
 
     # Árboles: faiques y algarrobos en la berma y al fondo, jacarandá en vereda.
@@ -829,8 +830,8 @@ def entorno(P, M):
     poblar(P, random.Random(23))
 
     # Sardineles: el borde de concreto que separa pista, berma y vereda.
-    caja('sardinel', -30, 40, -r - 11.65, -r - 11.5, -0.05, 0.22, M['concreto'], bisel=0.01)
-    caja('sardinel', -30, 40, -r - 3.35, -r - 3.2, -0.05, 0.2, M['concreto'], bisel=0.01)
+    caja('sardinel', -460, 470, -r - 11.65, -r - 11.5, -0.05, 0.22, M['concreto'], bisel=0.01)
+    caja('sardinel', -460, 470, -r - 3.35, -r - 3.2, -0.05, 0.2, M['concreto'], bisel=0.01)
     pasto(-16, 32, -r - 15, -r - 11.65, 0.18)
 
 
@@ -949,8 +950,8 @@ def barrio(P, M):
     # nuestra vereda: los vecinos inmediatos fijan las medianeras
     global LOTE
     LOTE = {}
-    izq = fila_casas(-0.7, -190, -r + 0.2, -1, M, rnd, sueltos=2)
-    der = fila_casas(W + 0.7, 200, -r + 0.2, -1, M, rnd, sueltos=2)
+    izq = fila_casas(-0.7, -440, -r + 0.2, -1, M, rnd, sueltos=2)
+    der = fila_casas(W + 0.7, 450, -r + 0.2, -1, M, rnd, sueltos=2)
     # Medianeras tarrajeadas con cada losa marcada en el color de acento, como en
     # Varú I: en el giro 360 los costados se ven enteros y un muro de ladrillo
     # de 17 m se leía a obra gris.
@@ -961,46 +962,50 @@ def barrio(P, M):
         zl = P['h_piso1'] + i * P['h_piso']
         caja('losa_lateral', -0.08, 0.0, 0.0, D, zl - 0.09, zl + 0.09, M['acento'], bisel=0)
         caja('losa_lateral', W, W + 0.08, 0.0, D, zl - 0.09, zl + 0.09, M['acento'], bisel=0)
-    # jardineras con helechos colgantes en los costados, cerca de las esquinas:
-    # la medianera deja de ser un plano blanco en el giro
-    helecho = VEGETACION.get('fern_02')
-    rj = random.Random(5)
-    for i in range(P['pisos']):
-        zj = P['h_piso1'] + i * P['h_piso'] + 0.1
-        for ya, yb in ((2.2, 4.4), (D - 4.4, D - 2.2)):
-            for xa, xb, xh in ((-0.45, 0.0, -0.25), (W, W + 0.45, W + 0.25)):
-                caja('jardinera_lateral', xa, xb, ya, yb, zj, zj + 0.3, M['acento'])
-                if helecho:
-                    for k in range(5):
-                        yy = ya + 0.25 + k * (yb - ya - 0.5) / 4
-                        instancia(helecho, xh, yy, zj + 0.27, alto=rj.uniform(0.35, 0.5), giro=rj.uniform(0, 6.28))
-                        col = instancia(helecho, xh + (0.12 if xh > W else -0.12), yy + 0.1, zj + 0.25, alto=rj.uniform(0.45, 0.6), giro=rj.uniform(0, 6.28))
-                        col.rotation_euler.y = math.radians(rj.uniform(70, 110)) * (1 if xh > W else -1)
     # el marco de acento dobla la esquina: paños de 1,8 m al frente y al fondo
     for y0, y1 in ((0.0, 1.8), (D - 1.8, D)):
         caja('esquina_acento', -0.1, 0.0, y0, y1, P['h_piso1'], z_top, M['acento'], bisel=0)
         caja('esquina_acento', W, W + 0.1, y0, y1, P['h_piso1'], z_top, M['acento'], bisel=0)
     LOTE = lote
     # manzana de enfrente, mirando hacia nosotros
-    fila_casas(-190, 200, -r - 26.5, 1, M, rnd, pisos_max=4)
+    fila_casas(-440, 450, -r - 26.5, 1, M, rnd, pisos_max=4)
     # manzana posterior: sus espaldas se ven por detrás del edificio
-    fila_casas(-190, 200, 40, 1, M, rnd, pisos_max=3, fondo=(17, 20))
+    fila_casas(-440, 450, 40, 1, M, rnd, pisos_max=3, fondo=(17, 20))
     # más allá, manzanas hasta el horizonte en los cuatro sentidos: desde el
     # dron y desde la azotea de enfrente el barrio no puede terminarse
-    for y in (48, 88, 128):
-        fila_casas(-190, 200, y, -1, M, rnd, pisos_max=3, fondo=(17, 20))
-        fila_casas(-190, 200, y + 40 - 8, 1, M, rnd, pisos_max=3, fondo=(12, 14))
-        caja('pista_fondo', -190, 200, y + 32, y + 40, -0.05, 0.0, M['asfalto'], bisel=0)
-    for y in (-58, -98, -138):
-        caja('pista_sur', -190, 200, y, y + 8, -0.05, 0.0, M['asfalto'], bisel=0)
-        fila_casas(-190, 200, y, 1, M, rnd, pisos_max=3, fondo=(17, 20))
-        fila_casas(-190, 200, y - 32, -1, M, rnd, pisos_max=3, fondo=(12, 14))
+    for y in (48, 88, 128, 168, 208):
+        fila_casas(-440, 450, y, -1, M, rnd, pisos_max=3, fondo=(17, 20))
+        fila_casas(-440, 450, y + 40 - 8, 1, M, rnd, pisos_max=3, fondo=(12, 14))
+        caja('pista_fondo', -440, 450, y + 32, y + 40, -0.05, 0.0, M['asfalto'], bisel=0)
+    for y in (-58, -98, -138, -178, -218):
+        caja('pista_sur', -440, 450, y, y + 8, -0.05, 0.0, M['asfalto'], bisel=0)
+        fila_casas(-440, 450, y, 1, M, rnd, pisos_max=3, fondo=(17, 20))
+        fila_casas(-440, 450, y - 32, -1, M, rnd, pisos_max=3, fondo=(12, 14))
+    ciudad_lejana(M, rnd)
     volcar_lote()
     LOTE = None
     if FANTASMA:
         # dos lotes por lado: desde el dron, el segundo vecino también tapa los pisos bajos
         fantasmas(izq[:2] + der[:2], P)
     arboleda(P, rnd)
+
+
+def ciudad_lejana(M, rnd):
+    """Anillo de manzanas simples más allá del barrio detallado: desde el dron
+    el horizonte es ciudad, no el borde de un plano. Solo volúmenes, techos y
+    tanques; a esa distancia el detalle no se ve."""
+    tintes = [M['casas'][c] for c, _ in PALETA_CASAS] + [M['ladrillo'], M['cemento']]
+    for _ in range(2600):
+        a = rnd.uniform(0, 2 * math.pi)
+        d = rnd.uniform(470, 950) if rnd.random() < 0.7 else rnd.uniform(260, 470)
+        x, y = 7 + d * math.cos(a), 11 + d * math.sin(a)
+        if -440 < x < 450 and -250 < y < 250:
+            continue
+        w, f = rnd.uniform(7, 12), rnd.uniform(12, 20)
+        h = 0.3 + rnd.choice((1, 2, 2, 3, 3, 4)) * 2.7
+        caja('lejana', x, x + w, y, y + f, 0, h, rnd.choice(tintes), bisel=0)
+        if rnd.random() < 0.6:
+            cilindro_lote(x + w / 2, y + f / 2, h, h + 1.1, 0.5, M['tanque'], lados=10)
 
 
 def arboleda(P, rnd):
@@ -1017,20 +1022,20 @@ def arboleda(P, rnd):
     def libre(x, y):
         return not (-5 < x < W + 5 and -r - 4 < y < D + 4) and despejado(x, y)
     veredas = [-r - 1.9, -r - 24.8, 40.6, 47.4]
-    for y in (48, 88, 128):
+    for y in (48, 88, 128, 168, 208):
         veredas += [y + 31.4, y + 40.6]
-    for y in (-58, -98, -138):
+    for y in (-58, -98, -138, -178, -218):
         veredas += [y - 0.6, y + 8.6]
     for y in veredas:
-        x = -188 + rnd.uniform(0, 6)
-        while x < 198:
+        x = -438 + rnd.uniform(0, 6)
+        while x < 448:
             if libre(x, y) and rnd.random() < 0.85:
                 instancia(rnd.choice(pool), x, y, 0.15, rnd.uniform(5.0, 9.0), rnd.uniform(0, 6.28))
             x += rnd.uniform(7, 11)
     # fondos de manzana: copas que asoman entre las azoteas
-    for y in (19.5, 67.5, 107.5, 147.5, -50.5, -77.5, -117.5):
-        for _ in range(55):
-            x = rnd.uniform(-188, 198)
+    for y in (19.5, 67.5, 107.5, 147.5, 187.5, 227.5, -50.5, -77.5, -117.5, -157.5, -197.5):
+        for _ in range(120):
+            x = rnd.uniform(-438, 448)
             if libre(x, y):
                 instancia(rnd.choice(pool), x, y + rnd.uniform(-1.5, 1.5), 0.0, rnd.uniform(6, 11), rnd.uniform(0, 6.28))
 
@@ -1502,6 +1507,28 @@ def cielo_estado(e):
             sol.data.energy = 0.0
 
 
+def cielo_solo(s, ruta, ancho=1.6):
+    """Solo el cielo, desde la misma cámara pero `ancho` veces más abierto en
+    horizontal: la capa que se desplaza detrás del edificio en la portada."""
+    ocultos = [o for o in s.objects if o.type != 'CAMERA' and not o.hide_render]
+    for o in ocultos:
+        o.hide_render = True
+    cam = s.camera.data
+    lente, rx, fondo, muestras, sy = cam.lens, s.render.resolution_x, s.render.film_transparent, s.cycles.samples, cam.shift_y
+    cam.lens = lente / ancho
+    # el desplazamiento de lente es fracción del ancho: se corrige para que el
+    # horizonte quede a la misma altura que en el primer plano
+    cam.shift_y = sy / ancho
+    s.render.resolution_x = int(rx * ancho)
+    s.render.film_transparent = False
+    s.cycles.samples = 16
+    s.render.filepath = str(ruta)
+    bpy.ops.render.render(write_still=True)
+    cam.lens, s.render.resolution_x, s.render.film_transparent, s.cycles.samples, cam.shift_y = lente, rx, fondo, muestras, sy
+    for o in ocultos:
+        o.hide_render = False
+
+
 def timelapse(a):
     """Una imagen por estado (día → noche) con la misma escena y la misma
     cámara: la portada las funde en bucle como un timelapse. Las luces y los
@@ -1537,8 +1564,15 @@ def timelapse(a):
             r.inputs['To Min'].default_value = 0.6 + (lo - 0.6) * e['mojado']
             r.inputs['To Max'].default_value = 1.0 + (hi - 1.0) * e['mojado']
         s.view_settings.exposure = e['exposicion']
+        # primer plano con el cielo transparente: en la web el cielo va en su
+        # propia capa, más ancha, que se desplaza (nubes que pasan, estrellas
+        # que aparecen al anochecer)
+        s.render.film_transparent = a.capas
+        s.render.image_settings.color_mode = 'RGBA' if a.capas else 'RGB'
         s.render.filepath = str(salida / f'{nombre}.png')
         bpy.ops.render.render(write_still=True)
+        if a.capas:
+            cielo_solo(s, salida / f'{nombre}_cielo.png')
         print(f'ESTADO OK {nombre}', flush=True)
     print(f'TIMELAPSE OK -> {salida}')
 

@@ -331,6 +331,62 @@ def pieza(id_, x, y, z, alto, giro=0.0):
     return None
 
 
+# ── Modelos de BlenderKit (gratuitos, licencia royalty free o CC0) ──────────
+# Bajados con la API a recursos-showroom/blenderkit/<nombre>.blend; registro.json
+# guarda id, título y licencia. Si falta el archivo, se usa el mueble modelado.
+BLENDERKIT = E.RECURSOS / 'blenderkit'
+BK = {}
+
+
+def cargar_bk(nombre):
+    """Agrega la colección principal del .blend y devuelve (colección, medidas,
+    z mínima) con el origen de instancia en el centro de la base."""
+    if nombre in BK:
+        return BK[nombre]
+    f = BLENDERKIT / f'{nombre}.blend'
+    if not f.exists():
+        BK[nombre] = None
+        return None
+    with bpy.data.libraries.load(str(f), link=False) as (src, dst):
+        dst.collections = src.collections[:1]
+    col = dst.collections[0]
+    # se vincula un momento para evaluar las matrices y medir
+    bpy.context.scene.collection.children.link(col)
+    bpy.context.view_layer.update()
+    pts = [o.matrix_world @ Vector(c) for o in col.all_objects if o.type == 'MESH' for c in o.bound_box]
+    bpy.context.scene.collection.children.unlink(col)
+    mn = Vector([min(q[i] for q in pts) for i in range(3)])
+    mx = Vector([max(q[i] for q in pts) for i in range(3)])
+    col.instance_offset = ((mn.x + mx.x) / 2, (mn.y + mx.y) / 2, mn.z)
+    BK[nombre] = (col, mx - mn, mn.z)
+    return BK[nombre]
+
+
+def bk(nombre, x, y, z=0.0, giro=0.0, ancho=None, prof=None, alto=None, colgar=False):
+    """Instancia un modelo de BlenderKit. Las medidas van en ejes locales del
+    modelo (ancho = x, prof = y); las que no se dan toman la escala media de
+    las dadas. colgar=True lo da vuelta y lo cuelga del techo en z."""
+    m = cargar_bk(nombre)
+    if not m:
+        return None
+    col, d, _ = m
+    pedidas = {0: ancho, 1: prof, 2: alto}
+    k = {i: v / d[i] for i, v in pedidas.items() if v}
+    media = sum(k.values()) / len(k) if k else 1.0
+    e = bpy.data.objects.new(nombre, None)
+    e.instance_type = 'COLLECTION'
+    e.instance_collection = col
+    e.scale = tuple(k.get(i, media) for i in range(3))
+    e.location = (x, y, z)
+    e.rotation_euler = (math.pi if colgar else 0.0, 0.0, giro)
+    bpy.context.collection.objects.link(e)
+    return e
+
+
+def hay_bk(*nombres):
+    return all((BLENDERKIT / f'{n}.blend').exists() for n in nombres)
+
+
 # ── Muebles ──────────────────────────────────────────────────────────────────
 
 def sofa(M, x, y, ancho, giro=0.0, prof=0.92):
@@ -672,10 +728,11 @@ def cocina(M):
     bloque('campana', 1.04, 1.54, 5.5, 5.94, 1.62, 1.72, M['negro'], r=0.004)
     bloque('chimenea', 1.17, 1.41, 5.66, 5.94, 1.72, ALTO, M['negro'], r=0.004)
     # refrigeradora de dos puertas
-    bloque('refri', 2.12, 2.76, 5.26, 5.94, 0, 1.85, M['acero_cepillado'], r=0.02)
-    E.caja('refri_junta', 2.438, 2.442, 5.255, 5.26, 0.02, 1.83, M['negro'], bisel=0)
-    for xx in (2.41, 2.47):
-        bloque('tirador', xx - 0.008, xx + 0.008, 5.22, 5.255, 0.8, 1.5, M['acero'], r=0.006)
+    if not bk('refri', 2.44, 5.6, ancho=0.64, prof=0.68, alto=1.85):
+        bloque('refri', 2.12, 2.76, 5.26, 5.94, 0, 1.85, M['acero_cepillado'], r=0.02)
+        E.caja('refri_junta', 2.438, 2.442, 5.255, 5.26, 0.02, 1.83, M['negro'], bisel=0)
+        for xx in (2.41, 2.47):
+            bloque('tirador', xx - 0.008, xx + 0.008, 5.22, 5.255, 0.8, 1.5, M['acero'], r=0.006)
     # barra abierta a la sala, con tope de cuarzo en cascada
     bloque('barra', 0.15, 2.6, 3.55, 3.95, 0, 1.0, M['blanco_mate'], r=0.006)
     bloque('barra_tope', 0.1, 2.65, 3.42, 3.98, 1.0, 1.04, s, r=0.006)
@@ -730,29 +787,48 @@ def amoblar(L, tipo, M):
     """Muebles por ambiente con las coordenadas de LAYOUT_A (el B comparte
     estructura; cambia el dormitorio 3 por un estudio)."""
     # ── sala-comedor (0..6 x 0..3.8): ventanal en y=0, entrada en x=6
-    sofa(M, 4.5, 0.72, 2.2, giro=math.pi)            # respaldo al ventanal, mira a la TV
-    alfombra(M, 3.35, 5.65, 1.25, 3.05)
-    mesa_centro(M, 4.5, 2.05)
-    aparador(M, 4.9, 3.52, 1.6, prof=0.4, giro=0)
-    tv(M, 4.9, 3.72, 1.05, ancho=1.23, giro=0)
-    pieza('ceramic_vase_03', 4.35, 3.52, 0.52, 0.34)
-    pieza('wicker_basket_01', 5.45, 3.52, 0.52, 0.12)
-    lampara_pie(M, 5.6, 0.45)
-    pieza('potted_plant_02', 0.32, 0.38, 0, 1.25)
-    mesa_redonda(M, 1.35, 1.75)
-    for (dx, dy, g) in ((0, -0.62, 0), (0, 0.62, math.pi), (-0.62, 0, -math.pi / 2), (0.62, 0, math.pi / 2)):
-        silla_y(M, 1.35 + dx, 1.75 + dy, g)
-    pieza('ceramic_vase_02', 1.35, 1.75, 0.755, 0.24)
-    pieza('modern_ceiling_lamp_01', 1.35, 1.75, 1.75, ALTO - 1.75)
-    luz('POINT', 1.35, 1.75, 1.82, 18, tam=0.08)
+    if hay_bk('sofa', 'alfombra', 'mesa_centro', 'aparador', 'lampara_pie', 'planta_ave', 'comedor', 'colgante'):
+        # modelos de BlenderKit: tapizados, maderas y fibras con textura real
+        bk('sofa', 4.5, 0.74, giro=math.pi, ancho=2.4, prof=1.0, alto=0.8)
+        bk('alfombra', 4.5, 2.15, giro=math.pi / 2, ancho=1.85, prof=2.3, alto=0.02)
+        bk('mesa_centro', 4.5, 2.1, ancho=0.9)
+        bk('aparador', 4.9, 3.53, ancho=1.6, prof=0.42, alto=0.5)
+        tv(M, 4.9, 3.72, 1.05, ancho=1.23, giro=0)
+        pieza('ceramic_vase_03', 4.3, 3.53, 0.5, 0.34)
+        pieza('wicker_basket_01', 5.5, 3.53, 0.5, 0.12)
+        pieza('ceramic_vase_01', 4.38, 2.06, 0.34, 0.22)
+        bk('lampara_pie', 5.6, 0.45, alto=1.55)
+        luz('POINT', 5.6, 0.45, 1.42, 28, tam=0.06)
+        bk('planta_ave', 0.42, 0.48, alto=1.75, giro=0.6)
+        bk('comedor', 1.35, 1.75, ancho=1.5, giro=math.radians(12))
+        pieza('ceramic_vase_02', 1.35, 1.75, 0.76, 0.24)
+        bk('colgante', 1.35, 1.75, z=ALTO, ancho=0.5, colgar=True)
+        luz('POINT', 1.35, 1.75, ALTO - 0.55, 22, tam=0.08)
+    else:
+        sofa(M, 4.5, 0.72, 2.2, giro=math.pi)            # respaldo al ventanal, mira a la TV
+        alfombra(M, 3.35, 5.65, 1.25, 3.05)
+        mesa_centro(M, 4.5, 2.05)
+        aparador(M, 4.9, 3.52, 1.6, prof=0.4, giro=0)
+        tv(M, 4.9, 3.72, 1.05, ancho=1.23, giro=0)
+        pieza('ceramic_vase_03', 4.35, 3.52, 0.52, 0.34)
+        pieza('wicker_basket_01', 5.45, 3.52, 0.52, 0.12)
+        lampara_pie(M, 5.6, 0.45)
+        pieza('potted_plant_02', 0.32, 0.38, 0, 1.25)
+        mesa_redonda(M, 1.35, 1.75)
+        for (dx, dy, g) in ((0, -0.62, 0), (0, 0.62, math.pi), (-0.62, 0, -math.pi / 2), (0.62, 0, math.pi / 2)):
+            silla_y(M, 1.35 + dx, 1.75 + dy, g)
+        pieza('ceramic_vase_02', 1.35, 1.75, 0.755, 0.24)
+        pieza('modern_ceiling_lamp_01', 1.35, 1.75, 1.75, ALTO - 1.75)
+        luz('POINT', 1.35, 1.75, 1.82, 18, tam=0.08)
     cuadro(M, 5.9, 1.25, 1.6, 0.9, 0.65, 'arte_1', giro=-math.pi / 2)
     cuadro(M, 0.125, 2.95, 1.6, 0.5, 0.7, 'arte_2', giro=math.pi / 2, marco='negro')
     cortina(M, 0.45, 1.35, 0.17, eje='x')
     cortina(M, 4.65, 5.55, 0.17, eje='x')
     cortina(M, 0.45, 0.95, 0.15, eje='y', pliegues=7)
     cortina(M, 1.9, 2.35, 0.15, eje='y', pliegues=7)
-    for xx in (0.6, 1.3, 2.0):
-        taburete(M, xx, 3.18)
+    for k, xx in enumerate((0.6, 1.3, 2.0)):
+        if not bk('taburete', xx, 3.12, giro=math.pi / 2 + (-0.15, 0.1, -0.05)[k], alto=0.98):
+            taburete(M, xx, 3.18)
 
     cocina(M)
 
@@ -782,11 +858,19 @@ def amoblar(L, tipo, M):
         lampara_mesa(M, 4.6, 6.3, 0.76)
 
     # ── dormitorio principal (0..4.2 x 8.3..11): cama queen, cabecera en y=11
-    cama(M, 2.0, 9.78, 1.6, giro=0)
-    for xx in (0.82, 3.18):
-        velador(M, xx, 10.7, giro=0)
+    if hay_bk('cama', 'velador', 'alfombra', 'planta_monstera'):
+        bk('alfombra', 2.0, 9.3, giro=math.pi / 2, ancho=1.7, prof=2.6, alto=0.02)
+        bk('cama', 2.0, 9.86, ancho=1.75)
+        for xx in (0.78, 3.22):
+            bk('velador', xx, 10.75, ancho=0.46, alto=0.52)
+            lampara_mesa(M, xx, 10.78, 0.52)
+        bk('planta_monstera', 0.38, 9.62, alto=1.1, giro=1.2)
+    else:
+        cama(M, 2.0, 9.78, 1.6, giro=0)
+        for xx in (0.82, 3.18):
+            velador(M, xx, 10.7, giro=0)
+        alfombra(M, 0.95, 3.05, 8.45, 10.0)
     ropero(M, 0.13, 1.05, 8.36, 8.92, frente='+y')
-    alfombra(M, 0.95, 3.05, 8.45, 10.0)
     cuadro(M, 2.0, 10.9, 1.78, 1.2, 0.5, 'arte_3', giro=0)
     cortina(M, 8.85, 9.15, 0.15, eje='y', pliegues=7)
     cortina(M, 10.15, 10.5, 0.15, eje='y', pliegues=7)
