@@ -227,6 +227,7 @@ def blender_main(a):
         'loza': mat('loza', (0.92, 0.92, 0.92, 1), 0.08),
         'negro': mat('negro', (0.01, 0.01, 0.01, 1), 0.3),
         'cortina': mat('cortina_visillo', (0.92, 0.9, 0.86, 1), 0.9, transmision=0.6),
+        'pantalla_luz': E.emisivo('pantalla_luz', (1.0, 0.86, 0.66, 1), 2.5),
     }
     modo = a.salida
     corte = modo in ('planta', 'piso')
@@ -470,6 +471,19 @@ def amoblar(L, tipo, M, caja, inst, VEG, E):
     for (x, y, g) in ((1.3, 0.72, 0), (1.3, 2.68, math.pi), (0.35, 1.7, -math.pi / 2), (2.25, 1.7, math.pi / 2)):
         silla(x, y, g)
     planta('potted_plant_02', 0.35, 0.4, 1.1)
+    # vestir la sala: cojines, lámpara de pie, libros, planta, colgante del comedor
+    for x0 in (3.75, 4.95):
+        caja('cojin_deco', x0, x0 + 0.42, 0.62, 0.72, 0.55, 0.95, M['manta'], bisel=0.06)
+    caja('lampara_pie', 5.72, 5.76, 0.38, 0.42, 0, 1.45, M['negro'], bisel=0)
+    bpy.ops.mesh.primitive_cone_add(vertices=24, radius1=0.24, radius2=0.16, depth=0.3, location=(5.74, 0.4, 1.5))
+    bpy.context.active_object.data.materials.append(M['pantalla_luz'])
+    for k, (ancho, alto, m_) in enumerate(((0.05, 0.24, 'tela_sofa'), (0.04, 0.22, 'manta'), (0.06, 0.26, 'tela_clara'))):
+        x = 4.35 + k * 0.07
+        caja('libro', x, x + ancho, 3.38, 3.58, 0.55, 0.55 + alto, M[m_], bisel=0.003)
+    planta('potted_plant_04', 5.75, 3.45, 0.75)
+    caja('cable_colgante', 1.29, 1.31, 1.69, 1.71, 1.9, ALTO, M['negro'], bisel=0)
+    bpy.ops.mesh.primitive_cone_add(vertices=32, radius1=0.26, radius2=0.08, depth=0.24, location=(1.3, 1.7, 1.78))
+    bpy.context.active_object.data.materials.append(M['pantalla_luz'])
     # cuadros: sin ellos la sala se ve de catálogo vacío
     cuadro(M, caja, 'x', 5.9, 1.2, 1.55, 1.0, 0.7, '5d7b8a')
     cuadro(M, caja, 'y', 10.9, 2.0, 1.55, 1.1, 0.5, '9aa79a')
@@ -526,6 +540,11 @@ def amoblar(L, tipo, M, caja, inst, VEG, E):
     if 'side_table_01' in VEG:
         inst(VEG['side_table_01'], 0.9, 10.75, 0, 0.5)
         inst(VEG['side_table_01'], 3.1, 10.75, 0, 0.5)
+    for x in (0.9, 3.1):
+        caja('base_lampara', x - 0.05, x + 0.05, 10.7, 10.8, 0.5, 0.78, M['negro'], bisel=0)
+        bpy.ops.mesh.primitive_cone_add(vertices=24, radius1=0.15, radius2=0.11, depth=0.2, location=(x, 10.75, 0.86))
+        bpy.context.active_object.data.materials.append(M['pantalla_luz'])
+    caja('cojin_deco', 1.6, 2.4, 10.45, 10.6, 0.62, 0.86, M['tela_sofa'], bisel=0.05)
     ropero(0.06, 1.9, 8.36, 8.95)
     caja('alfombra', 1.0, 3.0, 8.8, 9.3, 0, 0.012, M['alfombra'], bisel=0)
 

@@ -55,6 +55,8 @@
     chat: 'M4 5h16v11H9l-5 4z',
     sol: 'M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1 1M17.4 17.4l1 1M5.6 18.4l1-1M17.4 6.6l1-1M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',
     luna: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+    mas: 'M12 5v14M5 12h14',
+    menos: 'M5 12h14',
     imprimir: 'M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2M7 14h10v6H7z',
   };
   const icono = (n) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[n]}"/></svg>`;
@@ -126,7 +128,7 @@
       <div class="menu" id="menu" hidden>
         <div class="menu__panel" role="dialog" aria-modal="true" aria-label="Menú">
           <div class="menu__cabeza">
-            <p class="marca"><span class="marca__nombre">${esc(p.marca)}</span>${esc(p.nombre)}</p>
+            <p class="marca marca--linea"><span class="marca__nombre">${esc(p.marca)}</span><span>${esc(p.nombre)}</span></p>
             <button class="circulo circulo--claro" data-menu-cerrar aria-label="Cerrar menú">${icono('cerrar')}</button>
           </div>
           <nav class="menu__nav" aria-label="Secciones">
@@ -156,31 +158,31 @@
       const etiqueta = p.id === 'azotea' ? 'Azotea' : `${p.id}°`;
       const detalle = disp === null ? (p.id === '1' ? 'Ingreso' : 'Común') : disp ? plural(disp, 'disponible') : 'Agotado';
       const corto = disp === null ? detalle : disp ? `${disp} disp.` : 'Agotado';
-      return `<li><a class="piso-pildora${p.id === activo ? ' piso-pildora--activo' : ''}${disp === 0 ? ' piso-pildora--agotado' : ''}" href="${url(`piso/${p.id}/`)}"${p.id === activo ? ' aria-current="page"' : ''} aria-label="${esc(p.etiqueta)}: ${esc(detalle)}"><b>${etiqueta}</b><small><span class="largo">${esc(detalle)}</span><span class="corto" aria-hidden="true">${esc(corto)}</span></small></a></li>`;
+      return `<li><a class="piso-pildora${p.id === activo ? ' piso-pildora--activo' : ''}${disp === 0 ? ' piso-pildora--agotado' : ''}" data-piso="${esc(p.id)}" href="${url(`piso/${p.id}/`)}"${p.id === activo ? ' aria-current="page"' : ''} aria-label="${esc(p.etiqueta)}: ${esc(detalle)}"><b>${etiqueta}</b><small><span class="largo">${esc(detalle)}</span><span class="corto" aria-hidden="true">${esc(corto)}</span></small></a></li>`;
     }).join('');
     return `<nav class="columna-pisos" aria-label="Pisos"><ol>${filas}</ol></nav>`;
   }
 
-  // ── Barra de las páginas de consulta ───────────────────────────────────────
+  // ── Páginas de consulta ────────────────────────────────────────────────────
+  // Mismo chrome flotante que las vistas inmersivas: un solo sistema de
+  // navegación en todo el showroom (Menú, volver, copiar enlace).
 
   function pagina(contenido, { atras, atrasTxt } = {}) {
-    const p = D.proyecto;
-    const ruta = location.pathname.slice(BASE.pathname.length);
-    const actual = (pref) => (ruta.startsWith(pref) ? ' aria-current="page"' : '');
+    const destino = atras || url('edificio/');
     return `
       ${aviso()}
-      <header class="barra">
-        <a class="marca" href="${url('')}"><span class="marca__nombre">${esc(p.marca)}</span>${esc(p.nombre)}</a>
-        <nav class="barra__nav" aria-label="Principal">
-          <a href="${url('edificio/')}"${actual('edificio')}>Edificio</a>
-          <a href="${url('departamentos/')}"${actual('departamentos')}>Departamentos</a>
-          <a href="${url('modelos/')}"${actual('modelos')}>Modelos</a>
-        </nav>
-      </header>
+      <div class="chrome-pagina">
+        <div class="flotante flotante--arriba-izq">
+          <button class="pildora pildora--acento" data-menu aria-expanded="false" aria-controls="menu">${icono('menu')}<span>Menú</span></button>
+          <a class="circulo" href="${destino}" aria-label="Volver a ${esc(atrasTxt || 'el edificio')}">${icono('volver')}</a>
+          <button class="circulo" data-compartir aria-label="Copiar enlace de esta vista">${icono('enlace')}</button>
+        </div>
+        <p class="etiqueta etiqueta--pagina">${esc(D.proyecto.nombre)}</p>
+      </div>
       <main id="principal" class="pagina">
-        ${atras ? `<a class="volver" href="${atras}">${icono('izq')}${esc(atrasTxt)}</a>` : ''}
         ${contenido}
-      </main>`;
+      </main>
+      ${menu()}`;
   }
 
   // ── Portada ────────────────────────────────────────────────────────────────
@@ -214,6 +216,19 @@
 
   // ── Edificio ───────────────────────────────────────────────────────────────
 
+  // Franjas de piso calculadas desde la geometría (produccion/mascaras.py).
+  // El SVG usa el mismo encuadre que la imagen: «slice» cuando la imagen llena
+  // la pantalla y «meet» cuando se muestra entera, así la franja no se corre.
+  function franjasSvg(v, img) {
+    const movil = img && (img === v.imagen.diaMovil || img === v.imagen.nocheMovil);
+    const set = movil ? v.pisosMovil : v.pisos;
+    if (!set) return '';
+    const [aw, ah] = movil ? [9, 16] : [16, 9];
+    const polis = Object.entries(set).filter(([id, poli]) => pisoPorId[id] && poli.length > 2).map(([id, poli]) =>
+      `<polygon class="franja" data-franja="${esc(id)}" points="${poli.map(([x, y]) => `${(x * aw).toFixed(3)},${(y * ah).toFixed(3)}`).join(' ')}"/>`).join('');
+    return `<svg class="franjas" viewBox="0 0 ${aw} ${ah}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${polis}</svg>`;
+  }
+
   function vistaEdificio() {
     const q = query();
     const i = Math.max(0, D.vistas.findIndex((v) => v.id === q.vista));
@@ -228,9 +243,11 @@
       <main class="inmersiva inmersiva--edificio" data-vista-actual="${i}">
         <div class="escena">
           ${img ? `<img class="escena__fondo" src="${esc(recurso(img))}" alt="" aria-hidden="true">
-          <img class="escena__img" data-escena-img src="${esc(recurso(img))}" alt="${esc(D.proyecto.nombre)}, vista ${esc(v.nombre.toLowerCase())}">`
+          <img class="escena__img" data-escena-img src="${esc(recurso(img))}" alt="${esc(D.proyecto.nombre)}, vista ${esc(v.nombre.toLowerCase())}">
+          ${franjasSvg(v, img)}`
             : marcador(`Vista ${v.nombre.toLowerCase()}`, `Parada ${i + 1} de ${n} · render del exterior`)}
         </div>
+        <p class="franja-rotulo" data-franja-rotulo hidden></p>
         ${controles(url(''))}
         <h1 class="etiqueta">${esc(D.proyecto.nombre)}</h1>
         <div class="flotante flotante--arriba-der">
@@ -263,8 +280,11 @@
       const xs = poli.map((p) => p[0]); const ys = poli.map((p) => p[1]);
       return [((Math.min(...xs) + Math.max(...xs)) / 2) * W, ((Math.min(...ys) + Math.max(...ys)) / 2) * H];
     };
+    const ctx = pl.contexto;
+    const [u0, v0, u1, v1] = ctx ? ctx.marco : [0, 0, 1, 1];
+    const caja = [u0 * W, v0 * H, (u1 - u0) * W, (v1 - v0) * H].map((n) => n.toFixed(1)).join(' ');
     const fondo = pl.imagen
-      ? `<image href="${esc(recurso(pl.imagen))}" x="0" y="0" width="${W}" height="${H}"/>`
+      ? `${ctx ? `<image href="${esc(recurso(ctx.imagen))}" x="${(u0 * W).toFixed(1)}" y="${(v0 * H).toFixed(1)}" width="${((u1 - u0) * W).toFixed(1)}" height="${((v1 - v0) * H).toFixed(1)}" preserveAspectRatio="none"/>` : ''}<image href="${esc(recurso(pl.imagen))}" x="0" y="0" width="${W}" height="${H}"/>`
       : `<g class="esquema">
           <polygon points="${pts(pl.esquema.contorno)}" class="esquema__contorno"/>
           <polygon points="${pts(pl.esquema.pasillo)}" class="esquema__comun"/>
@@ -278,20 +298,13 @@
     const zonas = unidadesDePiso(piso.id).map((u) => {
       const poli = pl.posiciones[u.posicion].poligono;
       const [cx, cy] = centro(poli);
-      const t = tipoPorId[u.tipologia];
-      const ancho = 70 + u.id.length * 38;
-      return `<g class="zona zona--${u.estado}${u.id === elegida ? ' zona--elegida' : ''}" data-unidad="${u.id}" tabindex="0" role="button"
-                 aria-pressed="${u.id === elegida}" aria-label="Departamento ${u.id}, ${t.nombre}, ${ESTADO[u.estado].txt}">
+      return `<g class="zona zona--${u.estado}${u.id === elegida ? ' zona--elegida' : ''}" data-unidad="${u.id}" aria-hidden="true">
           <polygon points="${pts(poli)}"/>
-          <g class="pin" transform="translate(${cx - ancho / 2} ${cy - 42})">
-            <rect width="${ancho}" height="84" rx="42"/>
-            <circle cx="42" cy="42" r="14" class="pin__punto"/>
-            <text x="66" y="57">${u.id}</text>
-          </g>
+          <circle class="ancla" data-ancla="${u.id}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="1"/>
         </g>`;
     }).join('');
     return `
-      <svg class="plano" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="group" aria-label="Planta del ${esc(piso.etiqueta.toLowerCase())}">
+      <svg class="plano${ctx ? ' plano--contexto' : ''}" viewBox="${caja}" preserveAspectRatio="xMidYMid ${ctx ? 'slice' : 'meet'}" role="img" aria-label="Planta del ${esc(piso.etiqueta.toLowerCase())}">
         <defs>
           <pattern id="rayado" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="16" height="16" class="patron-fondo"/><line x1="0" y1="0" x2="0" y2="16" class="patron"/></pattern>
           <pattern id="cruzado" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" class="patron-fondo"/><path d="M0 0L16 16M16 0L0 16" class="patron"/></pattern>
@@ -339,7 +352,10 @@
     const leyenda = `<ul class="leyenda">${Object.keys(ESTADO).map((e) => `<li>${chipEstado(e)}</li>`).join('')}</ul>`;
     let escena;
     if (piso.plantilla) {
-      escena = planoPiso(piso, elegida);
+      // Marcadores HTML de tamaño fijo en pantalla: se leen igual con cualquier
+      // zoom. Los coloca colocarPines() sobre las anclas del SVG.
+      const pines = unidadesDePiso(id).map((u) => `<button class="pin-unidad pin-unidad--${u.estado}${u.id === elegida ? ' pin-unidad--elegido' : ''}" data-unidad="${u.id}" data-pin="${u.id}" aria-pressed="${u.id === elegida}" aria-label="Departamento ${u.id}, ${esc(tipoPorId[u.tipologia].nombre)}, ${ESTADO[u.estado].txt}"><span class="pin-unidad__punto" aria-hidden="true"></span>${u.id}</button>`).join('');
+      escena = `<div class="lienzo-plano" data-piso="${esc(id)}">${planoPiso(piso, elegida)}</div><div class="pines">${pines}</div>`;
     } else {
       escena = `<div class="escena__vacia">${marcador(piso.etiqueta, piso.uso)}</div>`;
     }
@@ -355,7 +371,13 @@
         </div>
         <a class="pildora pildora--buscar" href="${url('departamentos/')}">${icono('buscar')}<span>Buscar departamentos</span></a>
         ${columnaPisos(id)}
-        ${piso.plantilla ? `<div class="flotante flotante--abajo-izq">${leyenda}</div>` : ''}
+        ${piso.plantilla ? `<div class="flotante flotante--abajo-izq">
+          <div class="zoom" role="group" aria-label="Acercar o alejar la planta">
+            <button class="circulo circulo--blanco" data-zoom="1" aria-label="Acercar">${icono('mas')}</button>
+            <button class="circulo circulo--blanco" data-zoom="-1" aria-label="Alejar">${icono('menos')}</button>
+          </div>
+          ${leyenda}
+        </div>` : ''}
         ${elegida ? tarjetaUnidad(unidadPorId[elegida], id) : piso.plantilla ? '<p class="pista">Toca un departamento para ver su precio y su planta</p>' : ''}
         ${menu()}
       </main>`;
@@ -484,7 +506,7 @@
                 <td>${esc(pisoPorId[u.piso].etiqueta.replace('Piso ', ''))}</td>
                 <td>${esc(orientacion(u))}</td>
                 <td>${chipEstado(u.estado)}</td>
-                <td>${precioTexto(u)}${bono(u) ? `<small class="bono-mini">Bono ${soles(bono(u).monto)}</small>` : ''}</td>
+                <td>${u.estado === 'disponible' ? `${precioTexto(u)}${bono(u) ? `<small class="bono-mini">Bono ${soles(bono(u).monto)}</small>` : ''}` : ''}</td>
               </tr>`).join('')}
             </tbody>
           </table>
@@ -650,14 +672,16 @@
     cont.querySelectorAll('[data-ir-vista]').forEach((b, j) => (j === i ? b.setAttribute('aria-current', 'true') : b.removeAttribute('aria-current')));
     const actual = cont.querySelector('[data-escena-img]');
     if (!src || !actual) return render({ foco: false });
+    const franjasViejas = cont.querySelector('.franjas');
+    if (franjasViejas) franjasViejas.outerHTML = franjasSvg(v, src) || '<span hidden class="franjas"></span>';
     const nueva = actual.cloneNode();
     nueva.src = recurso(src);
     nueva.alt = `${D.proyecto.nombre}, vista ${v.nombre.toLowerCase()}`;
     nueva.classList.add('escena__img--entrando');
     const fondo = cont.querySelector('.escena__fondo');
     const listo = () => {
-      ajustarEncaje(nueva);
       actual.after(nueva);
+      ajustarEncaje(nueva);
       requestAnimationFrame(() => nueva.classList.remove('escena__img--entrando'));
       if (fondo) fondo.src = nueva.src;
       setTimeout(() => actual.remove(), 700);
@@ -672,7 +696,9 @@
     const aplicar = () => {
       if (!img.naturalWidth) return;
       const r = (img.naturalWidth / img.naturalHeight) / (innerWidth / innerHeight);
-      img.classList.toggle('escena__img--entera', r < 0.72 || r > 1.45);
+      const entera = r < 0.72 || r > 1.45;
+      img.classList.toggle('escena__img--entera', entera);
+      img.parentElement?.querySelector('.franjas')?.setAttribute('preserveAspectRatio', `xMidYMid ${entera ? 'meet' : 'slice'}`);
     };
     if (img.complete) aplicar(); else img.addEventListener('load', aplicar, { once: true });
   }
@@ -682,6 +708,145 @@
     if (!app.querySelector('.inmersiva--edificio')) return;
     for (const v of D.vistas) { const src = imagenVista(v); if (src) { const im = new Image(); im.src = recurso(src); } }
   }
+
+  // ── Planta: zoom, arrastre y marcadores ───────────────────────────────────
+  // El estado del encuadre sobrevive al elegir otra unidad (la vista se vuelve
+  // a dibujar) mientras no se cambie de piso.
+
+  let encuadre = null;
+  const limitar = (n, a, b) => Math.min(b, Math.max(a, n));
+
+  function aplicarEncuadre() {
+    const svg = app.querySelector('.lienzo-plano .plano');
+    if (!svg || !encuadre) return;
+    svg.style.transform = `translate(${encuadre.x}px, ${encuadre.y}px) scale(${encuadre.s})`;
+    colocarPines();
+  }
+
+  function colocarPines() {
+    const cont = app.querySelector('.inmersiva--piso');
+    if (!cont) return;
+    const base = cont.getBoundingClientRect();
+    cont.querySelectorAll('[data-pin]').forEach((pin) => {
+      const ancla = cont.querySelector(`[data-ancla="${pin.dataset.pin}"]`);
+      if (!ancla) return;
+      const r = ancla.getBoundingClientRect();
+      pin.style.transform = `translate(${(r.left + r.width / 2 - base.left).toFixed(1)}px, ${(r.top + r.height / 2 - base.top).toFixed(1)}px) translate(-50%, -50%)`;
+    });
+  }
+
+  // Zoom alrededor de un punto de pantalla (el cursor, o el centro).
+  function zoomEn(factor, px, py) {
+    const lienzo = app.querySelector('.lienzo-plano');
+    if (!lienzo || !encuadre) return;
+    const b = lienzo.getBoundingClientRect();
+    const cx = b.left + b.width / 2;
+    const cy = b.top + b.height / 2;
+    const s2 = limitar(encuadre.s * factor, 1, 4);
+    const k = s2 / encuadre.s;
+    encuadre.x = (px - cx) - (px - cx - encuadre.x) * k;
+    encuadre.y = (py - cy) - (py - cy - encuadre.y) * k;
+    encuadre.s = s2;
+    aplicarEncuadre();
+  }
+
+  // Lleva la unidad elegida a la zona visible: a la derecha de la tarjeta en
+  // escritorio, por encima de la hoja inferior en el celular. Nunca encoge.
+  function asegurarVisible(id) {
+    const cont = app.querySelector('.inmersiva--piso');
+    const ancla = cont?.querySelector(`[data-ancla="${id}"]`);
+    const tarjeta = cont?.querySelector('.tarjeta--flotante');
+    if (!ancla || !tarjeta || !encuadre) return;
+    const base = cont.getBoundingClientRect();
+    const t = tarjeta.getBoundingClientRect();
+    const a = ancla.getBoundingClientRect();
+    const px = a.left - base.left;
+    const py = a.top - base.top;
+    const movil = t.width > base.width * 0.8;
+    const zona = movil
+      ? { x0: 0, x1: base.width, y0: 110, y1: t.top - base.top - 10 }
+      : { x0: t.right - base.left + 20, x1: base.width - (base.width > 900 ? 160 : 20), y0: 90, y1: base.height - 70 };
+    const objX = (zona.x0 + zona.x1) / 2;
+    const objY = (zona.y0 + zona.y1) / 2;
+    if (px < zona.x0 || px > zona.x1) encuadre.x += objX - px;
+    if (py < zona.y0 || py > zona.y1) encuadre.y += objY - py;
+    aplicarEncuadre();
+  }
+
+  function montarPlano() {
+    const lienzo = app.querySelector('.lienzo-plano');
+    if (!lienzo) { encuadre = null; return; }
+    if (!encuadre || encuadre.piso !== lienzo.dataset.piso) encuadre = { piso: lienzo.dataset.piso, s: 1, x: 0, y: 0 };
+    aplicarEncuadre();
+    const elegida = query().d;
+    if (elegida) requestAnimationFrame(() => asegurarVisible(elegida));
+  }
+
+  // Arrastre con el puntero; un toque sin arrastre sigue siendo un clic.
+  let arrastre = null;
+  document.addEventListener('pointerdown', (e) => {
+    const lienzo = e.target.closest('.lienzo-plano');
+    if (!lienzo || !encuadre || e.button !== 0) return;
+    arrastre = { id: e.pointerId, x: e.clientX, y: e.clientY, ox: encuadre.x, oy: encuadre.y, movido: false };
+  });
+  document.addEventListener('pointermove', (e) => {
+    if (!arrastre || e.pointerId !== arrastre.id) return;
+    const dx = e.clientX - arrastre.x;
+    const dy = e.clientY - arrastre.y;
+    if (!arrastre.movido && Math.hypot(dx, dy) < 6) return;
+    arrastre.movido = true;
+    encuadre.x = arrastre.ox + dx;
+    encuadre.y = arrastre.oy + dy;
+    aplicarEncuadre();
+  });
+  document.addEventListener('pointerup', (e) => {
+    if (!arrastre || e.pointerId !== arrastre.id) return;
+    if (arrastre.movido) {
+      // el clic que sigue a un arrastre no debe elegir una unidad
+      const bloquear = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
+      document.addEventListener('click', bloquear, { capture: true, once: true });
+      setTimeout(() => document.removeEventListener('click', bloquear, { capture: true }), 50);
+    }
+    arrastre = null;
+  });
+  document.addEventListener('wheel', (e) => {
+    if (!e.target.closest('.lienzo-plano') || !encuadre) return;
+    e.preventDefault();
+    zoomEn(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX, e.clientY);
+  }, { passive: false });
+  addEventListener('resize', () => colocarPines());
+
+  // ── Fachada: franja ↔ columna de pisos ────────────────────────────────────
+
+  function resaltarPiso(id) {
+    const cont = app.querySelector('.inmersiva--edificio');
+    if (!cont) return;
+    cont.querySelectorAll('.franja').forEach((f) => f.classList.toggle('franja--activa', f.dataset.franja === id));
+    cont.querySelectorAll('.piso-pildora').forEach((a) => a.classList.toggle('piso-pildora--resaltado', a.dataset.piso === id));
+    const rotulo = cont.querySelector('[data-franja-rotulo]');
+    const piso = id && pisoPorId[id];
+    if (rotulo) {
+      if (piso) {
+        const disp = piso.plantilla ? unidadesDePiso(id).filter((u) => u.estado === 'disponible').length : null;
+        rotulo.textContent = `${piso.etiqueta}${disp === null ? '' : ` · ${disp ? plural(disp, 'disponible') : 'sin disponibles'}`}`;
+        rotulo.hidden = false;
+      } else rotulo.hidden = true;
+    }
+  }
+  document.addEventListener('pointerover', (e) => {
+    const f = e.target.closest?.('.franja, .piso-pildora');
+    if (app.querySelector('.inmersiva--edificio')) resaltarPiso(f ? (f.dataset.franja || f.dataset.piso) : null);
+  });
+  document.addEventListener('focusin', (e) => {
+    const f = e.target.closest?.('.piso-pildora');
+    if (f && app.querySelector('.inmersiva--edificio')) resaltarPiso(f.dataset.piso);
+  });
+  document.addEventListener('pointermove', (e) => {
+    const rotulo = app.querySelector('[data-franja-rotulo]');
+    if (rotulo && !rotulo.hidden && e.target.closest?.('.franja')) {
+      rotulo.style.transform = `translate(${e.clientX + 16}px, ${e.clientY - 12}px)`;
+    }
+  });
 
   // ── Enrutado ───────────────────────────────────────────────────────────────
 
@@ -700,6 +865,7 @@
     montarVisor();
     precargarVistas();
     app.querySelectorAll('[data-escena-img]').forEach(ajustarEncaje);
+    montarPlano();
     actualizarTitulo(partes);
     // Al cambiar de pantalla, el lector de pantalla arranca por el título nuevo.
     const h1 = app.querySelector('h1');
@@ -755,6 +921,14 @@
     const t = e.target;
     if (t.closest('[data-menu]')) return abrirMenu(true);
     if (t.closest('[data-menu-cerrar]') || t.classList?.contains('menu')) return abrirMenu(false);
+    const franja = t.closest('[data-franja]');
+    if (franja && pisoPorId[franja.dataset.franja]) return navegar(url(`piso/${franja.dataset.franja}/`));
+    const zoom = t.closest('[data-zoom]');
+    if (zoom) {
+      const b = app.querySelector('.lienzo-plano')?.getBoundingClientRect();
+      if (b) zoomEn(Number(zoom.dataset.zoom) > 0 ? 1.4 : 1 / 1.4, b.left + b.width / 2, b.top + b.height / 2);
+      return;
+    }
     const zona = t.closest('[data-unidad]');
     if (zona) return refrescar({ d: zona.dataset.unidad });
     const cerrarTarjeta = t.closest('[data-cerrar-tarjeta]');

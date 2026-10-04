@@ -8,11 +8,17 @@
 // Paradas de cámara del exterior. `camara` es la vista homónima de
 // produccion/edificio.py: así cada imagen se puede regenerar sabiendo de dónde
 // sale. Con `imagen` en null el motor dibuja un marcador en su lugar.
+// Franjas de piso sobre cada render: las calcula produccion/mascaras.py
+// proyectando la geometría de cada piso con la misma cámara del render.
+import { readFileSync } from 'node:fs';
+const mascaras = JSON.parse(readFileSync(new URL('./mascaras.json', import.meta.url), 'utf8'));
+const franjas = (camara) => ({ pisos: mascaras[`web_${camara}`], pisosMovil: mascaras[`movil_${camara}`] });
+
 export const vistas = [
-  { id: 'frente', nombre: 'Frente', camara: 'web_frente', imagen: { dia: 'assets/exterior/frente-dia-v1.webp', diaMovil: 'assets/exterior/frente-movil-v1.webp', noche: null } },
-  { id: 'diagonal-izq', nombre: 'Desde la avenida', camara: 'web_diag_izq', imagen: { dia: 'assets/exterior/diagonal-izq-dia-v1.webp', diaMovil: 'assets/exterior/diagonal-izq-movil-v1.webp', noche: null } },
-  { id: 'diagonal-der', nombre: 'Esquina opuesta', camara: 'web_diag_der', imagen: { dia: 'assets/exterior/diagonal-der-dia-v1.webp', diaMovil: 'assets/exterior/diagonal-der-movil-v1.webp', noche: null } },
-  { id: 'aerea', nombre: 'Vista aérea', camara: 'web_aerea', imagen: { dia: 'assets/exterior/aerea-dia-v1.webp', diaMovil: 'assets/exterior/aerea-movil-v1.webp', noche: null } },
+  { id: 'frente', nombre: 'Frente', camara: 'web_frente', ...franjas('frente'), imagen: { dia: 'assets/exterior/frente-dia-v1.webp', diaMovil: 'assets/exterior/frente-movil-v1.webp', noche: 'assets/exterior/frente-noche-v1.webp', nocheMovil: 'assets/exterior/frente-noche-movil-v1.webp' } },
+  { id: 'diagonal-izq', nombre: 'Desde la avenida', camara: 'web_diag_izq', ...franjas('diag_izq'), imagen: { dia: 'assets/exterior/diagonal-izq-dia-v1.webp', diaMovil: 'assets/exterior/diagonal-izq-movil-v1.webp', noche: 'assets/exterior/diagonal-izq-noche-v1.webp', nocheMovil: 'assets/exterior/diagonal-izq-noche-movil-v1.webp' } },
+  { id: 'diagonal-der', nombre: 'Esquina opuesta', camara: 'web_diag_der', ...franjas('diag_der'), imagen: { dia: 'assets/exterior/diagonal-der-dia-v1.webp', diaMovil: 'assets/exterior/diagonal-der-movil-v1.webp', noche: 'assets/exterior/diagonal-der-noche-v1.webp', nocheMovil: 'assets/exterior/diagonal-der-noche-movil-v1.webp' } },
+  { id: 'aerea', nombre: 'Vista aérea', camara: 'web_aerea', ...franjas('aerea'), imagen: { dia: 'assets/exterior/aerea-dia-v1.webp', diaMovil: 'assets/exterior/aerea-movil-v1.webp', noche: 'assets/exterior/aerea-noche-v1.webp', nocheMovil: 'assets/exterior/aerea-noche-movil-v1.webp' } },
 ];
 
 // Clip de transición entre paradas consecutivas, clave "origen>destino".
@@ -33,7 +39,11 @@ export const plantillas = {
     aspecto: F / P,
     // Render cenital de produccion/interior.py --salida piso, encuadrado exacto
     // al rectángulo del edificio (100 px/m): los polígonos calzan sin ajuste.
-    imagen: 'assets/plantas/piso-tipico-v1.webp',
+    imagen: 'assets/plantas/piso-tipico-v2.webp',
+    // Cenital del barrio sin el edificio (edificio.py --vista planta_contexto):
+    // la planta queda a pantalla completa rodeada de su manzana real. `marco`
+    // es lo que cubre esa imagen en coordenadas normalizadas de la planta.
+    contexto: { imagen: 'assets/plantas/contexto-piso-v1.webp', marco: [-0.8333, -0.5455, 1.8333, 1.9091] },
     esquema: {
       contorno: rect(0, 0, F, P),
       pasillo: rect(6.0, 0, 8.4, P),
