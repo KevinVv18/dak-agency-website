@@ -114,7 +114,7 @@ main { padding: 12px var(--gutter) 48px; max-width: 1280px; margin: 0 auto; }
 .zona--vendido polygon { fill: url(#cruzado); fill-opacity: .45; }
 .zona:hover polygon, .zona:focus-visible polygon { fill-opacity: .4; stroke-width: 4; }
 .zona--elegida polygon { stroke: var(--acento); stroke-width: 12; fill-opacity: .35; }
-.zona text { text-anchor: middle; pointer-events: none; fill: var(--tinta); }
+.zona text { text-anchor: middle; pointer-events: none; fill: var(--tinta); paint-order: stroke; stroke: rgb(255 255 255 / .92); stroke-width: 10px; stroke-linejoin: round; }
 .zona__num { font-size: 52px; font-weight: 700; }
 .zona__estado { font-size: 28px; }
 .leyenda { display: flex; flex-wrap: wrap; gap: 16px; list-style: none; padding: 0; margin: 8px 0 0; }

@@ -163,7 +163,7 @@ def argumentos():
     argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else sys.argv[1:]
     p = argparse.ArgumentParser()
     p.add_argument('--tipo', default='A', choices=LAYOUTS.keys())
-    p.add_argument('--salida', default='planta', choices=['planta', '360'])
+    p.add_argument('--salida', default='planta', choices=['planta', '360', 'piso'])
     p.add_argument('--escena', default='sala')
     p.add_argument('--out', default='//interior.png')
     p.add_argument('--plano', default='', help='escribir el plano técnico SVG aquí')
@@ -229,73 +229,82 @@ def blender_main(a):
         'cortina': mat('cortina_visillo', (0.92, 0.9, 0.86, 1), 0.9, transmision=0.6),
     }
     modo = a.salida
-    h_muro = CORTE if modo == 'planta' else ALTO
+    corte = modo in ('planta', 'piso')
+    h_muro = CORTE if corte else ALTO
 
-    # pisos por ambiente y zócalo bajo los muros
-    for _, _, x0, y0, x1, y1, piso in L['ambientes']:
-        caja('piso', x0, x1, y0, y1, -0.02, 0.0, M[piso], bisel=0)
+    def construir(L, tipo):
+        """Muros, pisos y muebles de una unidad en sus coordenadas locales."""
+        # pisos por ambiente y zócalo bajo los muros
+        for _, _, x0, y0, x1, y1, piso in L['ambientes']:
+            caja('piso', x0, x1, y0, y1, -0.02, 0.0, M[piso], bisel=0)
 
-    # muros con vanos
-    for x0, y0, x1, y1, g, vanos in L['muros']:
-        largo = math.hypot(x1 - x0, y1 - y0)
-        ux, uy = (x1 - x0) / largo, (y1 - y0) / largo
-        horiz = abs(uy) < 0.5
+        # muros con vanos
+        for x0, y0, x1, y1, g, vanos in L['muros']:
+            largo = math.hypot(x1 - x0, y1 - y0)
+            ux, uy = (x1 - x0) / largo, (y1 - y0) / largo
+            horiz = abs(uy) < 0.5
 
-        def tramo(d, h, z0, z1, m_=None):
-            if h - d <= 0.001 or z1 - z0 <= 0.001:
-                return
-            ax, ay = x0 + ux * d, y0 + uy * d
-            bx, by = x0 + ux * h, y0 + uy * h
-            if horiz:
-                caja('muro', ax, bx, ay - g / 2, ay + g / 2, z0, z1, m_ or M['pared'], bisel=0)
-            else:
-                caja('muro', ax - g / 2, ax + g / 2, ay, by, z0, z1, m_ or M['pared'], bisel=0)
-
-        cortes = [0.0]
-        for d, h, _ in sorted(vanos):
-            cortes += [d, h]
-        cortes.append(largo)
-        for i in range(0, len(cortes), 2):
-            tramo(cortes[i], cortes[i + 1], 0, h_muro)
-        for d, h, tipo in vanos:
-            if tipo == 'ventana':
-                tramo(d, h, 0, 1.0)
-                if modo != 'planta':
-                    tramo(d, h, 2.15, h_muro)
-                vz0, vz1 = 1.0, 2.15
-            elif tipo == 'mampara':
-                if modo != 'planta':
-                    tramo(d, h, 2.3, h_muro)
-                vz0, vz1 = 0.0, 2.3
-            else:
-                if modo != 'planta':
-                    tramo(d, h, 2.1, h_muro)
-                vz0 = None
-            if tipo in ('ventana', 'mampara'):
+            def tramo(d, h, z0, z1, m_=None):
+                if h - d <= 0.001 or z1 - z0 <= 0.001:
+                    return
                 ax, ay = x0 + ux * d, y0 + uy * d
                 bx, by = x0 + ux * h, y0 + uy * h
-                z1v = min(vz1, h_muro)
                 if horiz:
-                    caja('vidrio', ax, bx, ay - 0.01, ay + 0.01, vz0, z1v, M['vidrio'], bisel=0)
-                    caja('marco', ax, bx, ay - 0.03, ay + 0.03, vz0, vz0 + 0.05, M['marco'], bisel=0)
+                    caja('muro', ax, bx, ay - g / 2, ay + g / 2, z0, z1, m_ or M['pared'], bisel=0)
                 else:
-                    caja('vidrio', ax - 0.01, ax + 0.01, ay, by, vz0, z1v, M['vidrio'], bisel=0)
-                    caja('marco', ax - 0.03, ax + 0.03, ay, by, vz0, vz0 + 0.05, M['marco'], bisel=0)
-            elif tipo in ('puerta', 'entrada'):
-                # hoja de madera abierta ~80° hacia el lado positivo del muro
-                ancho_hoja = h - d
-                ax, ay = x0 + ux * d, y0 + uy * d
-                hoja = caja('hoja', 0, ancho_hoja, -0.02, 0.02, 0, 2.05, M['madera'], bisel=0)
-                hoja.location = (ax, ay, 0)
-                ang = math.atan2(uy, ux) + math.radians(80)
-                hoja.rotation_euler = (0, 0, ang)
+                    caja('muro', ax - g / 2, ax + g / 2, ay, by, z0, z1, m_ or M['pared'], bisel=0)
 
-    # corte de muros en negro (la cara superior), como en una planta de arquitectura
-    if modo == 'planta':
-        for x0, y0, x1, y1, g, vanos in L['muros']:
-            pass  # el material de pared ya contrasta con los pisos; se mantiene limpio
+            cortes = [0.0]
+            for d, h, _ in sorted(vanos):
+                cortes += [d, h]
+            cortes.append(largo)
+            for i in range(0, len(cortes), 2):
+                tramo(cortes[i], cortes[i + 1], 0, h_muro)
+            for d, h, tipo in vanos:
+                if tipo == 'ventana':
+                    tramo(d, h, 0, 1.0)
+                    if not corte:
+                        tramo(d, h, 2.15, h_muro)
+                    vz0, vz1 = 1.0, 2.15
+                elif tipo == 'mampara':
+                    if not corte:
+                        tramo(d, h, 2.3, h_muro)
+                    vz0, vz1 = 0.0, 2.3
+                else:
+                    if not corte:
+                        tramo(d, h, 2.1, h_muro)
+                    vz0 = None
+                if tipo in ('ventana', 'mampara'):
+                    ax, ay = x0 + ux * d, y0 + uy * d
+                    bx, by = x0 + ux * h, y0 + uy * h
+                    z1v = min(vz1, h_muro)
+                    if horiz:
+                        caja('vidrio', ax, bx, ay - 0.01, ay + 0.01, vz0, z1v, M['vidrio'], bisel=0)
+                        caja('marco', ax, bx, ay - 0.03, ay + 0.03, vz0, vz0 + 0.05, M['marco'], bisel=0)
+                    else:
+                        caja('vidrio', ax - 0.01, ax + 0.01, ay, by, vz0, z1v, M['vidrio'], bisel=0)
+                        caja('marco', ax - 0.03, ax + 0.03, ay, by, vz0, vz0 + 0.05, M['marco'], bisel=0)
+                elif tipo in ('puerta', 'entrada'):
+                    # hoja de madera abierta ~80° hacia el lado positivo del muro
+                    ancho_hoja = h - d
+                    ax, ay = x0 + ux * d, y0 + uy * d
+                    hoja = caja('hoja', 0, ancho_hoja, -0.02, 0.02, 0, 2.05, M['madera'], bisel=0)
+                    hoja.location = (ax, ay, 0)
+                    ang = math.atan2(uy, ux) + math.radians(80)
+                    hoja.rotation_euler = (0, 0, ang)
 
-    amoblar(L, a.tipo, M, caja, inst, VEG, E)
+        # corte de muros en negro (la cara superior), como en una planta de arquitectura
+        if corte:
+            for x0, y0, x1, y1, g, vanos in L['muros']:
+                pass  # el material de pared ya contrasta con los pisos; se mantiene limpio
+
+        amoblar(L, tipo, M, caja, inst, VEG, E)
+
+    if modo == 'piso':
+        piso_completo(bpy, construir, M, caja)
+        L = LAYOUT_PISO
+    else:
+        construir(L, a.tipo)
 
     W, F = L['ancho'], L['fondo']
     if modo == '360':
@@ -306,6 +315,48 @@ def blender_main(a):
     render(bpy, a, modo, L)
     bpy.ops.render.render(write_still=True)
     print(f'RENDER OK -> {a.out}')
+
+
+# Piso típico completo: 4 unidades alrededor del núcleo, con las medidas de la
+# planta del edificio (14,4 x 22 m, avenida en y=0). Mismas coordenadas que los
+# polígonos de datos/edificio.js, así cada departamento cae en su polígono.
+LAYOUT_PISO = {'ancho': 14.4, 'fondo': 22.0, 'nucleo': (6.0, 8.4)}
+
+
+def piso_completo(bpy, construir, M, caja):
+    W, F = LAYOUT_PISO['ancho'], LAYOUT_PISO['fondo']
+    colecciones = {}
+    for t in ('A', 'B'):
+        antes = set(bpy.data.objects)
+        construir(LAYOUTS[t], t)
+        col = bpy.data.collections.new(f'unidad_{t}')
+        for o in [o for o in bpy.data.objects if o not in antes]:
+            for c in list(o.users_collection):
+                c.objects.unlink(o)
+            col.objects.link(o)
+        colecciones[t] = col
+
+    def colocar(t, ubicacion, escala):
+        e = bpy.data.objects.new(f'unidad_{t}', None)
+        e.instance_type = 'COLLECTION'
+        e.instance_collection = colecciones[t]
+        e.location = ubicacion
+        e.scale = escala
+        bpy.context.collection.objects.link(e)
+
+    colocar('A', (0, 0, 0), (1, 1, 1))          # 01: frente izquierda
+    colocar('A', (W, 0, 0), (-1, 1, 1))         # 02: frente derecha, en espejo
+    colocar('B', (W, F, 0), (-1, -1, 1))        # 03: fondo derecha
+    colocar('B', (0, F, 0), (1, -1, 1))         # 04: fondo izquierda, sala al patio
+    # núcleo: hall, ascensor y escalera
+    n0, n1 = LAYOUT_PISO['nucleo']
+    caja('hall', n0 + 0.1, n1 - 0.1, 0, F, -0.02, 0.0, M['porcelanato'], bisel=0)
+    caja('ascensor', n0 + 0.25, n0 + 1.45, 8.7, 10.3, 0, CORTE, M['gris_mueble'], bisel=0.01)
+    caja('ascensor_puerta', n0 + 1.45, n0 + 1.5, 9.0, 10.0, 0, 2.1, M['acero'], bisel=0)
+    for k in range(12):
+        y = 10.8 + k * 0.25
+        caja('peldaño', n0 + 0.2, n1 - 0.2, y, y + 0.25, 0, 0.17 * (k + 1), M['pared'], bisel=0.005)
+    caja('baranda_escalera', n0 + 1.18, n0 + 1.22, 10.8, 13.8, 0, CORTE, M['marco'], bisel=0)
 
 
 def amoblar(L, tipo, M, caja, inst, VEG, E):
@@ -541,7 +592,14 @@ def camara(bpy, L, a, modo):
     ob = bpy.data.objects.new('cam', cam)
     bpy.context.collection.objects.link(ob)
     W, F = L['ancho'], L['fondo']
-    if modo == 'planta':
+    if modo == 'piso':
+        # encuadre exacto del rectángulo del edificio: 100 px por metro, sin
+        # margen, para que los polígonos normalizados calcen sobre la imagen
+        cam.type = 'ORTHO'
+        cam.ortho_scale = max(W, F)
+        ob.location = (W / 2, F / 2, 30)
+        ob.rotation_euler = (0, 0, 0)
+    elif modo == 'planta':
         cam.type = 'ORTHO'
         cam.ortho_scale = F + 0.8
         ob.location = (W / 2, F / 2, 20)
@@ -578,7 +636,13 @@ def render(bpy, a, modo, L):
     s.cycles.samples = a.muestras
     s.cycles.use_denoising = True
     s.cycles.max_bounces = 8
-    if modo == 'planta':
+    if modo == 'piso':
+        s.render.resolution_x = int(L['ancho'] * 100)
+        s.render.resolution_y = int(L['fondo'] * 100)
+        s.render.film_transparent = True
+        s.render.image_settings.file_format = 'PNG'
+        s.render.image_settings.color_mode = 'RGBA'
+    elif modo == 'planta':
         W, F = L['ancho'], L['fondo']
         ancho = a.ancho or 2200
         s.render.resolution_x = ancho

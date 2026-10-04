@@ -31,7 +31,9 @@ export const plantillas = {
     nombre: 'Planta típica',
     orientacionPlano: 'La avenida queda en la parte inferior de la planta.',
     aspecto: F / P,
-    imagen: null,
+    // Render cenital de produccion/interior.py --salida piso, encuadrado exacto
+    // al rectángulo del edificio (100 px/m): los polígonos calzan sin ajuste.
+    imagen: 'assets/plantas/piso-tipico-v1.webp',
     esquema: {
       contorno: rect(0, 0, F, P),
       pasillo: rect(6.0, 0, 8.4, P),
