@@ -84,6 +84,34 @@ blender -b -P _showroom-demo/produccion/edificio.py -- --vista web_frente --anch
   muebles; luz rasante en las celosías, pista mojada, LED en el cerco y cielo
   de hora azul. Antes el muro macizo tapaba los interiores y las ventanas no se
   veían encendidas.
+- **Giro 360 de dron** (`edificio.py --orbita 60`): la cámara da la vuelta al
+  edificio a altura de dron y deja un cuadro cada 6°, más `franjas.json` (piso
+  por cuadro) y `rotulos.json` (dónde caen los letreros). La escena se arma una
+  sola vez; los cuadros existentes se saltan. Los vecinos de dos lotes por lado
+  van como maqueta translúcida (`--fantasma`), y la fachada posterior es la
+  delantera reflejada. En la web se arrastra para girar; la portada usa los
+  mismos cuadros como intro que pasa del día a la noche.
+- **Vistas de calle con vecino fantasma**: las diagonales tienen una variante
+  `--fantasma` que la web funde encima al elegir un piso, así la franja no cae
+  sobre la casa de al lado.
+- **Pase de realismo con IA** (`realismo.py`, `lote_realismo.py`): Stable
+  Diffusion XL local (RealVisXL V5 + ControlNet canny + VAE fp16) en img2img con
+  poca fuerza. Es el recurso de los renders de la competencia, gratis y en la
+  GPU propia; la geometría no se mueve (las franjas siguen calzando) y los
+  letreros se reponen del render original. Entorno en `~/tools/ia-render`.
+- `comunes.py`: planta del piso 1 (recepción, depósitos y cocheras). La azotea
+  sale de `edificio.py --vista planta_azotea`, de la misma escena del giro.
+- `publicar.py`: convierte renders + pase de IA en assets versionados
+  (`assets/giro/<modo>-vN/`, `assets/exterior/*-vN.webp`, plantas) y escribe
+  `datos/giro.json` con las franjas de cada cuadro.
+
+  ```
+  blender -b -P produccion/edificio.py -- --orbita 60 --orbita-dir R/giro/dia --muestras 64 --ancho 1600 --alto 900
+  blender -b -P produccion/edificio.py -- --vista web_diag_izq --fantasma --muestras 256 --ancho 1920 --alto 1080 --out R/calle/dia_web_diag_izq_fantasma.png
+  ~/tools/ia-render/venv/Scripts/python produccion/lote_realismo.py R IA
+  python produccion/publicar.py R IA --version 2
+  ```
+
 - El visor 360 es **Pannellum 2.5.7 (MIT)** en `vendor/`, cargado solo al
   abrir un recorrido.
 

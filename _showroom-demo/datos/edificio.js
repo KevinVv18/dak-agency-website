@@ -14,11 +14,31 @@ import { readFileSync } from 'node:fs';
 const mascaras = JSON.parse(readFileSync(new URL('./mascaras.json', import.meta.url), 'utf8'));
 const franjas = (camara) => ({ pisos: mascaras[`web_${camara}`], pisosMovil: mascaras[`movil_${camara}`] });
 
+const giro = JSON.parse(readFileSync(new URL('./giro.json', import.meta.url), 'utf8'));
+const cuadros = (modo) => `assets/giro/${modo}-v2/f{n}.webp`;
+const ext = (vista, modo, extra = '') => `assets/exterior/${vista}-${modo}${extra}-v2.webp`;
+// Imágenes de una vista de calle: día/noche, versión vertical para celular y,
+// en las diagonales, la variante con los vecinos como maqueta translúcida.
+const imagenes = (vista, fantasma = false) => ({
+  dia: ext(vista, 'dia'), diaMovil: ext(vista, 'dia', '-movil'),
+  noche: ext(vista, 'noche'), nocheMovil: ext(vista, 'noche', '-movil'),
+  ...(fantasma ? {
+    diaFantasma: ext(vista, 'dia', '-fantasma'), diaMovilFantasma: ext(vista, 'dia', '-movil-fantasma'),
+    nocheFantasma: ext(vista, 'noche', '-fantasma'), nocheMovilFantasma: ext(vista, 'noche', '-movil-fantasma'),
+  } : {}),
+});
+
 export const vistas = [
-  { id: 'frente', nombre: 'Frente', camara: 'web_frente', ...franjas('frente'), imagen: { dia: 'assets/exterior/frente-dia-v1.webp', diaMovil: 'assets/exterior/frente-movil-v1.webp', noche: 'assets/exterior/frente-noche-v1.webp', nocheMovil: 'assets/exterior/frente-noche-movil-v1.webp' } },
-  { id: 'diagonal-izq', nombre: 'Desde la avenida', camara: 'web_diag_izq', ...franjas('diag_izq'), imagen: { dia: 'assets/exterior/diagonal-izq-dia-v1.webp', diaMovil: 'assets/exterior/diagonal-izq-movil-v1.webp', noche: 'assets/exterior/diagonal-izq-noche-v1.webp', nocheMovil: 'assets/exterior/diagonal-izq-noche-movil-v1.webp' } },
-  { id: 'diagonal-der', nombre: 'Esquina opuesta', camara: 'web_diag_der', ...franjas('diag_der'), imagen: { dia: 'assets/exterior/diagonal-der-dia-v1.webp', diaMovil: 'assets/exterior/diagonal-der-movil-v1.webp', noche: 'assets/exterior/diagonal-der-noche-v1.webp', nocheMovil: 'assets/exterior/diagonal-der-noche-movil-v1.webp' } },
-  { id: 'aerea', nombre: 'Vista aérea', camara: 'web_aerea', ...franjas('aerea'), imagen: { dia: 'assets/exterior/aerea-dia-v1.webp', diaMovil: 'assets/exterior/aerea-movil-v1.webp', noche: 'assets/exterior/aerea-noche-v1.webp', nocheMovil: 'assets/exterior/aerea-noche-movil-v1.webp' } },
+  // Giro 360 de dron (edificio.py --orbita 60): un cuadro cada 6 grados, con los
+  // vecinos como maqueta. Las franjas de cada cuadro salen de la misma cámara.
+  {
+    id: 'giro', nombre: 'Giro 360°',
+    giro: { cuadros: 60, dia: cuadros('dia'), diaMovil: cuadros('dia-movil'), noche: cuadros('noche'), nocheMovil: cuadros('noche-movil'), franjas: giro.franjas, franjasMovil: giro.franjasMovil },
+    imagen: { dia: 'assets/giro/dia-v2/f000.webp', diaMovil: 'assets/giro/dia-movil-v2/f000.webp', noche: 'assets/giro/noche-v2/f000.webp', nocheMovil: 'assets/giro/noche-movil-v2/f000.webp' },
+  },
+  { id: 'frente', nombre: 'Frente', camara: 'web_frente', ...franjas('frente'), imagen: imagenes('frente') },
+  { id: 'diagonal-izq', nombre: 'Desde la avenida', camara: 'web_diag_izq', ...franjas('diag_izq'), imagen: imagenes('diagonal-izq', true) },
+  { id: 'diagonal-der', nombre: 'Esquina opuesta', camara: 'web_diag_der', ...franjas('diag_der'), imagen: imagenes('diagonal-der', true) },
 ];
 
 // Clip de transición entre paradas consecutivas, clave "origen>destino".
@@ -67,7 +87,7 @@ plantillas.primer = {
   nombre: 'Piso 1',
   orientacionPlano: 'La avenida queda en la parte inferior de la planta.',
   aspecto: F / P,
-  imagen: 'assets/plantas/piso1-v1.webp',
+  imagen: 'assets/plantas/piso1-v2.webp',
   contexto,
   posiciones: {},
   espacios: [
@@ -80,7 +100,7 @@ plantillas.azotea = {
   nombre: 'Azotea',
   orientacionPlano: 'La avenida queda en la parte inferior de la planta.',
   aspecto: F / P,
-  imagen: 'assets/plantas/azotea-v1.webp',
+  imagen: 'assets/plantas/azotea-v2.webp',
   contexto,
   posiciones: {},
   espacios: [

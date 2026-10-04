@@ -81,8 +81,17 @@ def reponer(original, nueva, cajas, margen=0.006):
     return Image.composite(original, nueva, mascara)
 
 
-def realzar(entrada, salida, tipo='exterior-dia', fuerza=0.35, control=0.7, pasos=32, semilla=7, lado=1536, prompt_extra='', rotulos=None):
+def levantar(img, k=1.25, g=0.72):
+    """Sube la exposición (ganancia y gamma): el giro nocturno sale oscuro en
+    los costados y el barrio, y la IA no recupera lo que no ve."""
+    a = np.clip(np.asarray(img).astype(np.float32) / 255 * k, 0, 1) ** g
+    return Image.fromarray((a * 255).astype(np.uint8))
+
+
+def realzar(entrada, salida, tipo='exterior-dia', fuerza=0.35, control=0.7, pasos=32, semilla=7, lado=1536, prompt_extra='', rotulos=None, ganancia=None):
     img = Image.open(entrada).convert('RGB')
+    if ganancia:
+        img = levantar(img, *ganancia)
     w0, h0 = img.size
     # SDXL trabaja mejor cerca de 1 MP y en múltiplos de 64; se vuelve al tamaño original al final
     k = lado / max(w0, h0)

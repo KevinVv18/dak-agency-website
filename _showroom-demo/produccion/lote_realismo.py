@@ -32,14 +32,15 @@ def main():
         rot = json.loads((d / 'rotulos.json').read_text()) if (d / 'rotulos.json').exists() else []
         for f in sorted(d.glob('f*.png')):
             k = int(f.stem[1:])
-            trabajos.append((f, salida / 'giro' / modo / f'{f.stem}.jpg', tipo, 0.42, 0.85, 28, 1600, rot[k] if k < len(rot) else []))
+            trabajos.append((f, salida / 'giro' / modo / f'{f.stem}.jpg', tipo, 0.42, 0.85, 28, 1600, rot[k] if k < len(rot) else [],
+                             (1.25, 0.72) if modo.startswith('noche') else None))
     for f in sorted((renders / 'calle').glob('*.png')):
         tipo = 'exterior-noche' if f.name.startswith('noche') else 'exterior-dia'
-        trabajos.append((f, salida / 'calle' / f'{f.stem}.jpg', tipo, 0.5, 0.8, 36, 1792, None))
+        trabajos.append((f, salida / 'calle' / f'{f.stem}.jpg', tipo, 0.5, 0.8, 36, 1792, None, None))
     trabajos = [t for t in trabajos if solo in str(t[0]) and not t[1].exists()]
     print(f'{len(trabajos)} imágenes por procesar', flush=True)
-    for i, (ent, sal, tipo, fuerza, control, pasos, lado, rot) in enumerate(trabajos):
-        R.realzar(ent, sal, tipo, fuerza, control, pasos, 7, lado, '', rot)
+    for i, (ent, sal, tipo, fuerza, control, pasos, lado, rot, gan) in enumerate(trabajos):
+        R.realzar(ent, sal, tipo, fuerza, control, pasos, 7, lado, '', rot, gan)
         print(f'IA {i + 1}/{len(trabajos)} {sal.relative_to(salida)}', flush=True)
     print('LOTE IA OK', flush=True)
 
