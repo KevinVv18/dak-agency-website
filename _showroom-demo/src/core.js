@@ -1026,12 +1026,16 @@
   }
 
   // Gira `pasos` cuadros con animación (flechas y teclado).
+  // Los gestos se miden en grados, no en cuadros: con 72 o con 144 cuadros el
+  // edificio gira lo mismo por cada píxel arrastrado o cada flecha.
+  const escalaGiro = () => (D.vistas[Number(contGiro()?.dataset.vistaActual)]?.giro?.cuadros || 72) / 72;
+
   function animarGiro(pasos) {
     const cont = contGiro();
     if (!cont) return;
     tocarGiro();
     const k0 = Number(cont.dataset.cuadro);
-    const dur = 140 * Math.abs(pasos);
+    const dur = 140 * Math.abs(pasos) / escalaGiro();
     let t0 = 0;
     const paso = (t) => {
       if (!t0) t0 = t;
@@ -1152,7 +1156,7 @@
     if (!giro.arr.movido && Math.hypot(dx, dy) < 6) return;
     giro.arr.movido = true;
     // arrastrar a la izquierda trae el costado derecho: el edificio sigue a la mano
-    mostrarCuadro(giro.arr.k - dx / 14);
+    mostrarCuadro(giro.arr.k - (dx / 14) * escalaGiro());
     // y en vertical la toma se inclina, con resistencia, hasta el borde del cuadro
     zoomG.y = giro.arr.zy + dy * 0.75;
     aplicarZoomGiro();
@@ -1452,7 +1456,7 @@
       return;
     }
     const paso = t.closest('[data-paso]');
-    if (paso && contGiro()) return animarGiro(Number(paso.dataset.paso) * 5);
+    if (paso && contGiro()) return animarGiro(Math.round(Number(paso.dataset.paso) * 5 * escalaGiro()));
     if (paso) return irAVista(Number(app.querySelector('.inmersiva--edificio').dataset.vistaActual) + Number(paso.dataset.paso));
     const irVista = t.closest('[data-ir-vista]');
     if (irVista) return irAVista(Number(irVista.dataset.irVista));
@@ -1482,7 +1486,7 @@
     // Flechas del teclado recorren las paradas del exterior.
     const ed = app.querySelector('.inmersiva--edificio');
     if (ed && !e.target.closest('input, select, textarea') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
-      if (contGiro()) animarGiro(e.key === 'ArrowRight' ? 3 : -3);
+      if (contGiro()) animarGiro(Math.round((e.key === 'ArrowRight' ? 3 : -3) * escalaGiro()));
       else irAVista(Number(ed.dataset.vistaActual) + (e.key === 'ArrowRight' ? 1 : -1));
     }
   });

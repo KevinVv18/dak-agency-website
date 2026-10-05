@@ -15,7 +15,7 @@ const mascaras = JSON.parse(readFileSync(new URL('./mascaras.json', import.meta.
 const franjas = (camara) => ({ pisos: mascaras[`web_${camara}`], pisosMovil: mascaras[`movil_${camara}`] });
 
 const giro = JSON.parse(readFileSync(new URL('./giro.json', import.meta.url), 'utf8'));
-const cuadros = (modo) => `assets/giro/${modo}-v4/f{n}.webp`;
+const cuadros = (modo) => `assets/giro/${modo}-v5/f{n}.webp`;
 const ext = (vista, modo, extra = '') => `assets/exterior/${vista}-${modo}${extra}-v4.webp`;
 // Imágenes de una vista de calle: día/noche, versión vertical para celular y,
 // en las diagonales, la variante con los vecinos como maqueta translúcida.
@@ -34,13 +34,14 @@ export const vistas = [
   {
     id: 'giro', nombre: 'Giro 360°',
     giro: {
-      cuadros: 72,
-      dia: cuadros('dia'), diaMovil: cuadros('dia-movil'), noche: cuadros('noche'), nocheMovil: cuadros('noche-movil'),
+      // 144 cuadros (uno cada 2,5°); en pantallas táctiles el giro no se muestra
+      cuadros: 144,
+      dia: cuadros('dia'), noche: cuadros('noche'),
       // al elegir un piso, los vecinos se vuelven maqueta (mismo cuadro, otra toma)
       diaFantasma: cuadros('dia-fantasma'), nocheFantasma: cuadros('noche-fantasma'),
-      franjas: giro.franjas, franjasMovil: giro.franjasMovil,
+      franjas: giro.franjas,
     },
-    imagen: { dia: 'assets/giro/dia-v4/f000.webp', diaMovil: 'assets/giro/dia-movil-v4/f000.webp', noche: 'assets/giro/noche-v4/f000.webp', nocheMovil: 'assets/giro/noche-movil-v4/f000.webp' },
+    imagen: { dia: 'assets/giro/dia-v5/f000.webp', noche: 'assets/giro/noche-v5/f000.webp' },
   },
   { id: 'frente', nombre: 'Frente', camara: 'web_frente', ...franjas('frente'), imagen: imagenes('frente') },
   { id: 'diagonal-izq', nombre: 'Desde la avenida', camara: 'web_diag_izq', ...franjas('diag_izq'), imagen: imagenes('diagonal-izq', true) },
