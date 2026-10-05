@@ -979,6 +979,12 @@
       const tiles = await C.createGooglePhotorealistic3DTileset({ onlyUsingWithGoogleGeocoder: true });
       if (cielo !== yo) return;
       scene.primitives.add(tiles);
+      // Oclusión ambiental: oscurece rincones y bordes de la malla, y las casas
+      // se despegan del suelo plano de Lambayeque.
+      const ao = scene.postProcessStages.ambientOcclusion;
+      ao.enabled = true;
+      Object.assign(ao.uniforms, { intensity: 2.2, bias: 0.1, lengthCap: 0.12, stepSize: 1.4, blurStepSize: 0.86 });
+
       // el giro se renderizó con 34 mm sobre 36 mm de sensor
       viewer.camera.frustum.fov = 2 * Math.atan(18 / 34);
 
