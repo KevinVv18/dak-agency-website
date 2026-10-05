@@ -131,7 +131,8 @@ HTML;
 
 function servir(string $privado, string $quien): void
 {
-    $ruta = ltrim(rawurldecode(strtok($_GET['ruta'] ?? '', '?')), '/');
+    // (strtok devuelve false con la ruta vacía de la portada)
+    $ruta = ltrim(rawurldecode(explode('?', (string)($_GET['ruta'] ?? ''))[0]), '/');
     $real = realpath(RAIZ . '/' . $ruta);
     // nada fuera del sitio, nada oculto, nada ejecutable
     if ($real === false || !str_starts_with($real, RAIZ) || preg_match('#(^|/)\.|\.php$#', $ruta)) {
