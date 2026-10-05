@@ -122,18 +122,18 @@ function shell(pag, v) {
 <title>${esc(pag.titulo)}</title>
 <meta name="description" content="${esc(pag.desc)}">
 <meta name="robots" content="noindex, nofollow">
-<link rel="preload" href="${base}vendor/fonts/manrope-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="${base}vendor/fonts/archivo-latin-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${base}core.css?v=${v.css}">
 <style>:root{${v.marca}}</style>
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
 <!--
-THESIS: El edificio a pantalla completa es la interfaz; los controles flotan encima y nunca lo enmarcan. Rechaza la web inmobiliaria de secciones apiladas.
-OWN-WORLD: Imagen a sangre; píldoras y círculos flotantes blancos y negros con sombra real y un único acento por proyecto; tarjeta blanca de radio 20; Manrope; estados como punto dibujado + palabra.
-STORY: El comprador entra al edificio, elige piso en la columna, toca el marcador de un departamento, ve precio y bono, abre planta o recorrido y consulta sin perder la unidad.
-FIRST VIEWPORT: Render del frente a sangre con acercamiento lento; marca arriba a la izquierda; nombre grande abajo a la izquierda sobre degradado; Ingresar en acento; aviso de demo arriba.
-FORM: estándar de la categoría (canon), vara President Tower; seed 889aa60c.
+THESIS: El edificio a pantalla completa es la interfaz, y lo que flota encima son tablillas de algarrobo, no las píldoras blancas y rojas del showroom de plantilla.
+OWN-WORLD: Bosque seco de Lambayeque: algarrobo oscuro, ceniza y arena; tablillas de esquina superior derecha cortada; el color del proyecto (flor de faique) solo en la acción y lo elegido; Archivo expandida en mayúsculas para nombres y cifras; estados como rombo + palabra.
+STORY: El comprador entra al edificio, elige piso en el tablero de tablillas, toca el marcador de un departamento, ve número, precio y casillas de datos, abre planta o recorrido y consulta sin perder la unidad.
+FIRST VIEWPORT: Timelapse día-noche a sangre con el cielo que corre; nombre en grotesca expandida abajo a la izquierda; Ingresar como tablilla amarilla y Ver departamentos como tablilla oscura; aviso de demo arriba.
+FORM: Bosque seco, candidato 3 de 7 de la lista propia; seed 8b3884cc.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
 -->
 <div id="app" aria-live="polite"><noscript><p class="sin-js">Este showroom necesita JavaScript para mostrar el edificio y los departamentos.</p></noscript></div>

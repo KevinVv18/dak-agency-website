@@ -160,7 +160,7 @@
   // Botonera de arriba a la izquierda, igual en todas las vistas inmersivas.
   const controles = (atras) => `
     <div class="flotante flotante--arriba-izq">
-      <button class="pildora pildora--acento" data-menu aria-expanded="false" aria-controls="menu">${icono('menu')}<span>Menú</span></button>
+      <button class="pildora" data-menu aria-expanded="false" aria-controls="menu">${icono('menu')}<span>Menú</span></button>
       <a class="circulo" href="${atras}" aria-label="Volver">${icono('volver')}</a>
       <button class="circulo" data-compartir aria-label="Copiar enlace de esta vista">${icono('enlace')}</button>
     </div>`;
@@ -187,7 +187,7 @@
       ${aviso()}
       <div class="chrome-pagina">
         <div class="flotante flotante--arriba-izq">
-          <button class="pildora pildora--acento" data-menu aria-expanded="false" aria-controls="menu">${icono('menu')}<span>Menú</span></button>
+          <button class="pildora" data-menu aria-expanded="false" aria-controls="menu">${icono('menu')}<span>Menú</span></button>
           <a class="circulo" href="${destino}" aria-label="Volver a ${esc(atrasTxt || 'el edificio')}">${icono('volver')}</a>
           <button class="circulo" data-compartir aria-label="Copiar enlace de esta vista">${icono('enlace')}</button>
         </div>
@@ -403,7 +403,7 @@
     return `
       <article class="tarjeta tarjeta--flotante" aria-labelledby="t-${u.id}">
         <div class="tarjeta__cabeza">
-          <h2 id="t-${u.id}">Dpto. ${u.id}</h2>
+          <h2 id="t-${u.id}"><small>Dpto.</small>${u.id}</h2>
           ${chipEstado(u.estado)}
           <a class="circulo circulo--claro circulo--chico" href="${url(`piso/${idPiso}/`)}" data-cerrar-tarjeta aria-label="Cerrar">${icono('cerrar')}</a>
         </div>
@@ -413,11 +413,11 @@
         ${consultable
           ? `<button class="pildora pildora--acento pildora--ancha" data-consultar="${u.id}" data-seccion="planta-piso">${icono('chat')}<span>${u.precio ? 'Consultar' : 'Consultar precio'}</span></button>`
           : `<a class="pildora pildora--ancha" href="${url('departamentos/', { tipo: u.tipologia, estado: 'disponible' })}">Ver ${esc(t.nombre)} disponibles</a>`}
-        <dl class="filas">
-          <div>${icono('area')}<dt>Área total</dt><dd>${m2(areaTotalDe(u))}</dd></div>
-          <div>${icono('cama')}<dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
-          <div>${icono('bano')}<dt>Baños</dt><dd>${t.banos}</dd></div>
-          <div>${icono('brujula')}<dt>Vista</dt><dd>${esc(orientacion(u))}</dd></div>
+        <dl class="datos">
+          <div><dt>Área total</dt><dd>${m2(areaTotalDe(u))}</dd></div>
+          <div><dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
+          <div><dt>Baños</dt><dd>${t.banos}</dd></div>
+          <div><dt>Vista</dt><dd>${esc(orientacion(u))}</dd></div>
         </dl>
         <div class="tarjeta__acciones">
           <a class="pildora pildora--oscura" href="${url(`departamento/${u.id}/`)}">${icono('plano')}<span>Ver ficha</span></a>
@@ -546,14 +546,14 @@
           ${consultable
             ? `<button class="pildora pildora--acento pildora--ancha" data-consultar="${u.id}" data-seccion="${sec}">${icono('chat')}<span>Consultar por este departamento</span></button>`
             : `<a class="pildora pildora--acento pildora--ancha" href="${url('departamentos/', { tipo: u.tipologia, estado: 'disponible' })}">Ver ${esc(t.nombre)} disponibles</a>`}
-          <dl class="filas">
-            <div>${icono('area')}<dt>Área techada</dt><dd>${m2(t.areaTechada)}</dd></div>
-            ${areaLibreDe(u) ? `<div>${icono('area')}<dt>Área libre</dt><dd>${m2(areaLibreDe(u))}</dd></div>` : ''}
-            <div>${icono('area')}<dt>Área total</dt><dd>${m2(areaTotalDe(u))}</dd></div>
-            <div>${icono('cama')}<dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
-            <div>${icono('bano')}<dt>Baños</dt><dd>${t.banos}</dd></div>
-            <div>${icono('edificio')}<dt>Piso</dt><dd>${esc(piso.etiqueta.replace('Piso ', ''))}</dd></div>
-            <div>${icono('brujula')}<dt>Vista</dt><dd>${esc(orientacion(u))}</dd></div>
+          <dl class="datos">
+            <div><dt>Área techada</dt><dd>${m2(t.areaTechada)}</dd></div>
+            ${areaLibreDe(u) ? `<div><dt>Área libre</dt><dd>${m2(areaLibreDe(u))}</dd></div>` : ''}
+            <div><dt>Área total</dt><dd>${m2(areaTotalDe(u))}</dd></div>
+            <div><dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
+            <div><dt>Baños</dt><dd>${t.banos}</dd></div>
+            <div><dt>Piso</dt><dd>${esc(piso.etiqueta.replace('Piso ', ''))}</dd></div>
+            <div><dt>Vista</dt><dd>${esc(orientacion(u))}</dd></div>
           </dl>
           <h2 class="tarjeta__sub">Ambientes</h2>
           <ul class="lista-ambientes">${[...t.ambientes, ...(u.extras || [])].map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
@@ -1155,6 +1155,13 @@
     const lienzo = app.querySelector('.lienzo-plano');
     if (!lienzo) { encuadre = null; return; }
     if (!encuadre || encuadre.piso !== lienzo.dataset.piso) encuadre = { piso: lienzo.dataset.piso, ...encuadreInicial(lienzo) };
+    // Medido con la pestaña oculta o sin tamaño todavía, el encuadre sale
+    // negativo o infinito y la planta quedaba encogida: se reintenta.
+    if (!(encuadre.s > 0) || !Number.isFinite(encuadre.s)) {
+      encuadre = null;
+      requestAnimationFrame(() => setTimeout(montarPlano, 120));
+      return;
+    }
     aplicarEncuadre();
     const elegida = query().d;
     if (elegida) requestAnimationFrame(() => asegurarVisible(elegida));

@@ -15,9 +15,9 @@ export default {
   descripcion:
     'Edificio boutique de 6 pisos con departamentos de 2 y 3 dormitorios, cocheras y terraza en azotea.',
   moneda: 'PEN',
-  // Acento de marca de la demo: cobre, por la tierra del bosque seco.
-  // Texto blanco sobre el acento: contraste 5,1 (AA).
-  estilo: { acento: '#a9581f', acentoTinta: '#ffffff' },
+  // Acento de marca de la demo: el amarillo de la flor del faique, con texto
+  // en algarrobo encima (contraste 10,5; AAA).
+  estilo: { acento: '#f2c230', acentoTinta: '#23170f' },
   // Portada: timelapse de cámara fija del día a la noche (edificio.py --vista
   // portada --capas --timelapse), con pase de realismo. Cada estado es un
   // frente recortado y un cielo más ancho que corre detrás; se funden en bucle.
