@@ -967,8 +967,11 @@
         globe: false, baseLayerPicker: false, geocoder: false, timeline: false, animation: false,
         homeButton: false, sceneModePicker: false, navigationHelpButton: false, infoBox: false,
         selectionIndicator: false, fullscreenButton: false, skyAtmosphere: new C.SkyAtmosphere(),
+        showRenderLoopErrors: false,
       });
       yo.viewer = viewer;
+      // si el render 3D falla, se pasa directo al giro en vez de mostrar el error
+      viewer.scene.renderError.addEventListener(() => terminarEntrada(true));
       const scene = viewer.scene;
       scene.skyBox.show = false;
       scene.backgroundColor = C.Color.fromCssColorString('#a9c7e3');
@@ -1032,42 +1035,63 @@
       } catch { /* se usa la altura aproximada */ }
       if (cielo !== yo) return;
 
-      // El edificio como maqueta blanca sobre la ciudad real: muros sueltos con
-      // un tono por cara (los polígonos de Cesium no reciben luz y una caja de un
-      // solo blanco se leía plana), techo más claro y una línea por losa.
-      const W = 14.4, F = 22, H = 17.0;
-      const esquina = (x, d, z) => pto(d, x, z);
-      const muro = (a, b, color) => viewer.entities.add({
-        wall: {
-          positions: [esquina(a[0], a[1], H), esquina(b[0], b[1], H)],
-          minimumHeights: [suelo, suelo], material: C.Color.fromCssColorString(color),
-        },
-      });
-      const atras = -F / 2, adelante = F / 2;
-      muro([-W / 2, adelante], [W / 2, adelante], '#efebe2');   // fachada, de cara a la cámara
-      muro([W / 2, atras], [W / 2, adelante], '#d6d0c3');       // costado en sombra
-      muro([-W / 2, adelante], [-W / 2, atras], '#e3ded3');     // costado con luz
-      muro([-W / 2, atras], [W / 2, atras], '#cfc8ba');
-      viewer.entities.add({
-        polygon: {
-          hierarchy: new C.PolygonHierarchy([[-W / 2, atras], [W / 2, atras], [W / 2, adelante], [-W / 2, adelante]].map(([x, d]) => esquina(x, d, H))),
-          perPositionHeight: true, material: C.Color.fromCssColorString('#f7f5f0'),
-        },
-      });
-      // caja de escalera en la azotea
-      const ca = 2.6, cx = 1.2, ch = H + 2.6;
-      const cmuro = (a, b, color) => viewer.entities.add({
-        wall: { positions: [esquina(a[0], a[1], ch), esquina(b[0], b[1], ch)], minimumHeights: [suelo + H, suelo + H], material: C.Color.fromCssColorString(color) },
-      });
-      cmuro([-cx, ca], [cx, ca], '#efebe2');
-      cmuro([cx, -ca], [cx, ca], '#d6d0c3');
-      cmuro([-cx, ca], [-cx, -ca], '#e3ded3');
-      // líneas de losa, apenas hacia afuera para que no se hundan en el muro
-      const fuera = 0.08;
-      for (const z of [3.0, 5.8, 8.6, 11.4, 14.2]) {
-        const a = [[-W / 2 - fuera, atras - fuera], [W / 2 + fuera, atras - fuera], [W / 2 + fuera, adelante + fuera], [-W / 2 - fuera, adelante + fuera]].map(([x, d]) => esquina(x, d, z));
-        viewer.entities.add({ polyline: { positions: [...a, a[0]], width: 1.6, material: C.Color.fromCssColorString('#b9b1a1') } });
+      // El edificio real (produccion/maqueta_glb.py: el modelo del render, con
+      // texturas chicas y Draco) sobre la ciudad, iluminado por el sol de Cesium a
+      // media tarde. Llega igual a como se ve en el render y el fundido no salta.
+      viewer.clock.currentTime = C.JulianDate.fromIso8601('2026-10-05T20:30:00Z');
+      viewer.clock.shouldAnimate = false;
+      const maquetaBlanca = () => {
+        // Respaldo si el modelo no carga: maqueta blanca, muros sueltos con
+        // un tono por cara (los polígonos de Cesium no reciben luz y una caja de un
+        // solo blanco se leía plana), techo más claro y una línea por losa.
+        const W = 14.4, F = 22, H = 17.0;
+        const esquina = (x, d, z) => pto(d, x, z);
+        const muro = (a, b, color) => viewer.entities.add({
+          wall: {
+            positions: [esquina(a[0], a[1], H), esquina(b[0], b[1], H)],
+            minimumHeights: [suelo, suelo], material: C.Color.fromCssColorString(color),
+          },
+        });
+        const atras = -F / 2, adelante = F / 2;
+        muro([-W / 2, adelante], [W / 2, adelante], '#efebe2');   // fachada, de cara a la cámara
+        muro([W / 2, atras], [W / 2, adelante], '#d6d0c3');       // costado en sombra
+        muro([-W / 2, adelante], [-W / 2, atras], '#e3ded3');     // costado con luz
+        muro([-W / 2, atras], [W / 2, atras], '#cfc8ba');
+        viewer.entities.add({
+          polygon: {
+            hierarchy: new C.PolygonHierarchy([[-W / 2, atras], [W / 2, atras], [W / 2, adelante], [-W / 2, adelante]].map(([x, d]) => esquina(x, d, H))),
+            perPositionHeight: true, material: C.Color.fromCssColorString('#f7f5f0'),
+          },
+        });
+        // caja de escalera en la azotea
+        const ca = 2.6, cx = 1.2, ch = H + 2.6;
+        const cmuro = (a, b, color) => viewer.entities.add({
+          wall: { positions: [esquina(a[0], a[1], ch), esquina(b[0], b[1], ch)], minimumHeights: [suelo + H, suelo + H], material: C.Color.fromCssColorString(color) },
+        });
+        cmuro([-cx, ca], [cx, ca], '#efebe2');
+        cmuro([cx, -ca], [cx, ca], '#d6d0c3');
+        cmuro([-cx, ca], [-cx, -ca], '#e3ded3');
+        // líneas de losa, apenas hacia afuera para que no se hundan en el muro
+        const fuera = 0.08;
+        for (const z of [3.0, 5.8, 8.6, 11.4, 14.2]) {
+          const a = [[-W / 2 - fuera, atras - fuera], [W / 2 + fuera, atras - fuera], [W / 2 + fuera, adelante + fuera], [-W / 2 - fuera, adelante + fuera]].map(([x, d]) => esquina(x, d, z));
+          viewer.entities.add({ polyline: { positions: [...a, a[0]], width: 1.6, material: C.Color.fromCssColorString('#b9b1a1') } });
+        }
+      };
+      try {
+        const modelo = await C.Model.fromGltfAsync({
+          // en Cesium el frente del glTF (+Z, la fachada) queda mirando al este:
+          // se gira desde ahí hasta el rumbo de la fachada
+          url: recurso(m.maqueta),
+          modelMatrix: C.Transforms.headingPitchRollToFixedFrame(
+            C.Cartesian3.fromDegrees(m.lon, m.lat, suelo), new C.HeadingPitchRoll(C.Math.toRadians(m.rumbo - 90), 0, 0)),
+        });
+        scene.primitives.add(modelo);
+      } catch (e) {
+        console.warn('Maqueta del edificio no disponible:', e);
+        maquetaBlanca();
       }
+      if (cielo !== yo) return;
 
       // Nubes a lo largo del tramo alto: pasan delante de la cámara (paralaje) y
       // una queda justo en la trayectoria, para atravesarla al empezar la picada.
