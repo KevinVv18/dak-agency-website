@@ -1,0 +1,26 @@
+# edificios.dakagency.net: showroom estático (lo copia generar.js a dist/.htaccess).
+Options -Indexes
+DirectoryIndex index.html
+
+# Sin indexar: es un demo con inventario y precios de ejemplo.
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
+
+# Las imágenes y fuentes cambian de nombre al cambiar (-vN), así que se cachean
+# un año. CSS, JS y datos llevan ?v=<firma>. El HTML nunca se cachea.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml
+</IfModule>

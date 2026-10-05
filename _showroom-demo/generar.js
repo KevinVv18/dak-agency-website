@@ -204,6 +204,8 @@ async function generar() {
   if (await stat(join(SITIO, 'assets')).catch(() => null)) await cp(join(SITIO, 'assets'), join(DIST, 'assets'), { recursive: true });
   // Librerías de terceros del motor (Pannellum, MIT), comunes a todos los proyectos.
   await cp(join(RAIZ, 'vendor'), join(DIST, 'vendor'), { recursive: true });
+  // Caché y cabeceras del subdominio (Apache de Hostinger).
+  await cp(join(RAIZ, 'src/htaccess'), join(DIST, '.htaccess'));
 
   const lista = paginas(datos);
   for (const pag of lista) {
