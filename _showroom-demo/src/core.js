@@ -403,7 +403,7 @@
     return `
       <article class="tarjeta tarjeta--flotante" aria-labelledby="t-${u.id}">
         <div class="tarjeta__cabeza">
-          <h2 id="t-${u.id}"><small>Dpto.</small>${u.id}</h2>
+          <h2 id="t-${u.id}"><small>Dpto.</small> ${u.id}</h2>
           ${chipEstado(u.estado)}
           <a class="circulo circulo--claro circulo--chico" href="${url(`piso/${idPiso}/`)}" data-cerrar-tarjeta aria-label="Cerrar">${icono('cerrar')}</a>
         </div>
@@ -417,7 +417,7 @@
           <div><dt>Área total</dt><dd>${m2(areaTotalDe(u))}</dd></div>
           <div><dt>Dormitorios</dt><dd>${t.dormitorios}</dd></div>
           <div><dt>Baños</dt><dd>${t.banos}</dd></div>
-          <div><dt>Vista</dt><dd>${esc(orientacion(u))}</dd></div>
+          <div><dt>Piso</dt><dd>${esc((pisoPorId[idPiso]?.etiqueta || idPiso).replace('Piso ', ''))}</dd></div>
         </dl>
         <div class="tarjeta__acciones">
           <a class="pildora pildora--oscura" href="${url(`departamento/${u.id}/`)}">${icono('plano')}<span>Ver ficha</span></a>

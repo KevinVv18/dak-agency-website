@@ -179,7 +179,18 @@ async function generar() {
   const datosJs = `window.SHOWROOM = ${JSON.stringify(datos)};\n`;
   // La marca de cada proyecto entra como variables CSS: misma hoja, otro acento.
   const e = datos.proyecto.estilo || {};
-  const marca = [e.acento && `--acento:${e.acento}`, e.acentoTinta && `--acento-tinta:${e.acentoTinta}`].filter(Boolean).join(';');
+  // Cuando el acento se usa como texto, trazo o foco necesita 3:1 con lo que
+  // tiene detrás: sobre algarrobo cae a arena y sobre ceniza a algarrobo si no
+  // llega (el azul de VARU sobre madera oscura, el amarillo sobre ceniza).
+  const lum = (hex) => {
+    const c = hex.replace('#', '').match(/../g).map((h) => parseInt(h, 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const contraste = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + 0.05) / (y + 0.05); };
+  const sobreOscuro = e.acento && (contraste(e.acento, '#23170f') >= 3 ? e.acento : '#efe7d6');
+  const sobreClaro = e.acento && (contraste(e.acento, '#dedad0') >= 3 ? e.acento : '#23170f');
+  const marca = [e.acento && `--acento:${e.acento}`, e.acentoTinta && `--acento-tinta:${e.acentoTinta}`,
+    sobreOscuro && `--acento-oscuro:${sobreOscuro}`, sobreClaro && `--acento-claro:${sobreClaro}`].filter(Boolean).join(';');
   const v = { css: firma(css), js: firma(js), datos: firma(datosJs), marca };
 
   await rm(DIST, { recursive: true, force: true });
