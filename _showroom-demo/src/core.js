@@ -968,11 +968,10 @@
         homeButton: false, sceneModePicker: false, navigationHelpButton: false, infoBox: false,
         selectionIndicator: false, fullscreenButton: false, skyAtmosphere: new C.SkyAtmosphere(),
       });
-      // cielo de día: sin el fondo estrellado del espacio
-      viewer.scene.skyBox.show = false;
-      viewer.scene.backgroundColor = C.Color.fromCssColorString('#a9c7e3');
       yo.viewer = viewer;
       const scene = viewer.scene;
+      scene.skyBox.show = false;
+      scene.backgroundColor = C.Color.fromCssColorString('#a9c7e3');
       scene.screenSpaceCameraController.enableInputs = false;
       const tiles = await C.createGooglePhotorealistic3DTileset({ onlyUsingWithGoogleGeocoder: true });
       if (cielo !== yo) return;
@@ -980,41 +979,128 @@
       // el giro se renderizó con 34 mm sobre 36 mm de sensor
       viewer.camera.frustum.fov = 2 * Math.atan(18 / 34);
 
+      // Marco local del lote (este, norte, arriba). Ejes propios del edificio:
+      // f = hacia donde mira la fachada (de donde llega la cámara), l = su derecha.
+      let suelo = m.suelo ?? 30;
+      const marcoDe = (h) => C.Transforms.eastNorthUpToFixedFrame(C.Cartesian3.fromDegrees(m.lon, m.lat, h));
+      let marco = marcoDe(suelo);
+      const r = C.Math.toRadians(m.rumbo);
+      const f = [Math.sin(r), Math.cos(r)];
+      const l = [Math.cos(r), -Math.sin(r)];
+      // punto en ejes del edificio: d metros hacia la fachada, x a la derecha, z de alto
+      const pto = (d, x, z) => C.Matrix4.multiplyByPoint(marco,
+        new C.Cartesian3(f[0] * d + l[0] * x, f[1] * d + l[1] * x, z), new C.Cartesian3());
+
+      // Recorrido como el de President Tower: plano oblicuo alto que planea
+      // despacio entre nubes, picada que acelera, baja y endereza la mirada, y
+      // llegada a la toma del primer cuadro del giro, donde se funde con el render.
+      // [t (0-1), d (m), x (m), alto (m)]
+      const claves = [
+        [0.00, 4300, -900, 2700],
+        [0.42, 3050, -620, 2050],
+        [0.70, 1300, -260, 700],
+        [0.88, 210, -40, 34],
+        [1.00, 54, 0, 14.5],
+      ];
+      const DUR = 5200;
+      const pose = (u) => {
+        // Catmull-Rom por tramos, con la altura en escala logarítmica
+        let i = 0;
+        while (i < claves.length - 2 && u > claves[i + 1][0]) i++;
+        const k = (j) => claves[Math.max(0, Math.min(claves.length - 1, j))];
+        const [p0, p1, p2, p3] = [k(i - 1), k(i), k(i + 1), k(i + 2)];
+        const s = (u - p1[0]) / (p2[0] - p1[0]);
+        const cr = (a, b, c, d) => 0.5 * ((2 * b) + (-a + c) * s + (2 * a - 5 * b + 4 * c - d) * s * s + (-a + 3 * b - 3 * c + d) * s * s * s);
+        const lg = (q) => Math.log(q[3]);
+        return { d: cr(p0[1], p1[1], p2[1], p3[1]), x: cr(p0[2], p1[2], p2[2], p3[2]), z: Math.exp(cr(lg(p0), lg(p1), lg(p2), lg(p3))) };
+      };
+      const mira = () => pto(0, 0, 9);   // el giro apunta a 9 m de altura
+      const ponerCamara = (u) => {
+        const p = pose(u);
+        const pos = pto(p.d, p.x, p.z);
+        const dir = C.Cartesian3.normalize(C.Cartesian3.subtract(mira(), pos, new C.Cartesian3()), new C.Cartesian3());
+        const cenit = C.Cartesian3.normalize(C.Cartesian3.subtract(pto(0, 0, 1), pto(0, 0, 0), new C.Cartesian3()), new C.Cartesian3());
+        const der = C.Cartesian3.normalize(C.Cartesian3.cross(dir, cenit, new C.Cartesian3()), new C.Cartesian3());
+        viewer.camera.setView({ destination: pos, orientation: { direction: dir, up: C.Cartesian3.cross(der, dir, new C.Cartesian3()) } });
+      };
+      ponerCamara(0);
+
       // altura real del suelo en el lote (los tiles vienen en altura elipsoidal)
-      const lote = C.Cartographic.fromDegrees(m.lon, m.lat);
-      // se arranca arriba, mirando hacia abajo, mientras carga la ciudad
-      const rumboCam = C.Math.toRadians(m.rumbo + 180);
-      viewer.camera.setView({ destination: C.Cartesian3.fromDegrees(m.lon, m.lat, 6200), orientation: { heading: rumboCam, pitch: -Math.PI / 2, roll: 0 } });
-      let suelo = m.suelo ?? 40;
       try {
-        const [h] = await scene.sampleHeightMostDetailed([lote], [], 1);
-        if (h?.height !== undefined && Number.isFinite(h.height)) suelo = h.height;
+        const [h] = await scene.sampleHeightMostDetailed([C.Cartographic.fromDegrees(m.lon, m.lat)], [], 1);
+        if (Number.isFinite(h?.height)) { suelo = h.height; marco = marcoDe(suelo); ponerCamara(0); }
       } catch { /* se usa la altura aproximada */ }
       if (cielo !== yo) return;
 
-      // marco local del lote: este, norte, arriba
-      const centro = C.Cartesian3.fromDegrees(m.lon, m.lat, suelo);
-      const marco = C.Transforms.eastNorthUpToFixedFrame(centro);
-      const enu = (e, n, u) => C.Matrix4.multiplyByPoint(marco, new C.Cartesian3(e, n, u), new C.Cartesian3());
-      const r = C.Math.toRadians(m.rumbo);
-      const frente = [Math.sin(r), Math.cos(r)];          // hacia donde mira la fachada
-      const mira = enu(0, 0, 9);                            // el giro apunta a 9 m de altura
+      // El edificio como maqueta blanca sobre la ciudad real: muros sueltos con
+      // un tono por cara (los polígonos de Cesium no reciben luz y una caja de un
+      // solo blanco se leía plana), techo más claro y una línea por losa.
+      const W = 14.4, F = 22, H = 17.0;
+      const esquina = (x, d, z) => pto(d, x, z);
+      const muro = (a, b, color) => viewer.entities.add({
+        wall: {
+          positions: [esquina(a[0], a[1], H), esquina(b[0], b[1], H)],
+          minimumHeights: [suelo, suelo], material: C.Color.fromCssColorString(color),
+        },
+      });
+      const atras = -F / 2, adelante = F / 2;
+      muro([-W / 2, adelante], [W / 2, adelante], '#efebe2');   // fachada, de cara a la cámara
+      muro([W / 2, atras], [W / 2, adelante], '#d6d0c3');       // costado en sombra
+      muro([-W / 2, adelante], [-W / 2, atras], '#e3ded3');     // costado con luz
+      muro([-W / 2, atras], [W / 2, atras], '#cfc8ba');
+      viewer.entities.add({
+        polygon: {
+          hierarchy: new C.PolygonHierarchy([[-W / 2, atras], [W / 2, atras], [W / 2, adelante], [-W / 2, adelante]].map(([x, d]) => esquina(x, d, H))),
+          perPositionHeight: true, material: C.Color.fromCssColorString('#f7f5f0'),
+        },
+      });
+      // caja de escalera en la azotea
+      const ca = 2.6, cx = 1.2, ch = H + 2.6;
+      const cmuro = (a, b, color) => viewer.entities.add({
+        wall: { positions: [esquina(a[0], a[1], ch), esquina(b[0], b[1], ch)], minimumHeights: [suelo + H, suelo + H], material: C.Color.fromCssColorString(color) },
+      });
+      cmuro([-cx, ca], [cx, ca], '#efebe2');
+      cmuro([cx, -ca], [cx, ca], '#d6d0c3');
+      cmuro([-cx, ca], [-cx, -ca], '#e3ded3');
+      // líneas de losa, apenas hacia afuera para que no se hundan en el muro
+      const fuera = 0.08;
+      for (const z of [3.0, 5.8, 8.6, 11.4, 14.2]) {
+        const a = [[-W / 2 - fuera, atras - fuera], [W / 2 + fuera, atras - fuera], [W / 2 + fuera, adelante + fuera], [-W / 2 - fuera, adelante + fuera]].map(([x, d]) => esquina(x, d, z));
+        viewer.entities.add({ polyline: { positions: [...a, a[0]], width: 1.6, material: C.Color.fromCssColorString('#b9b1a1') } });
+      }
 
-      // nubes sueltas entre 1,2 y 2,6 km: atravesarlas es lo que se siente caída
+      // Nubes a lo largo del tramo alto: pasan delante de la cámara (paralaje) y
+      // una queda justo en la trayectoria, para atravesarla al empezar la picada.
       const nubes = scene.primitives.add(new C.CloudCollection({ noiseDetail: 16 }));
-      let semilla = 11;
+      let semilla = 7;
       const azar = () => ((semilla = (semilla * 16807) % 2147483647) / 2147483647);
-      for (let i = 0; i < 70; i++) {
-        const a = azar() * Math.PI * 2;
-        // más densas cerca de la vertical del lote, que es por donde se cae
-        const d = 60 + azar() ** 1.6 * 2600;
+      for (let i = 0; i < 46; i++) {
+        const u = 0.05 + azar() * 0.62;
+        const p = pose(u);
+        const lado = (azar() < 0.5 ? -1 : 1) * (120 + azar() * 900);
         nubes.add({
-          position: enu(Math.cos(a) * d, Math.sin(a) * d, 900 + azar() * 1300),
-          scale: new C.Cartesian2(900 + azar() * 1300, 380 + azar() * 420),
-          maximumSize: new C.Cartesian3(42, 14, 12), slice: 0.3 + azar() * 0.2, brightness: 1.05,
+          position: pto(p.d + (azar() - 0.5) * 500, p.x + lado, Math.max(600, p.z - 120 - azar() * 500)),
+          scale: new C.Cartesian2(380 + azar() * 620, 160 + azar() * 220),
+          maximumSize: new C.Cartesian3(40, 14, 12), slice: 0.32 + azar() * 0.2, brightness: 1.08,
         });
       }
-      // espera a que la ciudad se vea desde arriba antes de soltar la cámara
+      const atravesar = pose(0.5);
+      nubes.add({
+        position: pto(atravesar.d, atravesar.x, atravesar.z - 20),
+        scale: new C.Cartesian2(520, 240), maximumSize: new C.Cartesian3(46, 18, 16), slice: 0.42, brightness: 1.1,
+      });
+      // y un manto lejano bajo la ciudad para la profundidad del primer plano
+      for (let i = 0; i < 24; i++) {
+        const a = azar() * Math.PI * 2;
+        const d = 1500 + azar() * 5000;
+        nubes.add({
+          position: pto(Math.cos(a) * d, Math.sin(a) * d, 900 + azar() * 900),
+          scale: new C.Cartesian2(900 + azar() * 1200, 300 + azar() * 300),
+          maximumSize: new C.Cartesian3(40, 14, 12), slice: 0.36, brightness: 1.05,
+        });
+      }
+
+      // espera a que la ciudad se vea desde la toma inicial y recién entonces aparece
       await new Promise((ok) => {
         const t0 = Date.now();
         const ver = () => (tiles.tilesLoaded || Date.now() - t0 > 3000 || cielo !== yo ? ok() : setTimeout(ver, 100));
@@ -1023,41 +1109,24 @@
       if (cielo !== yo) return;
       capa.classList.add('cielo--listo');
 
-      const DUR = 7600;
-      const A0 = 6200;
-      const A1 = 14.5;
-      const R1 = 54;
-      const suave = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
-      const tramo = (a, b, t) => Math.min(1, Math.max(0, (t - a) / (b - a)));
+      // ?cielo-u=0.8 congela la cámara en ese punto del recorrido (para calibrar)
+      const congelar = Number(new URLSearchParams(location.search).get('cielo-u'));
+      if (new URLSearchParams(location.search).has('cielo-u') && Number.isFinite(congelar)) {
+        const quieto = () => { if (cielo === yo) { ponerCamara(Math.min(1, Math.max(0, congelar))); yo.raf = requestAnimationFrame(quieto); } };
+        quieto();
+        return;
+      }
+      let fundido = false;
       const paso = (t0) => (t) => {
         const u = Math.min(1, (t - t0) / DUR);
-        // la altura baja en escala logarítmica: acelera y frena como una caída
-        const alto = Math.exp(Math.log(A0) + (Math.log(A1) - Math.log(A0)) * suave(u));
-        const sale = suave(tramo(0.45, 1, u));
-        const pos = enu(frente[0] * R1 * sale, frente[1] * R1 * sale, alto);
-        // primero mira hacia abajo; al final, a la fachada
-        const abajo = enu(frente[0] * R1 * sale, frente[1] * R1 * sale, alto - 100);
-        const p = suave(tramo(0.5, 0.97, u));
-        const objetivo = new C.Cartesian3(
-          abajo.x + (mira.x - abajo.x) * p, abajo.y + (mira.y - abajo.y) * p, abajo.z + (mira.z - abajo.z) * p);
-        const dir = C.Cartesian3.normalize(C.Cartesian3.subtract(objetivo, pos, new C.Cartesian3()), new C.Cartesian3());
-        const arriba0 = enu(-frente[0], -frente[1], 0);
-        const norte = C.Cartesian3.normalize(C.Cartesian3.subtract(arriba0, centro, new C.Cartesian3()), new C.Cartesian3());
-        const cenit = C.Cartesian3.normalize(C.Cartesian3.subtract(enu(0, 0, 1), centro, new C.Cartesian3()), new C.Cartesian3());
-        // vector arriba de la cámara: «hacia el edificio» mirando abajo, cénit al final
-        const up0 = new C.Cartesian3(norte.x + (cenit.x - norte.x) * p, norte.y + (cenit.y - norte.y) * p, norte.z + (cenit.z - norte.z) * p);
-        const derecha = C.Cartesian3.normalize(C.Cartesian3.cross(dir, up0, new C.Cartesian3()), new C.Cartesian3());
-        const up = C.Cartesian3.cross(derecha, dir, new C.Cartesian3());
-        viewer.camera.setView({ destination: pos, orientation: { direction: dir, up } });
+        ponerCamara(u);
+        // como en la referencia, el render entra mientras la cámara todavía llega
+        if (!fundido && u > 0.94) { fundido = true; terminarEntrada(); }
+        if (u < 1 && cielo === null && !fundido) return;
         if (u < 1) yo.raf = requestAnimationFrame(paso(t0));
-        else {
-          // espera un momento a que carguen los tiles de la toma final
-          const listo = Date.now();
-          const esperar = () => (tiles.tilesLoaded || Date.now() - listo > 1600 ? terminarEntrada() : setTimeout(esperar, 120));
-          esperar();
-        }
       };
-      yo.raf = requestAnimationFrame((t) => paso(t)(t));
+      // un respiro en la toma alta antes de planear
+      setTimeout(() => { if (cielo === yo) yo.raf = requestAnimationFrame((t) => paso(t)(t)); }, 500);
     } catch (e) {
       console.warn('Entrada desde el cielo no disponible:', e);
       terminarEntrada(true);
