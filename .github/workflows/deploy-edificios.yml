@@ -1,0 +1,65 @@
+name: Deploy showroom de edificios
+
+# Publica el showroom estático de _showroom-demo/ (vitrina pública «Residencial
+# Los Faiques») en el docroot del subdominio edificios.dakagency.net
+# (/home/u567580447/domains/dakagency.net/public_html/edificios).
+#
+# Solo construye el proyecto público: privado/ (clientes reales) está fuera de
+# git y nunca llega al runner.
+#
+# Dispara:
+#  - manualmente (workflow_dispatch), también desde una rama con --ref
+#  - push a main que toque _showroom-demo/**
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '_showroom-demo/**'
+      - '.github/workflows/deploy-edificios.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-edificios
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generar el sitio
+        run: |
+          if [ ! -f _showroom-demo/generar.js ]; then
+            echo "Esta rama no tiene el showroom; nada que publicar."; exit 0
+          fi
+          node _showroom-demo/generar.js
+
+      - name: Comprobar que no se cuela material privado
+        if: hashFiles('_showroom-demo/generar.js') != ''
+        run: |
+          if grep -rIl -i "domaria\|varu" _showroom-demo/dist --include=*.html --include=*.js; then
+            echo "::error::El build público menciona a un cliente privado"; exit 1
+          fi
+
+      - name: Subir al docroot del subdominio (rsync en Docker)
+        if: hashFiles('_showroom-demo/generar.js') != ''
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: _showroom-demo/dist/
+          remote_path: /home/u567580447/domains/dakagency.net/public_html/edificios/
+          remote_host: 89.116.115.11
+          remote_port: 65002
+          remote_user: u567580447
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
