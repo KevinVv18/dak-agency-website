@@ -61,28 +61,39 @@ def envolvente(puntos):
 
 
 def franjas_camara(s, cam):
-    """Contorno de cada piso visto desde `cam` (coordenadas de imagen 0-1)."""
+    """Contorno de cada piso visto desde `cam` (coordenadas de imagen 0-1).
+
+    Es la banda del piso pegada a las fachadas que miran a la cámara: el borde
+    de abajo recorre esas caras y el de arriba vuelve por encima. Antes era la
+    envolvente convexa de sus esquinas, y en las tomas en diagonal y desde
+    arriba esa envolvente rellenaba la V sobre la esquina: parecía que la
+    franja se comía parte del piso de arriba."""
     P = E.PARAM
     W, D, v = P['frente'], P['fondo'], P['vuelo']
     ojo = cam.matrix_world.translation
     yf = -v / 2       # plano de fachada (entre el muro y el vuelo de los balcones)
     yb = D + v / 2    # la posterior es la delantera reflejada
-    # caras verticales del edificio: (normal, esquinas en planta)
-    caras = [((0, -1, 0), [(0, yf), (W, yf)]), ((-1, 0, 0), [(0, yf), (0, yb)]),
-             ((1, 0, 0), [(W, yf), (W, yb)]), ((0, 1, 0), [(0, yb), (W, yb)])]
+    # caras verticales en orden alrededor del edificio: (normal, extremos en planta)
+    caras = [((0, -1, 0), ((0, yf), (W, yf))), ((1, 0, 0), ((W, yf), (W, yb))),
+             ((0, 1, 0), ((W, yb), (0, yb))), ((-1, 0, 0), ((0, yb), (0, yf)))]
+    visibles = [n[0] * (ojo.x - (a[0] + b[0]) / 2) + n[1] * (ojo.y - (a[1] + b[1]) / 2) > 0
+                for n, (a, b) in caras]
+    # recorrido continuo de las caras visibles (en una caja se ven una o dos,
+    # y si son dos son vecinas): se empieza por la que no tiene vecina visible antes
+    idx = [i for i in range(4) if visibles[i]]
+    if len(idx) == 2 and (idx[0] + 1) % 4 != idx[1]:
+        idx = [idx[1], idx[0]]
+    planta = [caras[idx[0]][1][0]] + [caras[i][1][1] for i in idx]
     franjas = {}
     for pid, (z0, z1) in pisos(P).items():
-        esquinas = []
-        for n, planta in caras:
-            cx = sum(p[0] for p in planta) / 2
-            cy = sum(p[1] for p in planta) / 2
-            # solo las caras que miran a la cámara
-            if n[0] * (ojo.x - cx) + n[1] * (ojo.y - cy) <= 0:
-                continue
-            esquinas += [Vector((x, y, z)) for x, y in planta for z in (z0, z1)]
-        proy = [world_to_camera_view(s, cam, c) for c in esquinas]
-        pts = [(round(p.x, 4), round(1 - p.y, 4)) for p in proy if p.z > 0]
-        franjas[pid] = [[x, y] for x, y in envolvente(pts)]
+        borde = [Vector((x, y, z0)) for x, y in planta] + [Vector((x, y, z1)) for x, y in reversed(planta)]
+        proy = [world_to_camera_view(s, cam, c) for c in borde]
+        if any(p.z <= 0 for p in proy):
+            # algún vértice detrás de la cámara: se vuelve a la envolvente
+            pts = [(round(p.x, 4), round(1 - p.y, 4)) for p in proy if p.z > 0]
+            franjas[pid] = [[x, y] for x, y in envolvente(pts)]
+        else:
+            franjas[pid] = [[round(p.x, 4), round(1 - p.y, 4)] for p in proy]
     return franjas
 
 
