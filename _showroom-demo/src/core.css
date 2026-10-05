@@ -263,7 +263,7 @@ body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="p
 .columna-pisos ol { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; }
 .piso-pildora { display: grid; justify-items: start; gap: 1px; padding: 8px 10px 8px 12px; border-radius: 1px; background: var(--algarrobo-2); text-decoration: none; transition: background .2s, color .2s; }
 .piso-pildora:hover { background: var(--algarrobo-3); }
-.piso-pildora b { font-size: 1.1rem; line-height: 1; text-transform: uppercase; font-variant-numeric: tabular-nums; }
+.piso-pildora b { font-size: 1.05rem; font-stretch: 108%; line-height: 1; text-transform: uppercase; font-variant-numeric: tabular-nums; }
 .piso-pildora small { font-size: .72rem; font-weight: 500; white-space: nowrap; color: var(--tenue); }
 .piso-pildora--agotado small { color: var(--vendido); }
 .piso-pildora .corto { display: none; }

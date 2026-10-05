@@ -65,7 +65,8 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   // Un área desconocida se dice, nunca se convierte en cero.
   const m2 = (n) => (n == null ? 'Por confirmar' : `${n.toLocaleString('es-PE', { minimumFractionDigits: 1, maximumFractionDigits: 2 })} m²`);
-  const soles = (n) => `S/ ${n.toLocaleString('es-PE')}`;
+  // espacio duro: «S/» nunca queda en una línea y la cifra en otra
+  const soles = (n) => `S/ ${n.toLocaleString('es-PE')}`;
   const url = (ruta, query = {}) => {
     const u = new URL(ruta, BASE);
     for (const [k, v] of Object.entries(query)) if (v !== null && v !== undefined && v !== '') u.searchParams.set(k, v);
