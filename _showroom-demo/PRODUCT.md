@@ -72,11 +72,12 @@ inmobiliaria más.
   edificio protagonista a pantalla completa y entrar a recorrerlo.
 - Evitar: plantilla genérica, lujo exagerado (no es una torre de Miami) y
   esconder precios o disponibilidad.
-- **Estándar de la categoría, ejecutado a fondo** (Kevin eligió el canon en la
-  ronda de dirección, 3-oct-2026): showroom oscuro con el render a sangre, como
-  Urbania 3D. Vara de acabado: **President Tower**
-  (president-tower.urbania3d.app). El carácter propio sale del oficio y del
-  material (renders, plantas, datos coherentes), no de un mundo excéntrico.
+- **Identidad propia «Bosque seco»** (Kevin, 4-oct-2026): el canon de la
+  ronda anterior (showroom estilo Urbania 3D) se descartó porque el showroom
+  parecía una copia de Urbania 3D. Kevin pidió identidad propia y delegó la
+  dirección («elige tú»); se construyó «Bosque seco» (algarrobo, ceniza y
+  arena; tablillas de esquina cortada). Se conserva de Urbania solo la
+  estructura de la categoría: el render a sangre como interfaz.
 
 ## Evidence on Hand
 

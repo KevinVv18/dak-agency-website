@@ -1,321 +1,487 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-04T05:16:51.057Z",
+  "generatedAt": "2026-10-05T00:39:10.574Z",
   "title": "Design System: Showroom de edificios DAK",
   "extensions": {
     "colorMeta": {
       "acento": {
         "role": "primary",
-        "displayName": "Terracota Faique (por defecto; lo reemplaza estilo.acento de cada proyecto)",
-        "canonical": "#a9581f",
+        "displayName": "Flor de faique (por defecto Los Faiques; lo reemplaza estilo.acento de cada proyecto)",
+        "canonical": "#f2c230",
         "tonalRamp": [
-          "oklch(15.0% 0.126 51.3)",
-          "oklch(27.0% 0.126 51.3)",
-          "oklch(39.0% 0.126 51.3)",
-          "oklch(51.0% 0.126 51.3)",
-          "oklch(63.0% 0.126 51.3)",
-          "oklch(75.0% 0.126 51.3)",
-          "oklch(86.0% 0.126 51.3)",
-          "oklch(95.0% 0.126 51.3)"
+          "oklch(15.0% 0.158 89.0)",
+          "oklch(27.0% 0.158 89.0)",
+          "oklch(39.0% 0.158 89.0)",
+          "oklch(51.0% 0.158 89.0)",
+          "oklch(63.0% 0.158 89.0)",
+          "oklch(75.0% 0.158 89.0)",
+          "oklch(86.0% 0.158 89.0)",
+          "oklch(95.0% 0.158 89.0)"
         ]
       },
       "acento-tinta": {
         "role": "primary",
         "displayName": "Tinta del acento",
-        "canonical": "#ffffff",
+        "canonical": "#23170f",
         "tonalRamp": [
-          "oklch(15.0% 0.000 89.9)",
-          "oklch(27.0% 0.000 89.9)",
-          "oklch(39.0% 0.000 89.9)",
-          "oklch(51.0% 0.000 89.9)",
-          "oklch(63.0% 0.000 89.9)",
-          "oklch(75.0% 0.000 89.9)",
-          "oklch(86.0% 0.000 89.9)",
-          "oklch(95.0% 0.000 89.9)"
+          "oklch(15.0% 0.024 54.7)",
+          "oklch(27.0% 0.024 54.7)",
+          "oklch(39.0% 0.024 54.7)",
+          "oklch(51.0% 0.024 54.7)",
+          "oklch(63.0% 0.024 54.7)",
+          "oklch(75.0% 0.024 54.7)",
+          "oklch(86.0% 0.024 54.7)",
+          "oklch(95.0% 0.024 54.7)"
         ]
       },
-      "tinta": {
-        "role": "neutral",
-        "displayName": "Tinta",
-        "canonical": "#141414",
+      "acento-oscuro": {
+        "role": "primary",
+        "displayName": "Acento sobre madera (calculado por generar.js: 3:1 contra algarrobo, si no arena)",
+        "canonical": "#f2c230",
         "tonalRamp": [
-          "oklch(15.0% 0.000 89.9)",
-          "oklch(27.0% 0.000 89.9)",
-          "oklch(39.0% 0.000 89.9)",
-          "oklch(51.0% 0.000 89.9)",
-          "oklch(63.0% 0.000 89.9)",
-          "oklch(75.0% 0.000 89.9)",
-          "oklch(86.0% 0.000 89.9)",
-          "oklch(95.0% 0.000 89.9)"
+          "oklch(15.0% 0.158 89.0)",
+          "oklch(27.0% 0.158 89.0)",
+          "oklch(39.0% 0.158 89.0)",
+          "oklch(51.0% 0.158 89.0)",
+          "oklch(63.0% 0.158 89.0)",
+          "oklch(75.0% 0.158 89.0)",
+          "oklch(86.0% 0.158 89.0)",
+          "oklch(95.0% 0.158 89.0)"
         ]
       },
-      "tenue": {
-        "role": "neutral",
-        "displayName": "Gris tenue",
-        "canonical": "#5f6368",
+      "acento-claro": {
+        "role": "primary",
+        "displayName": "Acento sobre ceniza (calculado por generar.js: 3:1 contra ceniza, si no algarrobo)",
+        "canonical": "#23170f",
         "tonalRamp": [
-          "oklch(15.0% 0.009 253.9)",
-          "oklch(27.0% 0.009 253.9)",
-          "oklch(39.0% 0.009 253.9)",
-          "oklch(51.0% 0.009 253.9)",
-          "oklch(63.0% 0.009 253.9)",
-          "oklch(75.0% 0.009 253.9)",
-          "oklch(86.0% 0.009 253.9)",
-          "oklch(95.0% 0.009 253.9)"
+          "oklch(15.0% 0.024 54.7)",
+          "oklch(27.0% 0.024 54.7)",
+          "oklch(39.0% 0.024 54.7)",
+          "oklch(51.0% 0.024 54.7)",
+          "oklch(63.0% 0.024 54.7)",
+          "oklch(75.0% 0.024 54.7)",
+          "oklch(86.0% 0.024 54.7)",
+          "oklch(95.0% 0.024 54.7)"
         ]
       },
-      "fondo": {
+      "algarrobo": {
         "role": "neutral",
-        "displayName": "Hueso",
-        "canonical": "#f4f4f2",
+        "displayName": "Algarrobo",
+        "canonical": "#23170f",
         "tonalRamp": [
-          "oklch(15.0% 0.003 106.4)",
-          "oklch(27.0% 0.003 106.4)",
-          "oklch(39.0% 0.003 106.4)",
-          "oklch(51.0% 0.003 106.4)",
-          "oklch(63.0% 0.003 106.4)",
-          "oklch(75.0% 0.003 106.4)",
-          "oklch(86.0% 0.003 106.4)",
-          "oklch(95.0% 0.003 106.4)"
+          "oklch(15.0% 0.024 54.7)",
+          "oklch(27.0% 0.024 54.7)",
+          "oklch(39.0% 0.024 54.7)",
+          "oklch(51.0% 0.024 54.7)",
+          "oklch(63.0% 0.024 54.7)",
+          "oklch(75.0% 0.024 54.7)",
+          "oklch(86.0% 0.024 54.7)",
+          "oklch(95.0% 0.024 54.7)"
         ]
       },
-      "superficie": {
+      "algarrobo-2": {
         "role": "neutral",
-        "displayName": "Blanco superficie",
-        "canonical": "#ffffff",
+        "displayName": "Algarrobo medio",
+        "canonical": "#342318",
         "tonalRamp": [
-          "oklch(15.0% 0.000 89.9)",
-          "oklch(27.0% 0.000 89.9)",
-          "oklch(39.0% 0.000 89.9)",
-          "oklch(51.0% 0.000 89.9)",
-          "oklch(63.0% 0.000 89.9)",
-          "oklch(75.0% 0.000 89.9)",
-          "oklch(86.0% 0.000 89.9)",
-          "oklch(95.0% 0.000 89.9)"
+          "oklch(15.0% 0.032 53.8)",
+          "oklch(27.0% 0.032 53.8)",
+          "oklch(39.0% 0.032 53.8)",
+          "oklch(51.0% 0.032 53.8)",
+          "oklch(63.0% 0.032 53.8)",
+          "oklch(75.0% 0.032 53.8)",
+          "oklch(86.0% 0.032 53.8)",
+          "oklch(95.0% 0.032 53.8)"
         ]
       },
-      "gris": {
+      "algarrobo-3": {
         "role": "neutral",
-        "displayName": "Gris píldora",
-        "canonical": "#f1f1ef",
+        "displayName": "Algarrobo claro",
+        "canonical": "#4b3524",
         "tonalRamp": [
-          "oklch(15.0% 0.003 106.4)",
-          "oklch(27.0% 0.003 106.4)",
-          "oklch(39.0% 0.003 106.4)",
-          "oklch(51.0% 0.003 106.4)",
-          "oklch(63.0% 0.003 106.4)",
-          "oklch(75.0% 0.003 106.4)",
-          "oklch(86.0% 0.003 106.4)",
-          "oklch(95.0% 0.003 106.4)"
+          "oklch(15.0% 0.042 58.5)",
+          "oklch(27.0% 0.042 58.5)",
+          "oklch(39.0% 0.042 58.5)",
+          "oklch(51.0% 0.042 58.5)",
+          "oklch(63.0% 0.042 58.5)",
+          "oklch(75.0% 0.042 58.5)",
+          "oklch(86.0% 0.042 58.5)",
+          "oklch(95.0% 0.042 58.5)"
         ]
       },
-      "linea": {
+      "escena": {
         "role": "neutral",
-        "displayName": "Línea",
-        "canonical": "#e6e5e1",
+        "displayName": "Escena",
+        "canonical": "#120b06",
         "tonalRamp": [
-          "oklch(15.0% 0.005 95.1)",
-          "oklch(27.0% 0.005 95.1)",
-          "oklch(39.0% 0.005 95.1)",
-          "oklch(51.0% 0.005 95.1)",
-          "oklch(63.0% 0.005 95.1)",
-          "oklch(75.0% 0.005 95.1)",
-          "oklch(86.0% 0.005 95.1)",
-          "oklch(95.0% 0.005 95.1)"
+          "oklch(15.0% 0.017 59.9)",
+          "oklch(27.0% 0.017 59.9)",
+          "oklch(39.0% 0.017 59.9)",
+          "oklch(51.0% 0.017 59.9)",
+          "oklch(63.0% 0.017 59.9)",
+          "oklch(75.0% 0.017 59.9)",
+          "oklch(86.0% 0.017 59.9)",
+          "oklch(95.0% 0.017 59.9)"
         ]
       },
-      "linea-fuerte": {
+      "campo-oscuro": {
         "role": "neutral",
-        "displayName": "Línea fuerte",
-        "canonical": "#c9c8c3",
+        "displayName": "Campo oscuro",
+        "canonical": "#1a110b",
         "tonalRamp": [
-          "oklch(15.0% 0.007 97.4)",
-          "oklch(27.0% 0.007 97.4)",
-          "oklch(39.0% 0.007 97.4)",
-          "oklch(51.0% 0.007 97.4)",
-          "oklch(63.0% 0.007 97.4)",
-          "oklch(75.0% 0.007 97.4)",
-          "oklch(86.0% 0.007 97.4)",
-          "oklch(95.0% 0.007 97.4)"
+          "oklch(15.0% 0.019 54.9)",
+          "oklch(27.0% 0.019 54.9)",
+          "oklch(39.0% 0.019 54.9)",
+          "oklch(51.0% 0.019 54.9)",
+          "oklch(63.0% 0.019 54.9)",
+          "oklch(75.0% 0.019 54.9)",
+          "oklch(86.0% 0.019 54.9)",
+          "oklch(95.0% 0.019 54.9)"
+        ]
+      },
+      "arena": {
+        "role": "neutral",
+        "displayName": "Arena",
+        "canonical": "#efe7d6",
+        "tonalRamp": [
+          "oklch(15.0% 0.024 85.8)",
+          "oklch(27.0% 0.024 85.8)",
+          "oklch(39.0% 0.024 85.8)",
+          "oklch(51.0% 0.024 85.8)",
+          "oklch(63.0% 0.024 85.8)",
+          "oklch(75.0% 0.024 85.8)",
+          "oklch(86.0% 0.024 85.8)",
+          "oklch(95.0% 0.024 85.8)"
+        ]
+      },
+      "arena-tenue": {
+        "role": "neutral",
+        "displayName": "Arena tenue",
+        "canonical": "#bcae95",
+        "tonalRamp": [
+          "oklch(15.0% 0.038 82.1)",
+          "oklch(27.0% 0.038 82.1)",
+          "oklch(39.0% 0.038 82.1)",
+          "oklch(51.0% 0.038 82.1)",
+          "oklch(63.0% 0.038 82.1)",
+          "oklch(75.0% 0.038 82.1)",
+          "oklch(86.0% 0.038 82.1)",
+          "oklch(95.0% 0.038 82.1)"
+        ]
+      },
+      "ceniza": {
+        "role": "neutral",
+        "displayName": "Ceniza",
+        "canonical": "#dedad0",
+        "tonalRamp": [
+          "oklch(15.0% 0.014 88.7)",
+          "oklch(27.0% 0.014 88.7)",
+          "oklch(39.0% 0.014 88.7)",
+          "oklch(51.0% 0.014 88.7)",
+          "oklch(63.0% 0.014 88.7)",
+          "oklch(75.0% 0.014 88.7)",
+          "oklch(86.0% 0.014 88.7)",
+          "oklch(95.0% 0.014 88.7)"
+        ]
+      },
+      "hoja": {
+        "role": "neutral",
+        "displayName": "Hoja",
+        "canonical": "#f4f1ea",
+        "tonalRamp": [
+          "oklch(15.0% 0.010 87.5)",
+          "oklch(27.0% 0.010 87.5)",
+          "oklch(39.0% 0.010 87.5)",
+          "oklch(51.0% 0.010 87.5)",
+          "oklch(63.0% 0.010 87.5)",
+          "oklch(75.0% 0.010 87.5)",
+          "oklch(86.0% 0.010 87.5)",
+          "oklch(95.0% 0.010 87.5)"
         ]
       },
       "papel": {
         "role": "neutral",
         "displayName": "Papel",
-        "canonical": "#e9e8e4",
+        "canonical": "#e4e0d5",
         "tonalRamp": [
-          "oklch(15.0% 0.005 95.1)",
-          "oklch(27.0% 0.005 95.1)",
-          "oklch(39.0% 0.005 95.1)",
-          "oklch(51.0% 0.005 95.1)",
-          "oklch(63.0% 0.005 95.1)",
-          "oklch(75.0% 0.005 95.1)",
-          "oklch(86.0% 0.005 95.1)",
-          "oklch(95.0% 0.005 95.1)"
+          "oklch(15.0% 0.015 90.2)",
+          "oklch(27.0% 0.015 90.2)",
+          "oklch(39.0% 0.015 90.2)",
+          "oklch(51.0% 0.015 90.2)",
+          "oklch(63.0% 0.015 90.2)",
+          "oklch(75.0% 0.015 90.2)",
+          "oklch(86.0% 0.015 90.2)",
+          "oklch(95.0% 0.015 90.2)"
         ]
       },
-      "escena": {
+      "tenue": {
         "role": "neutral",
-        "displayName": "Negro escena",
-        "canonical": "#0b0c0e",
+        "displayName": "Tenue",
+        "canonical": "#625646",
         "tonalRamp": [
-          "oklch(15.0% 0.005 264.4)",
-          "oklch(27.0% 0.005 264.4)",
-          "oklch(39.0% 0.005 264.4)",
-          "oklch(51.0% 0.005 264.4)",
-          "oklch(63.0% 0.005 264.4)",
-          "oklch(75.0% 0.005 264.4)",
-          "oklch(86.0% 0.005 264.4)",
-          "oklch(95.0% 0.005 264.4)"
+          "oklch(15.0% 0.029 74.9)",
+          "oklch(27.0% 0.029 74.9)",
+          "oklch(39.0% 0.029 74.9)",
+          "oklch(51.0% 0.029 74.9)",
+          "oklch(63.0% 0.029 74.9)",
+          "oklch(75.0% 0.029 74.9)",
+          "oklch(86.0% 0.029 74.9)",
+          "oklch(95.0% 0.029 74.9)"
+        ]
+      },
+      "linea": {
+        "role": "neutral",
+        "displayName": "Línea",
+        "canonical": "#cfc7b6",
+        "tonalRamp": [
+          "oklch(15.0% 0.025 85.8)",
+          "oklch(27.0% 0.025 85.8)",
+          "oklch(39.0% 0.025 85.8)",
+          "oklch(51.0% 0.025 85.8)",
+          "oklch(63.0% 0.025 85.8)",
+          "oklch(75.0% 0.025 85.8)",
+          "oklch(86.0% 0.025 85.8)",
+          "oklch(95.0% 0.025 85.8)"
+        ]
+      },
+      "olivo": {
+        "role": "secondary",
+        "displayName": "Olivo (confirmación)",
+        "canonical": "#5d6b3a",
+        "tonalRamp": [
+          "oklch(15.0% 0.073 122.1)",
+          "oklch(27.0% 0.073 122.1)",
+          "oklch(39.0% 0.073 122.1)",
+          "oklch(51.0% 0.073 122.1)",
+          "oklch(63.0% 0.073 122.1)",
+          "oklch(75.0% 0.073 122.1)",
+          "oklch(86.0% 0.073 122.1)",
+          "oklch(95.0% 0.073 122.1)"
         ]
       },
       "disponible": {
         "role": "estado",
-        "displayName": "Verde disponible",
-        "canonical": "#1a7f4b",
+        "displayName": "Disponible",
+        "canonical": "#3d6a1e",
         "tonalRamp": [
-          "oklch(15.0% 0.121 155.0)",
-          "oklch(27.0% 0.121 155.0)",
-          "oklch(39.0% 0.121 155.0)",
-          "oklch(51.0% 0.121 155.0)",
-          "oklch(63.0% 0.121 155.0)",
-          "oklch(75.0% 0.121 155.0)",
-          "oklch(86.0% 0.121 155.0)",
-          "oklch(95.0% 0.121 155.0)"
+          "oklch(15.0% 0.117 135.1)",
+          "oklch(27.0% 0.117 135.1)",
+          "oklch(39.0% 0.117 135.1)",
+          "oklch(51.0% 0.117 135.1)",
+          "oklch(63.0% 0.117 135.1)",
+          "oklch(75.0% 0.117 135.1)",
+          "oklch(86.0% 0.117 135.1)",
+          "oklch(95.0% 0.117 135.1)"
         ]
       },
       "disponible-fondo": {
         "role": "estado",
         "displayName": "Fondo disponible",
-        "canonical": "#e3f3ea",
+        "canonical": "#dfe6c9",
         "tonalRamp": [
-          "oklch(15.0% 0.021 161.5)",
-          "oklch(27.0% 0.021 161.5)",
-          "oklch(39.0% 0.021 161.5)",
-          "oklch(51.0% 0.021 161.5)",
-          "oklch(63.0% 0.021 161.5)",
-          "oklch(75.0% 0.021 161.5)",
-          "oklch(86.0% 0.021 161.5)",
-          "oklch(95.0% 0.021 161.5)"
+          "oklch(15.0% 0.039 118.2)",
+          "oklch(27.0% 0.039 118.2)",
+          "oklch(39.0% 0.039 118.2)",
+          "oklch(51.0% 0.039 118.2)",
+          "oklch(63.0% 0.039 118.2)",
+          "oklch(75.0% 0.039 118.2)",
+          "oklch(86.0% 0.039 118.2)",
+          "oklch(95.0% 0.039 118.2)"
         ]
       },
       "reservado": {
         "role": "estado",
-        "displayName": "Ocre reservado",
-        "canonical": "#8a5a07",
+        "displayName": "Reservado",
+        "canonical": "#9a3f17",
         "tonalRamp": [
-          "oklch(15.0% 0.106 72.4)",
-          "oklch(27.0% 0.106 72.4)",
-          "oklch(39.0% 0.106 72.4)",
-          "oklch(51.0% 0.106 72.4)",
-          "oklch(63.0% 0.106 72.4)",
-          "oklch(75.0% 0.106 72.4)",
-          "oklch(86.0% 0.106 72.4)",
-          "oklch(95.0% 0.106 72.4)"
+          "oklch(15.0% 0.132 41.5)",
+          "oklch(27.0% 0.132 41.5)",
+          "oklch(39.0% 0.132 41.5)",
+          "oklch(51.0% 0.132 41.5)",
+          "oklch(63.0% 0.132 41.5)",
+          "oklch(75.0% 0.132 41.5)",
+          "oklch(86.0% 0.132 41.5)",
+          "oklch(95.0% 0.132 41.5)"
         ]
       },
       "reservado-fondo": {
         "role": "estado",
         "displayName": "Fondo reservado",
-        "canonical": "#fbefd8",
+        "canonical": "#f1dccb",
         "tonalRamp": [
-          "oklch(15.0% 0.033 83.7)",
-          "oklch(27.0% 0.033 83.7)",
-          "oklch(39.0% 0.033 83.7)",
-          "oklch(51.0% 0.033 83.7)",
-          "oklch(63.0% 0.033 83.7)",
-          "oklch(75.0% 0.033 83.7)",
-          "oklch(86.0% 0.033 83.7)",
-          "oklch(95.0% 0.033 83.7)"
+          "oklch(15.0% 0.033 61.4)",
+          "oklch(27.0% 0.033 61.4)",
+          "oklch(39.0% 0.033 61.4)",
+          "oklch(51.0% 0.033 61.4)",
+          "oklch(63.0% 0.033 61.4)",
+          "oklch(75.0% 0.033 61.4)",
+          "oklch(86.0% 0.033 61.4)",
+          "oklch(95.0% 0.033 61.4)"
         ]
       },
       "vendido": {
         "role": "estado",
-        "displayName": "Gris vendido",
-        "canonical": "#575d65",
+        "displayName": "Vendido",
+        "canonical": "#6a6155",
         "tonalRamp": [
-          "oklch(15.0% 0.015 255.6)",
-          "oklch(27.0% 0.015 255.6)",
-          "oklch(39.0% 0.015 255.6)",
-          "oklch(51.0% 0.015 255.6)",
-          "oklch(63.0% 0.015 255.6)",
-          "oklch(75.0% 0.015 255.6)",
-          "oklch(86.0% 0.015 255.6)",
-          "oklch(95.0% 0.015 255.6)"
+          "oklch(15.0% 0.022 75.1)",
+          "oklch(27.0% 0.022 75.1)",
+          "oklch(39.0% 0.022 75.1)",
+          "oklch(51.0% 0.022 75.1)",
+          "oklch(63.0% 0.022 75.1)",
+          "oklch(75.0% 0.022 75.1)",
+          "oklch(86.0% 0.022 75.1)",
+          "oklch(95.0% 0.022 75.1)"
         ]
       },
       "vendido-fondo": {
         "role": "estado",
         "displayName": "Fondo vendido",
-        "canonical": "#eceef0",
+        "canonical": "#e3ded4",
         "tonalRamp": [
-          "oklch(15.0% 0.003 247.9)",
-          "oklch(27.0% 0.003 247.9)",
-          "oklch(39.0% 0.003 247.9)",
-          "oklch(51.0% 0.003 247.9)",
-          "oklch(63.0% 0.003 247.9)",
-          "oklch(75.0% 0.003 247.9)",
-          "oklch(86.0% 0.003 247.9)",
-          "oklch(95.0% 0.003 247.9)"
+          "oklch(15.0% 0.015 84.6)",
+          "oklch(27.0% 0.015 84.6)",
+          "oklch(39.0% 0.015 84.6)",
+          "oklch(51.0% 0.015 84.6)",
+          "oklch(63.0% 0.015 84.6)",
+          "oklch(75.0% 0.015 84.6)",
+          "oklch(86.0% 0.015 84.6)",
+          "oklch(95.0% 0.015 84.6)"
+        ]
+      },
+      "disponible-sobre-madera": {
+        "role": "estado",
+        "displayName": "Disponible sobre madera",
+        "canonical": "#b6cf74",
+        "tonalRamp": [
+          "oklch(15.0% 0.120 121.7)",
+          "oklch(27.0% 0.120 121.7)",
+          "oklch(39.0% 0.120 121.7)",
+          "oklch(51.0% 0.120 121.7)",
+          "oklch(63.0% 0.120 121.7)",
+          "oklch(75.0% 0.120 121.7)",
+          "oklch(86.0% 0.120 121.7)",
+          "oklch(95.0% 0.120 121.7)"
+        ]
+      },
+      "reservado-sobre-madera": {
+        "role": "estado",
+        "displayName": "Reservado sobre madera",
+        "canonical": "#f09a6e",
+        "tonalRamp": [
+          "oklch(15.0% 0.119 47.5)",
+          "oklch(27.0% 0.119 47.5)",
+          "oklch(39.0% 0.119 47.5)",
+          "oklch(51.0% 0.119 47.5)",
+          "oklch(63.0% 0.119 47.5)",
+          "oklch(75.0% 0.119 47.5)",
+          "oklch(86.0% 0.119 47.5)",
+          "oklch(95.0% 0.119 47.5)"
+        ]
+      },
+      "vendido-sobre-madera": {
+        "role": "estado",
+        "displayName": "Vendido sobre madera",
+        "canonical": "#a99d8c",
+        "tonalRamp": [
+          "oklch(15.0% 0.028 76.7)",
+          "oklch(27.0% 0.028 76.7)",
+          "oklch(39.0% 0.028 76.7)",
+          "oklch(51.0% 0.028 76.7)",
+          "oklch(63.0% 0.028 76.7)",
+          "oklch(75.0% 0.028 76.7)",
+          "oklch(86.0% 0.028 76.7)",
+          "oklch(95.0% 0.028 76.7)"
         ]
       }
     },
     "typographyMeta": {
       "display": {
         "displayName": "Display",
-        "purpose": "Solo el nombre del edificio en la portada."
+        "purpose": "Solo el nombre del edificio en la portada; expandida 125%, mayúsculas."
       },
       "headline": {
         "displayName": "Headline",
         "purpose": "Título de las páginas de consulta."
       },
+      "numero-unidad": {
+        "displayName": "Número de unidad",
+        "purpose": "Número del departamento en la tarjeta."
+      },
       "precio": {
         "displayName": "Precio",
-        "purpose": "Precio de la unidad en la tarjeta, cifras tabulares."
+        "purpose": "Precio de la unidad, tabular."
       },
       "title": {
         "displayName": "Title",
-        "purpose": "Unidad, grupos, modelos, insignia del piso."
+        "purpose": "Insignia del piso, grupos, modelos, consulta, menú."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Texto corrido."
+        "purpose": "Texto corrido a ancho normal."
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Píldoras, pestañas, navegación, conmutadores."
+        "purpose": "Tablillas, conmutadores, pestañas, barra, rótulos; 112% en mayúsculas."
       },
       "estado": {
         "displayName": "Estado",
-        "purpose": "Etiqueta de disponibilidad."
+        "purpose": "Etiqueta de disponibilidad con rombo."
       },
-      "cabecera-tabla": {
-        "displayName": "Cabecera de tabla",
-        "purpose": "Solo cabeceras de columna y rótulos de filtros."
+      "rotulo-dato": {
+        "displayName": "Rótulo de dato",
+        "purpose": "Rótulo chico bajo la cifra en las casillas y cabecera de tabla."
       }
     },
     "shadows": [
       {
-        "name": "flotante",
-        "value": "0 8px 24px rgb(0 0 0 / .16), 0 2px 6px rgb(0 0 0 / .08)",
-        "purpose": "Toda pieza que flota sobre la imagen."
+        "name": "tablilla",
+        "value": "filter: drop-shadow(0 10px 18px rgb(26 14 6 / .34)) drop-shadow(0 2px 4px rgb(26 14 6 / .22))",
+        "purpose": "Toda tablilla sobre el render; drop-shadow para seguir la esquina cortada."
       },
       {
         "name": "alta",
-        "value": "0 22px 48px rgb(0 0 0 / .22), 0 6px 14px rgb(0 0 0 / .1)",
-        "purpose": "Tarjeta flotante, menú, diálogo de consulta y hover de píldora."
+        "value": "filter: drop-shadow(0 24px 40px rgb(26 14 6 / .42)) drop-shadow(0 6px 12px rgb(26 14 6 / .24))",
+        "purpose": "Tarjeta flotante, menú lateral, diálogo de consulta."
       }
     ],
+    "shapes": {
+      "radio": {
+        "pieza": "2px",
+        "interior": "1px"
+      },
+      "corte": {
+        "token": "--corte",
+        "tecnica": "linear-gradient(225deg, transparent var(--corte), var(--pieza) calc(var(--corte) + .6px))",
+        "valores": {
+          "chica": "7px",
+          "marcador": "8px",
+          "base": "9-10px",
+          "flecha": "12px",
+          "grande": "14px",
+          "tiraMovil": "16px",
+          "modelo": "18px",
+          "tarjeta": "22px"
+        }
+      },
+      "pieza": "@property --pieza { syntax: '<color>'; inherits: false; } (color animable de la tablilla)",
+      "rombo": "cuadrado girado 45° para estados, aviso, menú y hotspot 360"
+    },
     "motion": [
       {
         "name": "ease",
         "value": "cubic-bezier(.16, 1, .3, 1)",
-        "purpose": "Curva única de todas las transiciones y entradas."
+        "purpose": "Curva de todas las transiciones y entradas."
       },
       {
-        "name": "pieza",
+        "name": "pieza-color",
+        "value": ".2s",
+        "purpose": "Fundido de --pieza al pasar el puntero."
+      },
+      {
+        "name": "pieza-mover",
         "value": ".25s",
-        "purpose": "Hover y presión de píldoras y círculos."
+        "purpose": "Ascenso de 1px y presión (escala .985)."
       },
       {
         "name": "franja",
@@ -323,9 +489,14 @@
         "purpose": "Aparición de la franja de piso."
       },
       {
-        "name": "tarjeta",
+        "name": "menu",
         "value": ".45s",
-        "purpose": "Entrada de la tarjeta de unidad (ascenso 10px + escala .98)."
+        "purpose": "Entrada del menú desde la izquierda (28px)."
+      },
+      {
+        "name": "tarjeta",
+        "value": ".5s",
+        "purpose": "Entrada de la tarjeta: ascenso 12px y clip-path que se abre."
       },
       {
         "name": "cambio-vista",
@@ -335,7 +506,22 @@
       {
         "name": "acercar",
         "value": "22s",
-        "purpose": "Acercamiento lento del render de portada (escala 1.08 a 1)."
+        "purpose": "Acercamiento del render de portada (1.08 a 1)."
+      },
+      {
+        "name": "acercar-lento",
+        "value": "48s alternate",
+        "purpose": "Acercamiento del timelapse (1 a 1.06)."
+      },
+      {
+        "name": "nubes",
+        "value": "90s linear alternate",
+        "purpose": "El cielo corre detrás del frente en la portada."
+      },
+      {
+        "name": "anochecer",
+        "value": "14s alternate",
+        "purpose": "Fundido día-noche de la portada."
       }
     ],
     "breakpoints": [
@@ -344,161 +530,196 @@
         "value": "760px"
       },
       {
+        "name": "escritorio",
+        "value": "761px"
+      },
+      {
         "name": "ficha-dos-columnas",
         "value": "960px"
       }
-    ]
+    ],
+    "acentoPorProyecto": {
+      "fuente": "datos/proyecto.js → estilo.acento / estilo.acentoTinta, emitidos por generar.js como --acento y --acento-tinta",
+      "calculo": "--acento-oscuro = acento si contraste >= 3:1 con #23170f, si no #efe7d6; --acento-claro = acento si contraste >= 3:1 con #dedad0, si no #23170f",
+      "proyectos": {
+        "los-faiques": {
+          "acento": "#f2c230",
+          "tinta": "#23170f"
+        },
+        "varu": {
+          "acento": "#184080",
+          "tinta": "#ffffff"
+        }
+      }
+    },
+    "aprobacion": {
+      "fecha": "2026-10-04",
+      "registro": "Kevin pidió identidad propia porque el showroom parecía una copia de Urbania 3D y delegó la dirección («elige tú»); se construyó «Bosque seco» (candidato 3 de 7, seed 8b3884cc)."
+    }
   },
   "components": [
     {
-      "name": "Píldora",
+      "name": "Tablilla",
       "kind": "button",
       "refersTo": "pildora",
-      "description": "Control flotante blanco con sombra real sobre la imagen.",
-      "html": "<button class=\"ds-pildora\">Ver planta</button>",
-      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-pildora{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:var(--superficie);color:var(--tinta);font:700 .94rem Manrope,system-ui,sans-serif;cursor:pointer;box-shadow:var(--sombra);transition:transform .25s var(--ease),box-shadow .25s var(--ease)}.ds-pildora:hover{transform:translateY(-1px);box-shadow:var(--sombra-alta)}.ds-pildora:active{transform:scale(.98)}.ds-pildora:focus-visible{outline:3px solid var(--acento);outline-offset:3px}"
+      "description": "Control base: madera de algarrobo con la esquina superior derecha cortada y sombra que sigue el corte.",
+      "html": "<button class=\"ds-tab ds-pil\">Ver departamentos</button>",
+      "css": ":host{--algarrobo:#23170f;--algarrobo-2:#342318;--algarrobo-3:#4b3524;--arena:#efe7d6;--arena-tenue:#bcae95;--ceniza:#dedad0;--acento:#f2c230;--acento-tinta:#23170f;--acento-oscuro:#f2c230;--olivo:#5d6b3a;--sombra:drop-shadow(0 10px 18px rgb(26 14 6 / .34)) drop-shadow(0 2px 4px rgb(26 14 6 / .22));--sombra-alta:drop-shadow(0 24px 40px rgb(26 14 6 / .42)) drop-shadow(0 6px 12px rgb(26 14 6 / .24));--ease:cubic-bezier(.16,1,.3,1);font-family:Archivo,system-ui,sans-serif}@property --pieza{syntax:'<color>';inherits:false;initial-value:#23170f}.ds-tab{--corte:10px;--pieza:var(--algarrobo);background:linear-gradient(225deg,transparent var(--corte),var(--pieza) calc(var(--corte) + .6px));transition:--pieza .2s,transform .25s var(--ease)}.ds-pil{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:0 20px 0 18px;border:0;border-radius:2px;color:var(--arena);font:700 .8rem Archivo,system-ui,sans-serif;font-stretch:112%;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;filter:var(--sombra)}.ds-pil:hover{--pieza:var(--algarrobo-3);transform:translateY(-1px)}.ds-pil:active{transform:scale(.985)}.ds-pil:focus-visible{outline:3px solid var(--arena);outline-offset:3px}"
     },
     {
-      "name": "Píldora de acento",
+      "name": "Tablilla de acento",
       "kind": "button",
       "refersTo": "pildora-acento",
-      "description": "La acción principal de cada vista, en el acento del proyecto.",
-      "html": "<button class=\"ds-pildora ds-pildora--acento\">Buscar departamento</button>",
-      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-pildora{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:var(--superficie);color:var(--tinta);font:700 .94rem Manrope,system-ui,sans-serif;cursor:pointer;box-shadow:var(--sombra);transition:transform .25s var(--ease),box-shadow .25s var(--ease)}.ds-pildora:hover{transform:translateY(-1px);box-shadow:var(--sombra-alta)}.ds-pildora:active{transform:scale(.98)}.ds-pildora:focus-visible{outline:3px solid var(--acento);outline-offset:3px}.ds-pildora--acento{background:var(--acento);color:var(--acento-tinta)}"
+      "description": "La acción principal de la vista, en relleno de acento con su tinta.",
+      "html": "<button class=\"ds-tab ds-pil ds-acento\">Ingresar</button>",
+      "css": ":host{--algarrobo:#23170f;--algarrobo-2:#342318;--algarrobo-3:#4b3524;--arena:#efe7d6;--arena-tenue:#bcae95;--ceniza:#dedad0;--acento:#f2c230;--acento-tinta:#23170f;--acento-oscuro:#f2c230;--olivo:#5d6b3a;--sombra:drop-shadow(0 10px 18px rgb(26 14 6 / .34)) drop-shadow(0 2px 4px rgb(26 14 6 / .22));--sombra-alta:drop-shadow(0 24px 40px rgb(26 14 6 / .42)) drop-shadow(0 6px 12px rgb(26 14 6 / .24));--ease:cubic-bezier(.16,1,.3,1);font-family:Archivo,system-ui,sans-serif}@property --pieza{syntax:'<color>';inherits:false;initial-value:#23170f}.ds-tab{--corte:10px;--pieza:var(--algarrobo);background:linear-gradient(225deg,transparent var(--corte),var(--pieza) calc(var(--corte) + .6px));transition:--pieza .2s,transform .25s var(--ease)}.ds-pil{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:0 20px 0 18px;border:0;border-radius:2px;color:var(--arena);font:700 .8rem Archivo,system-ui,sans-serif;font-stretch:112%;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;filter:var(--sombra)}.ds-pil:hover{--pieza:var(--algarrobo-3);transform:translateY(-1px)}.ds-pil:active{transform:scale(.985)}.ds-pil:focus-visible{outline:3px solid var(--arena);outline-offset:3px}.ds-acento{--pieza:var(--acento);color:var(--acento-tinta)}.ds-acento:hover{--pieza:color-mix(in srgb,var(--acento) 86%,#fff)}"
     },
     {
-      "name": "Píldora oscura",
-      "kind": "button",
-      "refersTo": "pildora-oscura",
-      "description": "Acción secundaria fuerte sobre fondo claro.",
-      "html": "<button class=\"ds-pildora ds-pildora--oscura\">Consultar</button>",
-      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-pildora{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:var(--superficie);color:var(--tinta);font:700 .94rem Manrope,system-ui,sans-serif;cursor:pointer;box-shadow:var(--sombra);transition:transform .25s var(--ease),box-shadow .25s var(--ease)}.ds-pildora:hover{transform:translateY(-1px);box-shadow:var(--sombra-alta)}.ds-pildora:active{transform:scale(.98)}.ds-pildora:focus-visible{outline:3px solid var(--acento);outline-offset:3px}.ds-pildora--oscura{background:var(--tinta);color:#fff}"
-    },
-    {
-      "name": "Círculo",
+      "name": "Círculo (tablilla cuadrada)",
       "kind": "button",
       "refersTo": "circulo",
-      "description": "Botón redondo de 44px para menú, cerrar y compartir.",
-      "html": "<button class=\"ds-circulo\" aria-label=\"Menú\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 7h16M4 12h16M4 17h16\"/></svg></button>",
-      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-circulo{display:inline-grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:var(--tinta);color:#fff;cursor:pointer;box-shadow:var(--sombra);transition:transform .25s var(--ease)}.ds-circulo:hover{transform:translateY(-1px)}.ds-circulo:focus-visible{outline:3px solid var(--acento);outline-offset:3px}"
+      "description": "Tablilla cuadrada de 44px con ícono: menú, cerrar, compartir, zoom.",
+      "html": "<button class=\"ds-tab ds-cir\" aria-label=\"Menú\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\"><path d=\"M4 7h16M4 12h16M4 17h16\"/></svg></button>",
+      "css": ":host{--algarrobo:#23170f;--algarrobo-2:#342318;--algarrobo-3:#4b3524;--arena:#efe7d6;--arena-tenue:#bcae95;--ceniza:#dedad0;--acento:#f2c230;--acento-tinta:#23170f;--acento-oscuro:#f2c230;--olivo:#5d6b3a;--sombra:drop-shadow(0 10px 18px rgb(26 14 6 / .34)) drop-shadow(0 2px 4px rgb(26 14 6 / .22));--sombra-alta:drop-shadow(0 24px 40px rgb(26 14 6 / .42)) drop-shadow(0 6px 12px rgb(26 14 6 / .24));--ease:cubic-bezier(.16,1,.3,1);font-family:Archivo,system-ui,sans-serif}@property --pieza{syntax:'<color>';inherits:false;initial-value:#23170f}.ds-tab{--corte:10px;--pieza:var(--algarrobo);background:linear-gradient(225deg,transparent var(--corte),var(--pieza) calc(var(--corte) + .6px));transition:--pieza .2s,transform .25s var(--ease)}.ds-cir{--corte:9px;display:inline-grid;place-items:center;width:44px;height:44px;border:0;border-radius:2px;color:var(--arena);cursor:pointer;filter:var(--sombra)}.ds-cir:hover{--pieza:var(--algarrobo-3);transform:translateY(-1px)}.ds-cir:focus-visible{outline:3px solid var(--arena);outline-offset:3px}"
     },
     {
       "name": "Etiquetas de estado",
       "kind": "chip",
       "refersTo": "estado-disponible",
-      "description": "Disponibilidad como punto dibujado + palabra, nunca solo color.",
-      "html": "<span class=\"ds-estado ds-d\"><i></i>Disponible</span> <span class=\"ds-estado ds-r\"><i></i>Reservado</span> <span class=\"ds-estado ds-v\"><i></i>Vendido</span>",
-      "css": ".ds-estado{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:999px;font:800 .78rem Manrope,system-ui,sans-serif}.ds-estado i{width:8px;height:8px;border-radius:50%;background:currentColor}.ds-d{color:#1a7f4b;background:#e3f3ea}.ds-r{color:#8a5a07;background:#fbefd8}.ds-v{color:#575d65;background:#eceef0}"
+      "description": "Rombo dibujado + palabra; pareja clara (aquí) y pareja sobre madera.",
+      "html": "<span class=\"ds-est ds-d\"><i></i>Disponible</span> <span class=\"ds-est ds-r\"><i></i>Reservado</span> <span class=\"ds-est ds-v\"><i></i>Vendido</span>",
+      "css": ".ds-est{display:inline-flex;align-items:center;gap:7px;padding:4px 9px 4px 8px;border-radius:2px;font:700 .7rem Archivo,system-ui,sans-serif;font-stretch:112%;letter-spacing:.08em;text-transform:uppercase}.ds-est i{width:7px;height:7px;border-radius:1px;background:currentColor;transform:rotate(45deg)}.ds-d{color:#3d6a1e;background:#dfe6c9}.ds-r{color:#9a3f17;background:#f1dccb}.ds-v{color:#6a6155;background:#e3ded4}"
     },
     {
       "name": "Conmutador segmentado",
       "kind": "nav",
       "refersTo": "pildora-chica-actual",
-      "description": "Día/Noche y modos de vista; solo existe si hay algo que conmutar.",
+      "description": "Regla de madera con la opción pulsada encendida en acento.",
       "html": "<div class=\"ds-seg\"><button aria-pressed=\"true\">Día</button><button aria-pressed=\"false\">Noche</button></div>",
-      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-seg{display:inline-flex;gap:2px;padding:4px;border-radius:999px;background:rgb(255 255 255 / .94);box-shadow:var(--sombra)}.ds-seg button{min-height:36px;padding:0 14px;border:0;border-radius:999px;background:transparent;color:var(--tenue);font:700 .88rem Manrope,system-ui,sans-serif;cursor:pointer}.ds-seg button[aria-pressed=true]{background:var(--tinta);color:#fff}.ds-seg button:focus-visible{outline:3px solid var(--acento);outline-offset:2px}"
+      "css": ":host{--algarrobo:#23170f;--algarrobo-2:#342318;--algarrobo-3:#4b3524;--arena:#efe7d6;--arena-tenue:#bcae95;--ceniza:#dedad0;--acento:#f2c230;--acento-tinta:#23170f;--acento-oscuro:#f2c230;--olivo:#5d6b3a;--sombra:drop-shadow(0 10px 18px rgb(26 14 6 / .34)) drop-shadow(0 2px 4px rgb(26 14 6 / .22));--sombra-alta:drop-shadow(0 24px 40px rgb(26 14 6 / .42)) drop-shadow(0 6px 12px rgb(26 14 6 / .24));--ease:cubic-bezier(.16,1,.3,1);font-family:Archivo,system-ui,sans-serif}@property --pieza{syntax:'<color>';inherits:false;initial-value:#23170f}.ds-seg{display:inline-flex;gap:2px;padding:4px;border-radius:2px;background:linear-gradient(225deg,transparent 9px,var(--algarrobo) 9.6px);filter:var(--sombra)}.ds-seg button{min-height:36px;padding:0 14px;border:0;border-radius:1px;background:transparent;color:var(--arena-tenue);font:700 .74rem Archivo,system-ui,sans-serif;font-stretch:112%;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:color .2s,background .2s}.ds-seg button:hover{color:var(--arena)}.ds-seg button[aria-pressed=true]{background:var(--acento);color:var(--acento-tinta)}.ds-seg button:focus-visible{outline:3px solid var(--arena);outline-offset:2px}"
     },
     {
       "name": "Columna de pisos",
       "kind": "custom",
       "refersTo": "piso-pildora",
-      "description": "Tablero de ascensor: elegir piso con unidades libres a la vista.",
-      "html": "<ol class=\"ds-col\"><li><a href=\"#\">8<small>3 libres</small></a></li><li><a href=\"#\" class=\"ds-act\">7<small>2 libres</small></a></li><li><a href=\"#\">6<small>Agotado</small></a></li></ol>",
-      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-col{display:grid;gap:6px;width:116px;margin:0;padding:8px;list-style:none;border-radius:20px;background:rgb(255 255 255 / .95);box-shadow:var(--sombra)}.ds-col a{display:grid;justify-items:center;padding:8px 6px;border-radius:14px;background:var(--gris);color:var(--tinta);font:800 1.02rem Manrope,system-ui,sans-serif;font-variant-numeric:tabular-nums;text-decoration:none}.ds-col a:hover{background:#e7e6e2}.ds-col a:focus-visible{outline:3px solid var(--acento);outline-offset:2px}.ds-col small{font-size:.7rem;font-weight:700;color:var(--tenue)}.ds-col .ds-act{background:var(--acento);color:var(--acento-tinta)}.ds-col .ds-act small{color:inherit}"
+      "description": "Tablero del ascensor en tablillas apiladas: reposo, resaltado y activo.",
+      "html": "<div class=\"ds-col\"><ol><li><a href=\"#\"><b>Piso 8</b><small>3 libres</small></a></li><li><a href=\"#\" class=\"ds-res\"><b>Piso 7</b><small>2 libres</small></a></li><li><a href=\"#\" class=\"ds-act\"><b>Piso 6</b><small>1 libre</small></a></li></ol></div>",
+      "css": ":host{--algarrobo:#23170f;--algarrobo-2:#342318;--algarrobo-3:#4b3524;--arena:#efe7d6;--arena-tenue:#bcae95;--ceniza:#dedad0;--acento:#f2c230;--acento-tinta:#23170f;--acento-oscuro:#f2c230;--olivo:#5d6b3a;--sombra:drop-shadow(0 10px 18px rgb(26 14 6 / .34)) drop-shadow(0 2px 4px rgb(26 14 6 / .22));--sombra-alta:drop-shadow(0 24px 40px rgb(26 14 6 / .42)) drop-shadow(0 6px 12px rgb(26 14 6 / .24));--ease:cubic-bezier(.16,1,.3,1);font-family:Archivo,system-ui,sans-serif}@property --pieza{syntax:'<color>';inherits:false;initial-value:#23170f}.ds-col{width:116px;padding:6px;border-radius:2px;background:linear-gradient(225deg,transparent 12px,var(--algarrobo) 12.6px);filter:var(--sombra)}.ds-col ol{display:grid;gap:3px;margin:0;padding:0;list-style:none}.ds-col a{display:grid;justify-items:start;gap:1px;padding:8px 10px 8px 12px;border-radius:1px;background:var(--algarrobo-2);color:var(--arena);text-decoration:none;transition:background .2s}.ds-col a:hover{background:var(--algarrobo-3)}.ds-col a:focus-visible{outline:3px solid var(--arena);outline-offset:2px}.ds-col b{font-size:1.1rem;line-height:1;font-weight:800;font-stretch:125%;text-transform:uppercase;font-variant-numeric:tabular-nums}.ds-col small{font-size:.72rem;font-weight:500;color:var(--arena-tenue)}.ds-col .ds-res{background:var(--algarrobo-3);box-shadow:inset 0 -3px 0 var(--acento-oscuro)}.ds-col .ds-act{background:var(--acento);color:var(--acento-tinta)}.ds-col .ds-act small{color:inherit;opacity:.82}"
     },
     {
       "name": "Marcador de unidad",
       "kind": "custom",
       "refersTo": "pin-unidad",
-      "description": "Botón HTML de tamaño fijo sobre la planta: punto de estado + ID.",
-      "html": "<button class=\"ds-pin\"><i style=\"background:#1f9a5c\"></i>401</button> <button class=\"ds-pin ds-pin--el\"><i></i>402</button>",
-      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-pin{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px 0 10px;border:0;border-radius:999px;background:var(--superficie);color:var(--tinta);font:800 .95rem/1 Manrope,system-ui,sans-serif;font-variant-numeric:tabular-nums;cursor:pointer;box-shadow:var(--sombra)}.ds-pin:hover{background:#f4f4f2}.ds-pin:focus-visible{outline:3px solid var(--acento);outline-offset:3px}.ds-pin i{width:10px;height:10px;border-radius:50%}.ds-pin--el{background:var(--acento);color:var(--acento-tinta)}.ds-pin--el i{background:var(--acento-tinta)}"
+      "description": "Tablilla de 32px sobre la planta: rombo de estado + ID expandido.",
+      "html": "<button class=\"ds-tab ds-pin\"><i style=\"background:#b6cf74\"></i>401</button> <button class=\"ds-tab ds-pin ds-el\"><i></i>402</button>",
+      "css": ":host{--algarrobo:#23170f;--algarrobo-2:#342318;--algarrobo-3:#4b3524;--arena:#efe7d6;--arena-tenue:#bcae95;--ceniza:#dedad0;--acento:#f2c230;--acento-tinta:#23170f;--acento-oscuro:#f2c230;--olivo:#5d6b3a;--sombra:drop-shadow(0 10px 18px rgb(26 14 6 / .34)) drop-shadow(0 2px 4px rgb(26 14 6 / .22));--sombra-alta:drop-shadow(0 24px 40px rgb(26 14 6 / .42)) drop-shadow(0 6px 12px rgb(26 14 6 / .24));--ease:cubic-bezier(.16,1,.3,1);font-family:Archivo,system-ui,sans-serif}@property --pieza{syntax:'<color>';inherits:false;initial-value:#23170f}.ds-tab{--corte:10px;--pieza:var(--algarrobo);background:linear-gradient(225deg,transparent var(--corte),var(--pieza) calc(var(--corte) + .6px));transition:--pieza .2s,transform .25s var(--ease)}.ds-pin{--corte:8px;display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 13px 0 10px;border:0;border-radius:2px;color:var(--arena);font:800 .86rem/1 Archivo,system-ui,sans-serif;font-stretch:125%;font-variant-numeric:tabular-nums;cursor:pointer;filter:var(--sombra)}.ds-pin:hover{--pieza:var(--algarrobo-3)}.ds-pin:focus-visible{outline:3px solid var(--arena);outline-offset:3px}.ds-pin i{width:8px;height:8px;border-radius:1px;transform:rotate(45deg)}.ds-el{--pieza:var(--acento);color:var(--acento-tinta)}.ds-el:hover{--pieza:var(--acento)}.ds-el i{background:var(--acento-tinta)}"
     },
     {
       "name": "Tarjeta de unidad",
       "kind": "card",
       "refersTo": "tarjeta",
-      "description": "Tarjeta blanca flotante de radio 20 con precio, bono, datos y acciones.",
-      "html": "<article class=\"ds-tar\"><h2>Dpto. 402</h2><p class=\"ds-tipo\">Tipo A · 3 dormitorios</p><p class=\"ds-pre\">S/ 389,000</p><p class=\"ds-bono\">Bono aplicable a esta unidad</p><dl><div><dt>Área</dt><dd>86 m²</dd></div><div><dt>Piso</dt><dd>4</dd></div></dl></article>",
-      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-tar{width:348px;padding:20px;border-radius:20px;background:var(--superficie);color:var(--tinta);box-shadow:var(--sombra-alta);font-family:Manrope,system-ui,sans-serif}.ds-tar h2{margin:0;font-size:1.5rem;font-weight:800}.ds-tipo{margin:4px 0 0;font-size:.9rem;color:var(--tenue)}.ds-pre{margin:14px 0 0;font-size:1.85rem;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.ds-bono{margin:10px 0 0;padding:9px 12px;border-radius:12px;background:#e3f3ea;color:#1a7f4b;font-size:.86rem;font-weight:700}.ds-tar dl{margin:14px 0 0}.ds-tar dl div{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--linea)}.ds-tar dt{font-size:.9rem;color:var(--tenue)}.ds-tar dd{margin:0;font-weight:800;font-variant-numeric:tabular-nums}"
+      "description": "Tablilla grande de corte 22px: número, precio, acción en acento y tablero de casillas.",
+      "html": "<article class=\"ds-tar\"><h2>402 <small>Dpto.</small></h2><p class=\"ds-pre\">S/ 389,000</p><button class=\"ds-cta\">Consultar</button><dl class=\"ds-dat\"><div><dt>Área</dt><dd>86 m²</dd></div><div><dt>Dormitorios</dt><dd>3</dd></div><div><dt>Piso</dt><dd>4</dd></div><div><dt>Vista</dt><dd>Parque</dd></div></dl></article>",
+      "css": ":host{--algarrobo:#23170f;--algarrobo-2:#342318;--algarrobo-3:#4b3524;--arena:#efe7d6;--arena-tenue:#bcae95;--ceniza:#dedad0;--acento:#f2c230;--acento-tinta:#23170f;--acento-oscuro:#f2c230;--olivo:#5d6b3a;--sombra:drop-shadow(0 10px 18px rgb(26 14 6 / .34)) drop-shadow(0 2px 4px rgb(26 14 6 / .22));--sombra-alta:drop-shadow(0 24px 40px rgb(26 14 6 / .42)) drop-shadow(0 6px 12px rgb(26 14 6 / .24));--ease:cubic-bezier(.16,1,.3,1);font-family:Archivo,system-ui,sans-serif}@property --pieza{syntax:'<color>';inherits:false;initial-value:#23170f}.ds-tar{width:352px;padding:22px;border-radius:2px;background:linear-gradient(225deg,transparent 22px,var(--algarrobo) 22.6px);color:var(--arena);filter:var(--sombra-alta)}.ds-tar h2{display:flex;align-items:baseline;gap:10px;margin:0;font-size:2.4rem;line-height:.95;font-weight:800;font-stretch:125%;letter-spacing:-.01em;font-variant-numeric:tabular-nums}.ds-tar h2 small{font-size:1rem;font-weight:700;text-transform:uppercase;color:var(--arena-tenue)}.ds-pre{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--algarrobo-3);font-size:1.7rem;font-weight:800;font-stretch:125%;font-variant-numeric:tabular-nums}.ds-cta{width:100%;min-height:44px;margin-top:14px;border:0;border-radius:2px;background:linear-gradient(225deg,transparent 10px,var(--acento) 10.6px);color:var(--acento-tinta);font:700 .8rem Archivo,system-ui,sans-serif;font-stretch:112%;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.ds-cta:focus-visible{outline:3px solid var(--arena);outline-offset:3px}.ds-dat{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:16px 0 0;background:var(--algarrobo-3);border:1px solid var(--algarrobo-3)}.ds-dat div{display:flex;flex-direction:column-reverse;gap:4px;padding:11px 12px;background:var(--algarrobo)}.ds-dat dt{font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--arena-tenue)}.ds-dat dd{margin:0;font-size:1rem;font-weight:800;font-stretch:125%;font-variant-numeric:tabular-nums}"
     },
     {
-      "name": "Campo",
+      "name": "Campo de consulta",
       "kind": "input",
       "refersTo": "campo",
-      "description": "Campo de la consulta y selects del catálogo.",
-      "html": "<input class=\"ds-campo\" placeholder=\"Tu nombre\">",
-      "css": ":host{--acento:#a9581f;--acento-tinta:#fff;--tinta:#141414;--tenue:#5f6368;--superficie:#fff;--gris:#f1f1ef;--linea:#e6e5e1;--sombra:0 8px 24px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .08);--sombra-alta:0 22px 48px rgb(0 0 0 / .22),0 6px 14px rgb(0 0 0 / .1);--ease:cubic-bezier(.16,1,.3,1);font-family:Manrope,system-ui,sans-serif}.ds-campo{min-height:44px;padding:12px 14px;border:1px solid var(--linea);border-radius:12px;background:#f7f7f5;color:var(--tinta);font:500 1rem Manrope,system-ui,sans-serif}.ds-campo:hover{border-color:#c9c8c3}.ds-campo:focus{outline:2px solid var(--acento);outline-offset:0;background:#fff}"
+      "description": "Campo oscuro dentro del diálogo; foco y cursor en acento sobre madera.",
+      "html": "<label class=\"ds-lab\">Nombre<input class=\"ds-campo\" placeholder=\"Tu nombre\"></label>",
+      "css": ":host{--algarrobo:#23170f;--algarrobo-2:#342318;--algarrobo-3:#4b3524;--arena:#efe7d6;--arena-tenue:#bcae95;--ceniza:#dedad0;--acento:#f2c230;--acento-tinta:#23170f;--acento-oscuro:#f2c230;--olivo:#5d6b3a;--sombra:drop-shadow(0 10px 18px rgb(26 14 6 / .34)) drop-shadow(0 2px 4px rgb(26 14 6 / .22));--sombra-alta:drop-shadow(0 24px 40px rgb(26 14 6 / .42)) drop-shadow(0 6px 12px rgb(26 14 6 / .24));--ease:cubic-bezier(.16,1,.3,1);font-family:Archivo,system-ui,sans-serif}@property --pieza{syntax:'<color>';inherits:false;initial-value:#23170f}.ds-lab{display:grid;gap:6px;padding:16px;background:var(--algarrobo);color:var(--arena-tenue);font:700 .68rem Archivo,system-ui,sans-serif;font-stretch:112%;letter-spacing:.1em;text-transform:uppercase}.ds-campo{padding:12px 14px;border:1px solid var(--algarrobo-3);border-radius:2px;background:#1a110b;color:var(--arena);font:500 1rem Archivo,system-ui,sans-serif;letter-spacing:0;text-transform:none;caret-color:var(--acento-oscuro)}.ds-campo::placeholder{color:#9d8f78}.ds-campo:focus{outline:2px solid var(--acento-oscuro);outline-offset:0;border-color:transparent}"
     }
   ],
   "narrative": {
-    "northStar": "El edificio es la pantalla",
-    "overview": "Este es el estándar de la categoría (el showroom de Urbania 3D, con President Tower como vara de acabado) ejecutado a fondo. El render del edificio ocupa la pantalla entera en la portada, en la vista del edificio y en la planta del piso, y los controles flotan encima como piezas blancas y negras con sombra real. Nada enmarca la imagen: no hay cabecera fija, barra lateral ni secciones apiladas en las vistas inmersivas. El carácter propio sale del oficio y del material (renders, plantas, geometría y datos coherentes), no de un mundo excéntrico.\n\nHay dos registros. Las **vistas inmersivas** (portada, edificio, piso) son oscuras o de papel, a sangre, con piezas flotantes. Las **páginas de consulta** (ficha, catálogo, modelos) son claras, sobre fondo hueso, con tarjetas blancas para leer y comparar. El mismo vocabulario de píldoras, círculos, tarjeta de radio 20 y estados atraviesa ambos.\n\nUna sola hoja sirve a todas las inmobiliarias: el color de marca entra por proyecto como variable CSS, y todo lo demás (neutros, estados, formas, sombras) es fijo. Se rechaza la web inmobiliaria de plantilla, el lujo exagerado y esconder precio o disponibilidad.",
+    "northStar": "Tablillas de algarrobo sobre la lámina",
+    "overview": "El render del edificio ocupa la pantalla entera en la portada, en la vista del edificio y en la planta del piso; encima flotan piezas de madera oscura, como tablillas de algarrobo apoyadas sobre una lámina de arquitecto. Cada tablilla es un rectángulo de esquinas casi rectas con la esquina superior derecha cortada, y su sombra cálida sigue ese corte. Nada enmarca la imagen en las vistas inmersivas: ni cabecera fija, ni barra lateral, ni secciones apiladas.\n\nEl mundo es el bosque seco de Lambayeque: algarrobo oscuro para las piezas, ceniza y arena para el papel y el texto claro, olivo para la confirmación. El color del proyecto (en Los Faiques, el amarillo de la flor del faique) no decora: enciende solo la acción y lo elegido. La voz tipográfica es Archivo expandida en mayúsculas para nombres, pisos y cifras, y Archivo normal para leer.\n\nHay dos registros con el mismo vocabulario. Las **vistas inmersivas** son oscuras y a sangre, con tablillas flotantes. Las **páginas de consulta** (ficha, catálogo, modelos) van sobre ceniza, con láminas de hoja para leer y una barra de algarrobo arriba. Una sola hoja sirve a todas las inmobiliarias: el acento entra por proyecto y todo lo demás es fijo.\n\nOrigen de la dirección: Kevin pidió el 4-oct-2026 una identidad propia porque el showroom parecía una copia de Urbania 3D (píldoras blancas y negras, radios grandes) y delegó la elección («elige tú»). «Bosque seco» fue el candidato construido; este documento lo registra tal como quedó en `src/core.css`.",
     "keyCharacteristics": [
-      "Imagen a sangre como interfaz; controles flotantes que nunca la enmarcan.",
-      "Piezas blancas y negras con sombra real de dos capas; un único acento por proyecto.",
-      "Tarjeta blanca de radio 20; píldoras y círculos totalmente redondos.",
-      "Manrope de peso 800 para todo lo que se lee como dato o título; cifras tabulares.",
-      "Estados de disponibilidad siempre como punto dibujado + palabra (y trama en la planta), nunca solo color.",
-      "Aviso de demo obligatorio en una franja fina fija arriba."
+      "Render a sangre como interfaz; tablillas flotantes que nunca lo enmarcan.",
+      "Tablilla de esquina superior derecha cortada, radio 2px, sombra cálida que sigue la forma.",
+      "Algarrobo, ceniza y arena como neutros; un acento por proyecto solo en acción y selección.",
+      "Archivo variable: expandida al 125% en mayúsculas para la voz, 112% para rótulos chicos, normal para leer.",
+      "Estados como rombo dibujado + palabra, nunca solo color.",
+      "Aviso de demo obligatorio en una franja fina arriba."
     ],
     "rules": [
       {
         "name": "La Regla del Acento Prestado",
-        "body": "El acento nunca se escribe en la hoja ni en un componente: llega del proyecto. Un componente que necesite color de marca usa `var(--acento)` y `var(--acento-tinta)`, sin excepción.",
+        "body": "El color de marca llega del proyecto. Un componente que lo necesite usa `var(--acento)` / `var(--acento-tinta)` para relleno y `var(--acento-oscuro)` / `var(--acento-claro)` para texto, trazo o foco; nunca un hex de marca escrito a mano.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla del Relleno y el Trazo",
+        "body": "`--acento` solo pinta superficies con su tinta encima. Si el acento va a ser texto, línea o anillo de foco, se usa la variante calculada para el fondo que tenga debajo; el amarillo como texto sobre ceniza es ilegible y el azul como texto sobre madera también.",
         "section": "colors"
       },
       {
         "name": "La Regla de la Voz Única",
-        "body": "El acento marca la acción y la selección actual, nada más. Un viewport inmersivo lleva a lo sumo la acción principal, la selección actual y la navegación de recorrido en acento; el resto es blanco y negro.",
+        "body": "El acento marca la acción y lo elegido, nada más. Con una unidad abierta, la única tablilla amarilla de la vista es Consultar: Buscar departamento vuelve a madera.",
         "section": "colors"
       },
       {
+        "name": "La Regla de la Madera que Redefine",
+        "body": "Toda pieza oscura (tarjeta, menú, consulta, barra, columna de pisos, leyenda, insignia, parada, conmutador, texto de modelo, aviso) redefine `--tinta`, `--tenue`, `--linea`, `--base` y los colores de estado en su propio ámbito. Los componentes de adentro leen esas variables y nunca preguntan sobre qué fondo están.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de los Tres Anchos",
+        "body": "125% para lo que se nombra o se cuenta (edificio, piso, unidad, precio, cifra de casilla); 112% para rótulos chicos en mayúsculas; ancho normal para leer. No se inventa un cuarto ancho.",
+        "section": "typography"
+      },
+      {
         "name": "La Regla de la Cifra Tabular",
-        "body": "Todo número que se compara (pisos, precios, áreas, conteos, IDs de unidad) va con `font-variant-numeric: tabular-nums`.",
+        "body": "Todo número que se compara (pisos, precios, áreas, IDs de unidad, dato de portada) va con `font-variant-numeric: tabular-nums`.",
         "section": "typography"
       },
       {
         "name": "La Regla de una Familia",
-        "body": "Manrope y nada más. No se introduce una segunda familia de display.",
+        "body": "Archivo y nada más; la jerarquía sale del ancho, el peso y la caja, no de una segunda familia.",
         "section": "typography"
       },
       {
         "name": "La Regla del Marco Ausente",
-        "body": "En una vista inmersiva nada ocupa un borde completo de la pantalla salvo el aviso de demo y, en móvil, la columna de pisos y la hoja de la tarjeta. Todo lo demás es una pieza flotante con aire alrededor.",
+        "body": "En una vista inmersiva nada ocupa un borde completo salvo el aviso de demo y, en móvil, la tira de pisos y la hoja de la tarjeta.",
         "section": "layout"
       },
       {
         "name": "La Regla del Mismo Encuadre",
-        "body": "Cualquier capa dibujada sobre un render (franjas, polígonos, marcadores) comparte el sistema de coordenadas de la imagen y su modo `slice`/`meet`. Una capa que no lo comparte se desalinea en cuanto cambia la proporción de la pantalla.",
+        "body": "Toda capa dibujada sobre un render comparte el sistema de coordenadas de la imagen y su modo `slice`/`meet`.",
         "section": "layout"
       },
       {
-        "name": "La Regla de la Sombra Real",
-        "body": "Sobre imagen, una pieza flotante lleva sombra; sobre blanco, borde de 1px de línea y ninguna sombra. Nunca las dos a la vez, nunca ninguna sobre imagen.",
+        "name": "La Regla de la Sombra que Sigue el Corte",
+        "body": "Una pieza de esquina cortada lleva sombra con `drop-shadow`, nunca con `box-shadow`; un `box-shadow` delata el rectángulo que el degradado escondió.",
+        "section": "elevation"
+      },
+      {
+        "name": "La Regla de la Madera sobre Madera",
+        "body": "Sobre el render, una tablilla lleva sombra; dentro de otra tablilla, ninguna.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "**Do** llevar el render a sangre (`object-fit: cover`) en portada, edificio y piso, con las piezas flotando a 16px de los bordes.",
-      "**Do** tomar el color de marca solo de `var(--acento)` / `var(--acento-tinta)`, inyectados por `generar.js` desde `estilo.acento` del proyecto.",
-      "**Do** dibujar franjas y polígonos con el mismo `viewBox` y el mismo modo `slice`/`meet` que la imagen que cubren.",
-      "**Do** mostrar el estado como punto dibujado + palabra, y en la planta añadir trama (rayado para reservado, cruzado para vendido).",
-      "**Do** mantener los marcadores de la planta como HTML de tamaño fijo que siguen al plano sin escalarse.",
-      "**Do** dar sombra flotante a lo que va sobre imagen y borde de línea sin sombra a lo que va sobre blanco.",
-      "**Do** guardar cada imagen reemplazada con un nombre nuevo (`-v2`, `-v3`…) y actualizar la referencia en `datos/`; el servidor cachea por nombre.",
+      "**Do** llevar el render a sangre (`object-fit: cover`) en portada, edificio y piso, con las tablillas flotando a 16px de los bordes.",
+      "**Do** construir cada control nuevo como tablilla: radio 2px, esquina superior derecha cortada con el degradado de 225° y color en `--pieza`.",
+      "**Do** dar sombra con `filter: drop-shadow` (tokens tablilla y alta) para que siga el corte.",
+      "**Do** usar `--acento` solo como relleno con `--acento-tinta` encima, y `--acento-oscuro` / `--acento-claro` para texto, trazo y foco.",
+      "**Do** declarar una pieza oscura nueva en la lista que redefine `--tinta`, `--tenue`, `--linea`, `--base` y los estados, en vez de escribir colores claros a mano dentro de ella.",
+      "**Do** poner nombres, pisos, precios y cifras en Archivo expandida (125%, 800) y los rótulos chicos a 112% en mayúsculas espaciadas.",
+      "**Do** mostrar el estado como rombo dibujado + palabra, y en la planta añadir trama.",
       "**Do** mostrar el aviso de demo en toda vista mientras el proyecto esté en modo demo.",
-      "**Do** dibujar el conmutador Día/Noche solo cuando el proyecto tenga renders nocturnos.",
-      "**Do** convertir la tarjeta de unidad en hoja inferior y la columna de pisos en tira horizontal por debajo de 760px."
+      "**Do** guardar cada imagen reemplazada con un nombre nuevo (`-v2`, `-v3`…); el servidor cachea por nombre."
     ],
     "donts": [
-      "**Don't** enmarcar las vistas inmersivas con cabeceras, barras laterales o secciones apiladas; rechazar la web inmobiliaria de secciones apiladas es la tesis.",
-      "**Don't** escribir un color de marca fijo en `core.css` ni en un componente.",
+      "**Don't** volver a píldoras redondas, círculos verdaderos ni tarjetas de radio grande: es el showroom de plantilla que esta identidad reemplazó.",
+      "**Don't** usar `box-shadow` en una pieza de esquina cortada.",
+      "**Don't** escribir un hex de marca en `core.css` ni en un componente; el acento llega del proyecto.",
+      "**Don't** usar `--acento` como color de texto o de foco: sin la variante calculada, falla el contraste en uno de los dos fondos.",
+      "**Don't** encender en acento más que la acción y lo elegido; con una unidad abierta, solo Consultar es amarilla.",
       "**Don't** comunicar disponibilidad solo con color.",
-      "**Don't** sobrescribir una imagen publicada con el mismo nombre de archivo.",
       "**Don't** esconder el precio o la disponibilidad detrás de una consulta.",
-      "**Don't** introducir una segunda familia tipográfica ni íconos de fuente o glifos; los íconos son SVG de trazo 1.8 en retícula 24.",
-      "**Don't** usar texto pequeño espaciado en mayúsculas como rótulo encima de un título; las mayúsculas espaciadas quedan para las cabeceras de tabla y filtros, y las versalitas en acento solo para el bloque de marca."
+      "**Don't** introducir una segunda familia tipográfica ni íconos de fuente o glifos.",
+      "**Don't** poner un rótulo chico en mayúsculas encima de un título como antetítulo; el bloque espaciado de la marca es el único caso y no se reutiliza."
     ]
   }
 }
