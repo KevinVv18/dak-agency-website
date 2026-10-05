@@ -85,7 +85,9 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+/* manipulation: sin zoom por doble toque (se disparaba al tocar flechas y
+   pisos seguidos); el pellizco de la página sigue funcionando. */
+html { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
 body { margin: 0; background: var(--ceniza); color: var(--tinta); font: 16px/1.55 var(--fuente); -webkit-font-smoothing: antialiased; }
 img { max-width: 100%; display: block; }
 a { color: inherit; text-underline-offset: .22em; text-decoration-thickness: 1px; }
@@ -253,7 +255,10 @@ body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="p
 }
 /* Giro: imagen y franjas escalan juntas */
 .giro-zoom { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; }
-.escena__img--siguiente { opacity: 0; pointer-events: none; }
+/* El giro se pinta en un lienzo encima de la imagen inicial; aparece cuando
+   tiene su primer cuadro decodificado. */
+.escena__lienzo { opacity: 0; pointer-events: none; transition: none; }
+.escena__lienzo--listo { opacity: 1; }
 .menu__creditos { margin: 10px 0 0; color: var(--tenue); font-size: var(--t-estado); line-height: 1.5; }
 .flotante--giro { bottom: 84px; }
 /* Vecinos como maqueta: la variante entra encima al elegir un piso. */
@@ -550,9 +555,11 @@ body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="p
   .pista-giro { left: 50%; bottom: 164px; font-size: var(--t-etiqueta); }
 
   .columna-pisos { inset: auto 0 0 0; transform: none; width: auto; max-height: none; overflow-x: auto; overflow-y: hidden; padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); background: linear-gradient(225deg, transparent 16px, var(--algarrobo) 16.6px); }
-  .columna-pisos ol { grid-auto-flow: column; grid-auto-columns: minmax(72px, auto); }
+  .columna-pisos ol { grid-auto-flow: column; grid-auto-columns: minmax(84px, auto); }
   .piso-pildora .largo { display: none; }
   .piso-pildora .corto { display: inline; }
+  .piso-pildora { padding: 8px; }
+  .piso-pildora b { font-size: .9rem; white-space: nowrap; }
 
   .insignia { top: 64px; left: 12px; padding: 8px 16px 9px 12px; }
   .insignia h1 { font-size: var(--t-cuerpo); }

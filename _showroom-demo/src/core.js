@@ -15,6 +15,12 @@
 
 (() => {
   const D = window.SHOWROOM;
+  // En el celular y la tableta el giro libre se quita: compite con los gestos
+  // del navegador (pellizco, doble toque) y arrastrar 2400 px por cuadro no es
+  // fluido en un teléfono. Quedan las vistas fijas, que se recorren con flechas.
+  if (matchMedia('(hover: none) and (pointer: coarse)').matches && D.vistas.some((v) => !v.giro)) {
+    D.vistas = D.vistas.filter((v) => !v.giro);
+  }
   const app = document.getElementById('app');
   // Sin modo demo no hay franja de aviso: las vistas inmersivas suben a tope.
   if (!D.proyecto.modoDemo) document.documentElement.style.setProperty('--aviso-h', '0px');
@@ -330,7 +336,7 @@
           ${img ? `<img class="escena__fondo" src="${esc(recurso(img))}" alt="" aria-hidden="true">
           ${v.giro ? '<div class="giro-zoom" data-giro-zoom>' : ''}
           <img class="escena__img" data-escena-img src="${esc(recurso(img))}" alt="${esc(D.proyecto.nombre)}, ${v.giro ? 'giro de 360 grados alrededor del edificio' : `vista ${esc(v.nombre.toLowerCase())}`}">
-          ${v.giro ? `<img class="escena__img escena__img--siguiente" data-giro-sig src="${esc(recurso(img))}" alt="" aria-hidden="true">` : ''}
+          ${v.giro ? '<canvas class="escena__img escena__lienzo" data-giro-lienzo aria-hidden="true"></canvas>' : ''}
           ${fantasma ? `<img class="escena__img escena__img--fantasma" data-fantasma src="${esc(recurso(fantasma))}" alt="" aria-hidden="true">` : ''}
           ${franjasSvg(v, img, k)}
           ${v.giro ? '</div>' : ''}`
@@ -902,6 +908,75 @@
   const giro = { cache: [], auto: null, anim: null, tocado: false, arr: null };
   const contGiro = () => app.querySelector('.inmersiva--edificio[data-giro]');
 
+  // Cuadros ya decodificados (ImageBitmap) alrededor del ángulo actual.
+  // Decodificar una imagen de 2400 px en el momento de mostrarla costaba
+  // 15–25 ms, dos por movimiento, y el arrastre daba tirones. Ahora se
+  // decodifican antes y fuera del hilo principal; pintar un cuadro en el
+  // lienzo es inmediato. Se guarda una ventana de vecinos, no los 144: cada
+  // cuadro decodificado ocupa ~13 MB.
+  const VENTANA = 12;
+  const bitmaps = { soporte: typeof createImageBitmap === 'function', modo: null, mapa: new Map(), pedidos: new Set(), centro: 0, a: 0, b: 0, frac: 0 };
+  const distanciaCuadros = (x, y, n) => { const d = Math.abs(x - y) % n; return Math.min(d, n - d); };
+
+  function vaciarBitmaps(modo) {
+    for (const bm of bitmaps.mapa.values()) bm.close();
+    bitmaps.mapa.clear();
+    bitmaps.pedidos.clear();
+    bitmaps.modo = modo;
+  }
+
+  function pedirBitmap(v, k, modo) {
+    if (bitmaps.mapa.has(k) || bitmaps.pedidos.has(k)) return;
+    bitmaps.pedidos.add(k);
+    fetch(recurso(cuadroSrc(v, k, modo)))
+      .then((r) => r.blob())
+      .then((b) => createImageBitmap(b))
+      .then((bm) => {
+        bitmaps.pedidos.delete(k);
+        if (bitmaps.modo !== modo || distanciaCuadros(k, bitmaps.centro, v.giro.cuadros) > VENTANA + 4) { bm.close(); return; }
+        bitmaps.mapa.set(k, bm);
+        if (k === bitmaps.a || k === bitmaps.b) pintarGiro();
+      })
+      .catch(() => bitmaps.pedidos.delete(k));
+  }
+
+  function prepararVecinos(v, modo, centro) {
+    const n = v.giro.cuadros;
+    bitmaps.centro = centro;
+    for (const [k, bm] of bitmaps.mapa) {
+      if (distanciaCuadros(k, centro, n) > VENTANA + 4) { bm.close(); bitmaps.mapa.delete(k); }
+    }
+    for (let d = 0; d <= VENTANA; d++) {
+      pedirBitmap(v, (centro + d) % n, modo);
+      if (d) pedirBitmap(v, (centro - d + n) % n, modo);
+    }
+  }
+
+  function pintarGiro() {
+    const cont = contGiro();
+    const lienzo = cont?.querySelector('[data-giro-lienzo]');
+    if (!lienzo) return;
+    const n = D.vistas[Number(cont.dataset.vistaActual)]?.giro?.cuadros || 1;
+    // si el cuadro pedido no llegó todavía (arrastre muy rápido), el más cercano
+    let A = bitmaps.mapa.get(bitmaps.a);
+    if (!A) {
+      let mejor = Infinity;
+      for (const [k, bm] of bitmaps.mapa) { const d = distanciaCuadros(k, bitmaps.a, n); if (d < mejor) { mejor = d; A = bm; } }
+      if (mejor > 3) A = null;
+    }
+    if (!A) return;
+    if (lienzo.width !== A.width || lienzo.height !== A.height) { lienzo.width = A.width; lienzo.height = A.height; }
+    const ctx = lienzo.getContext('2d');
+    ctx.globalAlpha = 1;
+    ctx.drawImage(A, 0, 0);
+    // fundido con el cuadro siguiente: el giro se lee continuo entre tomas
+    const B = bitmaps.mapa.get(bitmaps.b);
+    if (B && bitmaps.frac > 0.02) { ctx.globalAlpha = bitmaps.frac; ctx.drawImage(B, 0, 0); }
+    const img = cont.querySelector('[data-escena-img]');
+    lienzo.classList.toggle('escena__img--entera', Boolean(img?.classList.contains('escena__img--entera')));
+    lienzo.classList.add('escena__lienzo--listo');
+  }
+
   function mostrarCuadro(k) {
     const cont = contGiro();
     const v = cont && D.vistas[Number(cont.dataset.vistaActual)];
@@ -914,13 +989,20 @@
     const j = frac < 0.5 ? a : b;
     cont.dataset.cuadro = j;
     const modo = modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia');
-    const img = cont.querySelector('[data-escena-img]');
-    if (img) img.src = recurso(cuadroSrc(v, a, modo));
-    // fundido con el cuadro siguiente: entre dos tomas cada 5° el giro se lee continuo
-    const sig = cont.querySelector('[data-giro-sig]');
-    if (sig) { sig.src = recurso(cuadroSrc(v, b, modo)); sig.style.opacity = frac.toFixed(3); }
+    Object.assign(bitmaps, { a, b, frac });
+    const lienzo = cont.querySelector('[data-giro-lienzo]');
+    if (lienzo && bitmaps.soporte) {
+      prepararVecinos(v, modo, a);
+      pintarGiro();
+    }
+    // sin lienzo listo (o sin createImageBitmap) se cambia la imagen, como antes
+    if (!lienzo?.classList.contains('escena__lienzo--listo')) {
+      const img = cont.querySelector('[data-escena-img]');
+      if (img) img.src = recurso(cuadroSrc(v, a, modo));
+    }
+    // la variante con vecinos de maqueta solo se actualiza mientras se ve
     const fan = cont.querySelector('[data-fantasma]');
-    if (fan && v.giro[`${modo}Fantasma`]) fan.src = recurso(cuadroSrc(v, j, `${modo}Fantasma`));
+    if (fan && v.giro[`${modo}Fantasma`] && cont.classList.contains('inmersiva--fantasma')) fan.src = recurso(cuadroSrc(v, j, `${modo}Fantasma`));
     const movil = giroMovil(v);
     const cuadro = (movil ? v.giro.franjasMovil : v.giro.franjas)?.[j] || {};
     const [aw, ah] = movil ? [9, 16] : [16, 9];
@@ -971,6 +1053,11 @@
     centrarZoomGiro(1.18);
     const n = v.giro.cuadros;
     const modo = modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia');
+    if (bitmaps.soporte) {
+      vaciarBitmaps(modo);
+      Object.assign(bitmaps, { a: Number(cont.dataset.cuadro) || 0, b: Number(cont.dataset.cuadro) || 0, frac: 0 });
+      prepararVecinos(v, modo, bitmaps.a);
+    }
     const orden = [...Array(n).keys()].sort((a, b) => (a % 4 ? 1 : 0) - (b % 4 ? 1 : 0));
     let listos = 0;
     giro.cache = orden.map((k) => {
@@ -1227,7 +1314,13 @@
     const cont = app.querySelector('.inmersiva--edificio');
     if (!cont) return;
     cont.querySelectorAll('.franja').forEach((f) => f.classList.toggle('franja--activa', f.dataset.franja === id));
-    cont.classList.toggle('inmersiva--fantasma', Boolean(id && cont.querySelector('[data-fantasma]')));
+    const fan = cont.querySelector('[data-fantasma]');
+    if (id && fan && cont.matches('[data-giro]') && !cont.classList.contains('inmersiva--fantasma')) {
+      const v = D.vistas[Number(cont.dataset.vistaActual)];
+      const modo = modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia');
+      if (v.giro[`${modo}Fantasma`]) fan.src = recurso(cuadroSrc(v, Number(cont.dataset.cuadro), `${modo}Fantasma`));
+    }
+    cont.classList.toggle('inmersiva--fantasma', Boolean(id && fan));
     if (id && giro.auto) tocarGiro();
     cont.querySelectorAll('.piso-pildora').forEach((a) => a.classList.toggle('piso-pildora--resaltado', a.dataset.piso === id));
     const rotulo = cont.querySelector('[data-franja-rotulo]');
