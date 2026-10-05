@@ -24,6 +24,8 @@ guias/
 agro/
 ventas/
 bitacora/
+# Showroom de edificios (_showroom-demo/, deploy-edificios.yml), 04-oct-2026.
+edificios/
 .builds/
 
 # Detectadas el 26-ago-2026 por la guarda, que aborto el deploy en vez de
