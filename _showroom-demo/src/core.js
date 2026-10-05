@@ -1479,6 +1479,12 @@
     const dx = e.clientX - giro.arr.x;
     const dy = e.clientY - giro.arr.y;
     if (!giro.arr.movido && Math.hypot(dx, dy) < 6) return;
+    if (!giro.arr.movido) {
+      // La variante con vecinos de maqueta es una <img> que se cambia cuadro a
+      // cuadro sin predecodificar: durante el arrastre quedaba atrás del lienzo
+      // y se veían dos edificios desfasados. Se apaga mientras se arrastra.
+      contGiro()?.classList.remove('inmersiva--fantasma');
+    }
     giro.arr.movido = true;
     // arrastrar a la izquierda trae el costado derecho: el edificio sigue a la mano
     mostrarCuadro(giro.arr.k - (dx / 14) * escalaGiro());
@@ -1494,6 +1500,10 @@
       setTimeout(() => document.removeEventListener('click', bloquear, { capture: true }), 50);
       mostrarCuadro(Number(contGiro()?.dataset.cuadro || 0));
       fijarQuery({ giro: contGiro()?.dataset.cuadro || null });
+      giro.arr = null;
+      const bajo = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.franja');
+      resaltarPiso(bajo ? bajo.dataset.franja : null);
+      return;
     }
     giro.arr = null;
   });
@@ -1643,7 +1653,7 @@
     const cont = app.querySelector('.inmersiva--edificio');
     if (!cont) return;
     cont.querySelectorAll('.franja').forEach((f) => f.classList.toggle('franja--activa', f.dataset.franja === id));
-    const fan = cont.querySelector('[data-fantasma]');
+    const fan = giro.arr?.movido ? null : cont.querySelector('[data-fantasma]');
     if (id && fan && cont.matches('[data-giro]') && !cont.classList.contains('inmersiva--fantasma')) {
       const v = D.vistas[Number(cont.dataset.vistaActual)];
       const modo = modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia');
