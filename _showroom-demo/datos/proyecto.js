@@ -36,7 +36,7 @@ export default {
   // La clave no va aquí: la pone generar.js desde MAPA3D_CLAVE.
   mapa3d: { lat: -6.6953275, lon: -79.9059207, rumbo: 192, suelo: 25.5, lugar: 'Lambayeque · Indoamérica', maqueta: 'assets/maqueta/edificio-v4.glb' },
   modoDemo: true,
-  avisoDemo: 'Proyecto conceptual · inventario, precios y vistas de ejemplo',
+  avisoDemo: 'Presentación privada de DAK Agency · inventario, precios y vistas de ejemplo',
   // Bono del Buen Pagador (Crédito Mivivienda), tramos vigentes desde junio
   // de 2026 según RPP. Es el gancho que más vende en Chiclayo. El tramo entre
   // S/ 99.600 y S/ 149.200 no está confirmado: sin tramo, la ficha no muestra

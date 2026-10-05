@@ -154,7 +154,7 @@
   const marcador = (titulo, detalle = '', clase = '') =>
     `<div class="marcador ${clase}" role="img" aria-label="${esc(titulo)} (pendiente)"><span class="marcador__t">${esc(titulo)}</span>${detalle ? `<span class="marcador__d">${esc(detalle)}</span>` : ''}</div>`;
 
-  const aviso = () => (D.proyecto.modoDemo ? `<div class="aviso-demo" role="note">${flor()}${esc(D.proyecto.avisoDemo)}</div>` : '');
+  const aviso = () => (D.proyecto.modoDemo ? `<div class="aviso-demo" role="note">${flor()}<span>${D.proyecto.avisoDemo.split(' · ').map(esc).join('<span class="aviso-demo__resto"> · ')}${'</span>'.repeat(D.proyecto.avisoDemo.split(' · ').length)}</div>` : '');
 
   // ── Menú y controles flotantes ─────────────────────────────────────────────
 

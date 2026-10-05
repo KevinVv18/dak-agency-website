@@ -134,6 +134,9 @@ h1:focus { outline: none; }
 /* Aviso de demo: una franja fina siempre visible, nunca confundible con inventario real. */
 .aviso-demo { position: fixed; inset: 0 0 auto; z-index: 70; height: var(--aviso-h); display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 12px; background: #150d07; color: var(--arena-tenue); font-size: var(--t-estado); font-weight: 600; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .aviso-demo .flor { width: 16px; height: 16px; flex: none; color: var(--arena-tenue); }
+.aviso-demo > span { overflow: hidden; text-overflow: ellipsis; }
+/* en pantallas angostas queda solo la primera parte: quién presenta */
+@media (max-width: 720px) { .aviso-demo__resto { display: none; } }
 body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="piso"]) .aviso-demo { position: sticky; }
 
 /* ── Tablillas ────────────────────────────────────────────────────────────── */
