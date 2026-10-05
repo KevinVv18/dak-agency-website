@@ -264,7 +264,16 @@ body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="p
 .cielo__mapa .cesium-viewer-bottom { left: 12px; bottom: 8px; }
 .cielo__lugar { position: absolute; left: 16px; bottom: 44px; margin: 0; padding: 8px 14px 8px 12px; border-radius: 2px; background: linear-gradient(225deg, transparent 8px, var(--algarrobo) 8.6px); color: var(--arena); font-size: var(--t-estado); font-weight: 700; font-stretch: 112%; letter-spacing: .1em; text-transform: uppercase; filter: var(--sombra); }
 .cielo__saltar { position: absolute; right: 16px; bottom: 44px; }
-.cielo--saliendo { opacity: 0; pointer-events: none; }
+/* Salida: la ciudad se desenfoca y se aclara mientras se va; debajo, el giro
+   entra apenas desenfocado y agrandado y hace foco. Leído como un enfoque de
+   cámara, no como un corte entre dos mundos. */
+.cielo { transition: opacity 1.4s var(--ease), filter 1.4s var(--ease); }
+.cielo--saliendo { opacity: 0; filter: blur(10px) brightness(1.12) saturate(.9); pointer-events: none; }
+.inmersiva--llegando .giro-zoom > .escena__img,
+.inmersiva--llegando .giro-zoom > .escena__lienzo { animation: enfocar 1.6s var(--ease) both; }
+@keyframes enfocar { from { filter: blur(7px) brightness(1.08); transform: scale(1.025); } to { filter: none; transform: none; } }
+/* bruma cerca del horizonte: perspectiva aérea para la llanura de Lambayeque */
+.cielo__mapa::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgb(222 232 240 / 0) 0%, rgb(222 232 240 / .32) 26%, rgb(222 232 240 / .12) 42%, rgb(222 232 240 / 0) 62%), radial-gradient(120% 90% at 50% 55%, transparent 60%, rgb(20 12 6 / .28) 100%); }
 
 /* El giro se pinta en un lienzo encima de la imagen inicial; aparece cuando
    tiene su primer cuadro decodificado. */

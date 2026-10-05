@@ -34,7 +34,7 @@ export default {
   // lat/lon = centro del edificio; rumbo = hacia dónde mira la fachada (grados
   // desde el norte); suelo = altura elipsoidal medida en los tiles (respaldo).
   // La clave no va aquí: la pone generar.js desde MAPA3D_CLAVE.
-  mapa3d: { lat: -6.6953275, lon: -79.9059207, rumbo: 192, suelo: 25.5, lugar: 'Lambayeque · Indoamérica', maqueta: 'assets/maqueta/edificio-v1.glb' },
+  mapa3d: { lat: -6.6953275, lon: -79.9059207, rumbo: 192, suelo: 25.5, lugar: 'Lambayeque · Indoamérica', maqueta: 'assets/maqueta/edificio-v4.glb' },
   modoDemo: true,
   avisoDemo: 'Proyecto conceptual · inventario, precios y vistas de ejemplo',
   // Bono del Buen Pagador (Crédito Mivivienda), tramos vigentes desde junio

@@ -908,6 +908,7 @@
   // no permiten guardarlos ni renderizarlos en un video.
 
   const CESIUM = 'https://cdn.jsdelivr.net/npm/cesium@1.124.0/Build/Cesium/';
+  const ZOOM_GIRO = 1.18;   // acercamiento con el que aparece el giro (centrarZoomGiro)
   let cielo = null;
 
   function cargarCesium() {
@@ -943,7 +944,10 @@
     const fin = () => { try { c.viewer?.destroy(); } catch { /* ya destruido */ } c.capa.remove(); };
     if (inmediato) return fin();
     c.capa.classList.add('cielo--saliendo');
-    setTimeout(fin, 1000);
+    const inm = c.capa.closest('.inmersiva');
+    inm?.classList.add('inmersiva--llegando');
+    setTimeout(() => inm?.classList.remove('inmersiva--llegando'), 1700);
+    setTimeout(fin, 1500);
   }
 
   async function entradaCielo() {
@@ -985,8 +989,19 @@
       ao.enabled = true;
       Object.assign(ao.uniforms, { intensity: 2.2, bias: 0.1, lengthCap: 0.12, stepSize: 1.4, blurStepSize: 0.86 });
 
-      // el giro se renderizó con 34 mm sobre 36 mm de sensor
-      viewer.camera.frustum.fov = 2 * Math.atan(18 / 34);
+      // Mismo encuadre que el giro al aparecer: 34 mm sobre 36 mm de sensor,
+      // recortado a la proporción de la pantalla (object-fit: cover sobre 16:9)
+      // y con el acercamiento inicial del giro. Si no coincide, el edificio
+      // cambia de tamaño en el fundido y se lee como un corte.
+      const encuadrar = () => {
+        const asp = capa.clientWidth / Math.max(1, capa.clientHeight);
+        let t = 18 / 34;
+        if (asp < 16 / 9) t *= asp / (16 / 9);
+        t /= ZOOM_GIRO;
+        const h = 2 * Math.atan(t);
+        viewer.camera.frustum.fov = asp >= 1 ? h : 2 * Math.atan(Math.tan(h / 2) / asp);
+      };
+      encuadrar();
 
       // Marco local del lote (este, norte, arriba). Ejes propios del edificio:
       // f = hacia donde mira la fachada (de donde llega la cámara), l = su derecha.
@@ -1044,8 +1059,12 @@
       // El edificio real (produccion/maqueta_glb.py: el modelo del render, con
       // texturas chicas y Draco) sobre la ciudad, iluminado por el sol de Cesium a
       // media tarde. Llega igual a como se ve en el render y el fundido no salta.
-      viewer.clock.currentTime = C.JulianDate.fromIso8601('2026-10-05T20:30:00Z');
-      viewer.clock.shouldAnimate = false;
+      // La luz del render: rasante desde adelante a la izquierda (52°) y a 35° de
+      // altura. Con el sol real de la hora la fachada quedaba a contraluz.
+      const az = C.Math.toRadians(-52), el = C.Math.toRadians(35);
+      const haciaSol = pto(Math.cos(az) * Math.cos(el), Math.sin(az) * Math.cos(el), Math.sin(el));
+      const dirLuz = C.Cartesian3.normalize(C.Cartesian3.subtract(pto(0, 0, 0), haciaSol, new C.Cartesian3()), new C.Cartesian3());
+      scene.light = new C.DirectionalLight({ direction: dirLuz, intensity: 4.2 });
       const maquetaBlanca = () => {
         // Respaldo si el modelo no carga: maqueta blanca, muros sueltos con
         // un tono por cara (los polígonos de Cesium no reciben luz y una caja de un
@@ -1092,6 +1111,9 @@
           modelMatrix: C.Transforms.headingPitchRollToFixedFrame(
             C.Cartesian3.fromDegrees(m.lon, m.lat, suelo), new C.HeadingPitchRoll(C.Math.toRadians(m.rumbo - 90), 0, 0)),
         });
+        // un poco más de luz que la ciudad: los tiles traen la luz horneada del
+        // mediodía y la maqueta, sin esto, quedaba apagada a su lado
+        modelo.lightColor = new C.Cartesian3(1.5, 1.45, 1.38);
         scene.primitives.add(modelo);
       } catch (e) {
         console.warn('Maqueta del edificio no disponible:', e);
@@ -1146,14 +1168,19 @@
         quieto();
         return;
       }
-      let fundido = false;
       const paso = (t0) => (t) => {
+        if (cielo !== yo) return;
         const u = Math.min(1, (t - t0) / DUR);
         ponerCamara(u);
-        // como en la referencia, el render entra mientras la cámara todavía llega
-        if (!fundido && u > 0.94) { fundido = true; terminarEntrada(); }
-        if (u < 1 && cielo === null && !fundido) return;
-        if (u < 1) yo.raf = requestAnimationFrame(paso(t0));
+        if (u < 1) { yo.raf = requestAnimationFrame(paso(t0)); return; }
+        // llegó a la toma del giro: espera un instante los tiles nítidos y se funde
+        const t1 = Date.now();
+        const esperar = () => {
+          if (cielo !== yo) return;
+          if (tiles.tilesLoaded || Date.now() - t1 > 1200) terminarEntrada();
+          else setTimeout(esperar, 80);
+        };
+        esperar();
       };
       // un respiro en la toma alta antes de planear
       setTimeout(() => { if (cielo === yo) yo.raf = requestAnimationFrame((t) => paso(t)(t)); }, 500);
@@ -1319,7 +1346,7 @@
     const v = cont && D.vistas[Number(cont.dataset.vistaActual)];
     if (!v?.giro) return;
     giro.tocado = Boolean(query().giro);
-    centrarZoomGiro(1.18);
+    centrarZoomGiro(ZOOM_GIRO);
     const n = v.giro.cuadros;
     const modo = modoGiro(v, query().modo === 'noche' ? 'noche' : 'dia');
     if (bitmaps.soporte) {
