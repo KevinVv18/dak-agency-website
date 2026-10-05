@@ -8,8 +8,8 @@ export default {
   id: 'los-faiques',
   marca: 'NORVIA',
   nombre: 'Residencial Los Faiques',
-  ciudad: 'Chiclayo',
-  zona: 'Santa Victoria',
+  ciudad: 'Lambayeque',
+  zona: 'Indoamérica',
   zonaReferencial: true,
   lema: 'Departamentos en preventa',
   descripcion:
@@ -29,6 +29,12 @@ export default {
     cieloMovil: `assets/portada/${e}-cielo-movil-v1.webp`,
     estrellas: { crepusculo: 0.35, noche: 1 }[e] || 0,
   })),
+  // Lote de la entrada desde el cielo (tiles 3D de Google): Urb. Indoamérica,
+  // Mz B Lote 25, Lambayeque; el terreno vacío frente a la avenida del canal.
+  // lat/lon = centro del edificio; rumbo = hacia dónde mira la fachada (grados
+  // desde el norte); suelo = altura elipsoidal medida en los tiles (respaldo).
+  // La clave no va aquí: la pone generar.js desde MAPA3D_CLAVE.
+  mapa3d: { lat: -6.6953275, lon: -79.9059207, rumbo: 192, suelo: 25.5, lugar: 'Lambayeque · Indoamérica' },
   modoDemo: true,
   avisoDemo: 'Proyecto conceptual · inventario, precios y vistas de ejemplo',
   // Bono del Buen Pagador (Crédito Mivivienda), tramos vigentes desde junio

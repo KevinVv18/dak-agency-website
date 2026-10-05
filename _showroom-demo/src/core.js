@@ -900,6 +900,172 @@
     est.raf = requestAnimationFrame(paso);
   }
 
+  // ── Entrada desde el cielo ────────────────────────────────────────────────
+  // Al entrar al edificio (escritorio, una vez por visita) la cámara cae sobre
+  // Chiclayo real en los tiles 3D fotorrealistas de Google y frena justo en la
+  // toma del primer cuadro del giro; ahí se funde y el giro queda en la mano.
+  // Los tiles se muestran en vivo, con su atribución: las condiciones de Google
+  // no permiten guardarlos ni renderizarlos en un video.
+
+  const CESIUM = 'https://cdn.jsdelivr.net/npm/cesium@1.124.0/Build/Cesium/';
+  let cielo = null;
+
+  function cargarCesium() {
+    if (window.Cesium) return Promise.resolve();
+    window.CESIUM_BASE_URL = CESIUM;
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = `${CESIUM}Widgets/widgets.css`;
+    document.head.append(css);
+    return new Promise((ok, mal) => {
+      const s = document.createElement('script');
+      s.src = `${CESIUM}Cesium.js`;
+      s.onload = ok;
+      s.onerror = mal;
+      document.head.append(s);
+    });
+  }
+
+  function quiereEntrada() {
+    const m = D.proyecto.mapa3d;
+    if (!m?.clave || !contGiro() || query().giro) return false;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || matchMedia('(hover: none)').matches) return false;
+    try { if (sessionStorage.getItem('entrada-cielo')) return false; } catch { /* sin almacenamiento: se muestra */ }
+    return true;
+  }
+
+  function terminarEntrada(inmediato = false) {
+    const c = cielo;
+    if (!c) return;
+    cielo = null;
+    try { sessionStorage.setItem('entrada-cielo', '1'); } catch { /* nada */ }
+    cancelAnimationFrame(c.raf);
+    const fin = () => { try { c.viewer?.destroy(); } catch { /* ya destruido */ } c.capa.remove(); };
+    if (inmediato) return fin();
+    c.capa.classList.add('cielo--saliendo');
+    setTimeout(fin, 1000);
+  }
+
+  async function entradaCielo() {
+    if (!quiereEntrada()) return;
+    const m = D.proyecto.mapa3d;
+    const inm = app.querySelector('.inmersiva--edificio');
+    const capa = document.createElement('div');
+    capa.className = 'cielo';
+    capa.innerHTML = `<div class="cielo__mapa"></div>
+      <p class="cielo__lugar">${esc(m.lugar || D.proyecto.ciudad)}</p>
+      <button class="pildora cielo__saltar" data-saltar-cielo>Saltar</button>`;
+    inm.append(capa);
+    cielo = { capa, raf: 0, viewer: null };
+    const yo = cielo;
+    try {
+      await cargarCesium();
+      if (cielo !== yo) return;
+      const C = window.Cesium;
+      C.GoogleMaps.defaultApiKey = m.clave;
+      const viewer = new C.Viewer(capa.querySelector('.cielo__mapa'), {
+        globe: false, baseLayerPicker: false, geocoder: false, timeline: false, animation: false,
+        homeButton: false, sceneModePicker: false, navigationHelpButton: false, infoBox: false,
+        selectionIndicator: false, fullscreenButton: false, skyAtmosphere: new C.SkyAtmosphere(),
+      });
+      // cielo de día: sin el fondo estrellado del espacio
+      viewer.scene.skyBox.show = false;
+      viewer.scene.backgroundColor = C.Color.fromCssColorString('#a9c7e3');
+      yo.viewer = viewer;
+      const scene = viewer.scene;
+      scene.screenSpaceCameraController.enableInputs = false;
+      const tiles = await C.createGooglePhotorealistic3DTileset({ onlyUsingWithGoogleGeocoder: true });
+      if (cielo !== yo) return;
+      scene.primitives.add(tiles);
+      // el giro se renderizó con 34 mm sobre 36 mm de sensor
+      viewer.camera.frustum.fov = 2 * Math.atan(18 / 34);
+
+      // altura real del suelo en el lote (los tiles vienen en altura elipsoidal)
+      const lote = C.Cartographic.fromDegrees(m.lon, m.lat);
+      // se arranca arriba, mirando hacia abajo, mientras carga la ciudad
+      const rumboCam = C.Math.toRadians(m.rumbo + 180);
+      viewer.camera.setView({ destination: C.Cartesian3.fromDegrees(m.lon, m.lat, 6200), orientation: { heading: rumboCam, pitch: -Math.PI / 2, roll: 0 } });
+      let suelo = m.suelo ?? 40;
+      try {
+        const [h] = await scene.sampleHeightMostDetailed([lote], [], 1);
+        if (h?.height !== undefined && Number.isFinite(h.height)) suelo = h.height;
+      } catch { /* se usa la altura aproximada */ }
+      if (cielo !== yo) return;
+
+      // marco local del lote: este, norte, arriba
+      const centro = C.Cartesian3.fromDegrees(m.lon, m.lat, suelo);
+      const marco = C.Transforms.eastNorthUpToFixedFrame(centro);
+      const enu = (e, n, u) => C.Matrix4.multiplyByPoint(marco, new C.Cartesian3(e, n, u), new C.Cartesian3());
+      const r = C.Math.toRadians(m.rumbo);
+      const frente = [Math.sin(r), Math.cos(r)];          // hacia donde mira la fachada
+      const mira = enu(0, 0, 9);                            // el giro apunta a 9 m de altura
+
+      // nubes sueltas entre 1,2 y 2,6 km: atravesarlas es lo que se siente caída
+      const nubes = scene.primitives.add(new C.CloudCollection({ noiseDetail: 16 }));
+      let semilla = 11;
+      const azar = () => ((semilla = (semilla * 16807) % 2147483647) / 2147483647);
+      for (let i = 0; i < 70; i++) {
+        const a = azar() * Math.PI * 2;
+        // más densas cerca de la vertical del lote, que es por donde se cae
+        const d = 60 + azar() ** 1.6 * 2600;
+        nubes.add({
+          position: enu(Math.cos(a) * d, Math.sin(a) * d, 900 + azar() * 1300),
+          scale: new C.Cartesian2(900 + azar() * 1300, 380 + azar() * 420),
+          maximumSize: new C.Cartesian3(42, 14, 12), slice: 0.3 + azar() * 0.2, brightness: 1.05,
+        });
+      }
+      // espera a que la ciudad se vea desde arriba antes de soltar la cámara
+      await new Promise((ok) => {
+        const t0 = Date.now();
+        const ver = () => (tiles.tilesLoaded || Date.now() - t0 > 3000 || cielo !== yo ? ok() : setTimeout(ver, 100));
+        ver();
+      });
+      if (cielo !== yo) return;
+      capa.classList.add('cielo--listo');
+
+      const DUR = 7600;
+      const A0 = 6200;
+      const A1 = 14.5;
+      const R1 = 54;
+      const suave = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+      const tramo = (a, b, t) => Math.min(1, Math.max(0, (t - a) / (b - a)));
+      const paso = (t0) => (t) => {
+        const u = Math.min(1, (t - t0) / DUR);
+        // la altura baja en escala logarítmica: acelera y frena como una caída
+        const alto = Math.exp(Math.log(A0) + (Math.log(A1) - Math.log(A0)) * suave(u));
+        const sale = suave(tramo(0.45, 1, u));
+        const pos = enu(frente[0] * R1 * sale, frente[1] * R1 * sale, alto);
+        // primero mira hacia abajo; al final, a la fachada
+        const abajo = enu(frente[0] * R1 * sale, frente[1] * R1 * sale, alto - 100);
+        const p = suave(tramo(0.5, 0.97, u));
+        const objetivo = new C.Cartesian3(
+          abajo.x + (mira.x - abajo.x) * p, abajo.y + (mira.y - abajo.y) * p, abajo.z + (mira.z - abajo.z) * p);
+        const dir = C.Cartesian3.normalize(C.Cartesian3.subtract(objetivo, pos, new C.Cartesian3()), new C.Cartesian3());
+        const arriba0 = enu(-frente[0], -frente[1], 0);
+        const norte = C.Cartesian3.normalize(C.Cartesian3.subtract(arriba0, centro, new C.Cartesian3()), new C.Cartesian3());
+        const cenit = C.Cartesian3.normalize(C.Cartesian3.subtract(enu(0, 0, 1), centro, new C.Cartesian3()), new C.Cartesian3());
+        // vector arriba de la cámara: «hacia el edificio» mirando abajo, cénit al final
+        const up0 = new C.Cartesian3(norte.x + (cenit.x - norte.x) * p, norte.y + (cenit.y - norte.y) * p, norte.z + (cenit.z - norte.z) * p);
+        const derecha = C.Cartesian3.normalize(C.Cartesian3.cross(dir, up0, new C.Cartesian3()), new C.Cartesian3());
+        const up = C.Cartesian3.cross(derecha, dir, new C.Cartesian3());
+        viewer.camera.setView({ destination: pos, orientation: { direction: dir, up } });
+        if (u < 1) yo.raf = requestAnimationFrame(paso(t0));
+        else {
+          // espera un momento a que carguen los tiles de la toma final
+          const listo = Date.now();
+          const esperar = () => (tiles.tilesLoaded || Date.now() - listo > 1600 ? terminarEntrada() : setTimeout(esperar, 120));
+          esperar();
+        }
+      };
+      yo.raf = requestAnimationFrame((t) => paso(t)(t));
+    } catch (e) {
+      console.warn('Entrada desde el cielo no disponible:', e);
+      terminarEntrada(true);
+    }
+  }
+  document.addEventListener('click', (e) => { if (e.target.closest('[data-saltar-cielo]')) terminarEntrada(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && cielo) terminarEntrada(); });
+
   // ── Giro 360 ──────────────────────────────────────────────────────────────
   // Los cuadros se precargan (primero uno de cada cuatro, para poder girar
   // cuanto antes) y se cambian sin fundido. Arrastrar gira el edificio como si
@@ -1378,6 +1544,8 @@
     montarVisor();
     precargarVistas();
     precargarGiro();
+    if (cielo) terminarEntrada(true);
+    entradaCielo();
     montarTimelapse();
     app.querySelectorAll('[data-escena-img], [data-fantasma]').forEach(ajustarEncaje);
     montarPlano();

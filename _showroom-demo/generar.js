@@ -177,6 +177,9 @@ async function generar() {
 
   const css = await readFile(join(RAIZ, 'src/core.css'), 'utf8');
   const js = await readFile(join(RAIZ, 'src/core.js'), 'utf8');
+  // Clave del mapa 3D (Google Map Tiles API): llega por variable de entorno al
+  // generar y nunca se escribe en el repo. Sin clave, no hay entrada desde el cielo.
+  if (datos.proyecto.mapa3d && process.env.MAPA3D_CLAVE) datos.proyecto.mapa3d.clave = process.env.MAPA3D_CLAVE;
   const datosJs = `window.SHOWROOM = ${JSON.stringify(datos)};\n`;
   // La marca de cada proyecto entra como variables CSS: misma hoja, otro acento.
   const e = datos.proyecto.estilo || {};

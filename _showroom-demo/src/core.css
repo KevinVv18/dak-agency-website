@@ -255,6 +255,15 @@ body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="p
 }
 /* Giro: imagen y franjas escalan juntas */
 .giro-zoom { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; }
+/* Entrada desde el cielo: capa a pantalla completa sobre el giro. */
+.cielo { position: absolute; inset: 0; z-index: 20; background: var(--algarrobo); transition: opacity .9s var(--ease); }
+.cielo__mapa { position: absolute; inset: 0; opacity: 0; transition: opacity .9s var(--ease); }
+.cielo--listo .cielo__mapa { opacity: 1; }
+.cielo__mapa .cesium-viewer-bottom { left: 12px; bottom: 8px; }
+.cielo__lugar { position: absolute; left: 16px; bottom: 44px; margin: 0; padding: 8px 14px 8px 12px; border-radius: 2px; background: linear-gradient(225deg, transparent 8px, var(--algarrobo) 8.6px); color: var(--arena); font-size: var(--t-estado); font-weight: 700; font-stretch: 112%; letter-spacing: .1em; text-transform: uppercase; filter: var(--sombra); }
+.cielo__saltar { position: absolute; right: 16px; bottom: 44px; }
+.cielo--saliendo { opacity: 0; pointer-events: none; }
+
 /* El giro se pinta en un lienzo encima de la imagen inicial; aparece cuando
    tiene su primer cuadro decodificado. */
 .escena__lienzo { opacity: 0; pointer-events: none; transition: none; }

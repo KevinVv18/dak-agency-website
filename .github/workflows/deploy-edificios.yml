@@ -39,6 +39,9 @@ jobs:
           node-version: '20'
 
       - name: Generar el sitio
+        env:
+          # clave del mapa 3D (Google Map Tiles API), restringida por dominio
+          MAPA3D_CLAVE: ${{ secrets.MAPA3D_CLAVE }}
         run: |
           if [ ! -f _showroom-demo/generar.js ]; then
             echo "Esta rama no tiene el showroom; nada que publicar."; exit 0
