@@ -1322,6 +1322,39 @@
   // edificio gira lo mismo por cada píxel arrastrado o cada flecha.
   const escalaGiro = () => (D.vistas[Number(contGiro()?.dataset.vistaActual)]?.giro?.cuadros || 72) / 72;
 
+  // Mantener una flecha (tecla o botón) gira sin parar a velocidad constante;
+  // al soltar, se asienta en el cuadro más cercano. Un toque corto sigue dando
+  // el salto de siempre.
+  const VUELTA_S = 9;             // segundos por vuelta completa
+  const mantener = { dir: 0, raf: 0, k: 0, t: 0, timer: 0, activo: false };
+  function girarSostenido(dir) {
+    const cont = contGiro();
+    if (!cont) return;
+    tocarGiro();
+    mantener.dir = dir;
+    mantener.activo = true;
+    mantener.k = Number(cont.dataset.cuadro);
+    mantener.t = 0;
+    const n = D.vistas[Number(cont.dataset.vistaActual)].giro.cuadros;
+    const paso = (t) => {
+      if (!mantener.activo || !contGiro()) return;
+      if (mantener.t) mantener.k += mantener.dir * (n / VUELTA_S) * ((t - mantener.t) / 1000);
+      mantener.t = t;
+      mostrarCuadro(mantener.k);
+      mantener.raf = requestAnimationFrame(paso);
+    };
+    mantener.raf = requestAnimationFrame(paso);
+  }
+  function soltarGiro() {
+    clearTimeout(mantener.timer);
+    if (!mantener.activo) return false;
+    mantener.activo = false;
+    cancelAnimationFrame(mantener.raf);
+    mostrarCuadro(Math.round(mantener.k));
+    fijarQuery({ giro: contGiro()?.dataset.cuadro || null });
+    return true;
+  }
+
   function animarGiro(pasos) {
     const cont = contGiro();
     if (!cont) return;
@@ -1750,7 +1783,11 @@
       return;
     }
     const paso = t.closest('[data-paso]');
-    if (paso && contGiro()) return animarGiro(Math.round(Number(paso.dataset.paso) * 5 * escalaGiro()));
+    if (paso && contGiro()) {
+      // si se mantuvo presionado, el giro continuo ya hizo el trabajo
+      if (mantener.hecho) { mantener.hecho = false; return; }
+      return animarGiro(Math.round(Number(paso.dataset.paso) * 5 * escalaGiro()));
+    }
     if (paso) return irAVista(Number(app.querySelector('.inmersiva--edificio').dataset.vistaActual) + Number(paso.dataset.paso));
     const irVista = t.closest('[data-ir-vista]');
     if (irVista) return irAVista(Number(irVista.dataset.irVista));
@@ -1773,6 +1810,21 @@
     }
   });
 
+  document.addEventListener('pointerdown', (e) => {
+    const paso = e.target.closest?.('[data-paso]');
+    if (!paso || !contGiro() || e.button !== 0) return;
+    clearTimeout(mantener.timer);
+    mantener.hecho = false;
+    mantener.timer = setTimeout(() => { mantener.hecho = true; girarSostenido(Number(paso.dataset.paso)); }, 260);
+  });
+  const soltarBoton = () => soltarGiro();
+  document.addEventListener('pointerup', soltarBoton);
+  document.addEventListener('pointercancel', soltarBoton);
+  addEventListener('blur', () => soltarGiro());
+  document.addEventListener('keyup', (e) => {
+    if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && contGiro()) soltarGiro();
+  });
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !app.querySelector('#menu')?.hidden) return abrirMenu(false);
     const zona = e.target.closest?.('[data-unidad]');
@@ -1780,8 +1832,11 @@
     // Flechas del teclado recorren las paradas del exterior.
     const ed = app.querySelector('.inmersiva--edificio');
     if (ed && !e.target.closest('input, select, textarea') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
-      if (contGiro()) animarGiro(Math.round((e.key === 'ArrowRight' ? 3 : -3) * escalaGiro()));
-      else irAVista(Number(ed.dataset.vistaActual) + (e.key === 'ArrowRight' ? 1 : -1));
+      if (contGiro()) {
+        e.preventDefault();
+        // la repetición del teclado no reinicia nada: se gira mientras siga apretada
+        if (!e.repeat && !mantener.activo) girarSostenido(e.key === 'ArrowRight' ? 1 : -1);
+      } else irAVista(Number(ed.dataset.vistaActual) + (e.key === 'ArrowRight' ? 1 : -1));
     }
   });
 
