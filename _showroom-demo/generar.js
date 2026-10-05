@@ -122,6 +122,7 @@ function shell(pag, v) {
 <title>${esc(pag.titulo)}</title>
 <meta name="description" content="${esc(pag.desc)}">
 <meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="${base}vendor/flor.svg" type="image/svg+xml">
 <link rel="preload" href="${base}vendor/fonts/archivo-latin-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${base}core.css?v=${v.css}">
 <style>:root{${v.marca}}</style>

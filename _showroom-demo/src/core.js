@@ -59,6 +59,24 @@
     menos: 'M5 12h14',
     imprimir: 'M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2M7 14h10v6H7z',
   };
+  // Flor del faique: la borla de estambres de la acacia del bosque seco, con
+  // su pedúnculo y el par de espinas. Es la marca del mundo, no un ícono.
+  const FLOR = (() => {
+    const cx = 24, cy = 18, n = 22;
+    let rayos = '', puntas = '';
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      const r = 9.6 + ((i * 7) % 5) * 0.35;
+      const x0 = cx + Math.cos(a) * 3.2, y0 = cy + Math.sin(a) * 3.2;
+      const x1 = cx + Math.cos(a) * r, y1 = cy + Math.sin(a) * r;
+      rayos += `M${x0.toFixed(2)} ${y0.toFixed(2)}L${x1.toFixed(2)} ${y1.toFixed(2)}`;
+      puntas += `<circle cx="${x1.toFixed(2)}" cy="${y1.toFixed(2)}" r="1.15"/>`;
+    }
+    const tallo = 'M24 29.5V46M24 37.5 15 33M24 37.5 33 33';
+    return `<path d="${rayos}${tallo}"/><g fill="currentColor" stroke="none"><circle cx="${cx}" cy="${cy}" r="2.6"/>${puntas}</g>`;
+  })();
+  const flor = (clase = '') => `<svg class="flor ${clase}" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">${FLOR}</svg>`;
+
   const icono = (n) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[n]}"/></svg>`;
 
   // ── Utilidades ─────────────────────────────────────────────────────────────
@@ -130,7 +148,7 @@
   const marcador = (titulo, detalle = '', clase = '') =>
     `<div class="marcador ${clase}" role="img" aria-label="${esc(titulo)} (pendiente)"><span class="marcador__t">${esc(titulo)}</span>${detalle ? `<span class="marcador__d">${esc(detalle)}</span>` : ''}</div>`;
 
-  const aviso = () => (D.proyecto.modoDemo ? `<div class="aviso-demo" role="note">${esc(D.proyecto.avisoDemo)}</div>` : '');
+  const aviso = () => (D.proyecto.modoDemo ? `<div class="aviso-demo" role="note">${flor()}${esc(D.proyecto.avisoDemo)}</div>` : '');
 
   // ── Menú y controles flotantes ─────────────────────────────────────────────
 
@@ -154,6 +172,7 @@
           </nav>
           <p class="menu__pie">${esc(p.lema)} · ${p.zona ? `${esc(p.zona)}, ` : ''}${esc(p.ciudad)}</p>
           ${p.creditos?.length ? `<p class="menu__creditos">${p.creditos.map(esc).join(' · ')}</p>` : ''}
+          ${flor('flor--marca')}
         </div>
       </div>`;
   }
@@ -619,7 +638,7 @@
         <label><span>Desde el piso</span><select name="desde"><option value="">Cualquiera</option>${opciones(pisosResidenciales.map((p) => [p.id, p.id]), q.desde)}</select></label>
         ${Object.keys(q).length ? `<a class="pildora pildora--chica" href="${url('departamentos/')}">Limpiar filtros</a>` : ''}
       </form>
-      ${grupos || (D.unidades.length ? '<p class="vacio">Ningún departamento coincide con esos filtros.</p>' : `<p class="vacio">Inventario por confirmar. Mientras tanto puedes ver los <a href="${url('modelos/')}">modelos de departamento</a>.</p>`)}`);
+      ${grupos || (D.unidades.length ? `<p class="vacio">${flor()}<span>Ningún departamento coincide con esos filtros.</span></p>` : `<p class="vacio">Inventario por confirmar. Mientras tanto puedes ver los <a href="${url('modelos/')}">modelos de departamento</a>.</p>`)}`);
   }
 
   // ── Modelos ────────────────────────────────────────────────────────────────
@@ -649,7 +668,7 @@
   }
 
   function vistaNoEncontrada() {
-    return pagina(`<div class="encabezado"><h1>No encontramos esa página</h1><p><a href="${url('edificio/')}">Volver al edificio</a></p></div>`);
+    return pagina(`<div class="encabezado encabezado--vacio">${flor('flor--grande')}<h1>No encontramos esa página</h1><p><a href="${url('edificio/')}">Volver al edificio</a></p></div>`);
   }
 
   // ── Consulta ───────────────────────────────────────────────────────────────

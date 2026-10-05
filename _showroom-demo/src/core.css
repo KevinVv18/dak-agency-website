@@ -101,6 +101,28 @@ h1:focus { outline: none; }
 
 .ic { width: 20px; height: 20px; flex: none; }
 
+/* Flor del faique: marca del mundo. Chica junto a textos de estado; grande y
+   tenue como marca de agua en el menú y en la página no encontrada. */
+.flor { display: block; width: 24px; height: 24px; flex: none; }
+.flor--marca { position: absolute; right: -36px; bottom: -28px; width: 260px; height: 260px; color: var(--arena); opacity: .06; pointer-events: none; }
+.flor--grande { width: 72px; height: 72px; margin-bottom: 18px; color: var(--algarrobo-3); }
+.vacio { display: flex; align-items: center; gap: 14px; }
+.vacio .flor { width: 34px; height: 34px; color: var(--algarrobo-3); }
+
+/* Grano de ceniza sobre la madera: textura propia, en mosaico, recortada con
+   la misma esquina que la pieza. Va debajo del contenido (z-index -1 dentro
+   de un contexto aislado), así nunca ensucia el texto. */
+.tarjeta, .consulta, .columna-pisos, .modelo__texto, .menu__panel { isolation: isolate; --g-corte: 22px; }
+.columna-pisos { --g-corte: 12px; }
+.modelo__texto { position: relative; --g-corte: 18px; }
+.menu__panel { position: relative; overflow: hidden; --g-corte: 0px; }
+.tarjeta::before, .consulta::before, .columna-pisos::before, .modelo__texto::before, .menu__panel::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: url('vendor/textura/ceniza.webp') 0 0 / 256px;
+  mix-blend-mode: soft-light; opacity: .2;
+  clip-path: polygon(0 0, calc(100% - var(--g-corte)) 0, 100% var(--g-corte), 100% 100%, 0 100%);
+}
+
 /* Voz expandida: nombres, pisos, cifras y rótulos. */
 .portada h1, .encabezado h1, .ficha__titulo h1, .insignia h1, .tarjeta__cabeza h2, .tarjeta__precio, .grupo__cabeza h2, .modelo__texto h2, .consulta__form h2, .menu__nav a, .piso-pildora b, .pin-unidad, .franja-rotulo, .datos dd {
   font-stretch: 125%;
@@ -109,7 +131,7 @@ h1:focus { outline: none; }
 
 /* Aviso de demo: una franja fina siempre visible, nunca confundible con inventario real. */
 .aviso-demo { position: fixed; inset: 0 0 auto; z-index: 70; height: var(--aviso-h); display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 12px; background: #150d07; color: var(--arena-tenue); font-size: var(--t-estado); font-weight: 600; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.aviso-demo::before { content: ''; flex: none; width: 7px; height: 7px; background: var(--arena-tenue); transform: rotate(45deg); }
+.aviso-demo .flor { width: 16px; height: 16px; flex: none; color: var(--arena-tenue); }
 body:not([data-vista="portada"]):not([data-vista="edificio"]):not([data-vista="piso"]) .aviso-demo { position: sticky; }
 
 /* ── Tablillas ────────────────────────────────────────────────────────────── */
