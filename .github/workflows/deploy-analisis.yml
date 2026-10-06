@@ -64,6 +64,13 @@ jobs:
           # Sin `set -e` a propósito, igual que la guarda de deploy.yml: cada
           # fallo se comprueba y se explica en vez de cortar el log en blanco.
           set -uo pipefail
+          # Y `set +e` explícito: GitHub Actions corre los run con `bash -eo pipefail`
+          # aunque aquí no se escriba. Sin esta línea, el `diff -u | head` de abajo
+          # sale con 1 en cuanto un archivo cambia de contenido de verdad y mata el
+          # paso sin explicar nada. Pasó el 05-oct-2026 con el informe de Almacenes
+          # Arrué: hasta entonces todos los cambios eran solo CRLF → LF y el diff
+          # nunca se ejecutaba.
+          set +e
 
           if [ -z "$SSH_KEY" ]; then
             echo "::error::No hay SSH_PRIVATE_KEY (¿pull request desde un fork?). Sin ella no se puede comprobar el servidor."
