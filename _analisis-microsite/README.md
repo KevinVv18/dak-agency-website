@@ -174,6 +174,15 @@ document.head.insertAdjacentHTML('beforeend',
 Eso deja la página exactamente como sale del diálogo de impresión con los fondos
 apagados. **Si desaparece un dato, está mal pintado.**
 
+**El OG (`analisis.css`) también lo cumple desde el 2026-10-05** (informe de Almacenes Arrué).
+Se perdían en papel las barras, las cabeceras de todas las tablas (blanco sobre morado), la
+fila de la marca (blanco sobre tinta), las viñetas y el texto en `var(--tx)` o `#fff` de las
+secciones oscuras; y «Guardar en PDF» desde la portada imprimía las cifras en 0 porque se
+animan al entrar en pantalla. Lo arregla un bloque `@media print` al final de la hoja —solo
+de impresión: en pantalla ningún informe entregado cambia— y un `beforeprint` en
+`analisis.js`. Después del fragmento de arriba, **pasa `auditar-contraste.js`**: en papel
+también se exige 4,5:1. Los nueve informes OG quedaron en cero fallos en pantalla y en papel.
+
 Reglas duras del componente:
 
 - **Nombres de clase con prefijo `t-` y anidados bajo `.tally-g`.** La primera versión usó

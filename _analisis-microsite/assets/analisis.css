@@ -425,3 +425,52 @@ section{scroll-margin-top:3.6rem}
   .tw{max-height:none}
   thead th{position:static}
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAPEL SIN FONDOS Y SUPERFICIES DEL NAVEGADOR — 2026-10-05
+   Solo afecta a la impresión y a la selección/foco: en pantalla ningún informe
+   entregado cambia un píxel.
+
+   El navegador no imprime fondos salvo que quien imprime marque «gráficos de
+   fondo», y esa casilla la marca —o no— el cliente. En el OG se perdían tres
+   cosas al guardar en PDF:
+     1. las barras (eran un degradado de fondo): salían vacías;
+     2. la fila de la marca en las tablas (texto blanco sobre fondo tinta):
+        quedaba texto blanco sobre papel blanco, invisible;
+     3. todo lo que en sección oscura usa --tx o color:#fff: la sección pasa a
+        papel blanco al imprimir, pero el texto seguía siendo blanco.
+   Regla heredada de «Signos vitales»: lo que significa algo se imprime con un
+   borde, que sale siempre. */
+@media print{
+  .dark{--tx:#141416;--red:#D4123F;--green:#0A7A55;--amber:#8F5A00;--purpd:#7A1FB8}
+  .dark [style*="color:#fff"]{color:#141416!important}
+  .btrack{background:none!important;box-shadow:none!important;height:auto!important;
+    border-bottom:1px solid #C9BEDB;border-radius:0}
+  .bfill{background:none!important;box-shadow:none!important;height:0!important;border-radius:0;
+    border-top:16px solid #7A1FB8;transition:none!important}
+  .bfill.zero{border-top-color:#D4123F}
+  .bfill::after{display:none}
+  tr.me td,.dark tr.me td{background:none!important;color:#141416!important;font-weight:700;
+    border-top:2px solid #141416;border-bottom:2px solid #141416}
+  tr.me td b,tr.me td strong,.dark tr.me td b{color:#141416!important}
+  .tier.reco{box-shadow:none;border:2px solid #7A1FB8}
+  .tier .badge,.pill{background:none!important;color:#7A1FB8!important;box-shadow:none!important;border:1px solid #7A1FB8}
+  .dot{background:none!important;box-shadow:none!important;border:5px solid #7A1FB8}
+  .dot.g{border-color:#0A7A55}.dot.r{border-color:#D4123F}.dot.a{border-color:#8F5A00}
+  /* Cabeceras de tabla: blanco sobre morado. Sin fondos, la cabecera entera
+     desaparecía del PDF — en todas las tablas de todos los informes. */
+  thead th{background:none!important;color:#141416!important;border-bottom:2px solid #7A1FB8}
+  /* Portada y pie: lila y grises pensados para negro, ilegibles sobre papel */
+  .hero .sub,.thesis b,.dark .kick{color:#7A1FB8!important}
+  .hero .meta,.hero .date,.dark .src,.foot small,.soc a{color:#4A4458!important}
+  .attrib{color:#7A1FB8!important}
+  .dark [style*="mutedd"],.dark [style*="#D9D0EA"],.dark [style*="#A99BC2"]{color:#4A4458!important}
+  /* El logotipo es blanco: sobre papel se invierte a negro */
+  .hero .logo,.foot img{filter:invert(1)}
+}
+::selection{background:#B024FF;color:#fff}
+:focus-visible{outline:2px solid #B024FF;outline-offset:3px}
+.dark :focus-visible{outline-color:#C97DFF}
+.tw{scrollbar-color:#B9A8D6 transparent}
+/* Piso de 11 px para texto funcional: la insignia «Recomendado» medía 10,56 */
+.tier .badge{font-size:.7rem}
