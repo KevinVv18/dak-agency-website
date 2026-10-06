@@ -206,6 +206,13 @@
     // muestra todo. (Comprobar `.rv.in` en su lugar sería un falso positivo:
     // arriba del todo no hay nada que revelar todavía.)
     setTimeout(function () { if (!ioRespondio) revelarTodo(); }, 1200);
+
+    // «Guardar en PDF» desde la portada imprimía las cifras en 0 y las barras
+    // vacías: se animan al entrar en pantalla, y lo que nunca entró sigue en su
+    // valor inicial. Antes de imprimir se fija todo en su valor final.
+    addEventListener('beforeprint', revelarTodo);
+    var mqPrint = matchMedia('print');
+    if (mqPrint.addListener) mqPrint.addListener(function (m) { if (m.matches) revelarTodo(); });
   } catch (err) {
     revelarTodo();
   }
